@@ -24,5 +24,6 @@ public class ApplicationConfig extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(IGBApplicationBean.class);
         resources.add(SessionREST.class);
+        resources.add(SessionPoolREST.class);
     }
 }
