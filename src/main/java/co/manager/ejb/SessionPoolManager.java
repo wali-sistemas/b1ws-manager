@@ -3,6 +3,7 @@ package co.manager.ejb;
 import co.manager.dto.B1WSSession;
 import co.manager.dto.SessionDTO;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
@@ -17,13 +18,17 @@ import java.util.logging.Logger;
 public class SessionPoolManager implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(SessionPoolManager.class.getSimpleName());
 
-    private LinkedList<B1WSSession> availableSessions = new LinkedList<>();
+    private HashMap<String, LinkedList<B1WSSession>> availableSessions = new HashMap<>();
     private HashMap<String, B1WSSession> borrowedSessions = new HashMap<>();
     private int maxOpenSessions;
     private long sessionMaxAge;
-
     @EJB
     private SessionManager sessionManager;
+
+    @PostConstruct
+    private void initialize() {
+        addListSession("VARROCPruebas");
+    }
 
     public SessionPoolManager() {
         //TODO: inicializar las variables desde properties
@@ -34,7 +39,7 @@ public class SessionPoolManager implements Serializable {
 
     public String getSession(String companyName) {
         CONSOLE.log(Level.INFO, "Solicitud de sesion para empresa {0}", companyName);
-        B1WSSession session = availableSessions.pollFirst();
+        B1WSSession session = availableSessions.get(companyName).pollFirst();
         if (session == null) {
             CONSOLE.log(Level.INFO, "No hay sesiones activas. Validando si se pueden iniciar nuevas");
             //si no hay elementos en la lista de sesiones disponibles, valida si estan todos en el mapa de sesiones
@@ -48,6 +53,10 @@ public class SessionPoolManager implements Serializable {
                 session = new B1WSSession();
                 session.setCreated(System.currentTimeMillis());
                 session.setSessionId(sessionId);
+
+                LinkedList<B1WSSession> list = new LinkedList<>();
+                list.add(session);
+                availableSessions.put(companyName, list);
             } else {
                 CONSOLE.log(Level.SEVERE, "No es posible iniciar nuevas sesiones porque se ha alcanzado el limite de {0}.", maxOpenSessions);
                 //no se pueden abrir mas sesiones, TODO: retornar error?
@@ -87,9 +96,23 @@ public class SessionPoolManager implements Serializable {
         } else {
             CONSOLE.log(Level.INFO, "La sesion {0} ha sido devuelta a la lista de sesiones disponibles", dto.getSessionID());
             // si el tiempo es inferior, la agrega a la lista de disponibles, en el ultimo lugar
-            availableSessions.addLast(borrowedSession);
+            //availableSessions.addLast(borrowedSession);
+            availableSessions.get(0).addLast(borrowedSession);
         }
         logSessionStatus();
+    }
+
+    private void addListSession(String companyName) {
+        if (availableSessions.size() <= 0) {
+            LinkedList<B1WSSession> session = new LinkedList<>();
+            for (int i = 0; i < 5; i++) {
+                String sessionId = sessionManager.login(companyName);
+                session.add(new B1WSSession(sessionId, System.currentTimeMillis()));
+            }
+            availableSessions.put(companyName, session);
+        } else {
+            return;
+        }
     }
 
     private void logSessionStatus() {

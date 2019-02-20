@@ -8,6 +8,14 @@ public class B1WSSession implements Comparable<B1WSSession>{
     private long created;
     private long lastBorrowed;
 
+    public B1WSSession(String sessionId, long created) {
+        this.sessionId = sessionId;
+        this.created = created;
+    }
+
+    public B1WSSession() {
+    }
+
     public long getCreated() {
         return created;
     }
