@@ -20,7 +20,6 @@ public class HealthchekREST {
     @Inject
     private SessionPoolManager sessionPoolManager;
 
-
     @GET
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)

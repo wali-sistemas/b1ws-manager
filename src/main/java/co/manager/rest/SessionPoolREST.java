@@ -1,7 +1,6 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
-import co.manager.dto.SessionDTO;
 import co.manager.ejb.SessionPoolManager;
 
 import javax.ejb.TransactionAttribute;
@@ -32,7 +31,11 @@ public class SessionPoolREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getSession(@PathParam("companyName") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando sesion de DI Server para la compañia [" + companyName + "]");
-        return Response.ok(new ResponseDTO(0, sessionPoolManager.getSession(companyName))).build();
+        String sessionId = sessionPoolManager.getSession(companyName);
+        if(sessionId != null) {
+            return Response.ok(new ResponseDTO(0, sessionId)).build();
+        }
+        return Response.status(429).entity(new ResponseDTO(1, "No hay sesiones disponibles para asignar. Intente de nuevo en unos segundos")).build();
     }
 
     @PUT

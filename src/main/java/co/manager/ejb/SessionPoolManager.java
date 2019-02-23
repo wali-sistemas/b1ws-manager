@@ -1,7 +1,7 @@
 package co.manager.ejb;
 
 import co.manager.dto.B1WSSession;
-import co.manager.dto.SessionDTO;
+import co.manager.dto.SessionStatusDTO;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -132,25 +131,10 @@ public class SessionPoolManager implements Serializable {
                 new Object[]{borrowedSessions.size(), availableSessions.size()});
     }
 
-    public String reportStatus() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("sesiones disponibles: \n");
-        for(String key : availableSessions.keySet()) {
-            sb.append("  [");
-            sb.append(key);
-            sb.append(", ");
-            sb.append(Arrays.asList(availableSessions.get(key).toArray()));
-            sb.append("]\n");
-        }
-        sb.append("\n");
-        sb.append("sesiones prestadas: \n");
-        for (String key : borrowedSessions.keySet()) {
-            sb.append("  [");
-            sb.append(key);
-            sb.append(", ");
-            sb.append(borrowedSessions.get(key));
-            sb.append("]\n");
-        }
-        return sb.toString();
+    public SessionStatusDTO reportStatus() {
+        SessionStatusDTO status = new SessionStatusDTO();
+        status.setAvailableSessions(availableSessions);
+        status.setBorrowedSessions(borrowedSessions);
+        return status;
     }
 }
