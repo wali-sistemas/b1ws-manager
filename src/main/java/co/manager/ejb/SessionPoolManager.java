@@ -42,7 +42,10 @@ public class SessionPoolManager implements Serializable {
 
     public String getSession(String companyName) {
         CONSOLE.log(Level.INFO, "Solicitud de sesion para empresa {0}", companyName);
-        B1WSSession session = availableSessions.get(companyName).poll();
+        B1WSSession session = null;
+        if(availableSessions.containsKey(companyName)) {
+            session = availableSessions.get(companyName).poll();
+        }
         if (session == null) {
             CONSOLE.log(Level.INFO, "No hay sesiones activas. Validando si se pueden iniciar nuevas");
             //si no hay elementos en la lista de sesiones disponibles, valida si estan todos en el mapa de sesiones
