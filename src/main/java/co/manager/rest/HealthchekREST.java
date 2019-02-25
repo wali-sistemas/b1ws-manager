@@ -13,6 +13,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.logging.Logger;
 
+/**
+ * @author dbotero
+ */
 @Path("health")
 public class HealthchekREST {
     private static final Logger CONSOLE = Logger.getLogger(HealthchekREST.class.getSimpleName());

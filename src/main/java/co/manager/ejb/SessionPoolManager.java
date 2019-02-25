@@ -2,19 +2,23 @@ package co.manager.ejb;
 
 import co.manager.dto.B1WSSession;
 import co.manager.dto.SessionStatusDTO;
+import co.manager.util.Constants;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import javax.swing.text.html.parser.Parser;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * @author dbotero
+ */
 @ApplicationScoped
 @Named("sessionPoolManager")
 public class SessionPoolManager implements Serializable {
@@ -29,12 +33,11 @@ public class SessionPoolManager implements Serializable {
 
     @PostConstruct
     private void initialize() {
-
     }
 
     public SessionPoolManager() {
         //TODO: inicializar las variables desde properties
-        maxOpenSessions = 10;
+        maxOpenSessions = Integer.parseInt(Constants.MAXIMO_OPEN_SESSIONS);
         //3 horas, 60 minutos por hora, 60 segundos por minuto, 1000 milisegundos por segundo
         sessionMaxAge = 3 * 60 * 60 * 1000;
     }
@@ -42,7 +45,7 @@ public class SessionPoolManager implements Serializable {
     public String getSession(String companyName) {
         CONSOLE.log(Level.INFO, "Solicitud de sesion para empresa {0}", companyName);
         B1WSSession session = null;
-        if(availableSessions.containsKey(companyName)) {
+        if (availableSessions.containsKey(companyName)) {
             session = availableSessions.get(companyName).poll();
         }
         if (session == null) {
@@ -111,19 +114,6 @@ public class SessionPoolManager implements Serializable {
             }
         }
         logSessionStatus();
-    }
-
-    private void addListSession(String companyName) {
-        if (availableSessions.size() <= 0) {
-            LinkedList<B1WSSession> session = new LinkedList<>();
-            for (int i = 0; i < 5; i++) {
-                String sessionId = sessionManager.login(companyName);
-                session.add(new B1WSSession(sessionId, System.currentTimeMillis()));
-            }
-            //availableSessions.put(companyName, session);
-        } else {
-            return;
-        }
     }
 
     private void logSessionStatus() {

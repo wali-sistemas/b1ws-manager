@@ -3,6 +3,9 @@ package co.manager.dto;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * @author dbotero
+ */
 public class SessionStatusDTO {
     private ConcurrentHashMap<String, LinkedBlockingQueue<B1WSSession>> availableSessions = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, B1WSSession> borrowedSessions = new ConcurrentHashMap<>();
