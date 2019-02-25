@@ -1,6 +1,6 @@
 package co.manager.rest;
 
-import co.manager.ejb.IGBApplicationBean;
+import co.manager.ejb.ManagerApplicationBean;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -26,7 +26,7 @@ public class HeaderDecorationFilter implements Filter {
     private static final String ALLOWED_METHODS = "GET, OPTIONS, POST, PUT, DELETE";
 
     @Inject
-    private IGBApplicationBean appBean;
+    private ManagerApplicationBean appBean;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

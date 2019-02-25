@@ -1,7 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
-import co.manager.ejb.IGBApplicationBean;
+import co.manager.ejb.ManagerApplicationBean;
 import co.manager.ejb.SessionManager;
 
 import javax.ejb.EJB;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class SessionREST {
     private static final Logger CONSOLE = Logger.getLogger(SessionREST.class.getSimpleName());
     @Inject
-    private IGBApplicationBean appBean;
+    private ManagerApplicationBean appBean;
     @EJB
     private SessionManager sessionManager;
 

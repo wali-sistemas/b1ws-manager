@@ -25,7 +25,7 @@ public class SessionManager implements Serializable {
     private LoginService service;
 
     @Inject
-    private IGBApplicationBean appBean;
+    private ManagerApplicationBean appBean;
 
     @PostConstruct
     private void initialize() {

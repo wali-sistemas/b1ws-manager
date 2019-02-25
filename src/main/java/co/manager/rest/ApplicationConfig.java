@@ -1,6 +1,6 @@
 package co.manager.rest;
 
-import co.manager.ejb.IGBApplicationBean;
+import co.manager.ejb.ManagerApplicationBean;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class ApplicationConfig extends Application {
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(IGBApplicationBean.class);
+        resources.add(ManagerApplicationBean.class);
         resources.add(SessionREST.class);
         resources.add(SessionPoolREST.class);
         resources.add(HealthchekREST.class);

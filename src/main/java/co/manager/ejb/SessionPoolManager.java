@@ -7,9 +7,10 @@ import co.manager.util.Constants;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.swing.text.html.parser.Parser;
 import java.io.Serializable;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -30,6 +31,8 @@ public class SessionPoolManager implements Serializable {
     private long sessionMaxAge;
     @EJB
     private SessionManager sessionManager;
+    @Inject
+    private ManagerApplicationBean appBean;
 
     @PostConstruct
     private void initialize() {
@@ -37,7 +40,7 @@ public class SessionPoolManager implements Serializable {
 
     public SessionPoolManager() {
         //TODO: inicializar las variables desde properties
-        maxOpenSessions = Integer.parseInt(Constants.MAXIMO_OPEN_SESSIONS);
+        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxSession"));
         //3 horas, 60 minutos por hora, 60 segundos por minuto, 1000 milisegundos por segundo
         sessionMaxAge = 3 * 60 * 60 * 1000;
     }
