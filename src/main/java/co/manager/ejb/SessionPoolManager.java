@@ -36,11 +36,10 @@ public class SessionPoolManager implements Serializable {
 
     @PostConstruct
     private void initialize() {
+        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxSession"));
     }
 
     public SessionPoolManager() {
-        //TODO: inicializar las variables desde properties
-        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxSession"));
         //3 horas, 60 minutos por hora, 60 segundos por minuto, 1000 milisegundos por segundo
         sessionMaxAge = 3 * 60 * 60 * 1000;
     }
