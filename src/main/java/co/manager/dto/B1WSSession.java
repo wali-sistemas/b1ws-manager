@@ -53,4 +53,14 @@ public class B1WSSession implements Comparable<B1WSSession>{
     public int compareTo(B1WSSession o) {
         return Long.compare(o.lastBorrowed, lastBorrowed);
     }
+
+    @Override
+    public String toString() {
+        return "B1WSSession{" +
+                "sessionId='" + sessionId + '\'' +
+                ", company='" + company + '\'' +
+                ", created=" + created +
+                ", lastBorrowed=" + lastBorrowed +
+                '}';
+    }
 }
