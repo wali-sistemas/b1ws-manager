@@ -18,18 +18,17 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * @author jguisao
  */
 @ApplicationScoped
-@Named("igbApplicationBean")
+@Named("managerApplicationBean")
 @Path("application")
-public class IGBApplicationBean implements Serializable {
+public class ManagerApplicationBean implements Serializable {
 
-    private static final Logger CONSOLE = Logger.getLogger(IGBApplicationBean.class.getSimpleName());
+    private static final Logger CONSOLE = Logger.getLogger(ManagerApplicationBean.class.getSimpleName());
 
     private Properties props = new Properties();
     private HashSet<String> excludedPaths;
@@ -60,7 +59,7 @@ public class IGBApplicationBean implements Serializable {
 
         String serverConfUrl = System.getProperty("jboss.server.config.dir");
         CONSOLE.log(Level.INFO, "Server config URL [{0}]", serverConfUrl);
-        String propertiesFileName = "igb.properties";
+        String propertiesFileName = "manager.properties";
         String path = serverConfUrl + File.separator + propertiesFileName;
         CONSOLE.log(Level.INFO, "Loading properties file: [{0}]", path);
 
@@ -87,22 +86,5 @@ public class IGBApplicationBean implements Serializable {
 
     public String obtenerValorPropiedad(String prop) {
         return props.getProperty(prop);
-    }
-
-    public boolean isPathExcludedFromTokenValidation(String path) {
-        return excludedPaths.contains(path) || pathMatchesTemplate(path);
-    }
-
-    private boolean pathMatchesTemplate(String path) {
-        for (Pattern pattern : excludedPathTemplates) {
-            CONSOLE.log(Level.FINE, "Validando si la ruta {0} equivale a la plantilla {1}", new Object[]{path, pattern.pattern()});
-            Matcher matcher = pattern.matcher(path);
-            if (matcher.matches()) {
-                CONSOLE.log(Level.INFO, "La ruta {0} equivale a la plantilla {1}", new Object[]{path, pattern.pattern()});
-                return true;
-            }
-        }
-        CONSOLE.log(Level.FINE, "La ruta {0} no equivale a ninguna de las plantillas", path);
-        return false;
     }
 }

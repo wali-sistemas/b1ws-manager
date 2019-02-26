@@ -15,15 +15,17 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author dbotero
+ */
 @Stateless
 public class SessionManager implements Serializable {
 
     private static final Logger CONSOLE = Logger.getLogger(SessionManager.class.getSimpleName());
-
     private LoginService service;
 
     @Inject
-    private IGBApplicationBean appBean;
+    private ManagerApplicationBean appBean;
 
     @PostConstruct
     private void initialize() {

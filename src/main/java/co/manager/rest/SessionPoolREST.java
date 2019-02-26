@@ -1,7 +1,6 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
-import co.manager.dto.SessionDTO;
 import co.manager.ejb.SessionPoolManager;
 
 import javax.ejb.TransactionAttribute;
@@ -32,16 +31,20 @@ public class SessionPoolREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getSession(@PathParam("companyName") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando sesion de DI Server para la compañia [" + companyName + "]");
-        return Response.ok(new ResponseDTO(0, sessionPoolManager.getSession(companyName))).build();
+        String sessionId = sessionPoolManager.getSession(companyName);
+        if(sessionId != null) {
+            return Response.ok(new ResponseDTO(0, sessionId)).build();
+        }
+        return Response.status(429).entity(new ResponseDTO(1, "No hay sesiones disponibles para asignar. Intente de nuevo en unos segundos")).build();
     }
 
     @PUT
-    @Path("return")
+    @Path("return/{sessionId}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response returnSession(SessionDTO dto) {
-        CONSOLE.log(Level.INFO, "Cerrando sesion [{0}] de DI Server", dto.getSessionID());
-        sessionPoolManager.returnSession(dto);
+    public Response returnSession(@PathParam("sessionId") String sessionId) {
+        CONSOLE.log(Level.INFO, "Devolviendo sesion [{0}] al pool", sessionId);
+        sessionPoolManager.returnSession(sessionId);
         return Response.ok(new ResponseDTO(0, "La sesión fue devuelta con éxito")).build();
     }
 }

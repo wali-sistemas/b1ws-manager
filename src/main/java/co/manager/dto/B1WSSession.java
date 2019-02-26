@@ -5,6 +5,7 @@ package co.manager.dto;
  */
 public class B1WSSession implements Comparable<B1WSSession>{
     private String sessionId;
+    private String company;
     private long created;
     private long lastBorrowed;
 
@@ -38,6 +39,14 @@ public class B1WSSession implements Comparable<B1WSSession>{
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
     }
 
     @Override
