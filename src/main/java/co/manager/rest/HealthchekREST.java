@@ -29,4 +29,13 @@ public class HealthchekREST {
     public Response openSession() {
         return Response.ok(new ResponseDTO(0, sessionPoolManager.reportStatus())).build();
     }
+
+    @GET
+    @Path("reset")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response resetSession() {
+        sessionPoolManager.resetSesion();
+        return Response.ok(new ResponseDTO(0, sessionPoolManager.reportStatus())).build();
+    }
 }

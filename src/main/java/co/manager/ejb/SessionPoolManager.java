@@ -58,6 +58,10 @@ public class SessionPoolManager implements Serializable {
             if (borrowedSessions.size() < maxOpenSessions) {
                 //abrir una nueva sesion
                 String sessionId = sessionManager.login(companyName);
+                if (sessionId == null) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                    return null;
+                }
                 CONSOLE.log(Level.INFO, "Se creo una nueva sesion con id {0}", sessionId);
 
                 session = new B1WSSession();
@@ -71,7 +75,7 @@ public class SessionPoolManager implements Serializable {
             }
         }
 
-        CONSOLE.log(Level.INFO, "Retornando sesion {0}", session.getSessionId());
+        CONSOLE.log(Level.INFO, "Entregando session {0}", session.getSessionId());
         session.setLastBorrowed(System.currentTimeMillis());
 
         borrowedSessions.put(session.getSessionId(), session);
@@ -80,7 +84,7 @@ public class SessionPoolManager implements Serializable {
     }
 
     public void returnSession(String sessionId) {
-        CONSOLE.log(Level.INFO, "Retornando sesion {0}", sessionId);
+        CONSOLE.log(Level.INFO, "Recibiendo sesion {0}", sessionId);
         // Obtiene la sesion asociada con el id recibido y la elimina del mapa de sesiones prestadas
         B1WSSession borrowedSession = borrowedSessions.remove(sessionId);
         if (borrowedSession == null) {
@@ -119,8 +123,12 @@ public class SessionPoolManager implements Serializable {
     }
 
     private void logSessionStatus() {
+        int totalAvailable = 0;
+        for (String key : availableSessions.keySet()) {
+            totalAvailable += availableSessions.get(key).size();
+        }
         CONSOLE.log(Level.INFO, "{0} sesiones prestadas, {1} sesiones disponibles",
-                new Object[]{borrowedSessions.size(), availableSessions.size()});
+                new Object[]{borrowedSessions.size(), totalAvailable});
     }
 
     public SessionStatusDTO reportStatus() {
@@ -128,5 +136,10 @@ public class SessionPoolManager implements Serializable {
         status.setAvailableSessions(availableSessions);
         status.setBorrowedSessions(borrowedSessions);
         return status;
+    }
+
+    public void resetSesion() {
+        availableSessions = new ConcurrentHashMap<>();
+        borrowedSessions = new ConcurrentHashMap<>();
     }
 }
