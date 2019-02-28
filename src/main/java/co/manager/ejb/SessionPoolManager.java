@@ -2,7 +2,6 @@ package co.manager.ejb;
 
 import co.manager.dto.B1WSSession;
 import co.manager.dto.SessionStatusDTO;
-import co.manager.util.Constants;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -10,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
