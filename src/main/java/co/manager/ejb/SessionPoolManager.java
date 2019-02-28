@@ -75,7 +75,7 @@ public class SessionPoolManager implements Serializable {
             }
         }
 
-        CONSOLE.log(Level.INFO, "Entregando session {0}", session.getSessionId());
+        CONSOLE.log(Level.INFO, "Entregando sesion {0} al usuario", session.getSessionId());
         session.setLastBorrowed(System.currentTimeMillis());
 
         borrowedSessions.put(session.getSessionId(), session);
@@ -84,7 +84,7 @@ public class SessionPoolManager implements Serializable {
     }
 
     public void returnSession(String sessionId) {
-        CONSOLE.log(Level.INFO, "Recibiendo sesion {0}", sessionId);
+        CONSOLE.log(Level.INFO, "Recibiendo sesion {0} del usuario", sessionId);
         // Obtiene la sesion asociada con el id recibido y la elimina del mapa de sesiones prestadas
         B1WSSession borrowedSession = borrowedSessions.remove(sessionId);
         if (borrowedSession == null) {
