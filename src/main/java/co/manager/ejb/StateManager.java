@@ -28,8 +28,7 @@ public class StateManager {
     private void initialize() {
         try {
             service = new StatesService(
-                    new URL(String.format("https://74601289-a97b-43a2-8c89-7a5ac1ed92d7.mock.pstmn.io/B1WS/WebReferences/StatesService.wsdl"
-                            /*appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_STATE_SERVICE*/)));
+                    new URL(String.format(appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_STATE_SERVICE)));
         } catch (MalformedURLException e) {
             CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de StateService. ", e);
         }

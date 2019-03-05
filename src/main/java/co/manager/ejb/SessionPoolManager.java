@@ -49,7 +49,7 @@ public class SessionPoolManager implements Serializable {
         B1WSSession session = null;
         if (availableSessions.containsKey(companyName)) {
             session = availableSessions.get(companyName).poll();
-            if (session != null) {
+            if (session != null && session.getTimesBorrowed() % 10 == 0) {
                 //Validar que la sesion se encuentre activa antes de retornarla
                 session.setSessionId(validateSession(session.getSessionId(), companyName));
             }
@@ -81,6 +81,7 @@ public class SessionPoolManager implements Serializable {
 
         CONSOLE.log(Level.INFO, "Entregando sesion {0} al usuario", session.getSessionId());
         session.setLastBorrowed(System.currentTimeMillis());
+        session.setTimesBorrowed(session.getTimesBorrowed() + 1);
 
         borrowedSessions.put(session.getSessionId(), session);
         logSessionStatus();
@@ -127,6 +128,7 @@ public class SessionPoolManager implements Serializable {
 
     private String validateSession(String sessionId, String companyName) {
         if (sessionId != null && !sessionId.isEmpty() && companyName != null && !companyName.isEmpty()) {
+            CONSOLE.log(Level.INFO, "Validando si la sesion {0} se encuentra activa en el Di Server", sessionId);
             Response res = stateManager.getState(sessionId);
             if (res == null) {
                 return getSession(companyName);
