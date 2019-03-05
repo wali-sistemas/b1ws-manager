@@ -8,6 +8,7 @@ public class B1WSSession implements Comparable<B1WSSession>{
     private String company;
     private long created;
     private long lastBorrowed;
+    private int timesBorrwed;
 
     public B1WSSession(String sessionId, long created) {
         this.sessionId = sessionId;
@@ -49,6 +50,14 @@ public class B1WSSession implements Comparable<B1WSSession>{
         this.company = company;
     }
 
+    public int getTimesBorrwed() {
+        return timesBorrwed;
+    }
+
+    public void setTimesBorrwed(int timesBorrwed) {
+        this.timesBorrwed = timesBorrwed;
+    }
+
     @Override
     public int compareTo(B1WSSession o) {
         return Long.compare(o.lastBorrowed, lastBorrowed);
@@ -61,6 +70,7 @@ public class B1WSSession implements Comparable<B1WSSession>{
                 ", company='" + company + '\'' +
                 ", created=" + created +
                 ", lastBorrowed=" + lastBorrowed +
+                ", timesBorrwed=" + timesBorrwed +
                 '}';
     }
 }

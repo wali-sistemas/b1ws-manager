@@ -37,12 +37,11 @@ public class SessionPoolManager implements Serializable {
 
     @PostConstruct
     private void initialize() {
-        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxSession"));
+        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxOpenSessions"));
+        sessionMaxAge = Long.parseLong(appBean.obtenerValorPropiedad("manager.b1ws.sessionMaxAge"));
     }
 
     public SessionPoolManager() {
-        //3 horas, 60 minutos por hora, 60 segundos por minuto, 1000 milisegundos por segundo
-        sessionMaxAge = 3 * 60 * 60 * 1000;
     }
 
     public String getSession(String companyName) {
@@ -51,11 +50,8 @@ public class SessionPoolManager implements Serializable {
         if (availableSessions.containsKey(companyName)) {
             session = availableSessions.get(companyName).poll();
             if (session != null) {
-                //TODO: Validando sessionID consultando servicio de B1WS
-                Response res = stateManager.getState(session.getSessionId());
-                if (res == null) {
-                    getSession(companyName);
-                }
+                //Validar que la sesion se encuentre activa antes de retornarla
+                return validateSession(session.getSessionId(), companyName);
             }
         }
         if (session == null) {
@@ -114,7 +110,6 @@ public class SessionPoolManager implements Serializable {
         } else {
             CONSOLE.log(Level.INFO, "La sesion {0} ha sido devuelta a la lista de sesiones disponibles", sessionId);
             // si el tiempo es inferior, la agrega a la lista de disponibles, en el ultimo lugar
-            //availableSessions.addLast(borrowedSession);
             try {
                 if (availableSessions.containsKey(borrowedSession.getCompany())) {
                     availableSessions.get(borrowedSession.getCompany()).put(borrowedSession);
@@ -128,6 +123,16 @@ public class SessionPoolManager implements Serializable {
             }
         }
         logSessionStatus();
+    }
+
+    private String validateSession(String sessionId, String companyName) {
+        if (sessionId != null && !sessionId.isEmpty() && companyName != null && !companyName.isEmpty()) {
+            Response res = stateManager.getState(sessionId);
+            if (res == null) {
+                return getSession(companyName);
+            }
+        }
+        return null;
     }
 
     private void logSessionStatus() {
