@@ -2,15 +2,14 @@ package co.manager.ejb;
 
 import co.manager.dto.B1WSSession;
 import co.manager.dto.SessionStatusDTO;
-import co.manager.util.Constants;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -31,17 +30,18 @@ public class SessionPoolManager implements Serializable {
     private long sessionMaxAge;
     @EJB
     private SessionManager sessionManager;
+    @EJB
+    private StateManager stateManager;
     @Inject
     private ManagerApplicationBean appBean;
 
     @PostConstruct
     private void initialize() {
-        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxSession"));
+        maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxOpenSessions"));
+        sessionMaxAge = Long.parseLong(appBean.obtenerValorPropiedad("manager.b1ws.sessionMaxAge"));
     }
 
     public SessionPoolManager() {
-        //3 horas, 60 minutos por hora, 60 segundos por minuto, 1000 milisegundos por segundo
-        sessionMaxAge = 3 * 60 * 60 * 1000;
     }
 
     public String getSession(String companyName) {
@@ -49,6 +49,10 @@ public class SessionPoolManager implements Serializable {
         B1WSSession session = null;
         if (availableSessions.containsKey(companyName)) {
             session = availableSessions.get(companyName).poll();
+            if (session != null && session.getTimesBorrowed() % 10 == 0) {
+                //Validar que la sesion se encuentre activa antes de retornarla
+                session.setSessionId(validateSession(session.getSessionId(), companyName));
+            }
         }
         if (session == null) {
             CONSOLE.log(Level.INFO, "No hay sesiones activas. Validando si se pueden iniciar nuevas");
@@ -58,6 +62,10 @@ public class SessionPoolManager implements Serializable {
             if (borrowedSessions.size() < maxOpenSessions) {
                 //abrir una nueva sesion
                 String sessionId = sessionManager.login(companyName);
+                if (sessionId == null) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                    return null;
+                }
                 CONSOLE.log(Level.INFO, "Se creo una nueva sesion con id {0}", sessionId);
 
                 session = new B1WSSession();
@@ -71,8 +79,9 @@ public class SessionPoolManager implements Serializable {
             }
         }
 
-        CONSOLE.log(Level.INFO, "Retornando sesion {0}", session.getSessionId());
+        CONSOLE.log(Level.INFO, "Entregando sesion {0} al usuario", session.getSessionId());
         session.setLastBorrowed(System.currentTimeMillis());
+        session.setTimesBorrowed(session.getTimesBorrowed() + 1);
 
         borrowedSessions.put(session.getSessionId(), session);
         logSessionStatus();
@@ -80,7 +89,7 @@ public class SessionPoolManager implements Serializable {
     }
 
     public void returnSession(String sessionId) {
-        CONSOLE.log(Level.INFO, "Retornando sesion {0}", sessionId);
+        CONSOLE.log(Level.INFO, "Recibiendo sesion {0} del usuario", sessionId);
         // Obtiene la sesion asociada con el id recibido y la elimina del mapa de sesiones prestadas
         B1WSSession borrowedSession = borrowedSessions.remove(sessionId);
         if (borrowedSession == null) {
@@ -102,7 +111,6 @@ public class SessionPoolManager implements Serializable {
         } else {
             CONSOLE.log(Level.INFO, "La sesion {0} ha sido devuelta a la lista de sesiones disponibles", sessionId);
             // si el tiempo es inferior, la agrega a la lista de disponibles, en el ultimo lugar
-            //availableSessions.addLast(borrowedSession);
             try {
                 if (availableSessions.containsKey(borrowedSession.getCompany())) {
                     availableSessions.get(borrowedSession.getCompany()).put(borrowedSession);
@@ -118,9 +126,24 @@ public class SessionPoolManager implements Serializable {
         logSessionStatus();
     }
 
+    private String validateSession(String sessionId, String companyName) {
+        if (sessionId != null && !sessionId.isEmpty() && companyName != null && !companyName.isEmpty()) {
+            CONSOLE.log(Level.INFO, "Validando si la sesion {0} se encuentra activa en el Di Server", sessionId);
+            Response res = stateManager.getState(sessionId);
+            if (res == null) {
+                return getSession(companyName);
+            }
+        }
+        return sessionId;
+    }
+
     private void logSessionStatus() {
+        int totalAvailable = 0;
+        for (String key : availableSessions.keySet()) {
+            totalAvailable += availableSessions.get(key).size();
+        }
         CONSOLE.log(Level.INFO, "{0} sesiones prestadas, {1} sesiones disponibles",
-                new Object[]{borrowedSessions.size(), availableSessions.size()});
+                new Object[]{borrowedSessions.size(), totalAvailable});
     }
 
     public SessionStatusDTO reportStatus() {
@@ -128,5 +151,10 @@ public class SessionPoolManager implements Serializable {
         status.setAvailableSessions(availableSessions);
         status.setBorrowedSessions(borrowedSessions);
         return status;
+    }
+
+    public void resetSesion() {
+        availableSessions = new ConcurrentHashMap<>();
+        borrowedSessions = new ConcurrentHashMap<>();
     }
 }

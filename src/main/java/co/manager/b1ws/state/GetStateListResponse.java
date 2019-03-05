@@ -1,5 +1,5 @@
 
-package co.manager.b1ws;
+package co.manager.b1ws.state;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="SessionID" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element ref="{http://www.sap.com/SBO/DIS}StatesParams" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,36 +29,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "sessionID"
+    "statesParams"
 })
-@XmlRootElement(name = "MsgHeader")
-public class MsgHeader {
+@XmlRootElement(name = "GetStateListResponse")
+public class GetStateListResponse {
 
-    @XmlElement(name = "SessionID")
-    protected String sessionID;
+    @XmlElement(name = "StatesParams")
+    protected StatesParams statesParams;
 
     /**
-     * Obtiene el valor de la propiedad sessionID.
+     * Obtiene el valor de la propiedad statesParams.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link StatesParams }
      *     
      */
-    public String getSessionID() {
-        return sessionID;
+    public StatesParams getStatesParams() {
+        return statesParams;
     }
 
     /**
-     * Define el valor de la propiedad sessionID.
+     * Define el valor de la propiedad statesParams.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link StatesParams }
      *     
      */
-    public void setSessionID(String value) {
-        this.sessionID = value;
+    public void setStatesParams(StatesParams value) {
+        this.statesParams = value;
     }
 
 }

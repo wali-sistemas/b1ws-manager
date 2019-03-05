@@ -1,5 +1,5 @@
 
-package co.manager.b1ws;
+package co.manager.b1ws.state;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,8 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "LogoutResponse")
-public class LogoutResponse {
+@XmlRootElement(name = "GetStateList", namespace = "StatesService")
+public class GetStateList {
 
 
 }

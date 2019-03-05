@@ -13,6 +13,7 @@ public class Constants {
     public static final String B1WS_LICENSE_SERVER = "manager.b1ws.licenseServer";
     public static final String B1WS_LOGIN_SERVICE = "LoginService";
     public static final String MAXIMO_OPEN_SESSIONS = "manager.b1ws.maxSession";
+    public static final String B1WS_STATE_SERVICE = "StatesService";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }
