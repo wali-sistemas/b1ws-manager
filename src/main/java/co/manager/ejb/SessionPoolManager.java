@@ -51,7 +51,7 @@ public class SessionPoolManager implements Serializable {
             session = availableSessions.get(companyName).poll();
             if (session != null) {
                 //Validar que la sesion se encuentre activa antes de retornarla
-                return validateSession(session.getSessionId(), companyName);
+                session.setSessionId(validateSession(session.getSessionId(), companyName));
             }
         }
         if (session == null) {
@@ -132,7 +132,7 @@ public class SessionPoolManager implements Serializable {
                 return getSession(companyName);
             }
         }
-        return null;
+        return sessionId;
     }
 
     private void logSessionStatus() {
