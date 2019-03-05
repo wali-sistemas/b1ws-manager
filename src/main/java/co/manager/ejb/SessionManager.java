@@ -1,8 +1,8 @@
 package co.manager.ejb;
 
-import co.manager.b1ws.LoginService;
-import co.manager.b1ws.Logout;
-import co.manager.b1ws.MsgHeader;
+import co.manager.b1ws.login.LoginService;
+import co.manager.b1ws.login.Logout;
+import co.manager.b1ws.login.MsgHeader;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
 

@@ -1,5 +1,5 @@
 
-package co.manager.b1ws;
+package co.manager.b1ws.login;
 
 import java.net.MalformedURLException;
 import java.net.URL;

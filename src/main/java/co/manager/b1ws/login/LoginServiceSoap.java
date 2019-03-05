@@ -1,5 +1,5 @@
 
-package co.manager.b1ws;
+package co.manager.b1ws.login;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;

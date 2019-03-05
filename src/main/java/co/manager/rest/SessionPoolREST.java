@@ -32,7 +32,7 @@ public class SessionPoolREST {
     public Response getSession(@PathParam("companyName") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando sesion de DI Server para la compañia [" + companyName + "]");
         String sessionId = sessionPoolManager.getSession(companyName);
-        if(sessionId != null) {
+        if (sessionId != null) {
             return Response.ok(new ResponseDTO(0, sessionId)).build();
         }
         return Response.status(429).entity(new ResponseDTO(1, "No hay sesiones disponibles para asignar. Intente de nuevo en unos segundos")).build();

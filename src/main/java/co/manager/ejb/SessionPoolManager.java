@@ -8,6 +8,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,6 +30,8 @@ public class SessionPoolManager implements Serializable {
     private long sessionMaxAge;
     @EJB
     private SessionManager sessionManager;
+    @EJB
+    private StateManager stateManager;
     @Inject
     private ManagerApplicationBean appBean;
 
@@ -47,6 +50,13 @@ public class SessionPoolManager implements Serializable {
         B1WSSession session = null;
         if (availableSessions.containsKey(companyName)) {
             session = availableSessions.get(companyName).poll();
+            if (session != null) {
+                //TODO: Validando sessionID consultando servicio de B1WS
+                Response res = stateManager.getState(session.getSessionId());
+                if (res == null) {
+                    getSession(companyName);
+                }
+            }
         }
         if (session == null) {
             CONSOLE.log(Level.INFO, "No hay sesiones activas. Validando si se pueden iniciar nuevas");

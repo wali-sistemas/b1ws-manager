@@ -1,6 +1,7 @@
 package co.manager.ejb;
 
 import co.manager.b1ws.state.*;
+import co.manager.dto.ResponseDTO;
 import co.manager.util.Constants;
 
 import javax.annotation.PostConstruct;
@@ -47,7 +48,12 @@ public class StateManager {
         GetState params = new GetState();
         params.setStateParams(docParams);
 
-        GetStateResponse response = service.getStatesServiceSoap12().getState(params, header);
-        return Response.ok(response).build();
+        try {
+            GetStateResponse response = service.getStatesServiceSoap12().getState(params, header);
+            return Response.ok(new ResponseDTO(response != null ? 0 : -1, response != null ? "OK" : "No se encontraron datos")).build();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el servicio state del B1WS. " + e);
+            return null;
+        }
     }
 }
