@@ -4,6 +4,7 @@ import co.manager.dto.ClientFeriaDTO;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,6 +28,8 @@ public class ClientFeriaSAPFacade {
 
         try {
             return (String) emVARROCPruebas.createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los datos capturados del cliente feria", e);
             return null;

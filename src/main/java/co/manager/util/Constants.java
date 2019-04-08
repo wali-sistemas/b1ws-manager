@@ -14,6 +14,11 @@ public class Constants {
     public static final String B1WS_LOGIN_SERVICE = "LoginService";
     public static final String MAXIMO_OPEN_SESSIONS = "manager.b1ws.maxSession";
     public static final String B1WS_STATE_SERVICE = "StatesService";
+    public static final String EMAIL_HOST = "mail.host";
+    public static final String EMAIL_PORT = "mail.port";
+    public static final String EMAIL_USERNAME = "mail.username";
+    public static final String EMAIL_PASSWORD = "mail.password";
+    public static final String EMAIL_TEMPLATES = "mail.templates";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }
