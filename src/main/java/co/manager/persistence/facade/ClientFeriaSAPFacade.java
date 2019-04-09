@@ -16,8 +16,8 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class ClientFeriaSAPFacade {
-    @PersistenceContext(unitName = "VARROCPruebasPU")
-    private EntityManager emVARROCPruebas;
+    @PersistenceContext(unitName = "IGBPU")
+    private EntityManager em;
     private static final Logger CONSOLE = Logger.getLogger(ClientFeriaSAPFacade.class.getSimpleName());
 
     public String getClienteFeria(String documento) {
@@ -27,7 +27,7 @@ public class ClientFeriaSAPFacade {
         sb.append("'");
 
         try {
-            return (String) emVARROCPruebas.createNativeQuery(sb.toString()).getSingleResult();
+            return (String) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class ClientFeriaSAPFacade {
         sb.append("');");
 
         try {
-            emVARROCPruebas.createNativeQuery(sb.toString()).executeUpdate();
+            em.createNativeQuery(sb.toString()).executeUpdate();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al insertar los datos capturados al cliente feria", e);
             return false;
