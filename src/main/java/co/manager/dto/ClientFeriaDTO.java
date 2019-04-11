@@ -11,11 +11,12 @@ public class ClientFeriaDTO {
     private String almacen;
     private String interes;
     private String regional;
+    private String ciudad;
 
     public ClientFeriaDTO() {
     }
 
-    public ClientFeriaDTO(String documento, String nombreCompleto, String telefono, String correo, String almacen, String interes, String regional) {
+    public ClientFeriaDTO(String documento, String nombreCompleto, String telefono, String correo, String almacen, String interes, String regional, String ciudad) {
         this.documento = documento;
         this.nombreCompleto = nombreCompleto;
         this.telefono = telefono;
@@ -23,6 +24,7 @@ public class ClientFeriaDTO {
         this.almacen = almacen;
         this.interes = interes;
         this.regional = regional;
+        this.ciudad = ciudad;
     }
 
     public String getDocumento() {
@@ -81,6 +83,14 @@ public class ClientFeriaDTO {
         this.regional = regional;
     }
 
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
     @Override
     public String toString() {
         return "ClientFeriaDTO{" +
@@ -91,6 +101,7 @@ public class ClientFeriaDTO {
                 ", almacen='" + almacen + '\'' +
                 ", interes='" + interes + '\'' +
                 ", regional='" + regional + '\'' +
+                ", ciudad='" + ciudad + '\'' +
                 '}';
     }
 }

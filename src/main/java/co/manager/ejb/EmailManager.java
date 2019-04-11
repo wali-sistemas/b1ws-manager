@@ -51,10 +51,9 @@ public class EmailManager implements Serializable {
     private void inicializarParametros() {
         propsConn = new Properties();
         propsConn.put("mail.smtp.auth", "true");
-        propsConn.put("mail.smtp.starttls.enable", "false");
+        propsConn.put("mail.smtp.starttls.enable", "true");
         propsConn.put("mail.smtp.host", host);
         propsConn.put("mail.smtp.port", "25");
-        propsConn.put("mail.smtp.port", port);
     }
 
     public void sendMailClientCapture(MailMessageDTO dto) throws Exception {
@@ -69,7 +68,6 @@ public class EmailManager implements Serializable {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(dto.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dto.getToList()));
-            message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
             message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(dto.getBccList()));
             message.setSubject(dto.getSubject());
             try {
@@ -77,11 +75,13 @@ public class EmailManager implements Serializable {
                 String templateContent = new String(Files.readAllBytes(Paths.get(fullTemplateName)), StandardCharsets.UTF_8);
                 message.setContent(StrSubstitutor.replace(templateContent, dto.getParams()), "text/html");
             } catch (Exception e) {
-                throw new Exception("No fue posible enviar ");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando el email", e);
+                throw new Exception("Ocurrio un error enviando el email");
             }
             CONSOLE.log(Level.INFO, "Enviando datos al email {0}", dto.getTo());
             Transport.send(message);
         } catch (MessagingException e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando el email", e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
