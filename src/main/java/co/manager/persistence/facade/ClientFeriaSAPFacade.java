@@ -59,6 +59,8 @@ public class ClientFeriaSAPFacade {
         sb.append(dto.getRegional().trim());
         sb.append("','");
         sb.append(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        sb.append("','");
+        sb.append(dto.getCiudad());
         sb.append("');");
 
         try {

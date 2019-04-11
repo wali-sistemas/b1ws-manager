@@ -104,8 +104,8 @@ public class EventREST implements Serializable {
         dtoMail.setFrom(from);
         dtoMail.setSubject(subject);
         dtoMail.addToAddress(toAddress);
-        dtoMail.addCcAddress(ccAddress);
         dtoMail.addBccAddress(bccAddress);
+        dtoMail.addBccAddress(ccAddress);
         try {
             emailManager.sendMailClientCapture(dtoMail);
         } catch (Exception e) {
