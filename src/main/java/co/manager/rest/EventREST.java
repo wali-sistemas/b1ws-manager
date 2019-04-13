@@ -47,42 +47,14 @@ public class EventREST implements Serializable {
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addClienteFeria(ClientFeriaDTO dto) {
-        CONSOLE.log(Level.INFO, "Captura de datos de cliente feria");
+        CONSOLE.log(Level.INFO, "Captura de datos para cliente feria [" + dto.getCompanyName() + "]");
         //Validar si el documento se encuentra ya registrado.
-        if ((clientFeriaSAPFacade.getClienteFeria(dto.getDocumento())) != null) {
+        if ((clientFeriaSAPFacade.getClienteFeria(dto.getDocumento(), dto.getCompanyName(), false)) != null) {
             return Response.ok(new ResponseDTO(-1, "Documento ya registrado.")).build();
         }
 
-        boolean res = clientFeriaSAPFacade.addClienteFeria(dto);
+        boolean res = clientFeriaSAPFacade.addClienteFeria(dto, false);
         if (res) {
-            //TODO: Obtener mail del telemercader asociado a la región desde el maestro del departemento de ventas (OSLP)
-            switch (dto.getRegional()) {
-                case "REGION ANTIOQUIA":
-                    emailTelemercader = "telemercadeo4@igbcolombia.com";
-                    break;
-                case "REGION CUNDINAMARCA":
-                    emailTelemercader = "telemercadeo7@igbcolombia.com";
-                    break;
-                case "REGION COSTA":
-                    emailTelemercader = "telemercadeo3@igbcolombia.com";
-                    break;
-                case "REGION NORTE":
-                    emailTelemercader = "telemercadeo5@igbcolombia.com";
-                    break;
-                case "REGION ORIENTAL":
-                    emailTelemercader = "telemercadeo2@igbcolombia.com";
-                    break;
-                case "REGION VALLE":
-                    emailTelemercader = "telemercadeo1@igbcolombia.com";
-                    break;
-                case "REGION SUR":
-                    emailTelemercader = "telemercadeo6@igbcolombia.com";
-                    break;
-                default:
-                    emailTelemercader = "sistemas2@igbcolombia.com";
-                    break;
-            }
-
             Map<String, String> params = new HashMap<>();
             params.put("cliente", dto.getNombreCompleto());
             params.put("documento", dto.getDocumento());
@@ -90,7 +62,9 @@ public class EventREST implements Serializable {
             params.put("correo", (dto.getCorreo() == null || dto.getCorreo().isEmpty()) ? "Ninguno" : dto.getCorreo());
             params.put("mensaje", dto.getInteres());
 
-            sendEmail("contactoEvento", "Feria <f2r_igb@igbcolombia.com>", "Datos de cliente feria2ruedas", dto.getCorreo(),
+            emailTelemercader = clientFeriaSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
+
+            sendEmail(dto.getCompanyName().equals("IGB") ? "IgbContactoEvento" : "MtzContactoEvento", "Feria <f2r@feria2ruedas.com>", "Datos de cliente feria2ruedas", dto.getCorreo(),
                     emailTelemercader, "sistemas2@igbcolombia.com", null, params);
         }
         return Response.ok(new ResponseDTO(res ? 0 : -1, res ? "Datos capturados exitosamente." : "Ocurrio un error capturando los datos.")).build();
