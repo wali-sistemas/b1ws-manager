@@ -18,13 +18,14 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class ClientFeriaSAPFacade {
-    @PersistenceContext(unitName = "IGBPU")
-    private EntityManager em;
     private static final Logger CONSOLE = Logger.getLogger(ClientFeriaSAPFacade.class.getSimpleName());
     private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
 
     @EJB
     private PersistenceConf persistenceConf;
+
+    public ClientFeriaSAPFacade() {
+    }
 
     public String getClienteFeria(String documento, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
@@ -64,7 +65,7 @@ public class ClientFeriaSAPFacade {
         sb.append("','");
         sb.append(dto.getRegional().trim());
         sb.append("','");
-        sb.append(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        sb.append(new SimpleDateFormat("yyyy-dd-MM HH:mm:ss").format(new Date()));
         sb.append("','");
         sb.append(dto.getCiudad());
         sb.append("');");
