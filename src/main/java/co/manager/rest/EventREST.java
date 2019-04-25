@@ -62,7 +62,20 @@ public class EventREST implements Serializable {
             params.put("correo", (dto.getCorreo() == null || dto.getCorreo().isEmpty()) ? "Ninguno" : dto.getCorreo());
             params.put("mensaje", dto.getInteres());
 
-            emailTelemercader = clientFeriaSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
+            switch (dto.getCompanyName()) {
+                case "VARROC":
+                    if (dto.getRegional().equals("PAISAS") || dto.getRegional().equals("CACHACOS")) {
+                        emailTelemercader = "telemercadeo@motozonecolombia.com";
+                    } else {
+                        emailTelemercader = "telemercadeo1@motozonecolombia.com";
+                    }
+                    break;
+                case "IGB":
+                    emailTelemercader = clientFeriaSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
+                    break;
+                default:
+                    emailTelemercader = null;
+            }
 
             sendEmail(dto.getCompanyName().equals("IGB") ? "IgbContactoEvento" : "MtzContactoEvento", "Feria <f2r@feria2ruedas.com>", "Datos de cliente feria2ruedas", dto.getCorreo(),
                     emailTelemercader, "sistemas2@igbcolombia.com", null, params);
