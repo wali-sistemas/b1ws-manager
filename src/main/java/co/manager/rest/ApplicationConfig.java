@@ -26,5 +26,6 @@ public class ApplicationConfig extends Application {
         resources.add(SessionPoolREST.class);
         resources.add(HealthchekREST.class);
         resources.add(EventREST.class);
+        resources.add(SondaREST.class);
     }
 }
