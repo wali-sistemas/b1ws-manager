@@ -1,6 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
+import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
 
 import javax.ejb.EJB;
@@ -28,6 +29,8 @@ public class SondaREST {
     private static final Logger CONSOLE = Logger.getLogger(SondaREST.class.getSimpleName());
     @EJB
     PickingRecordFacade pickingRecordFacade;
+    @EJB
+    ItemSAPFacade itemSAPFacade;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -55,6 +58,31 @@ public class SondaREST {
             pickingRecordFacade.deleteExpiredRecords(expiredRecords, companyName, pruebas);
         }
         return Response.ok(new ResponseDTO(0, expiredRecords)).build();
+    }
+
+    @GET
+    @Path("sync-picture/{companyname}/{testing}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncItem(@PathParam("companyname") String companyname,
+                             @PathParam("testing") boolean testing) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion de campo picturName para [" + companyname + "]");
+        List<String> items = itemSAPFacade.getListItemByPicture(companyname, testing);
+        if (items == null || items.size() <= 0) {
+            CONSOLE.log(Level.INFO, "No se encontraron datos para sincronizar en [" + companyname +"]");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos para sincronizar.")).build();
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            String picturName = items.get(i) + ".jpg";
+            try {
+                itemSAPFacade.updateFieldPicture(items.get(i), picturName, companyname, testing);
+                picturName = "";
+            } catch (Exception e) {
+            }
+        }
+        CONSOLE.log(Level.INFO, "Finalizando sincronizacion de campo picturName para [" + companyname + "]");
+        return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion para [" + companyname + "]")).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {
