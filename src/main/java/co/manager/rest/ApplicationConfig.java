@@ -27,5 +27,6 @@ public class ApplicationConfig extends Application {
         resources.add(HealthchekREST.class);
         resources.add(EventREST.class);
         resources.add(SondaREST.class);
+        resources.add(PedBoxREST.class);
     }
 }
