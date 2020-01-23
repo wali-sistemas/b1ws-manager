@@ -33,6 +33,14 @@ public class StockCurrentDTO {
         this.stockWarehouses = stockWarehouses;
     }
 
+    @Override
+    public String toString() {
+        return "StockCurrentDTO{" +
+                "itemCode='" + itemCode + '\'' +
+                ", stockWarehouses=" + stockWarehouses +
+                '}';
+    }
+
     public static class StockCurrentWarehouseDTO {
         private String whsCode;
         private Integer quantity;

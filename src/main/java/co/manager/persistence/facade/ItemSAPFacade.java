@@ -31,7 +31,8 @@ public class ItemSAPFacade {
     public List<String> getListItemByPicture(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select Distinct cast(ItemCode as varchar(10)) as item from OITM ");
-        sb.append("where PicturName is null and validFor = 'Y' and InvntItem = 'Y'");
+        sb.append("where (PicturName is null or ItemCode <> replace(PicturName, '.jpg', '')) ");
+        sb.append("and validFor = 'Y' and InvntItem = 'Y'");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

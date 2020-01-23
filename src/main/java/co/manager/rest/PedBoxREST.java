@@ -77,7 +77,6 @@ public class PedBoxREST {
         }
 
         List<ItemDTO> stock = new ArrayList<>();
-
         for (Object[] obj : objects) {
             ItemDTO dto = new ItemDTO();
             dto.setItemCode((String) obj[0]);
@@ -91,7 +90,6 @@ public class PedBoxREST {
             dto.setQuantity(null);
             stock.add(dto);
         }
-
         CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
         return Response.ok(new ResponseDTO(0, stock)).build();
     }
@@ -110,7 +108,6 @@ public class PedBoxREST {
         }
 
         List<PriceListDTO> priceList = new ArrayList<>();
-
         for (Object[] obj : objects) {
             PriceListDTO dto = new PriceListDTO();
             dto.setItemCode((String) obj[0]);
@@ -126,9 +123,10 @@ public class PedBoxREST {
     @Path("customers/{slpcode}/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getBusinessPartner(@PathParam("slpcode") String slpCode,
-                                       @PathParam("companyname") String companyname) {
+    public Response getCustomers(@PathParam("slpcode") String slpCode,
+                                 @PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Iniciando retorno de clientes para el asesor [{0}] de la compania {1}", new Object[]{slpCode, companyname});
+        List<CustomerDTO> customerDTO = new ArrayList<>();
         List<Object[]> objects = businessPartnerSAPFacade.getListCustomersBySeller(slpCode, companyname, false);
 
         if (objects == null) {
@@ -136,34 +134,51 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error retornando el listado de clientes para el vendedor [" + slpCode + "] para " + companyname)).build();
         }
 
-        List<CustomerDTO> customers = new ArrayList<>();
-
+        HashMap<String, String> customers = new HashMap<>();
         for (Object[] obj : objects) {
+            customers.put((String) obj[0], "id");
+        }
+
+        for (String client : customers.keySet()) {
+            List<CustomerDTO.CustomerAddressesDTO> customerAddresses = new ArrayList<>();
             CustomerDTO dto = new CustomerDTO();
-            dto.setCardCode((String) obj[0]);
-            dto.setNit((String) obj[1]);
-            dto.setCardName((String) obj[2]);
-            dto.setAddress((String) obj[3]);
-            dto.setLocation((String) obj[4]);
-            dto.setPhone((String) obj[5]);
-            dto.setCellular((String) obj[6]);
-            dto.setEmail((String) obj[7]);
-            dto.setWayToPay((String) obj[8]);
-            dto.setPlazo((Integer) obj[9]);
-            dto.setContact((String) obj[10]);
-            dto.setSeller((String) obj[11]);
-            dto.setLength((Integer) obj[12]);
-            dto.setLatitude((Integer) obj[13]);
-            dto.setPriceList((Integer) obj[14]);
-            dto.setNotes((String) obj[15]);
-            dto.setDiscountCommercial((BigDecimal) obj[16]);
-            dto.setCondition((String) obj[17]);
-            dto.setExcent((String) obj[18]);
-            dto.setCupo((BigDecimal) obj[19]);
-            customers.add(dto);
+            dto.setCardCode(client);
+
+            for (Object[] obj : objects) {
+                dto.setNit((String) obj[1]);
+                dto.setCardName((String) obj[2]);
+                dto.setAddressToDef((String) obj[3]);
+                dto.setLocation((String) obj[4]);
+                dto.setPhone((String) obj[5]);
+                dto.setCellular((String) obj[6]);
+                dto.setEmail((String) obj[7]);
+                dto.setWayToPay((String) obj[8]);
+                dto.setPlazo((Integer) obj[9]);
+                dto.setContact((String) obj[10]);
+                dto.setSeller((String) obj[11]);
+                dto.setLength((Integer) obj[12]);
+                dto.setLatitude((Integer) obj[13]);
+                dto.setPriceList((Integer) obj[14]);
+                dto.setNotes((String) obj[15]);
+                dto.setDiscountCommercial((BigDecimal) obj[16]);
+                dto.setCondition((String) obj[17]);
+                dto.setExcent((String) obj[18]);
+                dto.setCupo((BigDecimal) obj[19]);
+
+                if (dto.getCardCode().equals(obj[0])) {
+                    CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
+                    dto2.setLineNum((Integer) obj[20]);
+                    dto2.setAddress((String) obj[21]);
+                    dto2.setCity((String) obj[22]);
+                    dto2.setCountry((String) obj[23]);
+                    customerAddresses.add(dto2);
+                }
+            }
+            dto.setAddresses(customerAddresses);
+            customerDTO.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando listado de clientes del vendedor [{0}] para {1}", new Object[]{slpCode, companyname});
-        return Response.ok(new ResponseDTO(0, customers)).build();
+        return Response.ok(new ResponseDTO(0, customerDTO)).build();
     }
 
     @GET
@@ -180,13 +195,13 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para " + companyname)).build();
         }
 
-        HashMap<String, Integer> items = new HashMap<>();
+        HashMap<String, String> items = new HashMap<>();
         for (Object[] obj : objects) {
-            items.put((String) obj[0], null);
+            items.put((String) obj[0], "id");
         }
 
         for (String item : items.keySet()) {
-            List<StockCurrentDTO.StockCurrentWarehouseDTO> stockCurrentWarehouseDTO = new ArrayList<>();
+            List<StockCurrentDTO.StockCurrentWarehouseDTO> stockCurrentWarehouse = new ArrayList<>();
             StockCurrentDTO dto1 = new StockCurrentDTO();
             dto1.setItemCode(item);
 
@@ -195,10 +210,10 @@ public class PedBoxREST {
                     StockCurrentDTO.StockCurrentWarehouseDTO dto2 = new StockCurrentDTO.StockCurrentWarehouseDTO();
                     dto2.setWhsCode((String) obj[1]);
                     dto2.setQuantity((Integer) obj[2]);
-                    stockCurrentWarehouseDTO.add(dto2);
+                    stockCurrentWarehouse.add(dto2);
                 }
             }
-            dto1.setStockWarehouses(stockCurrentWarehouseDTO);
+            dto1.setStockWarehouses(stockCurrentWarehouse);
             stockCurrentDTO.add(dto1);
         }
         CONSOLE.log(Level.INFO, "Retornando listado de stock actual para [{0}]", companyname);

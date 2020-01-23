@@ -1,7 +1,6 @@
 package co.manager.dto;
 
 /**
- *
  * @author jguisao
  */
 public class WarehouseDTO {
