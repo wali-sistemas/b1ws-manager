@@ -29,12 +29,14 @@ public class ItemSAPFacade {
     }
 
     public List<String> getListItemByPicture(String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
         StringBuilder sb = new StringBuilder();
         sb.append("select Distinct cast(ItemCode as varchar(10)) as item from OITM ");
         sb.append("where (PicturName is null or ItemCode <> replace(PicturName, '.jpg', '')) ");
         sb.append("and validFor = 'Y' and InvntItem = 'Y'");
         try {
-            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
+            return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los items sin foto en SAP.", e);
@@ -44,6 +46,7 @@ public class ItemSAPFacade {
 
     public void updateFieldPicture(String itemCode, String picturName, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaUpdate<ItemSAP> cu = cb.createCriteriaUpdate(ItemSAP.class);
         Root<ItemSAP> root = cu.from(ItemSAP.class);
@@ -60,6 +63,7 @@ public class ItemSAPFacade {
 
     public List<Object[]> getListItems(String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
         StringBuilder sb = new StringBuilder();
         sb.append("select distinct cast(it.ItemCode as varchar(20)) as Producto, ");
         sb.append("       cast(it.ItemName as varchar(50)) as Descripcion, ");
@@ -87,6 +91,7 @@ public class ItemSAPFacade {
 
     public List<Object[]> getPriceList(String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(pr.itemcode as varchar(20)) as ItemCode, cast(pr.PriceList as int) as PriceList, cast(pr.Price as numeric(18,0)) as Price ");
         sb.append("from ITM1 pr ");
@@ -107,8 +112,9 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public List<Object[]> getStockWarehouseCurrent(String companyName, boolean pruebas) {
+    public List<Object[]> getStockWarehouseCurrent(String itemCode, String whsCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(oi.ItemCode as varchar(20)) as Producto, ");
         sb.append("       cast(it.WhsCode as varchar(20)) as Bodega, ");
@@ -123,6 +129,19 @@ public class ItemSAPFacade {
         sb.append("from OITM oi ");
         sb.append("inner join OITW it on it.ItemCode = oi.ItemCode ");
         sb.append("where it.WhsCode in ('01','26','28') and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
+
+        if (!itemCode.equals("0")) {
+            sb.append(" and oi.ItemCode = '");
+            sb.append(itemCode);
+            sb.append("'");
+        }
+
+        if (!whsCode.equals("0")) {
+            sb.append(" and it.WhsCode = '");
+            sb.append(whsCode);
+            sb.append("'");
+        }
+
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

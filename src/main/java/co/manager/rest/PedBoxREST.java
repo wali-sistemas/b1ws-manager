@@ -10,10 +10,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
@@ -134,6 +131,11 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error retornando el listado de clientes para el vendedor [" + slpCode + "] para " + companyname)).build();
         }
 
+        if (objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "El vendedor [{0}] para {1} no tiene clientes asignados", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "El vendedor [" + slpCode + "] para " + companyname + " no tiene clientes asignados.")).build();
+        }
+
         HashMap<String, String> customers = new HashMap<>();
         for (Object[] obj : objects) {
             customers.put((String) obj[0], "id");
@@ -145,27 +147,28 @@ public class PedBoxREST {
             dto.setCardCode(client);
 
             for (Object[] obj : objects) {
-                dto.setNit((String) obj[1]);
-                dto.setCardName((String) obj[2]);
-                dto.setAddressToDef((String) obj[3]);
-                dto.setLocation((String) obj[4]);
-                dto.setPhone((String) obj[5]);
-                dto.setCellular((String) obj[6]);
-                dto.setEmail((String) obj[7]);
-                dto.setWayToPay((String) obj[8]);
-                dto.setPlazo((Integer) obj[9]);
-                dto.setContact((String) obj[10]);
-                dto.setSeller((String) obj[11]);
-                dto.setLength((Integer) obj[12]);
-                dto.setLatitude((Integer) obj[13]);
-                dto.setPriceList((Integer) obj[14]);
-                dto.setNotes((String) obj[15]);
-                dto.setDiscountCommercial((BigDecimal) obj[16]);
-                dto.setCondition((String) obj[17]);
-                dto.setExcent((String) obj[18]);
-                dto.setCupo((BigDecimal) obj[19]);
-
                 if (dto.getCardCode().equals(obj[0])) {
+                    //TODO: Encabezado del CustomerDTO.
+                    dto.setNit((String) obj[1]);
+                    dto.setCardName((String) obj[2]);
+                    dto.setAddressToDef((String) obj[3]);
+                    dto.setLocation((String) obj[4]);
+                    dto.setPhone((String) obj[5]);
+                    dto.setCellular((String) obj[6]);
+                    dto.setEmail((String) obj[7]);
+                    dto.setWayToPay((String) obj[8]);
+                    dto.setPlazo((Integer) obj[9]);
+                    dto.setContact((String) obj[10]);
+                    dto.setSeller((String) obj[11]);
+                    dto.setLength((Integer) obj[12]);
+                    dto.setLatitude((Integer) obj[13]);
+                    dto.setPriceList((Integer) obj[14]);
+                    dto.setNotes((String) obj[15]);
+                    dto.setDiscountCommercial((BigDecimal) obj[16]);
+                    dto.setCondition((String) obj[17]);
+                    dto.setExcent((String) obj[18]);
+                    dto.setCupo((BigDecimal) obj[19]);
+                    //TODO: Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((Integer) obj[20]);
                     dto2.setAddress((String) obj[21]);
@@ -185,10 +188,12 @@ public class PedBoxREST {
     @Path("stock-current/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getStockCurrent(@PathParam("companyname") String companyname) {
+    public Response getStockCurrent(@PathParam("companyname") String companyname,
+                                    @QueryParam("itemcode") String itemCode,
+                                    @QueryParam("whscode") String whsCode) {
         CONSOLE.log(Level.INFO, "Listando stock actual para la empresa [{0}]", companyname);
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
-        List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(companyname, false);
+        List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), whsCode.trim(), companyname, false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.INFO, "Ocurrio un error al consultar el stock actual para {0}", companyname);
