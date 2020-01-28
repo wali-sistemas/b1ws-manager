@@ -57,29 +57,4 @@ public class BusinessPartnerSAPFacade {
         }
         return null;
     }
-
-    public List<Object[]> getListCustomerAddresses(String slpCode, String companyname, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyname, pruebas, DB_TYPE);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(Upper(sn.CardCode) as varchar (20)) as CardCode, cast(sn.LicTradNum as varchar(20)) as Nit, ");
-        sb.append("       cast(row_number()over(partition by sn.CardCode order by sn.CardCode) as int) as CodAddress, ");
-        sb.append("       cast(isnull(Upper(dr.Street),'') as varchar(100)) as Address, ");
-        sb.append("       cast(isnull(Upper(dr.City),'') as varchar(50)) as City, ");
-        sb.append("       cast(isnull(Upper(dp.Name),'') as varchar(50)) as County ");
-        sb.append("from  OCRD sn ");
-        sb.append("inner join CRD1 dr ON dr.CardCode = sn.CardCode ");
-        sb.append("inner join OCTG T2 ON sn.GroupNum = T2.GroupNum ");
-        sb.append("inner join OSLP ve ON sn.SlpCode = ve.SlpCode ");
-        sb.append("inner join OCST dp ON dp.Code = dr.State ");
-        sb.append("where sn.CardType = 'C' and sn.frozenFor = 'N' and dp.Country = 'CO' and sn.SlpCode<> -1 and dr.AdresType = 'B' and sn.CardCode = 'C10004671'");
-        sb.append("order by sn.CardCode, CodAddress");
-        try {
-            return em.createNativeQuery(sb.toString()).getResultList();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las direcciones de los clientes asignados al vendedor [{0}] para la empresa {1}", new Object[]{slpCode, companyname});
-        }
-        return null;
-    }
 }
