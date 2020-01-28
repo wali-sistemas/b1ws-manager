@@ -1,6 +1,8 @@
 package co.manager.rest;
 
+import co.manager.b1ws.orderSale.OrdersService;
 import co.manager.dto.*;
+import co.manager.ejb.SalesOrderEJB;
 import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
@@ -34,6 +36,8 @@ public class PedBoxREST {
     private BusinessPartnerSAPFacade businessPartnerSAPFacade;
     @EJB
     private SalesOrderSAPFacade salesOrderSAPFacade;
+    @EJB
+    private SalesOrderEJB salesOrderEJB;
 
     @GET
     @Path("warehouses/{companyname}")
@@ -233,5 +237,25 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Listando estados disponibles para las ordenes de la empresa [{0}]", companyname);
         List<String> status = salesOrderSAPFacade.getStatusOrder(companyname, false);
         return Response.ok(new ResponseDTO(status == null ? -1 : 0, status)).build();
+    }
+
+    @POST
+    @Path("create-order")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createOrderSale(SalesOrderDTO dto) {
+        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+            return Response.ok(new ResponseDTO(-1, "CardCode es obligatorio.")).build();
+        }
+        if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+            return Response.ok(new ResponseDTO(-1, "CompanyName es obligatorio.")).build();
+        }
+        if (dto.getDetailSalesOrder().size() <= 0) {
+            return Response.ok(new ResponseDTO(-1, "Detalle de la orden es obligatorio.")).build();
+        }
+
+        CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para {0}", dto.getCompanyName());
+        return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
 }
