@@ -172,6 +172,7 @@ public class PedBoxREST {
                     dto.setCondition((String) obj[17]);
                     dto.setExcent((String) obj[18]);
                     dto.setCupo((BigDecimal) obj[19]);
+                    dto.setIdTransport((String) obj[24]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((Integer) obj[20]);
@@ -245,17 +246,29 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
-        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
-            return Response.ok(new ResponseDTO(-1, "CardCode es obligatorio.")).build();
-        }
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
-            return Response.ok(new ResponseDTO(-1, "CompanyName es obligatorio.")).build();
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio.")).build();
+        }
+        CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para {0}", dto.getCompanyName());
+        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo cardCode es obligatorio.")).build();
         }
         if (dto.getDetailSalesOrder().size() <= 0) {
-            return Response.ok(new ResponseDTO(-1, "Detalle de la orden es obligatorio.")).build();
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
+        }
+        if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
+        }
+        if (dto.getSlpCode().equals(null) || dto.getSlpCode() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
         }
 
-        CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para {0}", dto.getCompanyName());
+
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
 }

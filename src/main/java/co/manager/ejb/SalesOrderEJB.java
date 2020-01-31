@@ -83,6 +83,11 @@ public class SalesOrderEJB {
                 order.setSeries(Long.parseLong(getPropertyValue("manager.order.series", dto.getCompanyName())));
                 order.setCardCode(dto.getCardCode());
                 order.setComments(dto.getComments());
+                order.setSalesPersonCode(dto.getSlpCode());
+                order.setNumAtCard(dto.getNumAtCard());
+                order.setJournalMemo("Pedidos de cliente - " + dto.getCardCode());
+                order.setUTRANSP(dto.getIdTransport());
+                order.setConfirmed("N");
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
