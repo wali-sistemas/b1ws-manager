@@ -27,12 +27,13 @@ public class CustomerDTO {
     private String condition;
     private String excent;
     private BigDecimal cupo;
+    private String idTransport;
     private List<CustomerAddressesDTO> addresses;
 
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, Integer length, Integer latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, List<CustomerAddressesDTO> addresses) {
+    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, Integer length, Integer latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, List<CustomerAddressesDTO> addresses, String idTransport) {
         this.cardCode = cardCode;
         this.nit = nit;
         this.cardName = cardName;
@@ -54,6 +55,7 @@ public class CustomerDTO {
         this.excent = excent;
         this.cupo = cupo;
         this.addresses = addresses;
+        this.idTransport = idTransport;
     }
 
     public String getCardCode() {
@@ -222,6 +224,14 @@ public class CustomerDTO {
 
     public void setAddresses(List<CustomerAddressesDTO> addresses) {
         this.addresses = addresses;
+    }
+
+    public String getIdTransport() {
+        return idTransport;
+    }
+
+    public void setIdTransport(String idTransport) {
+        this.idTransport = idTransport;
     }
 
     @Override
