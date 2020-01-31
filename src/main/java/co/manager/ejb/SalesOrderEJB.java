@@ -106,9 +106,9 @@ public class SalesOrderEJB {
 
                     detail.getDocumentLine().add(orderLine);
                 }
-
                 order.setDocumentLines(detail);
 
+                CONSOLE.log(Level.INFO, "Iniciando creacion de orden de la venta para {0}", dto.getCompanyName());
                 docEntry = createOrderDocument(order, sessionId);
                 if (docEntry == 0) {
                     CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la orden. Resetear el sesión ID.");
