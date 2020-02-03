@@ -172,7 +172,6 @@ public class PedBoxREST {
                     dto.setCondition((String) obj[17]);
                     dto.setExcent((String) obj[18]);
                     dto.setCupo((BigDecimal) obj[19]);
-                    dto.setIdTransport((String) obj[24]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((Integer) obj[20]);
@@ -266,6 +265,8 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
         }
+        //Consultando id de la transportadora asignada al cliente
+        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
         
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
