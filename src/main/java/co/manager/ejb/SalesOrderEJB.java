@@ -4,6 +4,7 @@ import co.manager.b1ws.orderSale.*;
 import co.manager.dto.DetailSalesOrderDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.dto.SalesOrderDTO;
+import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
 
@@ -126,9 +127,9 @@ public class SalesOrderEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
-            } else {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
         return new ResponseDTO(0, docEntry);

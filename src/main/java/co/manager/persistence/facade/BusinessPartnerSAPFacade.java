@@ -39,7 +39,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(((cast(sn.CreditLine as int) * 1.2) - sn.Balance - sn.OrdersBal) as numeric(18,0)) as Cupo, ");
         sb.append("       cast(row_number() over (partition by sn.CardCode order by sn.CardCode) as int) as LineNum, ");
         sb.append("       cast(isnull(upper(cr.Street),'') as varchar(100)) as Address, cast(isnull(upper(cr.City),'') as varchar(50)) as City, ");
-        sb.append("       cast(isnull(upper(cs.Name),'') as varchar(50)) as County, cast(sn.U_TRASP as varchar(10)) as IdTransport ");
+        sb.append("       cast(isnull(upper(cs.Name),'') as varchar(50)) as County ");
         sb.append("from   OCRD sn ");
         sb.append("inner  join CRD1 cr on cr.CardCode = sn.CardCode ");
         sb.append("inner  join OCTG oc on sn.GroupNum = oc.GroupNum ");
@@ -53,6 +53,22 @@ public class BusinessPartnerSAPFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes del vendedor [{0}] para {1}", new Object[]{slpCode, companyName});
+        }
+        return null;
+    }
+
+    public String getTransportCustomer(String cardCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(U_TRASP as varchar(11)) as transport from OCRD where CardCode = '");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (String) em.createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la transportadora del cliente [" + cardCode + "] para ", companyName);
         }
         return null;
     }
