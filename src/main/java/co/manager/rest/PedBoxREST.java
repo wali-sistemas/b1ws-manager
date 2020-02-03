@@ -257,16 +257,14 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
         }
-        if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
-        }
         if (dto.getSlpCode().equals(null) || dto.getSlpCode() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        //Seteando campo numAtCard como origen de documento.
+        dto.setNumAtCard("pedBox");
         
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
