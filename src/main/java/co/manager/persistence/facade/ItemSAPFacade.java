@@ -98,9 +98,9 @@ public class ItemSAPFacade {
         sb.append("inner join OITM it on it.ItemCode = pr.itemcode ");
         sb.append("where it.validFor = 'Y' and it.ItemType = 'I' and it.U_Marca <> '' and PriceList =");
         if (companyName.equals("IGB")) {
-            sb.append("1");
-        } else {
             sb.append("4");
+        } else {
+            sb.append("1");
         }
         sb.append(" order by pr.ItemCode asc");
         try {
