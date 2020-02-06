@@ -1,6 +1,5 @@
 package co.manager.rest;
 
-import co.manager.b1ws.orderSale.OrdersService;
 import co.manager.dto.*;
 import co.manager.ejb.SalesOrderEJB;
 import co.manager.persistence.facade.BusinessPartnerSAPFacade;
@@ -47,7 +46,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Listando bodegas para la empresa [{0}]", companyname);
         List<Object[]> objects = warehouseSAPFacade.getListWarehouse(companyname, false);
 
-        if (objects == null) {
+        if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas para la empresa [{0}]", companyname);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando las bodegas.")).build();
         }
@@ -72,7 +71,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
         List<Object[]> objects = itemSAPFacade.getListItems(companyname, false);
 
-        if (objects == null) {
+        if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando items actual para {0}", companyname);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando items actual para " + companyname)).build();
         }
@@ -134,9 +133,8 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando el listado de clientes para el vendedor [{0}] para {1}", new Object[]{slpCode, companyname});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error retornando el listado de clientes para el vendedor [" + slpCode + "] para " + companyname)).build();
         }
-
         if (objects.size() <= 0) {
-            CONSOLE.log(Level.SEVERE, "El vendedor [{0}] para {1} no tiene clientes asignados", new Object[]{slpCode, companyname});
+            CONSOLE.log(Level.WARNING, "El vendedor [{0}] para {1} no tiene clientes asignados", new Object[]{slpCode, companyname});
             return Response.ok(new ResponseDTO(-1, "El vendedor [" + slpCode + "] para " + companyname + " no tiene clientes asignados.")).build();
         }
 
@@ -200,7 +198,7 @@ public class PedBoxREST {
         List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), whsCode.trim(), companyname, false);
 
         if (objects == null || objects.size() <= 0) {
-            CONSOLE.log(Level.INFO, "Ocurrio un error al consultar el stock actual para {0}", companyname);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para {0}", companyname);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para " + companyname)).build();
         }
 
@@ -239,6 +237,40 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(status == null ? -1 : 0, status)).build();
     }
 
+    @GET
+    @Path("orders-stopped/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrdersStopped(@PathParam("companyname") String companyname,
+                                      @QueryParam("slpcode") String slpCode) {
+        CONSOLE.log(Level.INFO, "Listando ordenes detenidas al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
+        List<Object[]> objects = salesOrderSAPFacade.findOrdersStopped(slpCode, companyname, false);
+
+        if (objects == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar las ordenes detenidas al vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar las ordenes detenidas al vendedor " + slpCode + " en " + companyname)).build();
+        }
+        if (objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontraron ordenes detenidas para el vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes detenidas paar el vendedor " + slpCode + " en " + companyname)).build();
+        }
+
+        List<SalesOrderStoppedDTO> ordersStopped = new ArrayList<>();
+        for (Object[] obj : objects) {
+            SalesOrderStoppedDTO dto = new SalesOrderStoppedDTO();
+            dto.setDocNum((Integer) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setCardCode((String) obj[2]);
+            dto.setCardName((String) obj[3]);
+            dto.setStatus((String) obj[4]);
+            dto.setDocTotal((BigDecimal) obj[5]);
+            dto.setAuthorization('N');
+            ordersStopped.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando listado de ordenes detenidas al vendedor {0} en la empresa {1}", new Object[]{slpCode, companyname});
+        return Response.ok(new ResponseDTO(0, ordersStopped)).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -267,7 +299,7 @@ public class PedBoxREST {
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
-        
+
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
 }
