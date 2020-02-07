@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,7 +128,7 @@ public class PedBoxREST {
                                  @PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Iniciando retorno de clientes para el asesor [{0}] de la compania {1}", new Object[]{slpCode, companyname});
         List<CustomerDTO> customerDTO = new ArrayList<>();
-        List<Object[]> objects = businessPartnerSAPFacade.getListCustomersBySeller(slpCode, companyname, false);
+        List<Object[]> objects = businessPartnerSAPFacade.listCustomersBySalesPerson(slpCode, companyname, false);
 
         if (objects == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando el listado de clientes para el vendedor [{0}] para {1}", new Object[]{slpCode, companyname});
@@ -269,6 +270,60 @@ public class PedBoxREST {
         }
         CONSOLE.log(Level.INFO, "Retornando listado de ordenes detenidas al vendedor {0} en la empresa {1}", new Object[]{slpCode, companyname});
         return Response.ok(new ResponseDTO(0, ordersStopped)).build();
+    }
+
+    @GET
+    @Path("customers-portfolio/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
+                                                       @QueryParam("slpcode") String slpCode) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera de clientes para el vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
+        List<CustomerPortfolioDTO> customerPortfolio = new ArrayList<>();
+        List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioBySalesPerson(slpCode, companyname, false);
+
+        if (objects == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la cartera de los clientes asignados al vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar la cartera de los clientes asignados al vendedor " + slpCode + " en " + companyname)).build();
+        }
+        if (objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos asociados al vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos asociados al vendedor " + slpCode + " en " + companyname)).build();
+        }
+
+        HashMap<String, String> customers = new HashMap<>();
+        for (Object[] obj : objects) {
+            customers.put((String) obj[0], "id");
+        }
+
+        for (String client : customers.keySet()) {
+            List<CustomerPortfolioDTO.detailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
+            CustomerPortfolioDTO dto = new CustomerPortfolioDTO();
+            dto.setCardCode(client);
+
+            for (Object[] obj : objects) {
+                if (dto.getCardCode().equals(obj[0])) {
+                    //TODO: Encabezado del CustomerDTO.
+                    dto.setCardName((String) obj[1]);
+                    dto.setLicTradNum((String) obj[2]);
+                    //TODO: Detalle de direcciones al CustomerDTO
+                    CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
+                    dto2.setDocType((String) obj[3]);
+                    dto2.setDocNum((Integer) obj[4]);
+                    dto2.setDocDate((Date) obj[5]);
+                    dto2.setDocDueDate((Date) obj[6]);
+                    dto2.setBalance((BigDecimal) obj[7]);
+                    dto2.setDocTotal((BigDecimal) obj[8]);
+                    dto2.setDocDateCutoff(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    dto2.setExpiredDays((Integer) obj[9]);
+                    customerDetailPortfolio.add(dto2);
+                }
+            }
+            dto.setDetailPortfolio(customerDetailPortfolio);
+            customerPortfolio.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el listado de la cartera de clientes asignados al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
+        return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
     }
 
     @POST
