@@ -24,7 +24,7 @@ public class BusinessPartnerSAPFacade {
     public BusinessPartnerSAPFacade() {
     }
 
-    public List<Object[]> getListCustomersBySeller(String slpCode, String companyName, boolean pruebas) {
+    public List<Object[]> listCustomersBySalesPerson(String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
@@ -69,6 +69,34 @@ public class BusinessPartnerSAPFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la transportadora del cliente [" + cardCode + "] para ", companyName);
+        }
+        return null;
+    }
+
+    public List<Object[]> listCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(f.CardCode as varchar(20))as cardCode, cast(f.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Factura'as tipoDoc, cast(f.DocNum as int)as docNum, ");
+        sb.append("      cast(f.DocDate as date)as fechaEmision, cast(f.DocDueDate as date)as fechaVencimiento, cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo, ");
+        sb.append("      cast(f.DocTotal as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos ");
+        sb.append("from  OINV f ");
+        sb.append("inner join OCRD s ON f.CardCode = s.CardCode ");
+        sb.append("where f.PaidToDate > 0 and f.DocStatus = 'O' and s.SlpCode =");
+        sb.append(slpCode);
+        sb.append(" union all ");
+        sb.append("select cast(n.CardCode as varchar(20))as cardCode, cast(n.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Nota Crédito'as tipoDoc, cast(n.DocNum as int)as docNum, ");
+        sb.append("      cast(n.DocDate as date)as fechaEmision, cast(n.DocDueDate as date)as fechaVencimiento, cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo, ");
+        sb.append("      cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos ");
+        sb.append("from  ORIN n ");
+        sb.append("inner join OCRD s ON n.CardCode = s.CardCode ");
+        sb.append("where n.PaidToDate > 0 and n.DocStatus = 'O' and s.SlpCode =");
+        sb.append(slpCode);
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes asignados al vendedor {0} para la empresa [{1}]", new Object[]{slpCode, companyName});
         }
         return null;
     }
