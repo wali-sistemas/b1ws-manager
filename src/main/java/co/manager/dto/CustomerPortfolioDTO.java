@@ -11,15 +11,21 @@ public class CustomerPortfolioDTO {
     private String cardCode;
     private String cardName;
     private String licTradNum;
+    private String slpName;
+    private String payCondition;
+    private BigDecimal cupo;
     private List<detailPortfolioDTO> detailPortfolio;
 
     public CustomerPortfolioDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, List<detailPortfolioDTO> detailPortfolio) {
+    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, List<detailPortfolioDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
+        this.slpName = slpName;
+        this.payCondition = payCondition;
+        this.cupo = cupo;
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -51,6 +57,30 @@ public class CustomerPortfolioDTO {
         return detailPortfolio;
     }
 
+    public String getSlpName() {
+        return slpName;
+    }
+
+    public void setSlpName(String slpName) {
+        this.slpName = slpName;
+    }
+
+    public String getPayCondition() {
+        return payCondition;
+    }
+
+    public void setPayCondition(String payCondition) {
+        this.payCondition = payCondition;
+    }
+
+    public BigDecimal getCupo() {
+        return cupo;
+    }
+
+    public void setCupo(BigDecimal cupo) {
+        this.cupo = cupo;
+    }
+
     public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
@@ -59,7 +89,12 @@ public class CustomerPortfolioDTO {
     public String toString() {
         return "CustomerPortfolioDTO{" +
                 "cardCode='" + cardCode + '\'' +
+                ", cardName='" + cardName + '\'' +
                 ", licTradNum='" + licTradNum + '\'' +
+                ", slpName='" + slpName + '\'' +
+                ", payCondition='" + payCondition + '\'' +
+                ", cupo=" + cupo +
+                ", detailPortfolio=" + detailPortfolio +
                 '}';
     }
 

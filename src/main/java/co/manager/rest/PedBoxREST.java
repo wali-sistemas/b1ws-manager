@@ -306,6 +306,9 @@ public class PedBoxREST {
                     //TODO: Encabezado del CustomerDTO.
                     dto.setCardName((String) obj[1]);
                     dto.setLicTradNum((String) obj[2]);
+                    dto.setSlpName((String) obj[10]);
+                    dto.setPayCondition((String) obj[11]);
+                    dto.setCupo((BigDecimal) obj[12]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
@@ -351,6 +354,14 @@ public class PedBoxREST {
         if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
+        }
+        if (dto.getStatus().equals(null) || dto.getStatus().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo status es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo status es obligatorio.")).build();
+        }
+        if (dto.getConfirmed().equals(null) || dto.getConfirmed().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo confirmed es obligatorio.")).build();
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
