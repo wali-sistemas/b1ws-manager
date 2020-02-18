@@ -306,6 +306,9 @@ public class PedBoxREST {
                     //TODO: Encabezado del CustomerDTO.
                     dto.setCardName((String) obj[1]);
                     dto.setLicTradNum((String) obj[2]);
+                    dto.setSlpName((String) obj[10]);
+                    dto.setPayCondition((String) obj[11]);
+                    dto.setCupo((BigDecimal) obj[12]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
