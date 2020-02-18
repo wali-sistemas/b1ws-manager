@@ -16,6 +16,8 @@ public class SalesOrderDTO {
     private String companyName;
     private String numAtCard;
     private String idTransport;
+    private String status;
+    private String confirmed;
     private Long slpCode;
 
     private List<DetailSalesOrderDTO> detailSalesOrder;
@@ -80,6 +82,22 @@ public class SalesOrderDTO {
         this.slpCode = slpCode;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(String confirmed) {
+        this.confirmed = confirmed;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderDTO{" +
@@ -88,6 +106,8 @@ public class SalesOrderDTO {
                 ", companyName='" + companyName + '\'' +
                 ", numAtCard='" + numAtCard + '\'' +
                 ", idTransport='" + idTransport + '\'' +
+                ", status='" + status + '\'' +
+                ", confirmed=" + confirmed +
                 ", slpCode=" + slpCode +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';

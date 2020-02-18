@@ -88,7 +88,8 @@ public class SalesOrderEJB {
                 order.setNumAtCard(dto.getNumAtCard());
                 order.setJournalMemo("Pedidos de cliente - " + dto.getCardCode());
                 order.setUTRANSP(dto.getIdTransport());
-                order.setConfirmed("N");
+                order.setConfirmed(dto.getConfirmed());
+                order.setUSEPARADOR(dto.getStatus());
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
