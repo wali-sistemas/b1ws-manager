@@ -14,18 +14,20 @@ public class CustomerPortfolioDTO {
     private String slpName;
     private String payCondition;
     private BigDecimal cupo;
+    private Integer payDayAvg;
     private List<detailPortfolioDTO> detailPortfolio;
 
     public CustomerPortfolioDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, List<detailPortfolioDTO> detailPortfolio) {
+    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, List<detailPortfolioDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
         this.slpName = slpName;
         this.payCondition = payCondition;
         this.cupo = cupo;
+        this.payDayAvg = payDayAvg;
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -81,6 +83,14 @@ public class CustomerPortfolioDTO {
         this.cupo = cupo;
     }
 
+    public Integer getPayDayAvg() {
+        return payDayAvg;
+    }
+
+    public void setPayDayAvg(Integer payDayAvg) {
+        this.payDayAvg = payDayAvg;
+    }
+
     public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
@@ -94,6 +104,7 @@ public class CustomerPortfolioDTO {
                 ", slpName='" + slpName + '\'' +
                 ", payCondition='" + payCondition + '\'' +
                 ", cupo=" + cupo +
+                ", payDayAvg=" + payDayAvg +
                 ", detailPortfolio=" + detailPortfolio +
                 '}';
     }

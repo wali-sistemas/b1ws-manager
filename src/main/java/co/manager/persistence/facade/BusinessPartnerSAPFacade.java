@@ -80,7 +80,8 @@ public class BusinessPartnerSAPFacade {
         sb.append("select cast(f.CardCode as varchar(20))as cardCode, cast(f.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Factura'as tipoDoc, cast(f.DocNum as int)as docNum, ");
         sb.append("      cast(f.DocDate as date)as fechaEmision, cast(f.DocDueDate as date)as fechaVencimiento, cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo, ");
         sb.append("      cast(f.DocTotal as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos, ");
-        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo ");
+        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
+        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago ");
         sb.append("from  OINV f ");
         sb.append("inner join OCRD s ON f.CardCode = s.CardCode ");
         sb.append("inner join OSLP a ON a.SlpCode = s.SlpCode ");
@@ -91,7 +92,8 @@ public class BusinessPartnerSAPFacade {
         sb.append("select cast(n.CardCode as varchar(20))as cardCode, cast(n.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Nota Crédito'as tipoDoc, cast(n.DocNum as int)as docNum, ");
         sb.append("      cast(n.DocDate as date)as fechaEmision, cast(n.DocDueDate as date)as fechaVencimiento, cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo, ");
         sb.append("      cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos, ");
-        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo ");
+        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
+        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago ");
         sb.append("from  ORIN n ");
         sb.append("inner join OCRD s ON n.CardCode = s.CardCode ");
         sb.append("inner join OSLP a ON a.SlpCode = s.SlpCode ");
