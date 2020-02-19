@@ -309,6 +309,7 @@ public class PedBoxREST {
                     dto.setSlpName((String) obj[10]);
                     dto.setPayCondition((String) obj[11]);
                     dto.setCupo((BigDecimal) obj[12]);
+                    dto.setPayDayAvg((Integer) obj[13]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
