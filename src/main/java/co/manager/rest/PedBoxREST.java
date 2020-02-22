@@ -266,10 +266,29 @@ public class PedBoxREST {
             dto.setStatus((String) obj[4]);
             dto.setDocTotal((BigDecimal) obj[5]);
             dto.setAuthorization('N');
+            dto.setWhsCode((String) obj[6]);
+            dto.setComments((String) obj[7]);
             ordersStopped.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando listado de ordenes detenidas al vendedor {0} en la empresa {1}", new Object[]{slpCode, companyname});
         return Response.ok(new ResponseDTO(0, ordersStopped)).build();
+    }
+
+    @GET
+    @Path("customer-portfolio/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
+                                                       @QueryParam("slpcode") String slpCode,
+                                                       @QueryParam("cardcode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera del cliente {0} asignado al vendedor {1} en [{2}]", new Object[]{cardCode, slpCode, companyname});
+        Object objects = businessPartnerSAPFacade.getCustomerPortfolio(cardCode, slpCode, companyname, false);
+
+        if (objects == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la cartera del cliente {0} asignado al vendedor {1} en {2}", new Object[]{cardCode, slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar la cartera del cliente " + cardCode + " asignado al vendedor " + slpCode + " en " + companyname)).build();
+        }
+        return Response.ok(new ResponseDTO(0, objects)).build();
     }
 
     @GET
@@ -310,6 +329,7 @@ public class PedBoxREST {
                     dto.setPayCondition((String) obj[11]);
                     dto.setCupo((BigDecimal) obj[12]);
                     dto.setPayDayAvg((Integer) obj[13]);
+                    dto.setLastSaleDay((Date) obj[14]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
@@ -329,6 +349,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Retornando el listado de la cartera de clientes asignados al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
         return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
     }
+
 
     @POST
     @Path("create-order")

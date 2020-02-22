@@ -44,11 +44,12 @@ public class SalesOrderSAPFacade {
     public List<Object[]> findOrdersStopped(String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(o.DocNum as int)as DocNum, cast(o.DocDate as date)as DocDate, cast(o.cardCode as varchar(20))as cardCode, ");
-        sb.append("      cast(o.CardName as varchar(50))as CardName, cast(o.U_SEPARADOR as varchar (50))as Status, cast(o.DocTotal as numeric(18,0))as DocTotal ");
-        sb.append("from  ORDR o ");
-        sb.append("where YEAR(o.DocDate) > YEAR(GETDATE())-1 and MONTH(o.DocDate) > MONTH(GETDATE())-1 and o.DocStatus = 'O' and ");
-        sb.append("      o.U_SEPARADOR NOT IN ('APROBADO','PREPAGO','') and o.SlpCode =");
+        sb.append("select cast(o.DocNum as int)as docNum, cast(o.DocDate as date)as docDate, cast(o.cardCode as varchar(20))as cardCode, ");
+        sb.append("       cast(o.CardName as varchar(50))as cardName, cast(o.U_SEPARADOR as varchar (50))as status, cast(o.DocTotal as numeric(18,0))as docTotal, ");
+        sb.append("       cast((select top 1 whsCode from RDR1 d where d.DocEntry = o.DocEntry)as varchar(10))as whsCode, cast(o.Comments as varchar(100))as comments ");
+        sb.append("from   ORDR o ");
+        sb.append("where  YEAR(o.DocDate) > YEAR(GETDATE())-1 and MONTH(o.DocDate) > MONTH(GETDATE())-1 and o.DocStatus = 'O' and ");
+        sb.append("       o.U_SEPARADOR NOT IN ('APROBADO','PREPAGO','') and o.SlpCode =");
         sb.append(slpCode);
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
