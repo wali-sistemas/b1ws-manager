@@ -128,7 +128,17 @@ public class ItemSAPFacade {
         sb.append("       else (it.onHAND - it.iscommited) end as int) as Stock ");
         sb.append("from OITM oi ");
         sb.append("inner join OITW it on it.ItemCode = oi.ItemCode ");
-        sb.append("where it.WhsCode in ('01','26','28') and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
+        sb.append("where it.WhsCode in (");
+
+        if (companyName.equals("IGB")) {
+            //TODO: Filtro bodegas de solo ventas para IGB
+            sb.append("'01', '05', '26'");
+        } else {
+            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            sb.append("'01', '09', '26', '44'");
+        }
+
+        sb.append(") and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
 
         if (!itemCode.equals("0")) {
             sb.append(" and oi.ItemCode = '");

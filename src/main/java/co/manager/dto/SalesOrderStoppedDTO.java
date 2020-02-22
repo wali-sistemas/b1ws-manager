@@ -17,11 +17,13 @@ public class SalesOrderStoppedDTO {
     private char authorization;
     private Date docDate;
     private BigDecimal docTotal;
+    private String whsCode;
+    private String comments;
 
     public SalesOrderStoppedDTO() {
     }
 
-    public SalesOrderStoppedDTO(Integer docNum, String cardCode, String cardName, String status, char authorization, Date docDate, BigDecimal docTotal) {
+    public SalesOrderStoppedDTO(Integer docNum, String cardCode, String cardName, String status, char authorization, Date docDate, BigDecimal docTotal, String whsCode, String comments) {
         this.docNum = docNum;
         this.cardCode = cardCode;
         this.cardName = cardName;
@@ -29,6 +31,8 @@ public class SalesOrderStoppedDTO {
         this.authorization = authorization;
         this.docDate = docDate;
         this.docTotal = docTotal;
+        this.whsCode = whsCode;
+        this.comments = comments;
     }
 
     public Integer getDocNum() {
@@ -87,6 +91,22 @@ public class SalesOrderStoppedDTO {
         this.docTotal = docTotal;
     }
 
+    public String getWhsCode() {
+        return whsCode;
+    }
+
+    public void setWhsCode(String whsCode) {
+        this.whsCode = whsCode;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderStoppedDTO{" +
@@ -97,6 +117,8 @@ public class SalesOrderStoppedDTO {
                 ", authorization=" + authorization +
                 ", docDate=" + docDate +
                 ", docTotal=" + docTotal +
+                ", whsCode='" + whsCode + '\'' +
+                ", comments='" + comments + '\'' +
                 '}';
     }
 }

@@ -15,12 +15,13 @@ public class CustomerPortfolioDTO {
     private String payCondition;
     private BigDecimal cupo;
     private Integer payDayAvg;
+    private Date lastSaleDay;
     private List<detailPortfolioDTO> detailPortfolio;
 
     public CustomerPortfolioDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, List<detailPortfolioDTO> detailPortfolio) {
+    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<detailPortfolioDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
@@ -28,6 +29,7 @@ public class CustomerPortfolioDTO {
         this.payCondition = payCondition;
         this.cupo = cupo;
         this.payDayAvg = payDayAvg;
+        this.lastSaleDay = lastSaleDay;
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -91,6 +93,14 @@ public class CustomerPortfolioDTO {
         this.payDayAvg = payDayAvg;
     }
 
+    public Date getLastSaleDay() {
+        return lastSaleDay;
+    }
+
+    public void setLastSaleDay(Date lastSaleDay) {
+        this.lastSaleDay = lastSaleDay;
+    }
+
     public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
@@ -105,6 +115,7 @@ public class CustomerPortfolioDTO {
                 ", payCondition='" + payCondition + '\'' +
                 ", cupo=" + cupo +
                 ", payDayAvg=" + payDayAvg +
+                ", lastSaleDay=" + lastSaleDay +
                 ", detailPortfolio=" + detailPortfolio +
                 '}';
     }
