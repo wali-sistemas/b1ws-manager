@@ -282,13 +282,13 @@ public class PedBoxREST {
                                                        @QueryParam("slpcode") String slpCode,
                                                        @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera del cliente {0} asignado al vendedor {1} en [{2}]", new Object[]{cardCode, slpCode, companyname});
-        Object objects = businessPartnerSAPFacade.getCustomerPortfolio(cardCode, slpCode, companyname, false);
+        CupoDTO dto = businessPartnerSAPFacade.getCustomerPortfolio(cardCode, slpCode, companyname, false);
 
-        if (objects == null) {
+        if (dto == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la cartera del cliente {0} asignado al vendedor {1} en {2}", new Object[]{cardCode, slpCode, companyname});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar la cartera del cliente " + cardCode + " asignado al vendedor " + slpCode + " en " + companyname)).build();
         }
-        return Response.ok(new ResponseDTO(0, objects)).build();
+        return Response.ok(new ResponseDTO(0, dto)).build();
     }
 
     @GET
