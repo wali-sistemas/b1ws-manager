@@ -1,11 +1,14 @@
 package co.manager.persistence.facade;
 
+import co.manager.dto.CupoDTO;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,7 +76,7 @@ public class BusinessPartnerSAPFacade {
         return null;
     }
 
-    public Object getCustomerPortfolio(String cardCode, String slpCode, String companyName, boolean pruebas) {
+    public CupoDTO getCustomerPortfolio(String cardCode, String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
@@ -87,7 +90,9 @@ public class BusinessPartnerSAPFacade {
         sb.append(cardCode);
         sb.append("'");
         try {
-            return em.createNativeQuery(sb.toString()).getSingleResult();
+            Object[] obj = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+            CupoDTO dto = new CupoDTO((BigDecimal) obj[0], (Integer) obj[1], (Date) obj[2]);
+            return dto;
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera del cliente.", e);
