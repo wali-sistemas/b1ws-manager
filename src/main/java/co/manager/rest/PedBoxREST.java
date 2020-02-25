@@ -253,7 +253,7 @@ public class PedBoxREST {
         }
         if (objects.size() <= 0) {
             CONSOLE.log(Level.WARNING, "No se encontraron ordenes detenidas para el vendedor {0} en {1}", new Object[]{slpCode, companyname});
-            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes detenidas paar el vendedor " + slpCode + " en " + companyname)).build();
+            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes detenidas para el vendedor " + slpCode + " en " + companyname)).build();
         }
 
         List<SalesOrderStoppedDTO> ordersStopped = new ArrayList<>();
@@ -360,28 +360,22 @@ public class PedBoxREST {
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio.")).build();
-        }
-        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+        } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo cardCode es obligatorio.")).build();
-        }
-        if (dto.getDetailSalesOrder().size() <= 0) {
+        } else if (dto.getDetailSalesOrder().size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
-        }
-        if (dto.getSlpCode().equals(null) || dto.getSlpCode() <= 0) {
+        } else if (dto.getSlpCode().equals(null) || dto.getSlpCode() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
-        }
-        if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
+        } else if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
-        }
-        if (dto.getStatus().equals(null) || dto.getStatus().isEmpty()) {
+        } else if (dto.getStatus().equals(null) || dto.getStatus().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo status es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo status es obligatorio.")).build();
-        }
-        if (dto.getConfirmed().equals(null) || dto.getConfirmed().isEmpty()) {
+        } else if (dto.getConfirmed().equals(null) || dto.getConfirmed().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo confirmed es obligatorio.")).build();
         }
