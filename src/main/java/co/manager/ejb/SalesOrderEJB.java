@@ -4,7 +4,7 @@ import co.manager.b1ws.orderSale.*;
 import co.manager.dto.DetailSalesOrderDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.dto.SalesOrderDTO;
-import co.manager.persistence.facade.BusinessPartnerSAPFacade;
+import co.manager.persistence.facade.SalesOrderSAPFacade;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
 
@@ -16,7 +16,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -34,6 +33,8 @@ public class SalesOrderEJB {
     private ManagerApplicationBean appBean;
     @EJB
     private SessionManager sessionManager;
+    @EJB
+    private SalesOrderSAPFacade salesOrderSAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -133,7 +134,7 @@ public class SalesOrderEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        return new ResponseDTO(0, docEntry);
+        return new ResponseDTO(0, salesOrderSAPFacade.getDocNumOrder(docEntry, dto.getCompanyName(), false));
     }
 
     private Long createOrderDocument(Document document, String sessionId) throws MalformedURLException {

@@ -6,7 +6,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,6 +55,20 @@ public class SalesOrderSAPFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes detenidas al vendedor [" + slpCode + "] de " + companyName, e);
+        }
+        return null;
+    }
+
+    public Integer getDocNumOrder(Long docEntry, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(DocNum as int)as DocNum from ORDR where DocEntry = ");
+        sb.append(docEntry);
+        try {
+            return (Integer) em.createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el nro de documento de la orden [" + docEntry + "] en [" + companyName + ']', e);
         }
         return null;
     }
