@@ -194,13 +194,13 @@ public class PedBoxREST {
     public Response getStockCurrent(@PathParam("companyname") String companyname,
                                     @QueryParam("itemcode") String itemCode,
                                     @QueryParam("whscode") String whsCode) {
-        CONSOLE.log(Level.INFO, "Listando stock actual para la empresa [{0}]", companyname);
+        CONSOLE.log(Level.INFO, "Listando stock actual para el item [{0}] en la empresa [{1}]", new Object[]{itemCode, companyname});
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
         List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), whsCode.trim(), companyname, false);
 
         if (objects == null || objects.size() <= 0) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para {0}", companyname);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para " + companyname)).build();
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para el item [" + itemCode + "] en " + companyname)).build();
         }
 
         HashMap<String, String> items = new HashMap<>();
@@ -224,7 +224,7 @@ public class PedBoxREST {
             dto1.setStockWarehouses(stockCurrentWarehouse);
             stockCurrentDTO.add(dto1);
         }
-        CONSOLE.log(Level.INFO, "Retornando listado de stock actual para [{0}]", companyname);
+        CONSOLE.log(Level.INFO, "Retornando listado de stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
         return Response.ok(new ResponseDTO(0, stockCurrentDTO)).build();
     }
 

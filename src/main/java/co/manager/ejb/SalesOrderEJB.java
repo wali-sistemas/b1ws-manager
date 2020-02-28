@@ -120,7 +120,7 @@ public class SalesOrderEJB {
                     CONSOLE.log(Level.INFO, "Se creo la orden satisfactoriamente");
                 }
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden ", e.getMessage());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden ", e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
