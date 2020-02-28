@@ -83,7 +83,7 @@ public class PedBoxREST {
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
             dto.setUnit(null);
-            dto.setPresentation((String) obj[2]);
+            dto.setPresentation((Integer) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
             dto.setDiscount(0);

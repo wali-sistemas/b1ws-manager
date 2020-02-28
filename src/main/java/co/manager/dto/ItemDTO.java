@@ -10,7 +10,7 @@ public class ItemDTO {
     private String itemName;
     private String unit;
     private String whsCode;
-    private String presentation;
+    private Integer presentation;
     private Integer iva;
     private Integer discount;
     private Integer quantity;
@@ -19,7 +19,7 @@ public class ItemDTO {
     public ItemDTO() {
     }
 
-    public ItemDTO(String itemCode, String itemName, String unit, String presentation, BigDecimal price, Integer iva, Integer discount, String whsCode, Integer quantity) {
+    public ItemDTO(String itemCode, String itemName, String unit, Integer presentation, BigDecimal price, Integer iva, Integer discount, String whsCode, Integer quantity) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.unit = unit;
@@ -63,11 +63,11 @@ public class ItemDTO {
         this.whsCode = whsCode;
     }
 
-    public String getPresentation() {
+    public Integer getPresentation() {
         return presentation;
     }
 
-    public void setPresentation(String presentation) {
+    public void setPresentation(Integer presentation) {
         this.presentation = presentation;
     }
 
