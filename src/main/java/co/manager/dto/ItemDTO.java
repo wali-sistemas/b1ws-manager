@@ -13,13 +13,12 @@ public class ItemDTO {
     private Integer presentation;
     private Integer iva;
     private Integer discount;
-    private Integer quantity;
     private BigDecimal price;
 
     public ItemDTO() {
     }
 
-    public ItemDTO(String itemCode, String itemName, String unit, Integer presentation, BigDecimal price, Integer iva, Integer discount, String whsCode, Integer quantity) {
+    public ItemDTO(String itemCode, String itemName, String unit, Integer presentation, BigDecimal price, Integer iva, Integer discount, String whsCode) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.unit = unit;
@@ -28,7 +27,6 @@ public class ItemDTO {
         this.iva = iva;
         this.discount = discount;
         this.whsCode = whsCode;
-        this.quantity = quantity;
     }
 
     public String getItemCode() {
@@ -87,14 +85,6 @@ public class ItemDTO {
         this.discount = discount;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -110,10 +100,9 @@ public class ItemDTO {
                 ", itemName='" + itemName + '\'' +
                 ", unit='" + unit + '\'' +
                 ", whsCode='" + whsCode + '\'' +
-                ", presentation='" + presentation + '\'' +
+                ", presentation=" + presentation +
                 ", iva=" + iva +
                 ", discount=" + discount +
-                ", quantity=" + quantity +
                 ", price=" + price +
                 '}';
     }

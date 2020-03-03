@@ -82,13 +82,12 @@ public class PedBoxREST {
             ItemDTO dto = new ItemDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
-            dto.setUnit(null);
+            dto.setUnit("UND");//TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
             dto.setPresentation((Integer) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
             dto.setDiscount(0);
             dto.setWhsCode((String) obj[5]);
-            dto.setQuantity(null);
             stock.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
@@ -275,6 +274,65 @@ public class PedBoxREST {
     }
 
     @GET
+    @Path("detail-orders-stopped/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listDetailOrdersStopped(@PathParam("companyname") String companyname,
+                                            @QueryParam("slpcode") String slpCode) {
+        CONSOLE.log(Level.INFO, "Listando detalle de las ordenes detenidas al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
+        List<DetailSalesOrderStoppedDTO> detailordersStopped = new ArrayList<>();
+        List<Object[]> objects = salesOrderSAPFacade.findDetailOrdersStopped(slpCode, companyname, false);
+
+        if (objects == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el detalle de las ordenes detenidas al vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el detalle de las ordenes detenidas al vendedor " + slpCode + " en " + companyname)).build();
+        }
+        if (objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontro el detalle de las ordenes detenidas para el vendedor {0} en {1}", new Object[]{slpCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "No se encontro el detalle de las ordenes detenidas para el vendedor " + slpCode + " en " + companyname)).build();
+        }
+
+        HashMap<Integer, String> ordersStopped = new HashMap<>();
+        for (Object[] obj : objects) {
+            ordersStopped.put((Integer) obj[0], "id");
+        }
+
+        for (Integer client : ordersStopped.keySet()) {
+            List<DetailSalesOrderStoppedDTO.DetailItemDTO> detailItemDTO = new ArrayList<>();
+            DetailSalesOrderStoppedDTO dto = new DetailSalesOrderStoppedDTO();
+            dto.setDocNum(client);
+
+            for (Object[] obj : objects) {
+                if (dto.getDocNum().equals(obj[0])) {
+                    //TODO: Encabezado del DetailSalesOrderStoppedDTO.
+                    dto.setCardCode((String) obj[1]);
+                    dto.setNit((String) obj[2]);
+                    dto.setCardName((String) obj[3]);
+                    dto.setDocDueDate((Date) obj[4]);
+                    dto.setDocDate((Date) obj[5]);
+                    dto.setDocTotal((BigDecimal) obj[6]);
+                    dto.setSlpCode((String) obj[7]);
+                    dto.setSlpName((String) obj[8]);
+                    dto.setStatus((String) obj[9]);
+                    dto.setMonth((String) obj[10]);
+                    //TODO: Detalle de direcciones al DetailItemDTO
+                    DetailSalesOrderStoppedDTO.DetailItemDTO dto2 = new DetailSalesOrderStoppedDTO.DetailItemDTO();
+                    dto2.setItemCode((String) obj[11]);
+                    dto2.setDscription((String) obj[12]);
+                    dto2.setOrderQty((Integer) obj[13]);
+                    dto2.setDelivrdQty((Integer) obj[14]);
+                    dto2.setPrice((BigDecimal) obj[15]);
+                    detailItemDTO.add(dto2);
+                }
+            }
+            dto.setDetailItem(detailItemDTO);
+            detailordersStopped.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el detalle de las ordenes detenidas al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
+        return Response.ok(new ResponseDTO(0, detailordersStopped)).build();
+    }
+
+    @GET
     @Path("customer-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -316,7 +374,7 @@ public class PedBoxREST {
         }
 
         for (String client : customers.keySet()) {
-            List<CustomerPortfolioDTO.detailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
+            List<CustomerPortfolioDTO.DetailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
             CustomerPortfolioDTO dto = new CustomerPortfolioDTO();
             dto.setCardCode(client);
 
@@ -331,7 +389,7 @@ public class PedBoxREST {
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
                     //TODO: Detalle de direcciones al CustomerDTO
-                    CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
+                    CustomerPortfolioDTO.DetailPortfolioDTO dto2 = new CustomerPortfolioDTO.DetailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
                     dto2.setDocNum((Integer) obj[4]);
                     dto2.setDocDate((Date) obj[5]);
