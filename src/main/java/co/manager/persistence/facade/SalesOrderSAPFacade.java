@@ -59,6 +59,31 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
+    public List<Object[]> findDetailOrdersStopped(String slpCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.DocNum as int)as docNum, cast(o.cardCode as varchar(20))as cardCode, cast(s.LicTradNum as varchar(20))as nit, ");
+        sb.append("       cast(o.CardName as varchar(50))as cardName, cast(o.DocDueDate as date)as docDueDate, cast(o.DocDate as date)as docDate, ");
+        sb.append("       cast(o.DocTotal as numeric(18,0))as docTotal, cast(o.SlpCode as varchar(50))as slpCode, cast(a.SlpName as varchar(50))as slpName, ");
+        sb.append("       cast(o.U_SEPARADOR as varchar(20))as status, cast(DATENAME(MM, o.DocDate)as varchar(20))as mes, ");
+        sb.append("       cast(d.itemCode as varchar(20))as itemCode, cast(d.Dscription as varchar(50))as dscription, cast(d.Quantity as int)as quantity, ");
+        sb.append("       cast(d.DelivrdQty as int)as delivrdQty, cast(d.Price as numeric(18,0))as priceUnit ");
+        sb.append("from   ORDR o ");
+        sb.append("inner  join RDR1 d ON d.DocEntry = o.DocEntry ");
+        sb.append("inner  join OSLP a ON a.SlpCode = o.SlpCode ");
+        sb.append("inner  join OCRD s ON s.CardCode = o.CardCode ");
+        sb.append("where  YEAR(o.DocDate) > YEAR(GETDATE())-1 and MONTH(o.DocDate) > MONTH(GETDATE())-1 and o.DocStatus = 'O' and ");
+        sb.append("       o.U_SEPARADOR NOT IN ('APROBADO','PREPAGO','') and o.SlpCode =");
+        sb.append(slpCode);
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el detalle de las ordenes detenidas para " + companyName, e);
+        }
+        return null;
+    }
+
     public Integer getDocNumOrder(Long docEntry, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
         StringBuilder sb = new StringBuilder();

@@ -16,12 +16,12 @@ public class CustomerPortfolioDTO {
     private BigDecimal cupo;
     private Integer payDayAvg;
     private Date lastSaleDay;
-    private List<detailPortfolioDTO> detailPortfolio;
+    private List<DetailPortfolioDTO> detailPortfolio;
 
     public CustomerPortfolioDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<detailPortfolioDTO> detailPortfolio) {
+    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<DetailPortfolioDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
@@ -57,7 +57,7 @@ public class CustomerPortfolioDTO {
         this.licTradNum = licTradNum;
     }
 
-    public List<detailPortfolioDTO> getDetailPortfolio() {
+    public List<DetailPortfolioDTO> getDetailPortfolio() {
         return detailPortfolio;
     }
 
@@ -101,7 +101,7 @@ public class CustomerPortfolioDTO {
         this.lastSaleDay = lastSaleDay;
     }
 
-    public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
+    public void setDetailPortfolio(List<DetailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -120,7 +120,7 @@ public class CustomerPortfolioDTO {
                 '}';
     }
 
-    public static class detailPortfolioDTO {
+    public static class DetailPortfolioDTO {
         private String docType;
         private Date docDate;
         private Date docDueDate;
@@ -130,10 +130,10 @@ public class CustomerPortfolioDTO {
         private Integer docNum;
         private Integer expiredDays;
 
-        public detailPortfolioDTO() {
+        public DetailPortfolioDTO() {
         }
 
-        public detailPortfolioDTO(String docType, Date docDate, Date docDueDate, String docDateCutoff, BigDecimal balance, BigDecimal docTotal, Integer docNum, Integer expiredDays) {
+        public DetailPortfolioDTO(String docType, Date docDate, Date docDueDate, String docDateCutoff, BigDecimal balance, BigDecimal docTotal, Integer docNum, Integer expiredDays) {
             this.docType = docType;
             this.docDate = docDate;
             this.docDueDate = docDueDate;
