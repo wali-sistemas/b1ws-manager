@@ -333,7 +333,7 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("only-customer-portfolio/{companyname}")
+    @Path("customer-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getOnlyCustomerPortfolioBySalesPerson(@PathParam("companyname") String companyname,
@@ -350,7 +350,7 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("all-customers-portfolio/{companyname}")
+    @Path("customers-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getAllCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
@@ -374,7 +374,7 @@ public class PedBoxREST {
         }
 
         for (String client : customers.keySet()) {
-            List<CustomerPortfolioDTO.DetailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
+            List<CustomerPortfolioDTO.detailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
             CustomerPortfolioDTO dto = new CustomerPortfolioDTO();
             dto.setCardCode(client);
 
@@ -389,7 +389,7 @@ public class PedBoxREST {
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
                     //TODO: Detalle de direcciones al CustomerDTO
-                    CustomerPortfolioDTO.DetailPortfolioDTO dto2 = new CustomerPortfolioDTO.DetailPortfolioDTO();
+                    CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
                     dto2.setDocType((String) obj[3]);
                     dto2.setDocNum((Integer) obj[4]);
                     dto2.setDocDate((Date) obj[5]);
