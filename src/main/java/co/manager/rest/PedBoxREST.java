@@ -336,9 +336,9 @@ public class PedBoxREST {
     @Path("only-customer-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getOnlyCustomerPortfBySalesPerson(@PathParam("companyname") String companyname,
-                                                      @QueryParam("slpcode") String slpCode,
-                                                      @QueryParam("cardcode") String cardCode) {
+    public Response getOnlyCustomerPortfolioBySalesPerson(@PathParam("companyname") String companyname,
+                                                          @QueryParam("slpcode") String slpCode,
+                                                          @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera del cliente {0} asignado al vendedor {1} en [{2}]", new Object[]{cardCode, slpCode, companyname});
         CupoDTO dto = businessPartnerSAPFacade.getCustomerPortfolio(cardCode, slpCode, companyname, false);
 
