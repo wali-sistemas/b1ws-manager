@@ -333,7 +333,7 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("customer-portfolio/{companyname}")
+    @Path("only-customer-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getCustomerPortfBySalesPerson(@PathParam("companyname") String companyname,
@@ -350,7 +350,7 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("customers-portfolio/{companyname}")
+    @Path("all-customers-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
