@@ -408,7 +408,6 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
     }
 
-
     @POST
     @Path("create-order")
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
