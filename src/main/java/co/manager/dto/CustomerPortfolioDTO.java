@@ -57,10 +57,6 @@ public class CustomerPortfolioDTO {
         this.licTradNum = licTradNum;
     }
 
-    public List<DetailPortfolioDTO> getDetailPortfolio() {
-        return detailPortfolio;
-    }
-
     public String getSlpName() {
         return slpName;
     }
@@ -101,6 +97,10 @@ public class CustomerPortfolioDTO {
         this.lastSaleDay = lastSaleDay;
     }
 
+    public List<DetailPortfolioDTO> getDetailPortfolio() {
+        return detailPortfolio;
+    }
+
     public void setDetailPortfolio(List<DetailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
@@ -131,17 +131,6 @@ public class CustomerPortfolioDTO {
         private Integer expiredDays;
 
         public DetailPortfolioDTO() {
-        }
-
-        public DetailPortfolioDTO(String docType, Date docDate, Date docDueDate, String docDateCutoff, BigDecimal balance, BigDecimal docTotal, Integer docNum, Integer expiredDays) {
-            this.docType = docType;
-            this.docDate = docDate;
-            this.docDueDate = docDueDate;
-            this.docDateCutoff = docDateCutoff;
-            this.balance = balance;
-            this.docTotal = docTotal;
-            this.docNum = docNum;
-            this.expiredDays = expiredDays;
         }
 
         public String getDocType() {
@@ -214,7 +203,7 @@ public class CustomerPortfolioDTO {
                     "docType='" + docType + '\'' +
                     ", docDate=" + docDate +
                     ", docDueDate=" + docDueDate +
-                    ", docDateCutoff=" + docDateCutoff +
+                    ", docDateCutoff='" + docDateCutoff + '\'' +
                     ", balance=" + balance +
                     ", docTotal=" + docTotal +
                     ", docNum=" + docNum +
