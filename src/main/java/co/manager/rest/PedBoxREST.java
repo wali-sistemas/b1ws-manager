@@ -333,12 +333,12 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("customer-portfolio/{companyname}")
+    @Path("only-customer-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getCustomerPortfBySalesPerson(@PathParam("companyname") String companyname,
-                                                  @QueryParam("slpcode") String slpCode,
-                                                  @QueryParam("cardcode") String cardCode) {
+    public Response getOnlyCustomerPortfBySalesPerson(@PathParam("companyname") String companyname,
+                                                      @QueryParam("slpcode") String slpCode,
+                                                      @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera del cliente {0} asignado al vendedor {1} en [{2}]", new Object[]{cardCode, slpCode, companyname});
         CupoDTO dto = businessPartnerSAPFacade.getCustomerPortfolio(cardCode, slpCode, companyname, false);
 
@@ -350,11 +350,11 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("customers-portfolio/{companyname}")
+    @Path("all-customers-portfolio/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
-                                                       @QueryParam("slpcode") String slpCode) {
+    public Response getAllCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
+                                                          @QueryParam("slpcode") String slpCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera de clientes para el vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
         List<CustomerPortfolioDTO> customerPortfolio = new ArrayList<>();
         List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioBySalesPerson(slpCode, companyname, false);
