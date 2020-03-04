@@ -210,7 +210,7 @@ public class CustomerPortfolioDTO {
 
         @Override
         public String toString() {
-            return "detailPortfolioDTO{" +
+            return "DetailPortfolioDTO{" +
                     "docType='" + docType + '\'' +
                     ", docDate=" + docDate +
                     ", docDueDate=" + docDueDate +
