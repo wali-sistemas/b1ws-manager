@@ -1,5 +1,7 @@
 package co.manager.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +9,8 @@ import java.util.List;
 /**
  * @author jguisao
  */
-public class CustomerPortfolioDTO {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class PortfolioCustomerDTO {
     private String cardCode;
     private String cardName;
     private String licTradNum;
@@ -16,12 +19,12 @@ public class CustomerPortfolioDTO {
     private BigDecimal cupo;
     private Integer payDayAvg;
     private Date lastSaleDay;
-    private List<detailPortfolioDTO> detailPortfolio;
+    private List<DetailPortfolioCustomerDTO> detailPortfolio;
 
-    public CustomerPortfolioDTO() {
+    public PortfolioCustomerDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<detailPortfolioDTO> detailPortfolio) {
+    public PortfolioCustomerDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<DetailPortfolioCustomerDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
@@ -97,17 +100,17 @@ public class CustomerPortfolioDTO {
         this.lastSaleDay = lastSaleDay;
     }
 
-    public List<detailPortfolioDTO> getDetailPortfolio() {
+    public List<DetailPortfolioCustomerDTO> getDetailPortfolio() {
         return detailPortfolio;
     }
 
-    public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
+    public void setDetailPortfolio(List<DetailPortfolioCustomerDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
 
     @Override
     public String toString() {
-        return "CustomerPortfolioDTO{" +
+        return "PortfolioCustomerDTO{" +
                 "cardCode='" + cardCode + '\'' +
                 ", cardName='" + cardName + '\'' +
                 ", licTradNum='" + licTradNum + '\'' +
@@ -120,7 +123,7 @@ public class CustomerPortfolioDTO {
                 '}';
     }
 
-    public static class detailPortfolioDTO {
+    public static class DetailPortfolioCustomerDTO {
         private String docType;
         private Date docDate;
         private Date docDueDate;
@@ -130,7 +133,7 @@ public class CustomerPortfolioDTO {
         private Integer docNum;
         private Integer expiredDays;
 
-        public detailPortfolioDTO() {
+        public DetailPortfolioCustomerDTO() {
         }
 
         public String getDocType() {
@@ -199,7 +202,7 @@ public class CustomerPortfolioDTO {
 
         @Override
         public String toString() {
-            return "detailPortfolioDTO{" +
+            return "DetailPortfolioCustomerDTO{" +
                     "docType='" + docType + '\'' +
                     ", docDate=" + docDate +
                     ", docDueDate=" + docDueDate +
