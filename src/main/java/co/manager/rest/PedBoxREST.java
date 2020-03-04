@@ -356,7 +356,7 @@ public class PedBoxREST {
     public Response getAllCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
                                                           @QueryParam("slpcode") String slpCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera de clientes para el vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
-        List<CustomerPortfolioDTO> customerPortfolio = new ArrayList<>();
+        List<PortfolioCustomerDTO> customerPortfolio = new ArrayList<>();
         List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioBySalesPerson(slpCode, companyname, false);
 
         if (objects == null) {
@@ -374,8 +374,8 @@ public class PedBoxREST {
         }
 
         for (String client : customers.keySet()) {
-            List<CustomerPortfolioDTO.detailPortfolioDTO> customerDetailPortfolio = new ArrayList<>();
-            CustomerPortfolioDTO dto = new CustomerPortfolioDTO();
+            List<PortfolioCustomerDTO.DetailPortfolioCustomerDTO> customerDetailPortfolio = new ArrayList<>();
+            PortfolioCustomerDTO dto = new PortfolioCustomerDTO();
             dto.setCardCode(client);
 
             for (Object[] obj : objects) {
@@ -389,7 +389,7 @@ public class PedBoxREST {
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
                     //TODO: Detalle de direcciones al CustomerDTO
-                    CustomerPortfolioDTO.detailPortfolioDTO dto2 = new CustomerPortfolioDTO.detailPortfolioDTO();
+                    PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
                     dto2.setDocType((String) obj[3]);
                     dto2.setDocNum((Integer) obj[4]);
                     dto2.setDocDate((Date) obj[5]);
