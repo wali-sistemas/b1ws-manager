@@ -16,12 +16,12 @@ public class CustomerPortfolioDTO {
     private BigDecimal cupo;
     private Integer payDayAvg;
     private Date lastSaleDay;
-    private List<DetailPortfolioDTO> detailPortfolio;
+    private List<detailPortfolioDTO> detailPortfolio;
 
     public CustomerPortfolioDTO() {
     }
 
-    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<DetailPortfolioDTO> detailPortfolio) {
+    public CustomerPortfolioDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<detailPortfolioDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
@@ -97,11 +97,11 @@ public class CustomerPortfolioDTO {
         this.lastSaleDay = lastSaleDay;
     }
 
-    public List<DetailPortfolioDTO> getDetailPortfolio() {
+    public List<detailPortfolioDTO> getDetailPortfolio() {
         return detailPortfolio;
     }
 
-    public void setDetailPortfolio(List<DetailPortfolioDTO> detailPortfolio) {
+    public void setDetailPortfolio(List<detailPortfolioDTO> detailPortfolio) {
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -120,7 +120,7 @@ public class CustomerPortfolioDTO {
                 '}';
     }
 
-    public static class DetailPortfolioDTO {
+    public static class detailPortfolioDTO {
         private String docType;
         private Date docDate;
         private Date docDueDate;
@@ -130,7 +130,7 @@ public class CustomerPortfolioDTO {
         private Integer docNum;
         private Integer expiredDays;
 
-        public DetailPortfolioDTO() {
+        public detailPortfolioDTO() {
         }
 
         public String getDocType() {
@@ -199,7 +199,7 @@ public class CustomerPortfolioDTO {
 
         @Override
         public String toString() {
-            return "DetailPortfolioDTO{" +
+            return "detailPortfolioDTO{" +
                     "docType='" + docType + '\'' +
                     ", docDate=" + docDate +
                     ", docDueDate=" + docDueDate +
