@@ -91,12 +91,15 @@ public class SalesOrderEJB {
                 order.setUTRANSP(dto.getIdTransport());
                 order.setConfirmed(dto.getConfirmed());
                 order.setUSEPARADOR(dto.getStatus());
+                order.setShipToCode(dto.getShipToCode());
+                order.setPayToCode(dto.getPayToCode());
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
                     XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
                     order.setDocDate(date2);
                     order.setDocDueDate(date2);
+                    order.setUFECINI(date2);
                 } catch (Exception e) {
                 }
 

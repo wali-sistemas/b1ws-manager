@@ -97,4 +97,19 @@ public class SalesOrderSAPFacade {
         }
         return null;
     }
+
+    public Integer getDocNumOrderByNumAtCard(String numAtCard, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(DocNum as int)as DocNum from ORDR where numAtCard = '");
+        sb.append(numAtCard);
+        sb.append("'");
+        try {
+            return (Integer) em.createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el nro de documento de la orden por el idPedBox [" + numAtCard + "] en [" + companyName + ']', e);
+        }
+        return 0;
+    }
 }
