@@ -28,5 +28,6 @@ public class ApplicationConfig extends Application {
         resources.add(EventREST.class);
         resources.add(SondaREST.class);
         resources.add(PedBoxREST.class);
+        resources.add(ReportREST.class);
     }
 }
