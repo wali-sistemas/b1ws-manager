@@ -1,6 +1,7 @@
 package co.manager.persistence.facade;
 
 import co.manager.dto.CupoDTO;
+import co.manager.dto.GeolocationDTO;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
@@ -134,5 +135,28 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes.", e);
         }
         return null;
+    }
+
+    public boolean updateGeolocation(GeolocationDTO dto, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(dto.getCompanyName(), pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OCRD set U_LATITUD = '");
+        sb.append(dto.getLatitud());
+        sb.append("', U_LONGITUD = '");
+        sb.append(dto.getLongitud());
+        sb.append("' where CardCode = '");
+        sb.append(dto.getCardCode());
+        sb.append("'");
+        try {
+            if (em.createNativeQuery(sb.toString()).executeUpdate() <= 0) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion del cliente [" + dto.getCardCode() + "] en [" + dto.getCompanyName() + "]", e);
+        }
+        return false;
     }
 }

@@ -18,8 +18,10 @@ public class SalesOrderDTO {
     private String idTransport;
     private String status;
     private String confirmed;
+    private String startDatePack;
+    private String shipToCode;
+    private String payToCode;
     private Long slpCode;
-
     private List<DetailSalesOrderDTO> detailSalesOrder;
 
     public SalesOrderDTO() {
@@ -98,6 +100,30 @@ public class SalesOrderDTO {
         this.confirmed = confirmed;
     }
 
+    public String getStartDatePack() {
+        return startDatePack;
+    }
+
+    public void setStartDatePack(String startDatePack) {
+        this.startDatePack = startDatePack;
+    }
+
+    public String getShipToCode() {
+        return shipToCode;
+    }
+
+    public void setShipToCode(String shipToCode) {
+        this.shipToCode = shipToCode;
+    }
+
+    public String getPayToCode() {
+        return payToCode;
+    }
+
+    public void setPayToCode(String payToCode) {
+        this.payToCode = payToCode;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderDTO{" +
@@ -107,7 +133,10 @@ public class SalesOrderDTO {
                 ", numAtCard='" + numAtCard + '\'' +
                 ", idTransport='" + idTransport + '\'' +
                 ", status='" + status + '\'' +
-                ", confirmed=" + confirmed +
+                ", confirmed='" + confirmed + '\'' +
+                ", startDatePack='" + startDatePack + '\'' +
+                ", shipToCode='" + shipToCode + '\'' +
+                ", payToCode='" + payToCode + '\'' +
                 ", slpCode=" + slpCode +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';

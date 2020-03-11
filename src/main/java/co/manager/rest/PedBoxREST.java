@@ -436,9 +436,36 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo confirmed es obligatorio.")).build();
         }
+        //Validar si ya existe la orden en SAP por idPedBox.
+        Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
+        if (docNum != 0) {
+            return Response.ok(new ResponseDTO(0, docNum)).build();
+        }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
 
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
+    }
+
+    @POST
+    @Path("update-geolocation-customer")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response updateGeolocationCustomer(GeolocationDTO dto) {
+        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo cardcode es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo cardcode es obligatorio.")).build();
+        } else if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo companyName es obligatorio.")).build();
+        } else if (dto.getLatitud().equals(null) || dto.getLatitud().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo latitud es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo latitud es obligatorio.")).build();
+        } else if (dto.getLongitud().equals(null) || dto.getLongitud().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo longitud es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo longitud es obligatorio.")).build();
+        }
+        return Response.ok(businessPartnerSAPFacade.updateGeolocation(dto, false)).build();
     }
 }
