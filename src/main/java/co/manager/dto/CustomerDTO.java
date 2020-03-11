@@ -19,8 +19,8 @@ public class CustomerDTO {
     private Integer plazo;
     private String contact;
     private String seller;
-    private Integer length;
-    private Integer latitude;
+    private String length;
+    private String latitude;
     private Integer priceList;
     private String notes;
     private BigDecimal discountCommercial;
@@ -32,7 +32,7 @@ public class CustomerDTO {
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, Integer length, Integer latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, List<CustomerAddressesDTO> addresses) {
+    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, String length, String latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, List<CustomerAddressesDTO> addresses) {
         this.cardCode = cardCode;
         this.nit = nit;
         this.cardName = cardName;
@@ -152,19 +152,19 @@ public class CustomerDTO {
         this.seller = seller;
     }
 
-    public Integer getLength() {
+    public String getLength() {
         return length;
     }
 
-    public void setLength(Integer length) {
+    public void setLength(String length) {
         this.length = length;
     }
 
-    public Integer getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Integer latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
@@ -252,7 +252,7 @@ public class CustomerDTO {
     }
 
     public static class CustomerAddressesDTO {
-        private Integer lineNum;
+        private String lineNum;
         private String address;
         private String city;
         private String country;
@@ -260,18 +260,18 @@ public class CustomerDTO {
         public CustomerAddressesDTO() {
         }
 
-        public CustomerAddressesDTO(Integer lineNum, String address, String city, String country) {
+        public CustomerAddressesDTO(String lineNum, String address, String city, String country) {
             this.lineNum = lineNum;
             this.address = address;
             this.city = city;
             this.country = country;
         }
 
-        public Integer getLineNum() {
+        public String getLineNum() {
             return lineNum;
         }
 
-        public void setLineNum(Integer lineNum) {
+        public void setLineNum(String lineNum) {
             this.lineNum = lineNum;
         }
 
