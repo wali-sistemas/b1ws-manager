@@ -162,8 +162,8 @@ public class PedBoxREST {
                     dto.setPlazo((Integer) obj[9]);
                     dto.setContact((String) obj[10]);
                     dto.setSeller((String) obj[11]);
-                    dto.setLength((Integer) obj[12]);
-                    dto.setLatitude((Integer) obj[13]);
+                    dto.setLength((String) obj[12]);
+                    dto.setLatitude((String) obj[13]);
                     dto.setPriceList((Integer) obj[14]);
                     dto.setNotes((String) obj[15]);
                     dto.setDiscountCommercial((BigDecimal) obj[16]);
@@ -172,7 +172,7 @@ public class PedBoxREST {
                     dto.setCupo((BigDecimal) obj[19]);
                     //TODO: Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
-                    dto2.setLineNum((Integer) obj[20]);
+                    dto2.setLineNum((String) obj[20]);
                     dto2.setAddress((String) obj[21]);
                     dto2.setCity((String) obj[22]);
                     dto2.setCountry((String) obj[23]);
