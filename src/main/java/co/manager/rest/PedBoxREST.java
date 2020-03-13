@@ -443,6 +443,7 @@ public class PedBoxREST {
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        CONSOLE.log(Level.INFO, dto.toString());
 
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
     }
