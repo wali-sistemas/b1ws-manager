@@ -80,7 +80,15 @@ public class ItemSAPFacade {
         sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode ");
         sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");
         sb.append("inner join OITW inv on inv.ItemCode = it.ItemCode ");
-        sb.append("where it.validFor = 'Y' and it.ItemType = 'I' and it.U_Marca <> '' and inv.WhsCode in ('01','05','26') and pre.PriceList =");
+        sb.append("where inv.OnHand > 0 and it.validFor = 'Y' and it.ItemType = 'I' and it.U_Marca <> '' and inv.WhsCode in (");
+        if (companyName.equals("IGB")) {
+            //TODO: Filtro bodegas de solo ventas para IGB
+            sb.append("'01', '05', '26'");
+        } else {
+            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            sb.append("'01', '09', '26', '44'");
+        }
+        sb.append(") and pre.PriceList =");
         if (companyName.equals("IGB")) {
             sb.append(4);
         } else {
@@ -137,7 +145,6 @@ public class ItemSAPFacade {
         sb.append("from OITM oi ");
         sb.append("inner join OITW it on it.ItemCode = oi.ItemCode ");
         sb.append("where it.WhsCode in (");
-
         if (companyName.equals("IGB")) {
             //TODO: Filtro bodegas de solo ventas para IGB
             sb.append("'01', '05', '26'");
@@ -145,21 +152,17 @@ public class ItemSAPFacade {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01', '09', '26', '44'");
         }
-
         sb.append(") and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
-
         if (!itemCode.equals("0")) {
             sb.append(" and oi.ItemCode = '");
             sb.append(itemCode);
             sb.append("'");
         }
-
         if (!whsCode.equals("0")) {
             sb.append(" and it.WhsCode = '");
             sb.append(whsCode);
             sb.append("'");
         }
-
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
