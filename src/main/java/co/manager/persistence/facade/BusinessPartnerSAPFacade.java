@@ -110,7 +110,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("      cast(f.DocDate as date)as fechaEmision, cast(f.DocDueDate as date)as fechaVencimiento, cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo, ");
         sb.append("      cast(f.DocTotal as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos, ");
         sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
-        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, (select max(cast(DocDate as date)) from OINV v where v.CardCode = f.CardCode)as fechaUltComp ");
+        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, (select max(cast(DocDate as date)) from OINV v where v.CardCode = f.CardCode)as fechaUltComp, cast(f.U_addInFE_LinkFE as varchar(max))as urlFacture ");
         sb.append("from  OINV f ");
         sb.append("inner join OCRD s ON f.CardCode = s.CardCode ");
         sb.append("inner join OSLP a ON a.SlpCode = f.SlpCode ");
@@ -122,7 +122,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("      cast(n.DocDate as date)as fechaEmision, cast(n.DocDueDate as date)as fechaVencimiento, cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo, ");
         sb.append("      cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos, ");
         sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((cast(s.CreditLine as int)*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
-        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, null as fechaUltComp ");
+        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, null as fechaUltComp, cast(n.U_addInFE_LinkFE as varchar(max))as urlFacture ");
         sb.append("from  ORIN n ");
         sb.append("inner join OCRD s ON n.CardCode = s.CardCode ");
         sb.append("inner join OSLP a ON a.SlpCode = n.SlpCode ");

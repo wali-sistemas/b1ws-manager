@@ -15,6 +15,8 @@ public class Constants {
     public static final String MAXIMO_OPEN_SESSIONS = "manager.b1ws.maxSession";
     public static final String B1WS_STATE_SERVICE = "StatesService";
     public static final String B1WS_ORDER_SERVICE = "OrdersService";
+    public static final String B1WS_BUSINESS_SERVICE = "BusinessPartnersService";
+    public static final String B1WS_QUOTATIONS_SERVICE = "QuotationsService";
     public static final String EMAIL_HOST = "mail.host";
     public static final String EMAIL_PORT = "mail.port";
     public static final String EMAIL_USERNAME = "mail.username";
@@ -22,6 +24,7 @@ public class Constants {
     public static final String EMAIL_TEMPLATES = "mail.templates";
     public static final String DATABASE_TYPE_MYSQL = "mysql";
     public static final String DATABASE_TYPE_MSSQL = "mssql";
+    public static final String URL_PICTURE = "url.picture";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }

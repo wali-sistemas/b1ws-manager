@@ -1,16 +1,18 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
+import co.manager.ejb.BusinessPartnerEJB;
+import co.manager.ejb.ManagerApplicationBean;
+import co.manager.ejb.QuotationsEJB;
 import co.manager.ejb.SalesOrderEJB;
-import co.manager.persistence.facade.BusinessPartnerSAPFacade;
-import co.manager.persistence.facade.ItemSAPFacade;
-import co.manager.persistence.facade.SalesOrderSAPFacade;
-import co.manager.persistence.facade.WarehouseSAPFacade;
+import co.manager.persistence.facade.*;
+import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,6 +30,8 @@ import java.util.logging.Logger;
 public class PedBoxREST {
     private static final Logger CONSOLE = Logger.getLogger(PedBoxREST.class.getSimpleName());
 
+    @Inject
+    private ManagerApplicationBean managerApplicationBean;
     @EJB
     private WarehouseSAPFacade warehouseSAPFacade;
     @EJB
@@ -38,6 +42,10 @@ public class PedBoxREST {
     private SalesOrderSAPFacade salesOrderSAPFacade;
     @EJB
     private SalesOrderEJB salesOrderEJB;
+    @EJB
+    private BusinessPartnerEJB businessPartnerEJB;
+    @EJB
+    private QuotationsEJB quotationsEJB;
 
     @GET
     @Path("warehouses/{companyname}")
@@ -88,6 +96,7 @@ public class PedBoxREST {
             dto.setIva((Integer) obj[4]);
             dto.setDiscount(0);
             dto.setWhsCode((String) obj[5]);
+            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_PICTURE) + "images/mtz/" + obj[7]);
             stock.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
@@ -195,7 +204,10 @@ public class PedBoxREST {
                                     @QueryParam("whscode") String whsCode) {
         CONSOLE.log(Level.INFO, "Listando stock actual para el item [{0}] en la empresa [{1}]", new Object[]{itemCode, companyname});
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
-        List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), whsCode.trim(), companyname, false);
+        //TODO: seteando sucursal pedBox lo maneja como integer.
+        String sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
+
+        List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
@@ -398,6 +410,7 @@ public class PedBoxREST {
                     dto2.setDocTotal((BigDecimal) obj[8]);
                     dto2.setDocDateCutoff(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                     dto2.setExpiredDays((Integer) obj[9]);
+                    dto2.setUrlFE((String) obj[15]);
                     customerDetailPortfolio.add(dto2);
                 }
             }
@@ -468,5 +481,24 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo longitud es obligatorio.")).build();
         }
         return Response.ok(businessPartnerSAPFacade.updateGeolocation(dto, false)).build();
+    }
+
+    @POST
+    @Path("create-customer")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createCustomer(BusinessPartnerDTO dto) {
+        dto.setLicTradNum(dto.getCardCode().replace("C", ""));
+        return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
+    }
+
+    @POST
+    @Path("create-quotation")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createQuotation(QuotationDTO dto) {
+        return Response.ok(quotationsEJB.createSalesOrder(dto)).build();
     }
 }

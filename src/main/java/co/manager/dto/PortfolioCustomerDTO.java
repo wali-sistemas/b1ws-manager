@@ -132,6 +132,7 @@ public class PortfolioCustomerDTO {
         private BigDecimal docTotal;
         private Integer docNum;
         private Integer expiredDays;
+        private String urlFE;
 
         public DetailPortfolioCustomerDTO() {
         }
@@ -200,6 +201,14 @@ public class PortfolioCustomerDTO {
             this.expiredDays = expiredDays;
         }
 
+        public String getUrlFE() {
+            return urlFE;
+        }
+
+        public void setUrlFE(String urlFE) {
+            this.urlFE = urlFE;
+        }
+
         @Override
         public String toString() {
             return "DetailPortfolioCustomerDTO{" +
@@ -211,6 +220,7 @@ public class PortfolioCustomerDTO {
                     ", docTotal=" + docTotal +
                     ", docNum=" + docNum +
                     ", expiredDays=" + expiredDays +
+                    ", urlFE='" + urlFE + '\'' +
                     '}';
         }
     }
