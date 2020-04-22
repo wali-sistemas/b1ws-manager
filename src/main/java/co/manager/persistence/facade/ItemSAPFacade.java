@@ -75,7 +75,7 @@ public class ItemSAPFacade {
         sb.append("       then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
         sb.append("       from OBIN ub ");
         sb.append("       inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
-        sb.append("       else (it.onHAND - it.iscommited) end as int) as Stock ");
+        sb.append("       else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName ");
         sb.append("from  OITM it ");
         sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode ");
         sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");

@@ -10,6 +10,7 @@ public class ItemDTO {
     private String itemName;
     private String unit;
     private String whsCode;
+    private String pictureUrl;
     private Integer presentation;
     private Integer iva;
     private Integer discount;
@@ -18,7 +19,7 @@ public class ItemDTO {
     public ItemDTO() {
     }
 
-    public ItemDTO(String itemCode, String itemName, String unit, Integer presentation, BigDecimal price, Integer iva, Integer discount, String whsCode) {
+    public ItemDTO(String itemCode, String itemName, String unit, Integer presentation, BigDecimal price, Integer iva, Integer discount, String whsCode, String pictureUrl) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.unit = unit;
@@ -27,6 +28,7 @@ public class ItemDTO {
         this.iva = iva;
         this.discount = discount;
         this.whsCode = whsCode;
+        this.pictureUrl = pictureUrl;
     }
 
     public String getItemCode() {
@@ -93,6 +95,14 @@ public class ItemDTO {
         this.price = price;
     }
 
+    public String getPictureUrl() {
+        return pictureUrl;
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
     @Override
     public String toString() {
         return "ItemDTO{" +
@@ -100,6 +110,7 @@ public class ItemDTO {
                 ", itemName='" + itemName + '\'' +
                 ", unit='" + unit + '\'' +
                 ", whsCode='" + whsCode + '\'' +
+                ", pictureUrl='" + pictureUrl + '\'' +
                 ", presentation=" + presentation +
                 ", iva=" + iva +
                 ", discount=" + discount +
