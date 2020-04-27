@@ -24,7 +24,7 @@ public class Constants {
     public static final String EMAIL_TEMPLATES = "mail.templates";
     public static final String DATABASE_TYPE_MYSQL = "mysql";
     public static final String DATABASE_TYPE_MSSQL = "mssql";
-    public static final String URL_PICTURE = "url.picture";
+    public static final String URL_SHARED = "url.shared";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }

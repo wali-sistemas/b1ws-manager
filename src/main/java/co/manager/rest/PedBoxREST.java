@@ -96,7 +96,55 @@ public class PedBoxREST {
             dto.setIva((Integer) obj[4]);
             dto.setDiscount(0);
             dto.setWhsCode((String) obj[5]);
-            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_PICTURE) + "images/mtz/" + obj[7]);
+            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
+            stock.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
+        return Response.ok(new ResponseDTO(0, stock)).build();
+    }
+
+    @GET
+    @Path("items/extranet/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getListItemsByFiltres(@PathParam("companyname") String companyname,
+                                          @QueryParam("nit") String nit) {
+        CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
+        List<Object[]> objects = itemSAPFacade.getListItemsExtranet(companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando items actual para {0}", companyname);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando items actual para " + companyname)).build();
+        }
+
+        List<ItemExtranetDTO> stock = new ArrayList<>();
+        for (Object[] obj : objects) {
+            ItemExtranetDTO dto = new ItemExtranetDTO();
+            dto.setItemCode((String) obj[0]);
+            dto.setItemName((String) obj[1]);
+            dto.setUnit("UND");//TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
+            dto.setPresentation((Integer) obj[2]);
+            dto.setPrice((BigDecimal) obj[3]);
+            dto.setIva((Integer) obj[4]);
+            dto.setDiscount(0);
+            dto.setWhsCode((String) obj[5]);
+            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
+            //TODO: filtros para extranet
+            dto.setMarca((String) obj[8]);
+            dto.setGrupo((String) obj[9]);
+            dto.setSubgrupo((String) obj[10]);
+            dto.setModeloMoto((String) obj[11]);
+            dto.setTipoLlanta((String) obj[12]);
+            dto.setAnchoLlanta((String) obj[13]);
+            dto.setPerfilLlanta((String) obj[14]);
+            dto.setRinLlanta((String) obj[15]);
+            dto.setTalla((String) obj[16]);
+
+            if (companyname.equals("VARROC")) {
+                dto.setSubLinea((String) obj[17]);
+                dto.setUrlFichaTecnica(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + companyname + "/fileItem/" + obj[0] + ".pdf");
+            }
+
             stock.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
