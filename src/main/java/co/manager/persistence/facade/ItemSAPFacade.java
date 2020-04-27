@@ -10,6 +10,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,15 +68,15 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from ( ");
         sb.append("select distinct cast(it.ItemCode as varchar(20)) as Producto, ");
-        sb.append("       cast(it.ItemName as varchar(50)) as Descripcion, ");
-        sb.append("       cast(it.PurPackUn as int) as Presentacion, cast(pre.Price as decimal(18,0)) as Precio, ");
-        sb.append("       cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
-        sb.append("       cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");
-        sb.append("       where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
-        sb.append("       then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
-        sb.append("       from OBIN ub ");
-        sb.append("       inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
-        sb.append("       else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName ");
+        sb.append("      cast(it.ItemName as varchar(50)) as Descripcion, ");
+        sb.append("      cast(it.PurPackUn as int) as Presentacion, cast(pre.Price as decimal(18,0)) as Precio, ");
+        sb.append("      cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
+        sb.append("      cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");
+        sb.append("      where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
+        sb.append("      then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
+        sb.append("      from OBIN ub ");
+        sb.append("      inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
+        sb.append("      else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName ");
         sb.append("from  OITM it ");
         sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode ");
         sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");
@@ -103,6 +104,68 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para [{0}]", companyName);
         }
         return null;
+    }
+
+    public List<Object[]> getListItemsExtranet(String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * from ( ");
+        sb.append("select distinct cast(it.ItemCode as varchar(20)) as Producto, ");
+        sb.append("      cast(it.ItemName as varchar(50)) as Descripcion, ");
+        sb.append("      cast(it.PurPackUn as int) as Presentacion, cast(pre.Price as decimal(18,0)) as Precio, ");
+        sb.append("      cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
+        sb.append("      cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");
+        sb.append("      where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
+        sb.append("      then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
+        sb.append("      from OBIN ub ");
+        sb.append("      inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
+        sb.append("      else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName, ");
+        sb.append("      cast(mar.Name as varchar(20))as Marca, cast(gru.Name as varchar(20))as Grupo, cast(sub.Name as varchar(20))as Subgrupo, ");
+        sb.append("      cast(mo.Name as varchar(20))as ModeloMoto, cast(tll.Name as varchar(20))as TipoLlanta, cast(anc.Name as varchar(20))as AnchoLlanta, ");
+        sb.append("      cast(pe.Name as varchar(20))as PerfilLlanta, cast(rin.Name as varchar(20))as RinLlanta, cast(ta.Name as varchar(20))as Talla ");
+        if (companyName.equals("VARROC")) {
+            sb.append(" ,cast(l.Name as varchar(20))as Sublinea ");
+        }
+        sb.append("from  OITM it ");
+        sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode ");
+        sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");
+        sb.append("inner join OITW inv on inv.ItemCode = it.ItemCode ");
+        sb.append("left  join [@MARCAS] mar on mar.Code = it.U_Marca ");
+        sb.append("left  join [@GRUPOS] gru on gru.Code = it.U_Grupo ");
+        sb.append("left  join [@SUBGRUPOS] sub on sub.Code = it.U_Subgrupo ");
+        sb.append("left  join [@MODELOS] mo on mo.Code = it.U_Modelo ");
+        sb.append("left  join [@TIPO_LLANTA] tll on tll.code = it.u_tipo_llanta ");
+        sb.append("left  join [@ANCHO_LLANTA] anc on anc.Code = it.U_ANCHO_LLANTA ");
+        sb.append("left  join [@PERFIL_LLANTA] pe on pe.Code = it.U_PERFIL_LLANTA ");
+        sb.append("left  join [@RIN_LLANTA] rin on rin.Code = it.U_RIN_LLANTA ");
+        sb.append("left  join [@TALLA] ta on ta.Code = it.U_TALLA ");
+        if (companyName.equals("VARROC")) {
+            sb.append("left join [@LINEA] l on l.code = it.u_linea ");
+        }
+        sb.append("where inv.OnHand > 0 and it.validFor = 'Y' and it.ItemType = 'I' and it.U_Marca <> '' and inv.WhsCode in (");
+        if (companyName.equals("IGB")) {
+            //TODO: Filtro bodegas de solo ventas para IGB
+            sb.append("'01', '05', '26'");
+        } else {
+            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            sb.append("'01', '09', '26', '44'");
+        }
+        sb.append(") and pre.PriceList =");
+        if (companyName.equals("IGB")) {
+            sb.append(4);
+        } else {
+            sb.append(1);
+        }
+        sb.append(") as t where t.Stock > 0 ");
+        sb.append("order by Producto ASC");
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para [{0}]", companyName);
+        }
+        return new ArrayList<>();
     }
 
     public List<Object[]> getPriceList(String companyName, boolean pruebas) {
