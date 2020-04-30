@@ -107,8 +107,7 @@ public class PedBoxREST {
     @Path("items/extranet/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getListItemsByFiltres(@PathParam("companyname") String companyname,
-                                          @QueryParam("nit") String nit) {
+    public Response getListItemsByFiltres(@PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
         List<Object[]> objects = itemSAPFacade.getListItemsExtranet(companyname, false);
 
@@ -126,8 +125,10 @@ public class PedBoxREST {
             dto.setPresentation((Integer) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
-            dto.setDiscount(0);
             dto.setWhsCode((String) obj[5]);
+            dto.setStock((Integer) obj[6]);
+            dto.setDiscountItem(0);
+            dto.setDiscountPorc(0);
             dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
             //TODO: filtros para extranet
             dto.setMarca((String) obj[8]);
