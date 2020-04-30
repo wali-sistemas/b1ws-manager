@@ -16,8 +16,10 @@ public class ItemExtranetDTO {
     private String pictureUrl;
     private Integer presentation;
     private Integer iva;
-    private Integer discount;
+    private Integer discountItem;
+    private Integer discountPorc;
     private BigDecimal price;
+    private Integer stock;
     //TODO: campos para filtros en extranet
     private String marca;
     private String grupo;
@@ -34,7 +36,7 @@ public class ItemExtranetDTO {
     public ItemExtranetDTO() {
     }
 
-    public ItemExtranetDTO(String itemCode, String itemName, String unit, String whsCode, String pictureUrl, Integer presentation, Integer iva, Integer discount, BigDecimal price, String marca, String grupo, String subgrupo, String subLinea, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String urlFichaTecnica) {
+    public ItemExtranetDTO(String itemCode, String itemName, String unit, String whsCode, String pictureUrl, Integer presentation, Integer iva, Integer discountItem, Integer discountPorc, BigDecimal price, Integer stock, String marca, String grupo, String subgrupo, String subLinea, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String urlFichaTecnica) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.unit = unit;
@@ -42,8 +44,10 @@ public class ItemExtranetDTO {
         this.pictureUrl = pictureUrl;
         this.presentation = presentation;
         this.iva = iva;
-        this.discount = discount;
+        this.discountItem = discountItem;
+        this.discountPorc = discountPorc;
         this.price = price;
+        this.stock = stock;
         this.marca = marca;
         this.grupo = grupo;
         this.subgrupo = subgrupo;
@@ -105,12 +109,28 @@ public class ItemExtranetDTO {
         this.iva = iva;
     }
 
-    public Integer getDiscount() {
-        return discount;
+    public Integer getDiscountItem() {
+        return discountItem;
     }
 
-    public void setDiscount(Integer discount) {
-        this.discount = discount;
+    public void setDiscountItem(Integer discountItem) {
+        this.discountItem = discountItem;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public Integer getDiscountPorc() {
+        return discountPorc;
+    }
+
+    public void setDiscountPorc(Integer discountPorc) {
+        this.discountPorc = discountPorc;
     }
 
     public BigDecimal getPrice() {
@@ -227,8 +247,10 @@ public class ItemExtranetDTO {
                 ", pictureUrl='" + pictureUrl + '\'' +
                 ", presentation=" + presentation +
                 ", iva=" + iva +
-                ", discount=" + discount +
+                ", discountItem=" + discountItem +
+                ", discountPorc=" + discountPorc +
                 ", price=" + price +
+                ", stock=" + stock +
                 ", marca='" + marca + '\'' +
                 ", grupo='" + grupo + '\'' +
                 ", subgrupo='" + subgrupo + '\'' +
