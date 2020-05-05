@@ -11,6 +11,7 @@ public class DetailSalesOrderDTO {
     private Integer quantity;
     private String itemCode;
     private String whsCode;
+    private String ocrCode;
 
     public DetailSalesOrderDTO() {
     }
@@ -39,12 +40,21 @@ public class DetailSalesOrderDTO {
         this.whsCode = whsCode;
     }
 
+    public String getOcrCode() {
+        return ocrCode;
+    }
+
+    public void setOcrCode(String ocrCode) {
+        this.ocrCode = ocrCode;
+    }
+
     @Override
     public String toString() {
         return "DetailSalesOrderDTO{" +
                 "quantity=" + quantity +
                 ", itemCode='" + itemCode + '\'' +
                 ", whsCode='" + whsCode + '\'' +
+                ", ocrCode='" + ocrCode + '\'' +
                 '}';
     }
 }

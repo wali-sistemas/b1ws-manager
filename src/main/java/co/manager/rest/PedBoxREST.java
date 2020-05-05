@@ -46,6 +46,8 @@ public class PedBoxREST {
     private BusinessPartnerEJB businessPartnerEJB;
     @EJB
     private QuotationsEJB quotationsEJB;
+    @EJB
+    private SalesPersonSAPFacade salesPersonSAPFacade;
 
     @GET
     @Path("warehouses/{companyname}")
@@ -501,10 +503,13 @@ public class PedBoxREST {
         //Validar si ya existe la orden en SAP por idPedBox.
         Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
         if (docNum != 0) {
+            CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
             return Response.ok(new ResponseDTO(0, docNum)).build();
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        //Consultando el centro de costo
+        dto.getDetailSalesOrder().get(0).setOcrCode(salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false));
         CONSOLE.log(Level.INFO, dto.toString());
 
         return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();

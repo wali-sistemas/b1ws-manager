@@ -33,7 +33,7 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select Distinct cast(ItemCode as varchar(10)) as item from OITM ");
+        sb.append("select Distinct cast(ItemCode as varchar(20)) as item from OITM ");
         sb.append("where (PicturName is null or ItemCode <> replace(PicturName, '.jpg', '')) ");
         sb.append("and validFor = 'Y' and InvntItem = 'Y'");
         try {
@@ -68,7 +68,7 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from ( ");
         sb.append("select distinct cast(it.ItemCode as varchar(20)) as Producto, ");
-        sb.append("      cast(it.ItemName as varchar(50)) as Descripcion, ");
+        sb.append("      cast(it.ItemName as varchar(100)) as Descripcion, ");
         sb.append("      cast(it.PurPackUn as int) as Presentacion, cast(pre.Price as decimal(18,0)) as Precio, ");
         sb.append("      cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
         sb.append("      cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");
@@ -112,7 +112,7 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from ( ");
         sb.append("select distinct cast(it.ItemCode as varchar(20)) as Producto, ");
-        sb.append("      cast(it.ItemName as varchar(50)) as Descripcion, ");
+        sb.append("      cast(it.ItemName as varchar(100)) as Descripcion, ");
         sb.append("      cast(it.PurPackUn as int) as Presentacion, cast(pre.Price as decimal(18,0)) as Precio, ");
         sb.append("      cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
         sb.append("      cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");

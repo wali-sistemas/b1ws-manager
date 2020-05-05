@@ -22,6 +22,7 @@ public class SalesOrderDTO {
     private String shipToCode;
     private String payToCode;
     private Long slpCode;
+    private Double discountPercent;
     private List<DetailSalesOrderDTO> detailSalesOrder;
 
     public SalesOrderDTO() {
@@ -124,6 +125,14 @@ public class SalesOrderDTO {
         this.payToCode = payToCode;
     }
 
+    public Double getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(Double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderDTO{" +
@@ -138,6 +147,7 @@ public class SalesOrderDTO {
                 ", shipToCode='" + shipToCode + '\'' +
                 ", payToCode='" + payToCode + '\'' +
                 ", slpCode=" + slpCode +
+                ", discountPercent=" + discountPercent +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';
     }
