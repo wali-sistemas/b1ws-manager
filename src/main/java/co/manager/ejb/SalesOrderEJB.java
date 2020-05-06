@@ -93,6 +93,7 @@ public class SalesOrderEJB {
                 order.setUSEPARADOR(dto.getStatus());
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
+                order.setDiscountPercent(dto.getDiscountPercent());
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
@@ -109,6 +110,7 @@ public class SalesOrderEJB {
                     orderLine.setItemCode(line.getItemCode());
                     orderLine.setQuantity(line.getQuantity().doubleValue());
                     orderLine.setWarehouseCode(line.getWhsCode());
+                    orderLine.setCostingCode(lines.get(0).getOcrCode());
 
                     detail.getDocumentLine().add(orderLine);
                 }
