@@ -39,7 +39,15 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(oc.PymntGroup as varchar(20)) as FormaPago, cast(((oc.ExtraMonth * 30) + ExtraDays) as int) as Plazo, ");
         sb.append("       cast(sn.CntctPrsn as varchar(100)) as Contacto, cast(sn.SlpCode as varchar(15)) as Vendedor, ");
         sb.append("       cast(isnull(sn.U_LONGITUD, 0) as varchar(20)) as Longitud, cast(isnull(sn.U_LATITUD, 0) as varchar(20)) as Latitud, ");
-        sb.append("       cast(sn.ListNum as int) as listaPrecio, '' as Notas, cast(isnull(sn.Discount,0) as numeric(18,2)) as DescuentComercial, ");
+        sb.append("       cast(sn.ListNum as int) as listaPrecio, '' as Notas, ");
+
+        if (companyName.equals("IGB")) {
+            sb.append("cast(isnull(sn.Discount,0) as numeric(18,2)) as DescuentComercial, ");
+        } else {
+            //TODO: se envia 0 para motozone, hasta que se definan los descuentos logisticos.
+            sb.append("cast(0 as numeric(18,2)) as DescuentComercial, ");
+        }
+
         sb.append("       'N' as Condicion, case when cr.TaxCode = 'IVAG19' then 'N' else 'S' end as Excento, ");
         sb.append("       cast(((sn.CreditLine * 1.2) - sn.Balance - sn.OrdersBal) as numeric(18,0)) as Cupo, ");
         sb.append("       cast(cr.Address as varchar(50)) as IdAddress, ");
