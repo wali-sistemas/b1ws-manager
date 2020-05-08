@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -167,5 +168,20 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion del cliente [" + dto.getCardCode() + "] en [" + dto.getCompanyName() + "]", e);
         }
         return false;
+    }
+
+    public List<Object[]> findIdAddress(String cardCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(s.ShipToDef as varchar(100))as ShipToDef, cast(s.BillToDef as varchar(100))as BillToDef ");
+        sb.append("from OCRD s where s.CardCode ='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el id de direcciones para el cliente " + cardCode + " en " + companyName, e);
+        }
+        return new ArrayList<>();
     }
 }
