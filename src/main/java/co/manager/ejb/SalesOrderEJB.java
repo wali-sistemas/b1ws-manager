@@ -93,7 +93,13 @@ public class SalesOrderEJB {
                 order.setUSEPARADOR(dto.getStatus());
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
-                order.setDiscountPercent(dto.getDiscountPercent());
+
+                //TODO: set descuento solo paar motozone
+                if (!dto.getCompanyName().equals("IGB")) {
+                    order.setDiscountPercent(dto.getDiscountPercent());
+                } else {
+                    order.setDiscountPercent(0.0);
+                }
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();

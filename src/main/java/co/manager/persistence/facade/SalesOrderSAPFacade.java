@@ -5,6 +5,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,5 +112,41 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el nro de documento de la orden por el idPedBox [" + numAtCard + "] en [" + companyName + ']', e);
         }
         return 0;
+    }
+
+    public List<Object[]> listOrdersHistoryByCustomer(String cardCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.DocNum as int)as DocNum, cast(o.DocDate as date)as DocDate, cast(o.DocTotal as numeric(18,2))as DocTotal ");
+        sb.append("from  ORDR o ");
+        sb.append("where cast(o.DocDate as date) between cast(DATEADD(MM,-6,GETDATE())as date) and cast(GETDATE() as date) and o.CardCode = '");
+        sb.append(cardCode);
+        sb.append("' order by o.DocDate asc");
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> listDetailOrder(Integer docNum, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(d.LineNum as int)as LineNum, cast(d.ItemCode as varchar(20))as ItemCode, cast(d.Dscription as varchar(100))as ItemName, ");
+        sb.append("      cast(d.Quantity as int)as Qty, cast(d.PackQty as int)as QtyPack, cast(d.Price as numeric(18,2))as PriceUnit, ");
+        sb.append("      cast(i.Rate as int)as Iva, cast(d.DiscPrcnt as numeric(18,2))as DiscPrcnt ");
+        sb.append("from  RDR1 d ");
+        sb.append("inner join OSTC i on i.Code = d.TaxCode ");
+        sb.append("where d.DocEntry = (select o.DocEntry from ORDR o where o.DocNum =");
+        sb.append(docNum);
+        sb.append(") order by d.LineNum asc");
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el detalle de la orden " + docNum.toString() + " en " + companyName, e);
+        }
+        return new ArrayList<>();
     }
 }
