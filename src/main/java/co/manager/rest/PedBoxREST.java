@@ -495,7 +495,7 @@ public class PedBoxREST {
         List<InvoicesHistoryDTO> invoicesHistory = new ArrayList<>();
         for (Object[] obj : objects) {
             InvoicesHistoryDTO dto = new InvoicesHistoryDTO();
-            dto.setDocType("Pagos Recibidos");
+            dto.setDocType("Factura Venta");
             dto.setDocNum((Integer) obj[0]);
             dto.setDocDate((Date) obj[1]);
             dto.setSubTotal((BigDecimal) obj[2]);
