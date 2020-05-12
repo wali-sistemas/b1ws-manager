@@ -48,6 +48,12 @@ public class PedBoxREST {
     private QuotationsEJB quotationsEJB;
     @EJB
     private SalesPersonSAPFacade salesPersonSAPFacade;
+    @EJB
+    private InvoiceSAPFacade invoiceSAPFacade;
+    @EJB
+    private IncomingPaymentsSAPFacade incomingPaymentsSAPFacade;
+    @EJB
+    private CreditNotesSAPFacade creditNotesSAPFacade;
 
     @GET
     @Path("warehouses/{companyname}")
@@ -470,6 +476,156 @@ public class PedBoxREST {
         }
         CONSOLE.log(Level.INFO, "Retornando el listado de la cartera de clientes asignados al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
         return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
+    }
+
+    @GET
+    @Path("invoices-history/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
+                                                @QueryParam("cardCode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Listando historial de facturas para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        List<Object[]> objects = invoiceSAPFacade.listInvoicesHistoryByCustomer(cardCode, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de facturas para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el historial de facturas para el cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        List<InvoicesHistoryDTO> invoicesHistory = new ArrayList<>();
+        for (Object[] obj : objects) {
+            InvoicesHistoryDTO dto = new InvoicesHistoryDTO();
+            dto.setDocType("Pagos Recibidos");
+            dto.setDocNum((Integer) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setSubTotal((BigDecimal) obj[2]);
+            dto.setPorcDesc((Integer) obj[3]);
+            dto.setDiscount((BigDecimal) obj[4]);
+            dto.setIva((BigDecimal) obj[5]);
+            dto.setDocTotal((BigDecimal) obj[6]);
+            dto.setUrlFacture((String) obj[7]);
+
+            invoicesHistory.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando historial de facturas para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+        return Response.ok(new ResponseDTO(0, invoicesHistory)).build();
+    }
+
+    @GET
+    @Path("payments-history/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listInvoicesHitoryByCustomer(@PathParam("companyname") String companyname,
+                                                 @QueryParam("cardCode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de pagos para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el historial de pagos para el cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        List<PaymentsHistoryDTO> paymentsHistory = new ArrayList<>();
+        for (Object[] obj : objects) {
+            PaymentsHistoryDTO dto = new PaymentsHistoryDTO();
+            dto.setDocType("Recibos Pago");
+            dto.setDocNum((Integer) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setDocTotal((BigDecimal) obj[2]);
+
+            paymentsHistory.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando historial de pagos para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+        return Response.ok(new ResponseDTO(0, paymentsHistory)).build();
+    }
+
+    @GET
+    @Path("credit-notes-history/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listCreditNotesHitoryByCustomer(@PathParam("companyname") String companyname,
+                                                    @QueryParam("cardCode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Listando historial de notas credito para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        List<Object[]> objects = creditNotesSAPFacade.listCreditNotesHistoryByCustomer(cardCode, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de notas credito para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el historial de notas credito para el cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        List<CreditNotesHistoryDTO> creditNotesHistory = new ArrayList<>();
+        for (Object[] obj : objects) {
+            CreditNotesHistoryDTO dto = new CreditNotesHistoryDTO();
+            dto.setDocType("Notas Crédito");
+            dto.setDocNum((Integer) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setDocTotal((BigDecimal) obj[2]);
+            dto.setDescription((String) obj[3]);
+            dto.setUrlFacture((String) obj[4]);
+
+            creditNotesHistory.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando historial de notas credito para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+        return Response.ok(new ResponseDTO(0, creditNotesHistory)).build();
+    }
+
+    @GET
+    @Path("orders-history/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
+                                               @QueryParam("cardCode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Listando historial de ordenes para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryByCustomer(cardCode, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de ordenes para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el historial de ordenes para el cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        List<OrdersHistoryDTO> ordersHistory = new ArrayList<>();
+        for (Object[] obj : objects) {
+            OrdersHistoryDTO dto = new OrdersHistoryDTO();
+            dto.setDocNum((Integer) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setDocTotal((BigDecimal) obj[2]);
+
+            ordersHistory.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando historial de ordenes para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+        return Response.ok(new ResponseDTO(0, ordersHistory)).build();
+    }
+
+    @GET
+    @Path("orders-detail/extranet/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrderDetail(@PathParam("companyname") String companyname,
+                                    @QueryParam("docNum") Integer docNum) {
+        CONSOLE.log(Level.INFO, "Listando detalle de la orden [{0}] de la empresa [{1}]", new Object[]{docNum.toString(), companyname});
+        List<Object[]> objects = salesOrderSAPFacade.listDetailOrder(docNum, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el detalle de la orden {0} en {1}", new Object[]{docNum.toString(), companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el detalle de la orden " + docNum.toString() + " en " + companyname)).build();
+        }
+
+        List<DetailSalesOrderExtranetDTO> detailOrder = new ArrayList<>();
+        for (Object[] obj : objects) {
+            DetailSalesOrderExtranetDTO dto = new DetailSalesOrderExtranetDTO();
+            dto.setLineNum((Integer) obj[0]);
+            dto.setItemCode((String) obj[1]);
+            dto.setItemName((String) obj[2]);
+            dto.setQty((Integer) obj[3]);
+            dto.setQtyPack((Integer) obj[4]);
+            dto.setPriceUnit((BigDecimal) obj[5]);
+            dto.setIva((Integer) obj[6]);
+            dto.setDiscPrcnt((BigDecimal) obj[7]);
+
+            detailOrder.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el detalle de la orden {0} en {1}", new Object[]{docNum.toString(), companyname});
+        return Response.ok(new ResponseDTO(0, detailOrder)).build();
     }
 
     @POST
