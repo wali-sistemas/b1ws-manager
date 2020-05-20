@@ -115,29 +115,66 @@ public class BusinessPartnerSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(f.CardCode as varchar(20))as cardCode, cast(f.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Factura'as tipoDoc, cast(f.DocNum as int)as docNum, ");
-        sb.append("      cast(f.DocDate as date)as fechaEmision, cast(f.DocDueDate as date)as fechaVencimiento, cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo, ");
-        sb.append("      cast(f.DocTotal as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos, ");
-        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
-        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, (select max(cast(DocDate as date)) from OINV v where v.CardCode = f.CardCode)as fechaUltComp, cast(f.U_addInFE_LinkFE as varchar(max))as urlFacture ");
-        sb.append("from  OINV f ");
-        sb.append("inner join OCRD s ON f.CardCode = s.CardCode ");
-        sb.append("inner join OSLP a ON a.SlpCode = f.SlpCode ");
-        sb.append("inner join OCTG c ON c.GroupNum = s.GroupNum ");
-        sb.append("where (f.DocTotal-f.PaidToDate) > 1999 and f.DocStatus = 'O' and f.SlpCode =");
+        sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos, ");
+        sb.append("     cast(a.SlpName as varchar(50))as vendedor,cast(c.PymntGroup as varchar(20))as condicionPago,t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture ");
+        sb.append("from (select cast(f.CardCode as varchar(20))as cardCode, cast(f.CardName as varchar(20))as cardName,cast(s.LicTradNum as varchar(20))as nit, ");
+        sb.append("            'Factura'as tipoDoc,cast(f.DocNum as int)as docNum,cast(f.DocDate as date)as fechaEmision,cast(f.DocDueDate as date)as fechaVencimiento, ");
+        sb.append("            cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo,cast(f.DocTotal as numeric(18,0))as valorDocumento,cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos, ");
+        sb.append("            cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo,cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, ");
+        sb.append("            (select max(cast(DocDate as date)) from OINV v where v.CardCode = f.CardCode)as fechaUltComp,cast(f.U_addInFE_LinkFE as varchar(max))as urlFacture,f.SlpCode,s.GroupNum ");
+        sb.append("      from  OINV f ");
+        sb.append("      inner join OCRD s ON f.CardCode = s.CardCode ");
+        sb.append("      where (f.DocTotal-f.PaidToDate) > 1999 and f.DocStatus = 'O' union all ");
+        sb.append("      select cast(n.CardCode as varchar(20))as cardCode,cast(n.CardName as varchar(20))as cardName,cast(s.LicTradNum as varchar(20))as nit, ");
+        sb.append("            'Nota Crédito'as tipoDoc,cast(n.DocNum as int)as docNum,cast(n.DocDate as date)as fechaEmision,cast(n.DocDueDate as date)as fechaVencimiento, ");
+        sb.append("            cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo,cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento,cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos, ");
+        sb.append("            cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo,cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, ");
+        sb.append("            null as fechaUltComp,cast(n.U_addInFE_LinkFE as varchar(max))as urlFacture,n.SlpCode,s.GroupNum ");
+        sb.append("      from  ORIN n ");
+        sb.append("      inner join OCRD s ON n.CardCode = s.CardCode ");
+        sb.append("      where (n.DocTotal-n.PaidToDate)>1999 and n.DocStatus = 'O' ");
+        sb.append(")as t ");
+        sb.append("inner join OSLP a ON a.SlpCode = t.SlpCode ");
+        sb.append("inner join OCTG c ON c.GroupNum = t.GroupNum ");
+        sb.append("where t.SlpCode = ");
         sb.append(slpCode);
-        sb.append(" union all ");
-        sb.append("select cast(n.CardCode as varchar(20))as cardCode, cast(n.CardName as varchar(20))as cardName, cast(s.LicTradNum as varchar(20))as nit, 'Nota Crédito'as tipoDoc, cast(n.DocNum as int)as docNum, ");
-        sb.append("      cast(n.DocDate as date)as fechaEmision, cast(n.DocDueDate as date)as fechaVencimiento, cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo, ");
-        sb.append("      cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento, cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos, ");
-        sb.append("      cast(a.SlpName as varchar(50))as vendedor, cast(c.PymntGroup as varchar(20))as condicionPago, cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo, ");
-        sb.append("      cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, null as fechaUltComp, cast(n.U_addInFE_LinkFE as varchar(max))as urlFacture ");
-        sb.append("from  ORIN n ");
-        sb.append("inner join OCRD s ON n.CardCode = s.CardCode ");
-        sb.append("inner join OSLP a ON a.SlpCode = n.SlpCode ");
-        sb.append("inner join OCTG c ON c.GroupNum = s.GroupNum ");
-        sb.append("where (n.DocTotal-n.PaidToDate) > 1999 and n.DocStatus = 'O' and n.SlpCode =");
-        sb.append(slpCode);
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes.", e);
+        }
+        return null;
+    }
+
+    public List<Object[]> listCustomerPortfolioByCustomer(String cardCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos, ");
+        sb.append("     cast(a.SlpName as varchar(50))as vendedor,cast(c.PymntGroup as varchar(20))as condicionPago,t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture ");
+        sb.append("from (select cast(f.CardCode as varchar(20))as cardCode, cast(f.CardName as varchar(20))as cardName,cast(s.LicTradNum as varchar(20))as nit, ");
+        sb.append("            'Factura'as tipoDoc,cast(f.DocNum as int)as docNum,cast(f.DocDate as date)as fechaEmision,cast(f.DocDueDate as date)as fechaVencimiento, ");
+        sb.append("            cast((f.DocTotal-f.PaidToDate)as numeric(18,0))as valorSaldo,cast(f.DocTotal as numeric(18,0))as valorDocumento,cast(getdate() as int)-cast(f.DocDueDate as int)as diasVencidos, ");
+        sb.append("            cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo,cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, ");
+        sb.append("            (select max(cast(DocDate as date)) from OINV v where v.CardCode = f.CardCode)as fechaUltComp,cast(f.U_addInFE_LinkFE as varchar(max))as urlFacture,f.SlpCode,s.GroupNum ");
+        sb.append("      from  OINV f ");
+        sb.append("      inner join OCRD s ON f.CardCode = s.CardCode ");
+        sb.append("      where (f.DocTotal-f.PaidToDate) > 1999 and f.DocStatus = 'O' union all ");
+        sb.append("      select cast(n.CardCode as varchar(20))as cardCode,cast(n.CardName as varchar(20))as cardName,cast(s.LicTradNum as varchar(20))as nit, ");
+        sb.append("            'Nota Crédito'as tipoDoc,cast(n.DocNum as int)as docNum,cast(n.DocDate as date)as fechaEmision,cast(n.DocDueDate as date)as fechaVencimiento, ");
+        sb.append("            cast((n.DocTotal-n.PaidToDate)*-1 as numeric(18,0))as valorSaldo,cast(n.DocTotal*-1 as numeric(18,0))as valorDocumento,cast(getdate() as int)-cast(n.DocDueDate as int)as diasVencidos, ");
+        sb.append("            cast(((s.CreditLine*1.2)-s.Balance-s.OrdersBal)as numeric(18,0))as cupo,cast(s.U_PROM_DIAS_PAGO as int)as uPromDiasPago, ");
+        sb.append("            null as fechaUltComp,cast(n.U_addInFE_LinkFE as varchar(max))as urlFacture,n.SlpCode,s.GroupNum ");
+        sb.append("      from  ORIN n ");
+        sb.append("      inner join OCRD s ON n.CardCode = s.CardCode ");
+        sb.append("      where (n.DocTotal-n.PaidToDate)>1999 and n.DocStatus = 'O' ");
+        sb.append(")as t ");
+        sb.append("inner join OSLP a ON a.SlpCode = t.SlpCode ");
+        sb.append("inner join OCTG c ON c.GroupNum = t.GroupNum ");
+        sb.append("where t.cardCode = '");
+        sb.append(cardCode);
+        sb.append("'");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
