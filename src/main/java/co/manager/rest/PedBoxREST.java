@@ -161,6 +161,66 @@ public class PedBoxREST {
     }
 
     @GET
+    @Path("customers-portfolio/extranet/{companyname}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getAllCustomersPortfolioByCustomer(@PathParam("companyname") String companyname,
+                                                       @QueryParam("cardcode") String cardCode) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera de cliente {0} en la empresa [{1}]", new Object[]{cardCode, companyname});
+        List<PortfolioCustomerDTO> customerPortfolio = new ArrayList<>();
+        List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioByCustomer(cardCode, companyname, false);
+
+        if (objects == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la cartera del cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar la cartera del cliente " + cardCode + " en " + companyname)).build();
+        }
+        if (objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos asociados al cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos asociados al cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        HashMap<String, String> customers = new HashMap<>();
+        for (Object[] obj : objects) {
+            customers.put((String) obj[0], "id");
+        }
+
+        for (String client : customers.keySet()) {
+            List<PortfolioCustomerDTO.DetailPortfolioCustomerDTO> customerDetailPortfolio = new ArrayList<>();
+            PortfolioCustomerDTO dto = new PortfolioCustomerDTO();
+            dto.setCardCode(client);
+
+            for (Object[] obj : objects) {
+                if (dto.getCardCode().equals(obj[0])) {
+                    //TODO: Encabezado del CustomerDTO.
+                    dto.setCardName((String) obj[1]);
+                    dto.setLicTradNum((String) obj[2]);
+                    dto.setSlpName((String) obj[10]);
+                    dto.setPayCondition((String) obj[11]);
+                    dto.setCupo((BigDecimal) obj[12]);
+                    dto.setPayDayAvg((Integer) obj[13]);
+                    dto.setLastSaleDay((Date) obj[14]);
+                    //TODO: Detalle de direcciones al CustomerDTO
+                    PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
+                    dto2.setDocType((String) obj[3]);
+                    dto2.setDocNum((Integer) obj[4]);
+                    dto2.setDocDate((Date) obj[5]);
+                    dto2.setDocDueDate((Date) obj[6]);
+                    dto2.setBalance((BigDecimal) obj[7]);
+                    dto2.setDocTotal((BigDecimal) obj[8]);
+                    dto2.setDocDateCutoff(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                    dto2.setExpiredDays((Integer) obj[9]);
+                    dto2.setUrlFE((String) obj[15]);
+                    customerDetailPortfolio.add(dto2);
+                }
+            }
+            dto.setDetailPortfolio(customerDetailPortfolio);
+            customerPortfolio.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el listado de la cartera del cliente {0} en la empresa [{1}]", new Object[]{cardCode, companyname});
+        return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
+    }
+
+    @GET
     @Path("price-list/{companyname}")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -483,7 +543,7 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
-                                                @QueryParam("cardCode") String cardCode) {
+                                                @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de facturas para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         List<Object[]> objects = invoiceSAPFacade.listInvoicesHistoryByCustomer(cardCode, companyname, false);
 
@@ -516,7 +576,7 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listInvoicesHitoryByCustomer(@PathParam("companyname") String companyname,
-                                                 @QueryParam("cardCode") String cardCode) {
+                                                 @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname, false);
 
@@ -544,7 +604,7 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listCreditNotesHitoryByCustomer(@PathParam("companyname") String companyname,
-                                                    @QueryParam("cardCode") String cardCode) {
+                                                    @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de notas credito para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         List<Object[]> objects = creditNotesSAPFacade.listCreditNotesHistoryByCustomer(cardCode, companyname, false);
 
@@ -574,7 +634,7 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
-                                               @QueryParam("cardCode") String cardCode) {
+                                               @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de ordenes para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryByCustomer(cardCode, companyname, false);
 
