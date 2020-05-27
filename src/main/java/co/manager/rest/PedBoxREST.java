@@ -210,6 +210,9 @@ public class PedBoxREST {
                     dto2.setDocDateCutoff(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                     dto2.setExpiredDays((Integer) obj[9]);
                     dto2.setUrlFE((String) obj[15]);
+                    dto2.setIva((BigDecimal) obj[16]);
+                    dto2.setSubtotal((BigDecimal) obj[17]);
+                    dto2.setDiscount((BigDecimal) obj[18]);
                     customerDetailPortfolio.add(dto2);
                 }
             }
