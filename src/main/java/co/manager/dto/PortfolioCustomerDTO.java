@@ -123,6 +123,7 @@ public class PortfolioCustomerDTO {
                 '}';
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DetailPortfolioCustomerDTO {
         private String docType;
         private Date docDate;
@@ -133,6 +134,9 @@ public class PortfolioCustomerDTO {
         private Integer docNum;
         private Integer expiredDays;
         private String urlFE;
+        private BigDecimal iva;
+        private BigDecimal subtotal;
+        private BigDecimal discount;
 
         public DetailPortfolioCustomerDTO() {
         }
@@ -209,6 +213,30 @@ public class PortfolioCustomerDTO {
             this.urlFE = urlFE;
         }
 
+        public BigDecimal getIva() {
+            return iva;
+        }
+
+        public void setIva(BigDecimal iva) {
+            this.iva = iva;
+        }
+
+        public BigDecimal getSubtotal() {
+            return subtotal;
+        }
+
+        public void setSubtotal(BigDecimal subtotal) {
+            this.subtotal = subtotal;
+        }
+
+        public BigDecimal getDiscount() {
+            return discount;
+        }
+
+        public void setDiscount(BigDecimal discount) {
+            this.discount = discount;
+        }
+
         @Override
         public String toString() {
             return "DetailPortfolioCustomerDTO{" +
@@ -221,6 +249,9 @@ public class PortfolioCustomerDTO {
                     ", docNum=" + docNum +
                     ", expiredDays=" + expiredDays +
                     ", urlFE='" + urlFE + '\'' +
+                    ", iva=" + iva +
+                    ", subtotal=" + subtotal +
+                    ", discount=" + discount +
                     '}';
         }
     }
