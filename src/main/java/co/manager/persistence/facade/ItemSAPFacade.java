@@ -120,7 +120,7 @@ public class ItemSAPFacade {
         sb.append("      then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
         sb.append("      from OBIN ub ");
         sb.append("      inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
-        sb.append("      else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(as PicturName, ");
+        sb.append("      else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar)as PicturName, ");
         sb.append("      cast(mar.Name as varchar(20))as Marca, cast(gru.Name as varchar(20))as Grupo, cast(sub.Name as varchar(20))as Subgrupo, ");
         sb.append("      cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto, cast(tll.Name as varchar(20))as TipoLlanta, cast(anc.Name as varchar(20))as AnchoLlanta, ");
         sb.append("      cast(pe.Name as varchar(20))as PerfilLlanta, cast(rin.Name as varchar(20))as RinLlanta, cast(ta.Name as varchar(20))as Talla ");
@@ -134,14 +134,14 @@ public class ItemSAPFacade {
         } else {
             sb.append(1);
         }
-        sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");
-        sb.append("inner join OITW inv on inv.ItemCode = it.ItemCode and inv.OnHand > 0 and inv.WhsCode in (");
+        sb.append(" inner join OSTC imp on imp.Code = it.TaxCodeAR ");
+        sb.append(" inner join OITW inv on inv.ItemCode = it.ItemCode and inv.OnHand > 0 and inv.WhsCode in (");
         if (companyName.equals("IGB")) {
             //TODO: Filtro bodegas de solo ventas para IGB
-            sb.append("'01', '05', '26')");
+            sb.append("'01', '05', '26') ");
         } else {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '09', '26', '44')");
+            sb.append("'01', '09', '26', '44') ");
         }
         sb.append("left  join [@MARCAS] mar on mar.Code = it.U_Marca and it.U_Marca<>'' ");
         sb.append("left  join [@GRUPOS] gru on gru.Code = it.U_Grupo ");
