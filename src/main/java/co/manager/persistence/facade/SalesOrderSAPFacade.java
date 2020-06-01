@@ -119,9 +119,9 @@ public class SalesOrderSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.DocNum as int)as DocNum, cast(o.DocDate as date)as DocDate, cast(o.DocTotal as numeric(18,2))as DocTotal ");
         sb.append("from  ORDR o ");
-        sb.append("where cast(o.DocDate as date) between cast(DATEADD(MM,-6,GETDATE())as date) and cast(GETDATE() as date) and o.CardCode = '");
+        sb.append("where cast(o.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE() as date) and o.CardCode = '");
         sb.append(cardCode);
-        sb.append("' order by o.DocDate asc");
+        sb.append("' order by o.DocDate DESC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
