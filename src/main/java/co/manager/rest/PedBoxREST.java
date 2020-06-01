@@ -548,6 +548,7 @@ public class PedBoxREST {
     public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
                                                 @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de facturas para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        //TODO: historial de facturas de los últimos 3 meses.
         List<Object[]> objects = invoiceSAPFacade.listInvoicesHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -581,6 +582,7 @@ public class PedBoxREST {
     public Response listInvoicesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                  @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        //TODO: historial de pagos de los últimos 3 meses.
         List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -609,6 +611,7 @@ public class PedBoxREST {
     public Response listCreditNotesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                     @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de notas credito para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        //TODO: historial de notas crédito de los últimos 3 meses.
         List<Object[]> objects = creditNotesSAPFacade.listCreditNotesHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -639,6 +642,7 @@ public class PedBoxREST {
     public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
                                                @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de ordenes para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
+        //TODO: historial de ordenes de los últimos 3 meses.
         List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {

@@ -26,9 +26,9 @@ public class CreditNotesSAPFacade {
         sb.append("select cast(n.DocNum as int)as DocNum, cast(n.DocDate as date)as DocDate, cast(n.DocTotal as numeric(18,2))as DocTotal, ");
         sb.append("      cast(n.Comments as varchar(max))as Descripcion, cast(n.U_addInFE_LinkFE as varchar(max))as UrlFacture ");
         sb.append("from  ORIN n ");
-        sb.append("where n.DocType = 'I' and n.CardCode = '");
+        sb.append("where cast(n.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE() as date) and n.DocType = 'I' and n.CardCode = '");
         sb.append(cardCode);
-        sb.append("' order by n.DocDate asc");
+        sb.append("' order by n.DocDate DESC");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

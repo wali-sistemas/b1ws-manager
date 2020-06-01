@@ -29,9 +29,9 @@ public class InvoiceSAPFacade {
         sb.append("      cast(f.VatSum as numeric(18,2))as Iva, cast(f.DocTotal as numeric(18,2))as DocTotal, ");
         sb.append("      cast(f.U_addInFE_LinkFE as varchar(max))as UrlFacture ");
         sb.append("from  OINV f ");
-        sb.append("where f.DocType = 'I' and f.CardCode = '");
+        sb.append("where cast(f.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE() as date) and f.DocType = 'I' and f.CardCode = '");
         sb.append(cardCode);
-        sb.append("' order by f.DocDate asc");
+        sb.append("' order by f.DocDate DESC");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
