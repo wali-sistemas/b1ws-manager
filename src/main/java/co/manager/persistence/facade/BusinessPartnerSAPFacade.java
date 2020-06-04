@@ -136,8 +136,9 @@ public class BusinessPartnerSAPFacade {
         sb.append(")as t ");
         sb.append("inner join OSLP a ON a.SlpCode = t.SlpCode ");
         sb.append("inner join OCTG c ON c.GroupNum = t.GroupNum ");
-        sb.append("where t.SlpCode = ");
+        sb.append("where t.SlpCode IN (");
         sb.append(slpCode);
+        sb.append(")");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
