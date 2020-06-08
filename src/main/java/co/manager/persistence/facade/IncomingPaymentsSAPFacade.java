@@ -25,7 +25,7 @@ public class IncomingPaymentsSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(r.DocNum as int)as DocNum, cast(r.DocDate as date)as DocDate, cast(r.DocTotal as numeric(18,2))as DocTotal ");
         sb.append("from  ORCT r ");
-        sb.append("where cast(r.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE() as date) and cast(GETDATE() as date) and r.CardCode = '");
+        sb.append("where cast(r.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE() as date) and r.CardCode = '");
         sb.append(cardCode);
         sb.append("' order by r.DocDate DESC");
         try {
