@@ -17,6 +17,7 @@ public class Constants {
     public static final String B1WS_ORDER_SERVICE = "OrdersService";
     public static final String B1WS_BUSINESS_SERVICE = "BusinessPartnersService";
     public static final String B1WS_QUOTATIONS_SERVICE = "QuotationsService";
+    public static final String B1WS_INCOMING_PAYMENTS_SERVICE = "IncomingPayments";
     public static final String EMAIL_HOST = "mail.host";
     public static final String EMAIL_PORT = "mail.port";
     public static final String EMAIL_USERNAME = "mail.username";

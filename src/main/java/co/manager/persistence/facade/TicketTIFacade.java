@@ -27,13 +27,24 @@ public class TicketTIFacade {
     public TicketTIFacade() {
     }
 
-    public List<Object[]> getListTickets() {
+    public void create(TicketTI ticketTi, String companyName, boolean testing) {
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTi);
+    }
+
+    public List<Object[]> listTickets(String empId, boolean admUser) {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.idticket, p.type_ticket, t.date, t.department_name, t.emp_id_add, ");
-        sb.append("       t.emp_id_set, t.url_attached, t.priority, t.company_name ");
-        sb.append("from ticket_ti t ");
+        sb.append("select t.idticket, p.type_ticket, t.date, t.department_name, t.emp_id_add, t.emp_id_set, ");
+        sb.append("      t.url_attached, t.priority, t.company_name, t.asunt ");
+        sb.append("from  ticket_ti t ");
         sb.append("inner join ticket_ti_type p ON p.idticket_ti_type = t.idticket_ti_type ");
+
+        if (!admUser) {
+            sb.append("where t.emp_id_add = '");
+            sb.append(empId);
+            sb.append("'");
+        }
+
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
