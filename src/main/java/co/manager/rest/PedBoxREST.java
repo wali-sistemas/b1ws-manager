@@ -885,7 +885,10 @@ public class PedBoxREST {
             }
         }
 
-        return Response.ok(new ResponseDTO(entityEnc.getuIdPago(), "Registro de pago éxitoso.")).build();
-        //return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
+        //if (dto.getCompanyName().contains("VARROC")) {
+        //    return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
+        //} else {
+            return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
+        //}
     }
 }
