@@ -829,7 +829,7 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo companyName es obligatorio.")).build();
         } else if (dto.getIdPayment().equals(null) || dto.getIdPayment() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo IdPayment es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo IdPayment es obligatorio.")).build();
         } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
