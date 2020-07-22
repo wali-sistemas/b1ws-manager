@@ -9,24 +9,28 @@ import java.math.BigDecimal;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IncomingPaymentInvoiceDTO {
-    private long docEntry;
+    private Long docEntry;
     private Integer lineNum;
     private BigDecimal sumApplied;
+    private BigDecimal appliedSys;
+    private String invoiceType;
 
     public IncomingPaymentInvoiceDTO() {
     }
 
-    public IncomingPaymentInvoiceDTO(long docEntry, Integer lineNum, BigDecimal sumApplied) {
+    public IncomingPaymentInvoiceDTO(Long docEntry, Integer lineNum, BigDecimal sumApplied, BigDecimal appliedSys, String invoiceType) {
         this.docEntry = docEntry;
         this.lineNum = lineNum;
         this.sumApplied = sumApplied;
+        this.appliedSys = appliedSys;
+        this.invoiceType = invoiceType;
     }
 
-    public long getDocEntry() {
+    public Long getDocEntry() {
         return docEntry;
     }
 
-    public void setDocEntry(long docEntry) {
+    public void setDocEntry(Long docEntry) {
         this.docEntry = docEntry;
     }
 
@@ -46,12 +50,30 @@ public class IncomingPaymentInvoiceDTO {
         this.sumApplied = sumApplied;
     }
 
+    public BigDecimal getAppliedSys() {
+        return appliedSys;
+    }
+
+    public void setAppliedSys(BigDecimal appliedSys) {
+        this.appliedSys = appliedSys;
+    }
+
+    public String getInvoiceType() {
+        return invoiceType;
+    }
+
+    public void setInvoiceType(String invoiceType) {
+        this.invoiceType = invoiceType;
+    }
+
     @Override
     public String toString() {
         return "IncomingPaymentInvoiceDTO{" +
                 "docEntry=" + docEntry +
                 ", lineNum=" + lineNum +
                 ", sumApplied=" + sumApplied +
+                ", appliedSys=" + appliedSys +
+                ", invoiceType='" + invoiceType + '\'' +
                 '}';
     }
 }
