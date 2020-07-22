@@ -876,7 +876,7 @@ public class PedBoxREST {
             entityDet.setCode(idDetPago);
             entityDet.setName(idDetPago);
             entityDet.setuIdPago(entityEnc.getuIdPago());
-            entityDet.setuDocEntryFv(detPago.getDocEntry().toString());
+            entityDet.setuDocEntryFv(String.valueOf(detPago.getDocEntry()));
             entityDet.setuLineNumFv(detPago.getLineNum().intValue());
             entityDet.setuSumAppliedFv(detPago.getSumApplied());
 
@@ -891,7 +891,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, dto.toString());
 
         //if (dto.getCompanyName().contains("VARROC")) {
-        //    return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
+            //return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
         //} else {
         CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
         return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
