@@ -891,6 +891,7 @@ public class PedBoxREST {
         //if (dto.getCompanyName().contains("VARROC")) {
         //    return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
         //} else {
+        CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc, dto.getCompanyName()});
         return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
         //}
     }
