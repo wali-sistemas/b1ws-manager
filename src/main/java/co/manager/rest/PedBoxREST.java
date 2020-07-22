@@ -1,10 +1,9 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
-import co.manager.ejb.BusinessPartnerEJB;
-import co.manager.ejb.ManagerApplicationBean;
-import co.manager.ejb.QuotationsEJB;
-import co.manager.ejb.SalesOrderEJB;
+import co.manager.ejb.*;
+import co.manager.persistence.entity.DetallePagoPasarelaSAP;
+import co.manager.persistence.entity.PagoPasarelaSAP;
 import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
 
@@ -47,6 +46,8 @@ public class PedBoxREST {
     @EJB
     private QuotationsEJB quotationsEJB;
     @EJB
+    private IncomingPaymentEJB incomingPaymentEJB;
+    @EJB
     private SalesPersonSAPFacade salesPersonSAPFacade;
     @EJB
     private InvoiceSAPFacade invoiceSAPFacade;
@@ -54,6 +55,10 @@ public class PedBoxREST {
     private IncomingPaymentsSAPFacade incomingPaymentsSAPFacade;
     @EJB
     private CreditNotesSAPFacade creditNotesSAPFacade;
+    @EJB
+    private PagoPasarelaSAPFacade pagoPasarelaSAPFacade;
+    @EJB
+    private DetallePagoPasarelaSAPFacade detPagoPasarelaSAPFacade;
 
     @GET
     @Path("warehouses/{companyname}")
@@ -778,6 +783,27 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createCustomer(BusinessPartnerDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
+        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio.")).build();
+        } else if (dto.getCardName().equals(null) || dto.getCardName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio.")).build();
+        }
+
+/*
+        private String cardCode;
+        private String cardName;
+        private Character cardType;
+        private String licTradNum;
+        private String uBPCORTC;
+        private String companyName;
+        private Integer uBPCOTDC;
+        private Integer uBPCOCS;
+
+ */
+
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
@@ -789,5 +815,86 @@ public class PedBoxREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createQuotation(QuotationDTO dto) {
         return Response.ok(quotationsEJB.createSalesOrder(dto)).build();
+    }
+
+    @POST
+    @Path("create-payment")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createIncomingPayments(IncomingPaymentDTO dto) {
+        CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
+        if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo companyName es obligatorio.")).build();
+        } else if (dto.getIdPayment().equals(null) || dto.getIdPayment() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo IdPayment es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo IdPayment es obligatorio.")).build();
+        } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
+        } else if (dto.getTransferReference().equals(null) || dto.getTransferReference().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo companyName es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo transferReference es obligatorio.")).build();
+        } else if (dto.getCashSum().equals(null) || dto.getCashSum().equals(BigDecimal.ZERO)) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cashSum es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cashSum es obligatorio.")).build();
+        } else if (dto.getIncomingPaymentInvoices().size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo incomingPaymentInvoices es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo detailSalesOrder es obligatorio.")).build();
+        }
+        CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para la empresa {0}", dto.getCompanyName());
+
+        if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), true)) {
+            CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Lo sentimos. Ya existe un registro con ese id de pago en " + dto.getCompanyName())).build();
+        }
+        //TODO: registrar en tabla temporal el pago recibido por placeToPay
+        String idPago = (new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getCardCode();
+
+        PagoPasarelaSAP entityEnc = new PagoPasarelaSAP();
+        entityEnc.setCode(idPago);
+        entityEnc.setName(idPago);
+        entityEnc.setuIdPago(dto.getIdPayment());
+        entityEnc.setuCardCode(dto.getCardCode());
+        entityEnc.setuTransferReference(dto.getTransferReference());
+        entityEnc.setuCashSum(dto.getCashSum());
+        entityEnc.setuStatus(dto.getStatus());
+        entityEnc.setuPasarela("PlaceToPay");
+        entityEnc.setuCreateDate(new Date());
+
+        try {
+            pagoPasarelaSAPFacade.create(entityEnc, dto.getCompanyName(), false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del pago recibido para {0}", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del pago recibido para " + dto.getCompanyName())).build();
+        }
+
+        for (IncomingPaymentInvoiceDTO detPago : dto.getIncomingPaymentInvoices()) {
+            String idDetPago = (new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getCardCode();
+            DetallePagoPasarelaSAP entityDet = new DetallePagoPasarelaSAP();
+            entityDet.setCode(idDetPago);
+            entityDet.setName(idDetPago);
+            entityDet.setuIdPago(entityEnc.getuIdPago());
+            entityDet.setuDocEntryFv(detPago.getDocEntry().toString());
+            entityDet.setuLineNumFv(detPago.getLineNum().intValue());
+            entityDet.setuSumAppliedFv(detPago.getSumApplied());
+
+            try {
+                detPagoPasarelaSAPFacade.create(entityDet, dto.getCompanyName(), false);
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del detalle de pago recibido para {0}", dto.getCompanyName());
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName())).build();
+            }
+        }
+
+        CONSOLE.log(Level.INFO, dto.toString());
+
+        //if (dto.getCompanyName().contains("VARROC")) {
+        //    return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
+        //} else {
+        CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
+        return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
+        //}
     }
 }

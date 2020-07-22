@@ -30,5 +30,6 @@ public class ApplicationConfig extends Application {
         resources.add(PedBoxREST.class);
         resources.add(ReportREST.class);
         resources.add(TicketREST.class);
+        resources.add(MotorepuestoREST.class);
     }
 }
