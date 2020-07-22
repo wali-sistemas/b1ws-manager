@@ -24,8 +24,8 @@ import java.util.logging.Logger;
  * @author jguisao
  */
 @Stateless
-public class IncomingPaymentsEJB {
-    private static final Logger CONSOLE = Logger.getLogger(IncomingPaymentsEJB.class.getSimpleName());
+public class IncomingPaymentEJB {
+    private static final Logger CONSOLE = Logger.getLogger(IncomingPaymentEJB.class.getSimpleName());
     private IncomingPaymentsService service;
 
     @Inject
@@ -80,7 +80,7 @@ public class IncomingPaymentsEJB {
                 Payment payment = new Payment();
 
                 //payment.setSeries(Long.parseLong(getPropertyValue("manager.order.series", dto.getCompanyName())));
-                payment.setDocNum(dto.getDocNum());
+                //payment.setDocNum(dto.getDocNum());
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
