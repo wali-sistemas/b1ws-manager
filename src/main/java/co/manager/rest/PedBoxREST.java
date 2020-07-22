@@ -827,18 +827,21 @@ public class PedBoxREST {
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo companyName es obligatorio.")).build();
+        } else if (dto.getIdPayment().equals(null) || dto.getIdPayment() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo IdPayment es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
         } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
         } else if (dto.getTransferReference().equals(null) || dto.getTransferReference().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo companyName es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo transferReference es obligatorio.")).build();
         } else if (dto.getCashSum().equals(null) || dto.getCashSum().equals(BigDecimal.ZERO)) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo cashSum es obligatorio");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cashSum es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cashSum es obligatorio.")).build();
         } else if (dto.getIncomingPaymentInvoices().size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo incomingPaymentInvoices es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo detailSalesOrder es obligatorio.")).build();
         }
         CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para la empresa {0}", dto.getCompanyName());
 
@@ -888,7 +891,7 @@ public class PedBoxREST {
         //if (dto.getCompanyName().contains("VARROC")) {
         //    return Response.ok(incomingPaymentEJB.createIncomingPaymentService(dto)).build();
         //} else {
-            return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
+        return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
         //}
     }
 }
