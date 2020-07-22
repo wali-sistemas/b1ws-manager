@@ -1,6 +1,7 @@
 
 package co.manager.b1ws.incomingPayments;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -583,13 +584,13 @@ public class Payment {
     @XmlElement(name = "DocCurrency")
     protected String docCurrency;
     @XmlElement(name = "CashSum")
-    protected Double cashSum;
+    protected BigDecimal cashSum;
     @XmlElement(name = "CheckAccount")
     protected String checkAccount;
     @XmlElement(name = "TransferAccount")
     protected String transferAccount;
     @XmlElement(name = "TransferSum")
-    protected Double transferSum;
+    protected BigDecimal transferSum;
     @XmlElement(name = "TransferDate")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar transferDate;
@@ -993,7 +994,7 @@ public class Payment {
      *     {@link Double }
      *     
      */
-    public Double getCashSum() {
+    public BigDecimal getCashSum() {
         return cashSum;
     }
 
@@ -1005,7 +1006,7 @@ public class Payment {
      *     {@link Double }
      *     
      */
-    public void setCashSum(Double value) {
+    public void setCashSum(BigDecimal value) {
         this.cashSum = value;
     }
 
@@ -1065,7 +1066,7 @@ public class Payment {
      *     {@link Double }
      *     
      */
-    public Double getTransferSum() {
+    public BigDecimal getTransferSum() {
         return transferSum;
     }
 
@@ -1077,7 +1078,7 @@ public class Payment {
      *     {@link Double }
      *     
      */
-    public void setTransferSum(Double value) {
+    public void setTransferSum(BigDecimal value) {
         this.transferSum = value;
     }
 
@@ -5942,7 +5943,7 @@ public class Payment {
             @XmlElement(name = "DocEntry")
             protected Long docEntry;
             @XmlElement(name = "SumApplied")
-            protected Double sumApplied;
+            protected BigDecimal sumApplied;
             @XmlElement(name = "AppliedFC")
             protected Double appliedFC;
             @XmlElement(name = "AppliedSys")
@@ -6041,7 +6042,7 @@ public class Payment {
              *     {@link Double }
              *     
              */
-            public Double getSumApplied() {
+            public BigDecimal getSumApplied() {
                 return sumApplied;
             }
 
@@ -6053,7 +6054,7 @@ public class Payment {
              *     {@link Double }
              *     
              */
-            public void setSumApplied(Double value) {
+            public void setSumApplied(BigDecimal value) {
                 this.sumApplied = value;
             }
 

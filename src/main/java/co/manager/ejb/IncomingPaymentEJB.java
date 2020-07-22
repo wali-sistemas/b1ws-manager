@@ -78,35 +78,41 @@ public class IncomingPaymentEJB {
             try {
                 Payment.PaymentInvoices paymentInvoice = new Payment.PaymentInvoices();
                 Payment payment = new Payment();
-
-                //payment.setSeries(Long.parseLong(getPropertyValue("manager.order.series", dto.getCompanyName())));
-                //payment.setDocNum(dto.getDocNum());
+                payment.setSeries(Long.valueOf(18L));
+                payment.setDocType("C");
+                payment.setCardCode(dto.getCardCode());
+                payment.setDocCurrency("$");
+                payment.setTransferAccount("11100510");
+                payment.setTransferReference(dto.getTransferReference());
+                payment.setJournalRemarks("Pagos recibidos Ecommerce - " + dto.getCardCode());
+                payment.setCashSum(dto.getCashSum());
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
                     XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
                     payment.setDocDate(date2);
-                } catch (Exception e) {
+                    payment.setTransferDate(date2);
+                    payment.setTaxDate(date2);
+                } catch (Exception exception) {
                 }
 
                 List<IncomingPaymentInvoiceDTO> lines = dto.getIncomingPaymentInvoices();
                 for (IncomingPaymentInvoiceDTO line : lines) {
                     Payment.PaymentInvoices.PaymentInvoice paymentInvoiceLine = new Payment.PaymentInvoices.PaymentInvoice();
-
+                    paymentInvoiceLine.setLineNum(line.getLineNum().longValue());
                     paymentInvoiceLine.setDocEntry(line.getDocEntry());
-
+                    paymentInvoiceLine.setSumApplied(line.getSumApplied());
+                    paymentInvoiceLine.setInvoiceType("it_Invoice");
                     paymentInvoice.getPaymentInvoice().add(paymentInvoiceLine);
                 }
                 payment.setPaymentInvoices(paymentInvoice);
-
                 CONSOLE.log(Level.INFO, "Iniciando creacion de pago recido para {0}", dto.getCompanyName());
-                docEntry = createIncomingPaymentsServiceDocument(payment, sessionId);
-                if (docEntry <= 0) {
-                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el pago recibido. Resetear el sesión ID.");
-                    return new ResponseDTO(-1, "Ocurrió un problema al crear el pago recibido. Resetear el sesión ID.");
-                } else {
-                    CONSOLE.log(Level.INFO, "Se creo el pago recibido satisfactoriamente");
+                docEntry = createIncomingPaymentsServiceDocument(payment, sessionId).longValue();
+                if (docEntry <= 0L) {
+                    CONSOLE.log(Level.WARNING, "Ocurriun problema al crear el pago recibido. Resetear el sesiID.");
+                    return new ResponseDTO(-1, "Ocurriun problema al crear el pago recibido. Resetear el sesiID.");
                 }
+                CONSOLE.log(Level.INFO, "Se creo el pago recibido satisfactoriamente");
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago recibido. ", e);
                 return new ResponseDTO(-1, e.getMessage());

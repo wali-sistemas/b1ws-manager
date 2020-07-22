@@ -877,7 +877,7 @@ public class PedBoxREST {
             entityDet.setName(idDetPago);
             entityDet.setuIdPago(entityEnc.getuIdPago());
             entityDet.setuDocEntryFv(String.valueOf(detPago.getDocEntry()));
-            entityDet.setuLineNumFv(detPago.getLineNum().intValue());
+            entityDet.setuLineNumFv(detPago.getLineNum());
             entityDet.setuSumAppliedFv(detPago.getSumApplied());
 
             try {
