@@ -30,7 +30,7 @@ public class IncomingPaymentsSAPFacade {
         sb.append(" where cast(r.DocDate as date) between cast(DATEADD(MM,-3,GETDATE())as date) and cast(GETDATE()as date) ");
 
         //TODO: se relaciona tabla temporal solo para IGB, Motozone se crea recibo de pago directamente.
-        if(companyName.contains("IGB")) {
+        if(companyName.equals("IGBPruebas")) {
             sb.append(" union all ");
             sb.append(" select cast(p.U_idPago as int)as DocNum, cast(p.U_createDate as date)as DocDate, cast(p.U_cashSum as numeric(18,2))as DocTotal, cast(p.U_cardCode as varchar(20))as CardCode ");
             sb.append(" from [@PAGO_PASARELA_ENC] p ");
