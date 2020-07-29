@@ -10,6 +10,7 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TicketDTO {
     public Integer idTicket;
+    public Integer idTypeTicket;
     public String typeTicket;
     public Date dateTicket;
     public String department;
@@ -19,12 +20,14 @@ public class TicketDTO {
     public String priority;
     public String company;
     public String asunt;
+    public String status;
 
     public TicketDTO() {
     }
 
-    public TicketDTO(Integer idTicket, String typeTicket, Date dateTicket, String department, String empAdd, String empSet, String urlAttached, String priority, String company) {
+    public TicketDTO(Integer idTicket, Integer idTypeTicket, String typeTicket, Date dateTicket, String department, String empAdd, String empSet, String urlAttached, String priority, String company, String asunt, String status) {
         this.idTicket = idTicket;
+        this.idTypeTicket = idTypeTicket;
         this.typeTicket = typeTicket;
         this.dateTicket = dateTicket;
         this.department = department;
@@ -33,6 +36,8 @@ public class TicketDTO {
         this.urlAttached = urlAttached;
         this.priority = priority;
         this.company = company;
+        this.asunt = asunt;
+        this.status = status;
     }
 
     public Integer getIdTicket() {
@@ -41,6 +46,14 @@ public class TicketDTO {
 
     public void setIdTicket(Integer idTicket) {
         this.idTicket = idTicket;
+    }
+
+    public Integer getIdTypeTicket() {
+        return idTypeTicket;
+    }
+
+    public void setIdTypeTicket(Integer idTypeTicket) {
+        this.idTypeTicket = idTypeTicket;
     }
 
     public String getTypeTicket() {
@@ -115,10 +128,19 @@ public class TicketDTO {
         this.asunt = asunt;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "TicketDTO{" +
                 "idTicket=" + idTicket +
+                ", idTypeTicket=" + idTypeTicket +
                 ", typeTicket='" + typeTicket + '\'' +
                 ", dateTicket=" + dateTicket +
                 ", department='" + department + '\'' +
@@ -128,6 +150,7 @@ public class TicketDTO {
                 ", priority='" + priority + '\'' +
                 ", company='" + company + '\'' +
                 ", asunt='" + asunt + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

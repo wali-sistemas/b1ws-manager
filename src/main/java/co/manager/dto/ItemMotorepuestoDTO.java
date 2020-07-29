@@ -15,24 +15,28 @@ public class ItemMotorepuestoDTO {
     private String whsCode;
     private Integer stock;
     private String pictureUrl;
+    private String category;
     private String marca;
     private String subMarca;
     private String grupo;
     private String subgrupo;
+    private String linea;
+    private String sublinea;
     private String modeloMoto;
     private String tipoLlanta;
     private String anchoLlanta;
     private String perfilLlanta;
     private String rinLlanta;
     private String talla;
-    private String category;
     private String colorCadena;
     private String pasoCadena;
+    private String viscosidad;
+    private String base;
 
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String itemName, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String marca, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String category, String colorCadena, String pasoCadena) {
+    public ItemMotorepuestoDTO(String itemCode, String itemName, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String subMarca, String grupo, String subgrupo, String linea, String sublinea, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.presentation = presentation;
@@ -40,19 +44,23 @@ public class ItemMotorepuestoDTO {
         this.whsCode = whsCode;
         this.stock = stock;
         this.pictureUrl = pictureUrl;
+        this.category = category;
         this.marca = marca;
         this.subMarca = subMarca;
         this.grupo = grupo;
         this.subgrupo = subgrupo;
+        this.linea = linea;
+        this.sublinea = sublinea;
         this.modeloMoto = modeloMoto;
         this.tipoLlanta = tipoLlanta;
         this.anchoLlanta = anchoLlanta;
         this.perfilLlanta = perfilLlanta;
         this.rinLlanta = rinLlanta;
         this.talla = talla;
-        this.category = category;
         this.colorCadena = colorCadena;
         this.pasoCadena = pasoCadena;
+        this.viscosidad = viscosidad;
+        this.base = base;
     }
 
     public String getItemCode() {
@@ -215,6 +223,38 @@ public class ItemMotorepuestoDTO {
         this.pasoCadena = pasoCadena;
     }
 
+    public String getLinea() {
+        return linea;
+    }
+
+    public void setLinea(String linea) {
+        this.linea = linea;
+    }
+
+    public String getSublinea() {
+        return sublinea;
+    }
+
+    public void setSublinea(String sublinea) {
+        this.sublinea = sublinea;
+    }
+
+    public String getViscosidad() {
+        return viscosidad;
+    }
+
+    public void setViscosidad(String viscosidad) {
+        this.viscosidad = viscosidad;
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public void setBase(String base) {
+        this.base = base;
+    }
+
     @Override
     public String toString() {
         return "ItemMotorepuestoDTO{" +
@@ -225,19 +265,23 @@ public class ItemMotorepuestoDTO {
                 ", whsCode='" + whsCode + '\'' +
                 ", stock=" + stock +
                 ", pictureUrl='" + pictureUrl + '\'' +
+                ", category='" + category + '\'' +
                 ", marca='" + marca + '\'' +
                 ", subMarca='" + subMarca + '\'' +
                 ", grupo='" + grupo + '\'' +
                 ", subgrupo='" + subgrupo + '\'' +
+                ", linea='" + linea + '\'' +
+                ", sublinea='" + sublinea + '\'' +
                 ", modeloMoto='" + modeloMoto + '\'' +
                 ", tipoLlanta='" + tipoLlanta + '\'' +
                 ", anchoLlanta='" + anchoLlanta + '\'' +
                 ", perfilLlanta='" + perfilLlanta + '\'' +
                 ", rinLlanta='" + rinLlanta + '\'' +
                 ", talla='" + talla + '\'' +
-                ", category='" + category + '\'' +
                 ", colorCadena='" + colorCadena + '\'' +
                 ", pasoCadena='" + pasoCadena + '\'' +
+                ", viscosidad='" + viscosidad + '\'' +
+                ", base='" + base + '\'' +
                 '}';
     }
 }

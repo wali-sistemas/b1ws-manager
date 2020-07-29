@@ -31,6 +31,19 @@ public class TicketTIFacade {
         persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTi);
     }
 
+    public Long getIdTicket() {
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("selet max(idticket) from ticket_ti");
+        try {
+            return (Long) em.createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el último ticket creado.", e);
+        }
+        return 0l;
+    }
+
     public List<Object[]> listTickets(String empId, boolean admUser) {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
         StringBuilder sb = new StringBuilder();
