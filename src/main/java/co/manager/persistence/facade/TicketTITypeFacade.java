@@ -1,6 +1,6 @@
 package co.manager.persistence.facade;
 
-import co.manager.persistence.entity.TicketTINotes;
+import co.manager.persistence.entity.TicketTIType;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
@@ -16,29 +16,26 @@ import java.util.logging.Logger;
  * @author jguisao
  */
 @Stateless
-public class TicketTINotesFacade {
-
-    private static final Logger CONSOLE = Logger.getLogger(TicketTINotes.class.getSimpleName());
+public class TicketTITypeFacade {
+    private static final Logger CONSOLE = Logger.getLogger(TicketTIType.class.getSimpleName());
     private static final String DB_TYPE = Constants.DATABASE_TYPE_MYSQL;
 
     @EJB
     private PersistenceConf persistenceConf;
 
-    public void create(TicketTINotes ticketTiNotes, String companyName, boolean testing) {
-        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTiNotes);
+    public void create(TicketTIType ticketTiType, String companyName, boolean testing) {
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTiType);
     }
 
-    public List<Object[]> listNotesTicket(Integer idTicket) {
+    public List<Object[]> listTypeTickets() {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
         StringBuilder sb = new StringBuilder();
-        sb.append("select n.* from ticket_ti_notes n where n.idTicket = ");
-        sb.append(idTicket);
-        sb.append(" order by n.idticket_ti_notes DESC, n.date ASC");
+        sb.append("select idticket_ti_type, type_ticket from ticket_ti_type where status = 'open' order by idticket_ti_type ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando las notas para el ticket #", idTicket.toString());
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar los tipos de tickets.", e);
         }
         return new ArrayList<>();
     }

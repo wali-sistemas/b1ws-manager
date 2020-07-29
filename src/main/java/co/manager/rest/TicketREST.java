@@ -4,9 +4,11 @@ import co.manager.dto.ResponseDTO;
 import co.manager.dto.TicketDTO;
 import co.manager.dto.TicketNotesDTO;
 import co.manager.ejb.ManagerApplicationBean;
+import co.manager.persistence.entity.TicketTI;
 import co.manager.persistence.entity.TicketTINotes;
 import co.manager.persistence.facade.TicketTIFacade;
 import co.manager.persistence.facade.TicketTINotesFacade;
+import co.manager.persistence.facade.TicketTITypeFacade;
 import co.manager.util.IGBUtils;
 
 import javax.ejb.EJB;
@@ -35,6 +37,8 @@ public class TicketREST {
     private TicketTIFacade ticketTIFacade;
     @EJB
     private TicketTINotesFacade ticketTINotesFacade;
+    @EJB
+    private TicketTITypeFacade ticketTITypeFacade;
     @Inject
     private ManagerApplicationBean managerAppBean;
 
@@ -83,7 +87,7 @@ public class TicketREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListTicketNotes(@PathParam("idTicket") Integer idTicket) {
-        CONSOLE.log(Level.INFO, "Listando notas del ticket TI #", idTicket.toString());
+        CONSOLE.log(Level.INFO, "Listando notas del ticket TI #{0}", idTicket.toString());
         List<Object[]> objects = ticketTINotesFacade.listNotesTicket(idTicket);
 
         List<TicketNotesDTO> ticketNotes = new ArrayList<>();
@@ -95,8 +99,16 @@ public class TicketREST {
             dto.setNote((String) obj[4]);
             ticketNotes.add(dto);
         }
-        CONSOLE.log(Level.INFO, "Retornando notas del ticket TI #", idTicket.toString());
+        CONSOLE.log(Level.INFO, "Retornando notas del ticket TI #{0}", idTicket.toString());
         return Response.ok(ticketNotes).build();
+    }
+
+    @GET
+    @Path("type-tickets")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getListTypeTickets() {
+        return Response.ok(ticketTITypeFacade.listTypeTickets()).build();
     }
 
     @POST
@@ -105,7 +117,7 @@ public class TicketREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addTicketNote(TicketNotesDTO dto) {
-        CONSOLE.log(Level.INFO, "Iniciando creación de nota para el ticket TI #", dto.idTicket.toString());
+        CONSOLE.log(Level.INFO, "Iniciando creación de nota para el ticket TI #{0}", dto.idTicket.toString());
         if (dto.getIdTicket() == null || dto.getIdTicket() <= 0) {
             CONSOLE.log(Level.SEVERE, "Campo idTicket es obligatorio para crear la nota");
             return Response.ok(new ResponseDTO(-1, "Campo idTicket es obligatorio para crear la nota.")).build();
@@ -129,11 +141,40 @@ public class TicketREST {
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.idTicket.toString(), e);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #" + dto.idTicket.toString())).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #{0}" + dto.idTicket.toString())).build();
         }
 
-        CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #", dto.idTicket.toString());
+        CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.idTicket.toString());
         return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
+    }
+
+    @POST
+    @Path("add-new-ticket")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addNewTicket(TicketDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de un nuevo ticket {0}", dto.toString());
+
+        TicketTI entity = new TicketTI();
+        entity.setIdTicketType(dto.idTypeTicket);
+        entity.setDate(new Date());
+        entity.setDepartmentName(dto.department);
+        entity.setEmpIidAdd(dto.empAdd);
+        entity.setEmpIidSet(null);
+        entity.setUrlAttached(dto.urlAttached);
+        entity.setPriority(dto.priority);
+        entity.setCompanyName(dto.company);
+        entity.setAsunt(dto.asunt);
+
+        try {
+            ticketTIFacade.create(entity, dto.company, false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el ticket", e);
+        }
+        //TODO: consultar el idTicket para retornarlo.
+        Long idTicket = ticketTIFacade.getIdTicket();
+        return Response.ok(new ResponseDTO(idTicket <= 0 ? -1 : 0, idTicket)).build();
     }
 
     private String getPropertyValue(String propertyName, String companyName) {

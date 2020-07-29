@@ -16,10 +16,10 @@ public class TicketTI implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)
     @Column(name = "idticket")
-    private Long id;
+    private Integer id;
     @Basic(optional = false)
     @Column(name = "idticket_ti_type")
-    private Long idTicketType;
+    private Integer idTicketType;
     @Basic(optional = false)
     @Column(name = "date")
     private Date date;
@@ -41,23 +41,26 @@ public class TicketTI implements Serializable {
     @Basic(optional = false)
     @Column(name = "company_name")
     private String companyName;
+    @Basic(optional = false)
+    @Column(name = "asunt")
+    private String asunt;
 
     public TicketTI() {
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getIdTicketType() {
+    public Integer getIdTicketType() {
         return idTicketType;
     }
 
-    public void setIdTicketType(Long idTicketType) {
+    public void setIdTicketType(Integer idTicketType) {
         this.idTicketType = idTicketType;
     }
 
@@ -117,6 +120,14 @@ public class TicketTI implements Serializable {
         this.companyName = companyName;
     }
 
+    public String getAsunt() {
+        return asunt;
+    }
+
+    public void setAsunt(String asunt) {
+        this.asunt = asunt;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -154,6 +165,7 @@ public class TicketTI implements Serializable {
                 ", urlAttached='" + urlAttached + '\'' +
                 ", priority='" + priority + '\'' +
                 ", companyName='" + companyName + '\'' +
+                ", asunt='" + asunt + '\'' +
                 '}';
     }
 }
