@@ -125,7 +125,8 @@ public class ItemSAPFacade {
         sb.append("      cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto, cast(tll.Name as varchar(20))as TipoLlanta, cast(anc.Name as varchar(20))as AnchoLlanta, ");
         sb.append("      cast(pe.Name as varchar(20))as PerfilLlanta, cast(rin.Name as varchar(20))as RinLlanta, cast(ta.Name as varchar(20))as Talla ");
         if (companyName.equals("VARROC")) {
-            sb.append(" ,cast(l.Name as varchar(20))as Sublinea ");
+            //sb.append(" ,cast(l.Name as varchar(20))as Sublinea ");
+            sb.append(" ,cast(null as varchar(20))as Sublinea ");
         }
         sb.append("from  OITM it ");
         sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode and pre.PriceList=");
@@ -151,9 +152,9 @@ public class ItemSAPFacade {
         sb.append("left  join [@PERFIL_LLANTA] pe on pe.Code = it.U_PERFIL_LLANTA ");
         sb.append("left  join [@RIN_LLANTA] rin on rin.Code = it.U_RIN_LLANTA ");
         sb.append("left  join [@TALLA] ta on ta.Code = it.U_TALLA ");
-        if (companyName.equals("VARROC")) {
+        /*if (companyName.equals("VARROC")) {
             sb.append("left join [@LINEA] l on l.code = it.u_linea ");
-        }
+        }*/
         sb.append("where it.validFor = 'Y' and it.ItemType = 'I' ");
         sb.append(") as t where t.Stock > 0 ");
         sb.append("order by Producto ASC");
