@@ -2,6 +2,8 @@ package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.math.BigDecimal;
+
 /**
  * @author jguisao
  */
@@ -10,6 +12,7 @@ public class ItemMotorepuestoDTO {
 
     private String itemCode;
     private String itemName;
+    private String nomWeb;
     private Integer presentation;
     private Integer iva;
     private String whsCode;
@@ -20,8 +23,8 @@ public class ItemMotorepuestoDTO {
     private String subMarca;
     private String grupo;
     private String subgrupo;
-    private String linea;
-    private String sublinea;
+    //private String linea;
+    //private String sublinea;
     private String modeloMoto;
     private String tipoLlanta;
     private String anchoLlanta;
@@ -32,13 +35,19 @@ public class ItemMotorepuestoDTO {
     private String pasoCadena;
     private String viscosidad;
     private String base;
+    private String itemParent;
+    private String itemType;
+    private String keyword;
+    private BigDecimal priceVenta;
+    private BigDecimal pricePromo;
 
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String itemName, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String subMarca, String grupo, String subgrupo, String linea, String sublinea, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base) {
+    public ItemMotorepuestoDTO(String itemCode, String itemName, String nomWeb, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
         this.itemCode = itemCode;
         this.itemName = itemName;
+        this.nomWeb = nomWeb;
         this.presentation = presentation;
         this.iva = iva;
         this.whsCode = whsCode;
@@ -49,8 +58,6 @@ public class ItemMotorepuestoDTO {
         this.subMarca = subMarca;
         this.grupo = grupo;
         this.subgrupo = subgrupo;
-        this.linea = linea;
-        this.sublinea = sublinea;
         this.modeloMoto = modeloMoto;
         this.tipoLlanta = tipoLlanta;
         this.anchoLlanta = anchoLlanta;
@@ -61,6 +68,11 @@ public class ItemMotorepuestoDTO {
         this.pasoCadena = pasoCadena;
         this.viscosidad = viscosidad;
         this.base = base;
+        this.itemParent = itemParent;
+        this.itemType = itemType;
+        this.keyword = keyword;
+        this.priceVenta = priceVenta;
+        this.pricePromo = pricePromo;
     }
 
     public String getItemCode() {
@@ -77,6 +89,14 @@ public class ItemMotorepuestoDTO {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public String getNomWeb() {
+        return nomWeb;
+    }
+
+    public void setNomWeb(String nomWeb) {
+        this.nomWeb = nomWeb;
     }
 
     public Integer getPresentation() {
@@ -223,22 +243,6 @@ public class ItemMotorepuestoDTO {
         this.pasoCadena = pasoCadena;
     }
 
-    public String getLinea() {
-        return linea;
-    }
-
-    public void setLinea(String linea) {
-        this.linea = linea;
-    }
-
-    public String getSublinea() {
-        return sublinea;
-    }
-
-    public void setSublinea(String sublinea) {
-        this.sublinea = sublinea;
-    }
-
     public String getViscosidad() {
         return viscosidad;
     }
@@ -255,11 +259,52 @@ public class ItemMotorepuestoDTO {
         this.base = base;
     }
 
+    public String getItemParent() {
+        return itemParent;
+    }
+
+    public void setItemParent(String itemParent) {
+        this.itemParent = itemParent;
+    }
+
+    public String getItemType() {
+        return itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public BigDecimal getPriceVenta() {
+        return priceVenta;
+    }
+
+    public void setPriceVenta(BigDecimal priceVenta) {
+        this.priceVenta = priceVenta;
+    }
+
+    public BigDecimal getPricePromo() {
+        return pricePromo;
+    }
+
+    public void setPricePromo(BigDecimal pricePromo) {
+        this.pricePromo = pricePromo;
+    }
+
     @Override
     public String toString() {
         return "ItemMotorepuestoDTO{" +
                 "itemCode='" + itemCode + '\'' +
                 ", itemName='" + itemName + '\'' +
+                ", nomWeb='" + nomWeb + '\'' +
                 ", presentation=" + presentation +
                 ", iva=" + iva +
                 ", whsCode='" + whsCode + '\'' +
@@ -270,8 +315,6 @@ public class ItemMotorepuestoDTO {
                 ", subMarca='" + subMarca + '\'' +
                 ", grupo='" + grupo + '\'' +
                 ", subgrupo='" + subgrupo + '\'' +
-                ", linea='" + linea + '\'' +
-                ", sublinea='" + sublinea + '\'' +
                 ", modeloMoto='" + modeloMoto + '\'' +
                 ", tipoLlanta='" + tipoLlanta + '\'' +
                 ", anchoLlanta='" + anchoLlanta + '\'' +
@@ -282,6 +325,11 @@ public class ItemMotorepuestoDTO {
                 ", pasoCadena='" + pasoCadena + '\'' +
                 ", viscosidad='" + viscosidad + '\'' +
                 ", base='" + base + '\'' +
+                ", itemParent='" + itemParent + '\'' +
+                ", itemType='" + itemType + '\'' +
+                ", keyword='" + keyword + '\'' +
+                ", priceVenta=" + priceVenta +
+                ", pricePromo=" + pricePromo +
                 '}';
     }
 }

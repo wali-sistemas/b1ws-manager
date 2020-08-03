@@ -238,20 +238,21 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select * from ( ");
+        sb.append("select t.*, cast(itMrto.ItemName as varchar(100))as NombreWeb, cast(prMrto.Price as numeric(18,2))as PrecioInicial, cast(0 as numeric(18,2))as PrecioOferta from ( ");
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.ItemName as varchar(100))as Descripcion,cast(it.PurPackUn as int)as Presentacion, ");
-        sb.append(" cast(imp.Rate as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
+        sb.append(" cast(19/*imp.Rate*/ as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when (select isnull(sum(de.onHandQty),0) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
         sb.append(" then ((select SUM(s.OnHand) from OITW s where s.WhsCode in ('01', '05', '26') and s.ItemCode = it.ItemCode)-it.iscommited-(select ");
         sb.append(" sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
         sb.append(" else ((select SUM(s.OnHand) from OITW s where s.WhsCode in ('01', '05', '26') and s.ItemCode = it.ItemCode) - it.iscommited) end as int) as Stock, ");
         sb.append(" cast(it.PicturName as varchar)as PicturName, cast(c.Name as varchar(100))as Categoria, cast(mar.Name as varchar(50))as Marca, cast(it.U_SUBMARCA as varchar(50))as SubMarca, ");
-        sb.append(" cast(gru.Name as varchar(50))as Grupo, cast(sub.Name as varchar(50))as SubGrupo, null as Linea, null as SubLinea, ");
+        sb.append(" cast(gru.Name as varchar(50))as Grupo, cast(sub.Name as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto, cast(tll.Name as varchar(50))as TipoLlanta, cast(anc.Name as varchar(50))as AnchoLlanta, ");
         sb.append(" cast(pe.Name as varchar(50))as PerfilLlanta, cast(rin.Name as varchar(50))as RinLlanta, cast(ta.Name as varchar(50))as Talla, ");
-        sb.append(" cast(it.U_COLOR_CADENA as varchar(50))as ColorCadena, cast(it.U_PASO_CADENA as varchar(50))as PasoCadena, null as Viscosidad, null as Base ");
+        sb.append(" cast(it.U_COLOR_CADENA as varchar(50))as ColorCadena, cast(it.U_PASO_CADENA as varchar(50))as PasoCadena, null as Viscosidad, null as Base, ");
+        sb.append(" cast(it.ItemCode as varchar(20))as ArticuloPadre, cast(it.U_TIPO as varchar(15))as TipoArticulo, cast(it.U_KEYWORDS as varchar(max))as Keywords ");
         sb.append(" from  OITM it ");
-        sb.append(" inner join OSTC imp on imp.Code = it.TaxCodeAR ");
+        //sb.append(" inner join OSTC imp on imp.Code = it.TaxCodeAR ");
         sb.append(" left  join [@MARCAS] mar on mar.Code = it.U_Marca and it.U_Marca<>'' ");
         sb.append(" left  join [@GRUPOS] gru on gru.Code = it.U_Grupo ");
         sb.append(" left  join [@SUBGRUPOS] sub on sub.Code = it.U_Subgrupo ");
@@ -265,18 +266,19 @@ public class ItemSAPFacade {
         sb.append("UNION ALL ");
         //TODO: macth con Motozone
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.ItemName as varchar(100))as Descripcion,cast(it.PurPackUn as int)as Presentacion, ");
-        sb.append(" cast(imp.Rate as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
+        sb.append(" cast(19/*imp.Rate*/ as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when (select isnull(sum(de.onHandQty),0) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
         sb.append(" then ((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in ('01', '09', '26', '44') and s.ItemCode = it.ItemCode) - it.iscommited - (select ");
         sb.append(" sum(de.onHandQty) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
         sb.append(" else ((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in ('01', '09', '26', '44') and s.ItemCode = it.ItemCode) - it.iscommited) end as int) as Stock, ");
         sb.append(" cast(it.PicturName as varchar)as PicturName, cast(c.Name as varchar(100)) as Categoria, cast(mar.Name as varchar(50))as Marca, '' as SubMarca, ");
-        sb.append(" cast(gru.Name as varchar(50))as Grupo, cast(sub.Name as varchar(50))as SubGrupo, cast(lin.Name as varchar(50))as Linea, cast(subLin.Name as varchar(50))as SubLinea, ");
+        sb.append(" cast(gru.Name as varchar(50))as Grupo, cast(sub.Name as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto, cast(tll.Name as varchar(50))as TipoLlanta, cast(anc.Name as varchar(50))as AnchoLlanta, ");
         sb.append(" cast(pe.Name as varchar(50))as PerfilLlanta, cast(rin.Name as varchar(50))as RinLlanta, cast(ta.Name as varchar(50))as Talla, ");
-        sb.append(" null as ColorCadena, null as PasoCadena, cast(vis.Name as varchar(50))as Viscosidad, cast(bs.Name as varchar(50))as Base ");
+        sb.append(" null as ColorCadena, null as PasoCadena, cast(vis.Name as varchar(50))as Viscosidad, cast(bs.Name as varchar(50))as Base, ");
+        sb.append(" cast(it.ItemCode as varchar(20))as ArticuloPadre, cast(it.U_TIPO as varchar(15))as TipoArticulo, cast(it.U_KEYWORDS as varchar(max))as Keywords ");
         sb.append(" from  [SBOMOTOREPUESTO].[VARROC].[DBO].OITM it ");
-        sb.append(" inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OSTC imp on imp.Code = it.TaxCodeAR ");
+        //sb.append(" inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OSTC imp on imp.Code = it.TaxCodeAR ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@MARCAS] mar on mar.Code = it.U_Marca and it.U_Marca<>'' ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@GRUPOS] gru on gru.Code = it.U_Grupo ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@SUBGRUPOS] sub on sub.Code = it.U_Subgrupo ");
@@ -286,12 +288,14 @@ public class ItemSAPFacade {
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@RIN_LLANTA] rin on rin.Code = it.U_RIN_LLANTA ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@TALLA] ta on ta.Code = it.U_TALLA ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@CATEGORIA] c on c.Code = it.U_CATEGORIA ");
-        sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@LINEA] lin on lin.Code = it.U_Linea ");
-        sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@SUBLINEA] subLin on subLin.Code = it.U_SUBLINEA ");
+        //sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@LINEA] lin on lin.Code = it.U_Linea ");
+        //sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@SUBLINEA] subLin on subLin.Code = it.U_SUBLINEA ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@VISCOSIDAD] vis on vis.Code = it.U_VISCOSIDAD ");
         sb.append(" left  join [SBOMOTOREPUESTO].[VARROC].[DBO].[@BASE] bs on bs.Code = it.U_BASE ");
         sb.append(" where it.validFor = 'Y' and it.ItemType = 'I' and it.QryGroup2 = 'Y' ");
         sb.append(") as t ");
+        sb.append("left  join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode = t.Producto ");
+        sb.append("left  join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode = itMrto.ItemCode and prMrto.PriceList=1 ");
         sb.append("where t.Stock > 0 order by Producto ASC");
 
         try {

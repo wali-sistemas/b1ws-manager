@@ -823,6 +823,7 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(IncomingPaymentDTO dto) {
+        dto.setCompanyName("IGBPruebras");
         CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
