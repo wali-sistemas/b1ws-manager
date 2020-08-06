@@ -1,14 +1,17 @@
 package co.manager.rest;
 
+import co.manager.dto.MailMessageDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.dto.TicketDTO;
 import co.manager.dto.TicketNotesDTO;
+import co.manager.ejb.EmailManager;
 import co.manager.ejb.ManagerApplicationBean;
 import co.manager.persistence.entity.TicketTI;
 import co.manager.persistence.entity.TicketTINotes;
 import co.manager.persistence.facade.TicketTIFacade;
 import co.manager.persistence.facade.TicketTINotesFacade;
 import co.manager.persistence.facade.TicketTITypeFacade;
+import co.manager.persistence.facade.UsersFacade;
 import co.manager.util.IGBUtils;
 
 import javax.ejb.EJB;
@@ -19,9 +22,8 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,8 +41,12 @@ public class TicketREST {
     private TicketTINotesFacade ticketTINotesFacade;
     @EJB
     private TicketTITypeFacade ticketTITypeFacade;
+    @EJB
+    private UsersFacade usersFacade;
     @Inject
     private ManagerApplicationBean managerAppBean;
+    @Inject
+    private EmailManager emailManager;
 
     @GET
     @Path("list/{empId}")
@@ -75,6 +81,7 @@ public class TicketREST {
             dto.setPriority((String) obj[7]);
             dto.setCompany((String) (obj[8] == "VARROC" ? "MOTOZONE" : "IGB"));
             dto.setAsunt((String) obj[9]);
+            dto.setStatus((String) obj[10]);
             ticketTI.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando tickets TI actuales");
@@ -112,6 +119,15 @@ public class TicketREST {
     }
 
     @POST
+    @Path("assign-ticket")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response assignTicket(TicketDTO dto) {
+        return Response.ok(ticketTIFacade.assignTicket(dto.idTicket, dto.empSet, dto.priority, dto.status)).build();
+    }
+
+    @POST
     @Path("add-note")
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
@@ -139,13 +155,12 @@ public class TicketREST {
 
         try {
             ticketTINotesFacade.create(entity, "", false);
+            CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.idTicket.toString());
+            return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.idTicket.toString(), e);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #{0}" + dto.idTicket.toString())).build();
         }
-
-        CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.idTicket.toString());
-        return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
     }
 
     @POST
@@ -160,21 +175,58 @@ public class TicketREST {
         entity.setIdTicketType(dto.idTypeTicket);
         entity.setDate(new Date());
         entity.setDepartmentName(dto.department);
-        entity.setEmpIidAdd(dto.empAdd);
-        entity.setEmpIidSet(null);
+        entity.setEmpIdAdd(dto.empAdd);
+        entity.setEmpIdSet(null);
         entity.setUrlAttached(dto.urlAttached);
         entity.setPriority(dto.priority);
         entity.setCompanyName(dto.company);
         entity.setAsunt(dto.asunt);
+        entity.setStatus("ABIERTO");
 
         try {
             ticketTIFacade.create(entity, dto.company, false);
+
+            //TODO: Notificar vía mail la creación del ticket
+            Map<String, String> params = new HashMap<>();
+            params.put("idTicket", entity.getId().toString());
+            params.put("status", entity.getStatus());
+            params.put("empIdAdd", entity.getEmpIdAdd());
+            params.put("companyName", entity.getCompanyName());
+            params.put("department", entity.getDepartmentName());
+            params.put("priority", entity.getPriority());
+            params.put("empIdSet", entity.getEmpIdSet());
+            params.put("asunt", entity.getAsunt());
+            params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
+
+            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            if (user != null) {
+                params.put("empName", (String) user[0] + " " + user[1]);
+            }
+
+            sendEmail("TicketNotification", "Ticket <ticketIgb@igbcolombia.com>", "Nuevo ticket", (String) user[2],
+                    "soporte@igbcolombia.com", "", null, params);
+            return Response.ok(new ResponseDTO(0, entity.getId())).build();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el ticket", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el ticket.")).build();
         }
-        //TODO: consultar el idTicket para retornarlo.
-        Long idTicket = ticketTIFacade.getIdTicket();
-        return Response.ok(new ResponseDTO(idTicket <= 0 ? -1 : 0, idTicket)).build();
+    }
+
+    private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
+        MailMessageDTO dtoMail = new MailMessageDTO();
+        dtoMail.setTemplateName(template);
+        dtoMail.setParams(params);
+        dtoMail.setAttachments(adjuntos);
+        dtoMail.setFrom(from);
+        dtoMail.setSubject(subject);
+        dtoMail.addToAddress(toAddress);
+        dtoMail.addBccAddress(bccAddress);
+        dtoMail.addBccAddress(ccAddress);
+        try {
+            emailManager.sendMailClientCapture(dtoMail);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
+        }
     }
 
     private String getPropertyValue(String propertyName, String companyName) {
