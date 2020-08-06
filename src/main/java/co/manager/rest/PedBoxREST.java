@@ -588,7 +588,8 @@ public class PedBoxREST {
                                                  @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         //TODO: historial de pagos de los últimos 3 meses.
-        List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname == "IGB" ? "IGBPruebas" : companyname, false);
+
+        List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, (companyname.equals("IGB") ? "IGBPruebas" : companyname), false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de pagos para el cliente {0} en {1}", new Object[]{cardCode, companyname});

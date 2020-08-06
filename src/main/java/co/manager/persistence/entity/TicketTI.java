@@ -28,10 +28,10 @@ public class TicketTI implements Serializable {
     private String departmentName;
     @Basic(optional = false)
     @Column(name = "emp_id_add")
-    private String empIidAdd;
+    private String empIdAdd;
     @Basic(optional = false)
     @Column(name = "emp_id_set")
-    private String empIidSet;
+    private String empIdSet;
     @Basic(optional = false)
     @Column(name = "url_attached")
     private String urlAttached;
@@ -44,6 +44,9 @@ public class TicketTI implements Serializable {
     @Basic(optional = false)
     @Column(name = "asunt")
     private String asunt;
+    @Basic(optional = false)
+    @Column(name = "status")
+    private String status;
 
     public TicketTI() {
     }
@@ -80,20 +83,20 @@ public class TicketTI implements Serializable {
         this.departmentName = departmentName;
     }
 
-    public String getEmpIidAdd() {
-        return empIidAdd;
+    public String getEmpIdAdd() {
+        return empIdAdd;
     }
 
-    public void setEmpIidAdd(String empIidAdd) {
-        this.empIidAdd = empIidAdd;
+    public void setEmpIdAdd(String empIdAdd) {
+        this.empIdAdd = empIdAdd;
     }
 
-    public String getEmpIidSet() {
-        return empIidSet;
+    public String getEmpIdSet() {
+        return empIdSet;
     }
 
-    public void setEmpIidSet(String empIidSet) {
-        this.empIidSet = empIidSet;
+    public void setEmpIdSet(String empIdSet) {
+        this.empIdSet = empIdSet;
     }
 
     public String getUrlAttached() {
@@ -128,6 +131,14 @@ public class TicketTI implements Serializable {
         this.asunt = asunt;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -160,12 +171,13 @@ public class TicketTI implements Serializable {
                 ", idTicketType=" + idTicketType +
                 ", date=" + date +
                 ", departmentName='" + departmentName + '\'' +
-                ", empIidAdd='" + empIidAdd + '\'' +
-                ", empIidSet='" + empIidSet + '\'' +
+                ", empIdAdd='" + empIdAdd + '\'' +
+                ", empIdSet='" + empIdSet + '\'' +
                 ", urlAttached='" + urlAttached + '\'' +
                 ", priority='" + priority + '\'' +
                 ", companyName='" + companyName + '\'' +
                 ", asunt='" + asunt + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
