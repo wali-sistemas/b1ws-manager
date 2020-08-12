@@ -62,9 +62,12 @@ public class TicketREST {
         }
 
         List<Object[]> objects = ticketTIFacade.listTickets(empId, admUser);
-        if (objects == null || objects.size() <= 0) {
+        if (objects == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los tickets TI actuales");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los tickets TI actuales.")).build();
+        } else if (objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No existe ningun ticket asociado al usuario {0}", empId);
+            return Response.ok(new ResponseDTO(-1, "No existe ningun ticket asociado al usuario " + empId)).build();
         }
 
         List<TicketDTO> ticketTI = new ArrayList<>();
@@ -87,7 +90,6 @@ public class TicketREST {
         CONSOLE.log(Level.INFO, "Retornando tickets TI actuales");
         return Response.ok(ticketTI).build();
     }
-
 
     @GET
     @Path("notes/{idTicket}")
@@ -123,8 +125,52 @@ public class TicketREST {
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response assignTicket(TicketDTO dto) {
-        return Response.ok(ticketTIFacade.assignTicket(dto.idTicket, dto.empSet, dto.priority, dto.status)).build();
+    public Response assignTicket(@QueryParam("username") String username, TicketDTO dto) {
+        boolean resp = ticketTIFacade.assignTicket(dto.idTicket, dto.empSet, dto.priority, "ASIGNADO");
+
+        if (!resp) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error asigando el ticket #{0}", dto.getIdTicket());
+            return Response.ok(resp).build();
+        }
+
+        //TODO: Agregar nota al ticket, de que fue asignado
+        TicketTINotes entity = new TicketTINotes();
+        entity.setIdTicket(dto.idTicket.longValue());
+        entity.setDate(new Date());
+        entity.setEmpId(username);
+        entity.setNote("Ticket asignado al empleado " + dto.empSet + " con prioridad " + dto.getPriority());
+
+        try {
+            ticketTINotesFacade.create(entity, "", false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.WARNING, "No se agrego la nota al ticket #{0}", dto.getIdTicket());
+        }
+
+        try {
+            //TODO: Notificar vía mail la asignacion del ticket
+            Map<String, String> params = new HashMap<>();
+            params.put("idTicket", dto.getIdTicket().toString());
+            params.put("status", "ASIGNADO");
+            params.put("empIdAdd", dto.getEmpAdd());
+            params.put("companyName", dto.getCompany());
+            params.put("department", dto.getDepartment());
+            params.put("priority", dto.getPriority());
+            params.put("empIdSet", dto.getEmpSet());
+            params.put("asunt", dto.getAsunt());
+            params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            if (user != null) {
+                params.put("empName", (String) user[0] + " " + user[1]);
+            }
+
+            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", "Asignado ticket", (String) user[2],
+                    "soporte@igbcolombia.com", null, null, params);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la asignacion del ticket #" + dto.getIdTicket(), e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la asignacion del ticket " + dto.getIdTicket())).build();
+        }
+        return Response.ok(resp).build();
     }
 
     @POST
@@ -185,7 +231,12 @@ public class TicketREST {
 
         try {
             ticketTIFacade.create(entity, dto.company, false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el ticket", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el ticket.")).build();
+        }
 
+        try {
             //TODO: Notificar vía mail la creación del ticket
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", entity.getId().toString());
@@ -194,7 +245,7 @@ public class TicketREST {
             params.put("companyName", entity.getCompanyName());
             params.put("department", entity.getDepartmentName());
             params.put("priority", entity.getPriority());
-            params.put("empIdSet", entity.getEmpIdSet());
+            params.put("empIdSet", entity.getEmpIdSet() == null ? "SIN ASIGNAR" : entity.getEmpIdSet());
             params.put("asunt", entity.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
 
@@ -203,12 +254,50 @@ public class TicketREST {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
 
-            sendEmail("TicketNotification", "Ticket <ticketIgb@igbcolombia.com>", "Nuevo ticket", (String) user[2],
-                    "soporte@igbcolombia.com", "", null, params);
+            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", "Nuevo ticket", (String) user[2],
+                    "soporte@igbcolombia.com", null, null, params);
             return Response.ok(new ResponseDTO(0, entity.getId())).build();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el ticket", e);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el ticket.")).build();
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la creacion del ticket", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la creacion del ticket.")).build();
+        }
+    }
+
+    @POST
+    @Path("update-status-ticket")
+    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response updateStatusTicket(TicketDTO dto) {
+        if (!ticketTIFacade.changeStatusTicket(dto.idTicket, dto.status)) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado a {0} al ticket #{1}", new Object[]{dto.getStatus(), dto.getIdTicket()});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el estado a " + dto.getStatus() + " al ticket #" + dto.getIdTicket())).build();
+        }
+
+        try {
+            //TODO: Notificar vía mail la modificación de estado del ticket
+            Map<String, String> params = new HashMap<>();
+            params.put("idTicket", dto.getIdTicket().toString());
+            params.put("status", dto.getStatus());
+            params.put("empIdAdd", dto.getEmpAdd());
+            params.put("companyName", dto.getCompany());
+            params.put("department", dto.getDepartment());
+            params.put("priority", dto.getPriority());
+            params.put("empIdSet", dto.getEmpSet() == null ? "SIN ASIGNAR" : dto.getEmpSet());
+            params.put("asunt", dto.getAsunt());
+            params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            if (user != null) {
+                params.put("empName", (String) user[0] + " " + user[1]);
+            }
+
+            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", dto.getAsunt() + " ticket", (String) user[2],
+                    "soporte@igbcolombia.com", null, null, params);
+            return Response.ok(new ResponseDTO(0, dto.getIdTicket())).build();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la actualizacion del ticket", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la actualizacion del ticket.")).build();
         }
     }
 
@@ -223,7 +312,7 @@ public class TicketREST {
         dtoMail.addBccAddress(bccAddress);
         dtoMail.addBccAddress(ccAddress);
         try {
-            emailManager.sendMailClientCapture(dtoMail);
+            emailManager.sendEmail(dtoMail);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
         }

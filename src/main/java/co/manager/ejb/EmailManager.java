@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,11 +33,9 @@ public class EmailManager implements Serializable {
     private String host;
     private String templatesFolder;
     private String port;
-    private Properties propsConn;
 
     @Inject
     private ManagerApplicationBean appBean;
-
 
     @PostConstruct
     protected void initialize() {
@@ -45,19 +44,20 @@ public class EmailManager implements Serializable {
         host = appBean.obtenerValorPropiedad(Constants.EMAIL_HOST);
         templatesFolder = appBean.obtenerValorPropiedad("mail.templates");
         port = appBean.obtenerValorPropiedad(Constants.EMAIL_PORT);
-        inicializarParametros();
     }
 
-    private void inicializarParametros() {
-        propsConn = new Properties();
-        propsConn.put("mail.smtp.auth", "true");
-        propsConn.put("mail.smtp.starttls.enable", "true");
-        propsConn.put("mail.smtp.host", host);
-        propsConn.put("mail.smtp.port", "25");
+    public Properties getEmailProperties() {
+        final Properties config = new Properties();
+        config.put("mail.smtp.auth", "true");
+        config.put("mail.smtp.starttls.enable", "true");
+        config.put("mail.smtp.host", host);
+        config.put("mail.smtp.port", port);
+        return config;
     }
 
-    public void sendMailClientCapture(MailMessageDTO dto) throws Exception {
-        Session session = Session.getInstance(propsConn, new javax.mail.Authenticator() {
+    public void sendEmail(MailMessageDTO dto) throws Exception {
+        final Session session = Session.getInstance(getEmailProperties(), new Authenticator() {
+
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
@@ -65,11 +65,12 @@ public class EmailManager implements Serializable {
         });
 
         try {
-            Message message = new MimeMessage(session);
+            final Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(dto.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dto.getToList()));
-            message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(dto.getBccList()));
+            message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
             message.setSubject(dto.getSubject());
+            message.setSentDate(new Date());
             try {
                 String fullTemplateName = appBean.obtenerValorPropiedad(Constants.EMAIL_TEMPLATES) + dto.getTemplateName() + ".html";
                 String templateContent = new String(Files.readAllBytes(Paths.get(fullTemplateName)), StandardCharsets.UTF_8);
