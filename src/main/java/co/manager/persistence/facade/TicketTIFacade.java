@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,6 +69,7 @@ public class TicketTIFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los ticket.");
+            return null;
         }
         return new ArrayList<>();
     }
@@ -80,6 +82,27 @@ public class TicketTIFacade {
         cu.set(root.get(TicketTI_.empIdSet), idEmp);
         cu.set(root.get(TicketTI_.priority), priority);
         cu.set(root.get(TicketTI_.status), status);
+        cu.set(root.get(TicketTI_.modifyDate), new Date());
+        cu.where(cb.equal(root.get(TicketTI_.id), idTicket));
+        try {
+            int rows = em.createQuery(cu).executeUpdate();
+            if (rows == 1) {
+                return true;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket, e);
+        }
+        return false;
+    }
+
+    public boolean changeStatusTicket(Integer idTicket, String status) {
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaUpdate<TicketTI> cu = cb.createCriteriaUpdate(TicketTI.class);
+        Root<TicketTI> root = cu.from(TicketTI.class);
+        cu.set(root.get(TicketTI_.status), status);
+        cu.set(root.get(TicketTI_.modifyDate), new Date());
         cu.where(cb.equal(root.get(TicketTI_.id), idTicket));
         try {
             int rows = em.createQuery(cu).executeUpdate();

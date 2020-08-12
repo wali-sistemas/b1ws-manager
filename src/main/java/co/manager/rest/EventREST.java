@@ -94,7 +94,7 @@ public class EventREST implements Serializable {
         dtoMail.addBccAddress(bccAddress);
         dtoMail.addBccAddress(ccAddress);
         try {
-            emailManager.sendMailClientCapture(dtoMail);
+            emailManager.sendEmail(dtoMail);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
         }

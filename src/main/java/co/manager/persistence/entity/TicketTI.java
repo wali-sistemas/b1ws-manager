@@ -47,6 +47,9 @@ public class TicketTI implements Serializable {
     @Basic(optional = false)
     @Column(name = "status")
     private String status;
+    @Basic(optional = false)
+    @Column(name = "modify_date")
+    private Date modifyDate;
 
     public TicketTI() {
     }
@@ -139,6 +142,14 @@ public class TicketTI implements Serializable {
         this.status = status;
     }
 
+    public Date getModifyDate() {
+        return modifyDate;
+    }
+
+    public void setModifyDate(Date modifyDate) {
+        this.modifyDate = modifyDate;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -178,6 +189,7 @@ public class TicketTI implements Serializable {
                 ", companyName='" + companyName + '\'' +
                 ", asunt='" + asunt + '\'' +
                 ", status='" + status + '\'' +
+                ", modifyDate=" + modifyDate +
                 '}';
     }
 }
