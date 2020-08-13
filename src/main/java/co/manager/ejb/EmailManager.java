@@ -47,7 +47,7 @@ public class EmailManager implements Serializable {
     }
 
     public Properties getEmailProperties() {
-        final Properties config = new Properties();
+        Properties config = new Properties();
         config.put("mail.smtp.auth", "true");
         config.put("mail.smtp.starttls.enable", "true");
         config.put("mail.smtp.host", host);
@@ -56,7 +56,7 @@ public class EmailManager implements Serializable {
     }
 
     public void sendEmail(MailMessageDTO dto) throws Exception {
-        final Session session = Session.getInstance(getEmailProperties(), new Authenticator() {
+        Session session = Session.getInstance(getEmailProperties(), new Authenticator() {
 
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -65,7 +65,7 @@ public class EmailManager implements Serializable {
         });
 
         try {
-            final Message message = new MimeMessage(session);
+            Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(dto.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dto.getToList()));
             message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
