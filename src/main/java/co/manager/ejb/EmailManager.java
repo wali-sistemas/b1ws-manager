@@ -68,7 +68,7 @@ public class EmailManager implements Serializable {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(dto.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dto.getToList()));
-            message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
+            //message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
             message.setSubject(dto.getSubject());
             message.setSentDate(new Date());
             try {

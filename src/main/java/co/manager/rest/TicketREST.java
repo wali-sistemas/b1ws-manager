@@ -308,7 +308,7 @@ public class TicketREST {
         dtoMail.setAttachments(adjuntos);
         dtoMail.setFrom(from);
         dtoMail.setSubject(subject);
-        dtoMail.addToAddress(toAddress);
+        dtoMail.addToAddress(toAddress + ',' + ccAddress);
         dtoMail.addBccAddress(bccAddress);
         dtoMail.addBccAddress(ccAddress);
         try {
