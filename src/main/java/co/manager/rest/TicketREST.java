@@ -164,7 +164,7 @@ public class TicketREST {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
 
-            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", "Asignado ticket", (String) user[2],
+            sendEmail("TicketNotification", "soporte@igbcolombia.com", "Asignado ticket", (String) user[2],
                     "soporte@igbcolombia.com", null, null, params);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la asignacion del ticket #" + dto.getIdTicket(), e);
@@ -254,7 +254,7 @@ public class TicketREST {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
 
-            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", "Nuevo ticket", (String) user[2],
+            sendEmail("TicketNotification", "soporte@igbcolombia.com", "Nuevo ticket", (String) user[2],
                     "soporte@igbcolombia.com", null, null, params);
             return Response.ok(new ResponseDTO(0, entity.getId())).build();
         } catch (Exception e) {
@@ -292,7 +292,7 @@ public class TicketREST {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
 
-            sendEmail("TicketNotification", "sistemas2@igbcolombia.com", dto.getAsunt() + " ticket", (String) user[2],
+            sendEmail("TicketNotification", "soporte@igbcolombia.com", dto.getAsunt() + " ticket", (String) user[2],
                     "soporte@igbcolombia.com", null, null, params);
             return Response.ok(new ResponseDTO(0, dto.getIdTicket())).build();
         } catch (Exception e) {
