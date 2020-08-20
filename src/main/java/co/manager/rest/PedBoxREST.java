@@ -589,7 +589,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         //TODO: historial de pagos de los últimos 3 meses.
 
-        List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, (companyname.equals("IGB") ? "IGBPruebas" : companyname), false);
+        List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de pagos para el cliente {0} en {1}", new Object[]{cardCode, companyname});
@@ -824,7 +824,6 @@ public class PedBoxREST {
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(IncomingPaymentDTO dto) {
-        dto.setCompanyName("IGBPruebas");
         CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
