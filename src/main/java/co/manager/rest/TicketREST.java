@@ -158,6 +158,7 @@ public class TicketREST {
             params.put("empIdSet", dto.getEmpSet());
             params.put("asunt", dto.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+            params.put("note", "Ticket asignado al empleado " + dto.getEmpSet() + " con prioridad " + dto.getPriority());
 
             Object[] user = usersFacade.getAttributeUser(dto.empAdd);
             if (user != null) {
@@ -214,7 +215,8 @@ public class TicketREST {
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response addNewTicket(TicketDTO dto) {
+    public Response addNewTicket(TicketDTO dto,
+                                 @QueryParam("newNote") String newNote) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de un nuevo ticket {0}", dto.toString());
 
         TicketTI entity = new TicketTI();
@@ -248,6 +250,7 @@ public class TicketREST {
             params.put("empIdSet", entity.getEmpIdSet() == null ? "SIN ASIGNAR" : entity.getEmpIdSet());
             params.put("asunt", entity.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
+            params.put("note", newNote == null ? "SIN NOTA" : newNote);
 
             Object[] user = usersFacade.getAttributeUser(dto.empAdd);
             if (user != null) {
@@ -268,7 +271,8 @@ public class TicketREST {
     @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response updateStatusTicket(TicketDTO dto) {
+    public Response updateStatusTicket(TicketDTO dto,
+                                       @QueryParam("note") String note) {
         if (!ticketTIFacade.changeStatusTicket(dto.idTicket, dto.status)) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado a {0} al ticket #{1}", new Object[]{dto.getStatus(), dto.getIdTicket()});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el estado a " + dto.getStatus() + " al ticket #" + dto.getIdTicket())).build();
@@ -286,6 +290,7 @@ public class TicketREST {
             params.put("empIdSet", dto.getEmpSet() == null ? "SIN ASIGNAR" : dto.getEmpSet());
             params.put("asunt", dto.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+            params.put("note", note);
 
             Object[] user = usersFacade.getAttributeUser(dto.empAdd);
             if (user != null) {

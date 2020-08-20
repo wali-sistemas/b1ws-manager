@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 public class ItemMotorepuestoDTO {
 
     private String itemCode;
-    private String itemName;
     private String nomWeb;
     private Integer presentation;
     private Integer iva;
@@ -20,6 +19,7 @@ public class ItemMotorepuestoDTO {
     private String pictureUrl;
     private String category;
     private String marca;
+    private String pictureMarcaUrl;
     private String subMarca;
     private String grupo;
     private String subgrupo;
@@ -44,9 +44,8 @@ public class ItemMotorepuestoDTO {
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String itemName, String nomWeb, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
         this.itemCode = itemCode;
-        this.itemName = itemName;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
         this.iva = iva;
@@ -55,6 +54,7 @@ public class ItemMotorepuestoDTO {
         this.pictureUrl = pictureUrl;
         this.category = category;
         this.marca = marca;
+        this.pictureMarcaUrl = pictureMarcaUrl;
         this.subMarca = subMarca;
         this.grupo = grupo;
         this.subgrupo = subgrupo;
@@ -81,14 +81,6 @@ public class ItemMotorepuestoDTO {
 
     public void setItemCode(String itemCode) {
         this.itemCode = itemCode;
-    }
-
-    public String getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(String itemName) {
-        this.itemName = itemName;
     }
 
     public String getNomWeb() {
@@ -145,6 +137,14 @@ public class ItemMotorepuestoDTO {
 
     public void setMarca(String marca) {
         this.marca = marca;
+    }
+
+    public String getPictureMarcaUrl() {
+        return pictureMarcaUrl;
+    }
+
+    public void setPictureMarcaUrl(String pictureMarcaUrl) {
+        this.pictureMarcaUrl = pictureMarcaUrl;
     }
 
     public String getSubMarca() {
@@ -303,7 +303,6 @@ public class ItemMotorepuestoDTO {
     public String toString() {
         return "ItemMotorepuestoDTO{" +
                 "itemCode='" + itemCode + '\'' +
-                ", itemName='" + itemName + '\'' +
                 ", nomWeb='" + nomWeb + '\'' +
                 ", presentation=" + presentation +
                 ", iva=" + iva +
@@ -312,6 +311,7 @@ public class ItemMotorepuestoDTO {
                 ", pictureUrl='" + pictureUrl + '\'' +
                 ", category='" + category + '\'' +
                 ", marca='" + marca + '\'' +
+                ", pictureMarcaUrl='" + pictureMarcaUrl + '\'' +
                 ", subMarca='" + subMarca + '\'' +
                 ", grupo='" + grupo + '\'' +
                 ", subgrupo='" + subgrupo + '\'' +
