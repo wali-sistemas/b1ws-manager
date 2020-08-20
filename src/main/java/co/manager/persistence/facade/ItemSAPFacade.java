@@ -239,7 +239,7 @@ public class ItemSAPFacade {
 
         StringBuilder sb = new StringBuilder();
         sb.append("select t.*, cast(itMrto.ItemName as varchar(100))as NombreWeb, cast(prMrto.Price as numeric(18,2))as PrecioInicial, cast(0 as numeric(18,2))as PrecioOferta from ( ");
-        sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.ItemName as varchar(100))as Descripcion,cast(it.PurPackUn as int)as Presentacion, ");
+        sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.PurPackUn as int)as Presentacion, ");
         sb.append(" cast(19/*imp.Rate*/ as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when (select isnull(sum(de.onHandQty),0) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
         sb.append(" then ((select SUM(s.OnHand) from OITW s where s.WhsCode in ('01', '05', '26') and s.ItemCode = it.ItemCode)-it.iscommited-(select ");
@@ -265,7 +265,7 @@ public class ItemSAPFacade {
         sb.append(" where it.validFor = 'Y' and it.ItemType = 'I' and it.QryGroup2 = 'Y' ");
         sb.append("UNION ALL ");
         //TODO: macth con Motozone
-        sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.ItemName as varchar(100))as Descripcion,cast(it.PurPackUn as int)as Presentacion, ");
+        sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.PurPackUn as int)as Presentacion, ");
         sb.append(" cast(19/*imp.Rate*/ as int)as PorcentajeIva, cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when (select isnull(sum(de.onHandQty),0) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
         sb.append(" then ((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in ('01', '09', '26', '44') and s.ItemCode = it.ItemCode) - it.iscommited - (select ");

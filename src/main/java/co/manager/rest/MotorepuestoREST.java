@@ -54,35 +54,36 @@ public class MotorepuestoREST {
         for (Object[] obj : objects) {
             ItemMotorepuestoDTO dto = new ItemMotorepuestoDTO();
             dto.setItemCode((String) obj[0]);
-            dto.setItemName((String) obj[1]);
-            dto.setPresentation((Integer) obj[2]);
-            dto.setIva((Integer) obj[3]);
-            dto.setWhsCode((String) obj[4]);
-            dto.setStock((Integer) obj[5]);
-            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/motorepuesto/" + obj[6]);
-            dto.setCategory((String) obj[7]);
-            dto.setMarca((String) obj[8]);
-            dto.setSubMarca((String) obj[9]);
-            dto.setGrupo((String) obj[10]);
-            dto.setSubgrupo((String) obj[11]);
+            //dto.setItemName((String) obj[1]);
+            dto.setPresentation((Integer) obj[1]);
+            dto.setIva((Integer) obj[2]);
+            dto.setWhsCode((String) obj[3]);
+            dto.setStock((Integer) obj[4]);
+            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/motorepuesto/" + obj[5]);
+            dto.setPictureMarcaUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/motorepuesto/" + obj[7] + ".jpg");
+            dto.setCategory((String) obj[6]);
+            dto.setMarca((String) obj[7]);
+            dto.setSubMarca((String) obj[8]);
+            dto.setGrupo((String) obj[9]);
+            dto.setSubgrupo((String) obj[10]);
             //dto.setLinea((String) obj[12]);
             //dto.setSublinea((String) obj[13]);
-            dto.setModeloMoto((String) obj[12]);
-            dto.setTipoLlanta((String) obj[13]);
-            dto.setAnchoLlanta((String) obj[14]);
-            dto.setPerfilLlanta((String) obj[15]);
-            dto.setRinLlanta((String) obj[16]);
-            dto.setTalla((String) obj[17]);
-            dto.setColorCadena((String) obj[18]);
-            dto.setPasoCadena((String) obj[19]);
-            dto.setViscosidad((String) obj[20]);
-            dto.setBase((String) obj[21]);
-            dto.setItemParent((String) obj[22]);
-            dto.setItemType((String) obj[23]);
-            dto.setKeyword((String) obj[24]);
-            dto.setNomWeb((String) obj[25]);
-            dto.setPriceVenta((BigDecimal) obj[26]);
-            dto.setPricePromo((BigDecimal) obj[27]);
+            dto.setModeloMoto((String) obj[11]);
+            dto.setTipoLlanta((String) obj[12]);
+            dto.setAnchoLlanta((String) obj[13]);
+            dto.setPerfilLlanta((String) obj[14]);
+            dto.setRinLlanta((String) obj[15]);
+            dto.setTalla((String) obj[16]);
+            dto.setColorCadena((String) obj[17]);
+            dto.setPasoCadena((String) obj[18]);
+            dto.setViscosidad((String) obj[19]);
+            dto.setBase((String) obj[20]);
+            dto.setItemParent((String) obj[21]);
+            dto.setItemType((String) obj[22]);
+            dto.setKeyword((String) obj[23]);
+            dto.setNomWeb((String) obj[24]);
+            dto.setPriceVenta((BigDecimal) obj[25]);
+            dto.setPricePromo((BigDecimal) obj[26]);
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");
@@ -109,8 +110,6 @@ public class MotorepuestoREST {
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
-
-
 
 
 }
