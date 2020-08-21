@@ -54,8 +54,7 @@ public class MotorepuestoREST {
         for (Object[] obj : objects) {
             ItemMotorepuestoDTO dto = new ItemMotorepuestoDTO();
             dto.setItemCode((String) obj[0]);
-            //dto.setItemName((String) obj[1]);
-            dto.setPresentation((Integer) obj[1]);
+            dto.setPresentation((String) obj[1]);
             dto.setIva((Integer) obj[2]);
             dto.setWhsCode((String) obj[3]);
             dto.setStock((Integer) obj[4]);
@@ -66,8 +65,6 @@ public class MotorepuestoREST {
             dto.setSubMarca((String) obj[8]);
             dto.setGrupo((String) obj[9]);
             dto.setSubgrupo((String) obj[10]);
-            //dto.setLinea((String) obj[12]);
-            //dto.setSublinea((String) obj[13]);
             dto.setModeloMoto((String) obj[11]);
             dto.setTipoLlanta((String) obj[12]);
             dto.setAnchoLlanta((String) obj[13]);
@@ -78,12 +75,13 @@ public class MotorepuestoREST {
             dto.setPasoCadena((String) obj[18]);
             dto.setViscosidad((String) obj[19]);
             dto.setBase((String) obj[20]);
-            dto.setItemParent((String) obj[21]);
-            dto.setItemType((String) obj[22]);
-            dto.setKeyword((String) obj[23]);
-            dto.setNomWeb((String) obj[24]);
-            dto.setPriceVenta((BigDecimal) obj[25]);
-            dto.setPricePromo((BigDecimal) obj[26]);
+            dto.setItemType((String) obj[21]);
+            dto.setKeyword((String) obj[22]);
+            dto.setItemParent((String) obj[23]);
+            dto.setItemNameParent((String) obj[24]);
+            dto.setNomWeb((String) obj[25]);
+            dto.setPriceVenta((BigDecimal) obj[26]);
+            dto.setPricePromo((BigDecimal) obj[27]);
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");

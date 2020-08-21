@@ -12,7 +12,7 @@ public class ItemMotorepuestoDTO {
 
     private String itemCode;
     private String nomWeb;
-    private Integer presentation;
+    private String presentation;
     private Integer iva;
     private String whsCode;
     private Integer stock;
@@ -23,8 +23,6 @@ public class ItemMotorepuestoDTO {
     private String subMarca;
     private String grupo;
     private String subgrupo;
-    //private String linea;
-    //private String sublinea;
     private String modeloMoto;
     private String tipoLlanta;
     private String anchoLlanta;
@@ -36,6 +34,7 @@ public class ItemMotorepuestoDTO {
     private String viscosidad;
     private String base;
     private String itemParent;
+    private String itemNameParent;
     private String itemType;
     private String keyword;
     private BigDecimal priceVenta;
@@ -44,7 +43,7 @@ public class ItemMotorepuestoDTO {
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String nomWeb, Integer presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
         this.itemCode = itemCode;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
@@ -69,6 +68,7 @@ public class ItemMotorepuestoDTO {
         this.viscosidad = viscosidad;
         this.base = base;
         this.itemParent = itemParent;
+        this.itemNameParent = itemNameParent;
         this.itemType = itemType;
         this.keyword = keyword;
         this.priceVenta = priceVenta;
@@ -91,11 +91,11 @@ public class ItemMotorepuestoDTO {
         this.nomWeb = nomWeb;
     }
 
-    public Integer getPresentation() {
+    public String getPresentation() {
         return presentation;
     }
 
-    public void setPresentation(Integer presentation) {
+    public void setPresentation(String presentation) {
         this.presentation = presentation;
     }
 
@@ -129,6 +129,14 @@ public class ItemMotorepuestoDTO {
 
     public void setPictureUrl(String pictureUrl) {
         this.pictureUrl = pictureUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getMarca() {
@@ -219,14 +227,6 @@ public class ItemMotorepuestoDTO {
         this.talla = talla;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getColorCadena() {
         return colorCadena;
     }
@@ -265,6 +265,14 @@ public class ItemMotorepuestoDTO {
 
     public void setItemParent(String itemParent) {
         this.itemParent = itemParent;
+    }
+
+    public String getItemNameParent() {
+        return itemNameParent;
+    }
+
+    public void setItemNameParent(String itemNameParent) {
+        this.itemNameParent = itemNameParent;
     }
 
     public String getItemType() {
@@ -326,6 +334,7 @@ public class ItemMotorepuestoDTO {
                 ", viscosidad='" + viscosidad + '\'' +
                 ", base='" + base + '\'' +
                 ", itemParent='" + itemParent + '\'' +
+                ", itemNameParent='" + itemNameParent + '\'' +
                 ", itemType='" + itemType + '\'' +
                 ", keyword='" + keyword + '\'' +
                 ", priceVenta=" + priceVenta +
