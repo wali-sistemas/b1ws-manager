@@ -33,6 +33,7 @@ public class ItemMotorepuestoDTO {
     private String pasoCadena;
     private String viscosidad;
     private String base;
+    private boolean parent;
     private String itemParent;
     private String itemNameParent;
     private String itemType;
@@ -43,7 +44,7 @@ public class ItemMotorepuestoDTO {
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
         this.itemCode = itemCode;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
@@ -67,6 +68,7 @@ public class ItemMotorepuestoDTO {
         this.pasoCadena = pasoCadena;
         this.viscosidad = viscosidad;
         this.base = base;
+        this.parent = parent;
         this.itemParent = itemParent;
         this.itemNameParent = itemNameParent;
         this.itemType = itemType;
@@ -259,6 +261,14 @@ public class ItemMotorepuestoDTO {
         this.base = base;
     }
 
+    public boolean isParent() {
+        return parent;
+    }
+
+    public void setParent(boolean parent) {
+        this.parent = parent;
+    }
+
     public String getItemParent() {
         return itemParent;
     }
@@ -312,7 +322,7 @@ public class ItemMotorepuestoDTO {
         return "ItemMotorepuestoDTO{" +
                 "itemCode='" + itemCode + '\'' +
                 ", nomWeb='" + nomWeb + '\'' +
-                ", presentation=" + presentation +
+                ", presentation='" + presentation + '\'' +
                 ", iva=" + iva +
                 ", whsCode='" + whsCode + '\'' +
                 ", stock=" + stock +
@@ -333,6 +343,7 @@ public class ItemMotorepuestoDTO {
                 ", pasoCadena='" + pasoCadena + '\'' +
                 ", viscosidad='" + viscosidad + '\'' +
                 ", base='" + base + '\'' +
+                ", parent=" + parent +
                 ", itemParent='" + itemParent + '\'' +
                 ", itemNameParent='" + itemNameParent + '\'' +
                 ", itemType='" + itemType + '\'' +

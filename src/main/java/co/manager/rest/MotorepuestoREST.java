@@ -77,6 +77,7 @@ public class MotorepuestoREST {
             dto.setBase((String) obj[20]);
             dto.setItemType((String) obj[21]);
             dto.setKeyword((String) obj[22]);
+            dto.setParent(obj[23] != null ? true : false);
             dto.setItemParent((String) obj[23]);
             dto.setItemNameParent((String) obj[24]);
             dto.setNomWeb((String) obj[25]);
