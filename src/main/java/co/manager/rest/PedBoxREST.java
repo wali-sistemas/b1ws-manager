@@ -134,8 +134,8 @@ public class PedBoxREST {
             ItemExtranetDTO dto = new ItemExtranetDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
-            dto.setUnit("UND");//TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
-            dto.setPresentation((Integer) obj[2]);
+            //TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
+            dto.setPresentation((String) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
             dto.setWhsCode((String) obj[5]);
@@ -144,18 +144,20 @@ public class PedBoxREST {
             dto.setDiscountPorc(0);
             dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
             //TODO: filtros para extranet
-            dto.setMarca((String) obj[8]);
-            dto.setGrupo((String) obj[9]);
-            dto.setSubgrupo((String) obj[10]);
-            dto.setModeloMoto((String) obj[11]);
-            dto.setTipoLlanta((String) obj[12]);
-            dto.setAnchoLlanta((String) obj[13]);
-            dto.setPerfilLlanta((String) obj[14]);
-            dto.setRinLlanta((String) obj[15]);
-            dto.setTalla((String) obj[16]);
+            dto.setModeloMoto((String) obj[8]);
+            dto.setTipoLlanta((String) obj[9]);
+            dto.setAnchoLlanta((String) obj[10]);
+            dto.setPerfilLlanta((String) obj[11]);
+            dto.setRinLlanta((String) obj[12]);
+            dto.setTalla((String) obj[13]);
+            dto.setCategoria((String) obj[14]);
+            dto.setGrupo((String) obj[15]);
+            dto.setSubgrupo((String) obj[16]);
+            dto.setMarca((String) obj[17]);
+            dto.setViscosidad((String) obj[18]);
+            dto.setBase((String) obj[19]);
 
             if (companyname.equals("VARROC")) {
-                dto.setSubLinea((String) obj[17]);
                 dto.setUrlFichaTecnica(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + companyname + "/fileItem/" + obj[0] + ".pdf");
             }
 
@@ -892,7 +894,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, dto.toString());
 
         //if (dto.getCompanyName().contains("VARROC")) {
-            //return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
+        //return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
         //} else {
         CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
         return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();

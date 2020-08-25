@@ -11,35 +11,35 @@ import java.math.BigDecimal;
 public class ItemExtranetDTO {
     private String itemCode;
     private String itemName;
-    private String unit;
     private String whsCode;
     private String pictureUrl;
-    private Integer presentation;
+    private String presentation;
     private Integer iva;
     private Integer discountItem;
     private Integer discountPorc;
     private BigDecimal price;
     private Integer stock;
     //TODO: campos para filtros en extranet
-    private String marca;
+    private String categoria;
     private String grupo;
     private String subgrupo;
-    private String subLinea;
+    private String marca;
     private String modeloMoto;
     private String tipoLlanta;
     private String anchoLlanta;
     private String perfilLlanta;
     private String rinLlanta;
     private String talla;
+    private String viscosidad;
+    private String base;
     private String urlFichaTecnica;
 
     public ItemExtranetDTO() {
     }
 
-    public ItemExtranetDTO(String itemCode, String itemName, String unit, String whsCode, String pictureUrl, Integer presentation, Integer iva, Integer discountItem, Integer discountPorc, BigDecimal price, Integer stock, String marca, String grupo, String subgrupo, String subLinea, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String urlFichaTecnica) {
+    public ItemExtranetDTO(String itemCode, String itemName, String whsCode, String pictureUrl, String presentation, Integer iva, Integer discountItem, Integer discountPorc, BigDecimal price, Integer stock, String categoria, String grupo, String subgrupo, String marca, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String viscosidad, String base, String urlFichaTecnica) {
         this.itemCode = itemCode;
         this.itemName = itemName;
-        this.unit = unit;
         this.whsCode = whsCode;
         this.pictureUrl = pictureUrl;
         this.presentation = presentation;
@@ -48,16 +48,18 @@ public class ItemExtranetDTO {
         this.discountPorc = discountPorc;
         this.price = price;
         this.stock = stock;
-        this.marca = marca;
+        this.categoria = categoria;
         this.grupo = grupo;
         this.subgrupo = subgrupo;
-        this.subLinea = subLinea;
+        this.marca = marca;
         this.modeloMoto = modeloMoto;
         this.tipoLlanta = tipoLlanta;
         this.anchoLlanta = anchoLlanta;
         this.perfilLlanta = perfilLlanta;
         this.rinLlanta = rinLlanta;
         this.talla = talla;
+        this.viscosidad = viscosidad;
+        this.base = base;
         this.urlFichaTecnica = urlFichaTecnica;
     }
 
@@ -77,14 +79,6 @@ public class ItemExtranetDTO {
         this.itemName = itemName;
     }
 
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
     public String getWhsCode() {
         return whsCode;
     }
@@ -93,11 +87,11 @@ public class ItemExtranetDTO {
         this.whsCode = whsCode;
     }
 
-    public Integer getPresentation() {
+    public String getPresentation() {
         return presentation;
     }
 
-    public void setPresentation(Integer presentation) {
+    public void setPresentation(String presentation) {
         this.presentation = presentation;
     }
 
@@ -173,14 +167,6 @@ public class ItemExtranetDTO {
         this.subgrupo = subgrupo;
     }
 
-    public String getSubLinea() {
-        return subLinea;
-    }
-
-    public void setSubLinea(String subLinea) {
-        this.subLinea = subLinea;
-    }
-
     public String getModeloMoto() {
         return modeloMoto;
     }
@@ -237,30 +223,55 @@ public class ItemExtranetDTO {
         this.urlFichaTecnica = urlFichaTecnica;
     }
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getViscosidad() {
+        return viscosidad;
+    }
+
+    public void setViscosidad(String viscosidad) {
+        this.viscosidad = viscosidad;
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public void setBase(String base) {
+        this.base = base;
+    }
+
     @Override
     public String toString() {
         return "ItemExtranetDTO{" +
                 "itemCode='" + itemCode + '\'' +
                 ", itemName='" + itemName + '\'' +
-                ", unit='" + unit + '\'' +
                 ", whsCode='" + whsCode + '\'' +
                 ", pictureUrl='" + pictureUrl + '\'' +
-                ", presentation=" + presentation +
+                ", presentation='" + presentation + '\'' +
                 ", iva=" + iva +
                 ", discountItem=" + discountItem +
                 ", discountPorc=" + discountPorc +
                 ", price=" + price +
                 ", stock=" + stock +
-                ", marca='" + marca + '\'' +
+                ", categoria='" + categoria + '\'' +
                 ", grupo='" + grupo + '\'' +
                 ", subgrupo='" + subgrupo + '\'' +
-                ", subLinea='" + subLinea + '\'' +
+                ", marca='" + marca + '\'' +
                 ", modeloMoto='" + modeloMoto + '\'' +
                 ", tipoLlanta='" + tipoLlanta + '\'' +
                 ", anchoLlanta='" + anchoLlanta + '\'' +
                 ", perfilLlanta='" + perfilLlanta + '\'' +
                 ", rinLlanta='" + rinLlanta + '\'' +
                 ", talla='" + talla + '\'' +
+                ", viscosidad='" + viscosidad + '\'' +
+                ", base='" + base + '\'' +
                 ", urlFichaTecnica='" + urlFichaTecnica + '\'' +
                 '}';
     }
