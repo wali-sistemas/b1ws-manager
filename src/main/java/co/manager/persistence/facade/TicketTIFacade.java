@@ -36,6 +36,10 @@ public class TicketTIFacade {
         persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTi);
     }
 
+    public TicketTI find(Integer idTicket, String companyName, boolean testing) {
+        return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).find(TicketTI.class, idTicket);
+    }
+
     public Long getIdTicket() {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
         StringBuilder sb = new StringBuilder();

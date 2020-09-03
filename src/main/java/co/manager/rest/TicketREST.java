@@ -200,10 +200,37 @@ public class TicketREST {
         entity.setEmpId(dto.empNote);
         entity.setNote(dto.note);
 
+        TicketTI entityTicket = ticketTIFacade.find(dto.idTicket, "", false);
+
         try {
             ticketTINotesFacade.create(entity, "", false);
             CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.idTicket.toString());
-            return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
+            try {
+                //TODO: Notificar vía mail la nota del ticket
+                Map<String, String> params = new HashMap<>();
+                params.put("idTicket", entity.getId().toString());
+                params.put("status", entityTicket.getStatus());
+                params.put("empIdAdd", entityTicket.getEmpIdAdd());
+                params.put("companyName", entityTicket.getCompanyName());
+                params.put("department", entityTicket.getDepartmentName());
+                params.put("priority", entityTicket.getPriority());
+                params.put("empIdSet", entityTicket.getEmpIdSet());
+                params.put("asunt", entityTicket.getAsunt());
+                params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
+                params.put("note", entity.getNote());
+
+                Object[] user = usersFacade.getAttributeUser(dto.empNote);
+                if (user != null) {
+                    params.put("empName", (String) user[0] + " " + user[1]);
+                }
+
+                sendEmail("TicketNotification", "soporte@igbcolombia.com", "Nuevo ticket", (String) user[2],
+                        "soporte@igbcolombia.com", null, null, params);
+                return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la creacion del ticket", e);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la creacion del ticket.")).build();
+            }
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.idTicket.toString(), e);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #{0}" + dto.idTicket.toString())).build();
@@ -276,6 +303,17 @@ public class TicketREST {
         if (!ticketTIFacade.changeStatusTicket(dto.idTicket, dto.status)) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado a {0} al ticket #{1}", new Object[]{dto.getStatus(), dto.getIdTicket()});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el estado a " + dto.getStatus() + " al ticket #" + dto.getIdTicket())).build();
+        }
+
+        try {
+            TicketTINotes entity = new TicketTINotes();
+            entity.setIdTicket(dto.idTicket.longValue());
+            entity.setDate(new Date());
+            entity.setEmpId(dto.empAdd);
+            entity.setNote(note);
+            ticketTINotesFacade.create(entity, "", false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.WARNING, "Ocurrio un novedad agregando la nota al ticket #{0}", dto.getIdTicket());
         }
 
         try {
