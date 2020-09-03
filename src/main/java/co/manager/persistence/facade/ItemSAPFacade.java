@@ -290,9 +290,9 @@ public class ItemSAPFacade {
         sb.append(" where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' ");
         sb.append(")as t ");
         //TODO: macth con Motorepuesto
-        sb.append("left join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto ");
-        sb.append("left join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode=itMrto.ItemCode and prMrto.PriceList=1 ");
-        sb.append("left join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto2 on prMrto2.ItemCode=itMrto.ItemCode and prMrto2.PriceList=2 ");
+        sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto ");
+        sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode=itMrto.ItemCode and prMrto.PriceList=1 ");
+        sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto2 on prMrto2.ItemCode=itMrto.ItemCode and prMrto2.PriceList=2 ");
         sb.append("where t.Stock>0 order by Producto ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
