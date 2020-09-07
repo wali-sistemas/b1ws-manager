@@ -309,7 +309,7 @@ public class TicketREST {
             TicketTINotes entity = new TicketTINotes();
             entity.setIdTicket(dto.idTicket.longValue());
             entity.setDate(new Date());
-            entity.setEmpId(dto.empAdd);
+            entity.setEmpId(dto.empSet);
             entity.setNote(note);
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {

@@ -40,11 +40,13 @@ public class ItemMotorepuestoDTO {
     private String keyword;
     private BigDecimal priceVenta;
     private BigDecimal pricePromo;
+    private String descripcionLarga;
+    private String ultimasOfertas;
 
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo, String descripcionLarga, String ultimasOfertas) {
         this.itemCode = itemCode;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
@@ -75,6 +77,8 @@ public class ItemMotorepuestoDTO {
         this.keyword = keyword;
         this.priceVenta = priceVenta;
         this.pricePromo = pricePromo;
+        this.descripcionLarga = descripcionLarga;
+        this.ultimasOfertas = ultimasOfertas;
     }
 
     public String getItemCode() {
@@ -317,6 +321,22 @@ public class ItemMotorepuestoDTO {
         this.pricePromo = pricePromo;
     }
 
+    public String getDescripcionLarga() {
+        return descripcionLarga;
+    }
+
+    public void setDescripcionLarga(String descripcionLarga) {
+        this.descripcionLarga = descripcionLarga;
+    }
+
+    public String getUltimasOfertas() {
+        return ultimasOfertas;
+    }
+
+    public void setUltimasOfertas(String ultimasOfertas) {
+        this.ultimasOfertas = ultimasOfertas;
+    }
+
     @Override
     public String toString() {
         return "ItemMotorepuestoDTO{" +
@@ -350,6 +370,8 @@ public class ItemMotorepuestoDTO {
                 ", keyword='" + keyword + '\'' +
                 ", priceVenta=" + priceVenta +
                 ", pricePromo=" + pricePromo +
+                ", descripcionLarga='" + descripcionLarga + '\'' +
+                ", ultimasOfertas='" + ultimasOfertas + '\'' +
                 '}';
     }
 }
