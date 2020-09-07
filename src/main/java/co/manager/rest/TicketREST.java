@@ -208,7 +208,7 @@ public class TicketREST {
             try {
                 //TODO: Notificar vía mail la nota del ticket
                 Map<String, String> params = new HashMap<>();
-                params.put("idTicket", entity.getId().toString());
+                params.put("idTicket", entity.getIdTicket().toString());
                 params.put("status", entityTicket.getStatus());
                 params.put("empIdAdd", entityTicket.getEmpIdAdd());
                 params.put("companyName", entityTicket.getCompanyName());
