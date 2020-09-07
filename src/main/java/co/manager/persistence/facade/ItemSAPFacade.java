@@ -232,7 +232,8 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.*,cast(itMrto.ItemName as varchar(100))as NombreWeb,cast(prMrto.Price as numeric(18,2))as PrecioInicial,cast(prMrto2.Price as numeric(18,2))as PrecioOferta from ( ");
+        sb.append("select t.*,cast(itMrto.ItemName as varchar(100))as NombreWeb,cast(prMrto.Price as numeric(18,2))as PrecioInicial,cast(prMrto2.Price as numeric(18,2))as PrecioOferta, ");
+        sb.append(" cast(itMrto.u_descripcion_larga as varchar(max))as DescripcionLarga,cast(itMrto.QryGroup2 as varchar(100))as UltimasOfertas from(");
         //TODO: macth con IGB
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.InvntryUom as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(50))as Bodega, ");
@@ -301,5 +302,20 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar los items para motorepuesto. ", e);
         }
         return null;
+    }
+
+    public List<Object[]> listItemsPendingSyncMrco(String companyName, boolean pruebas) {
+        //TODO: listar items pendientes por crear en bd motorepuestos.
+        StringBuilder sb = new StringBuilder();
+        sb.append("select Distinct cast(it.ItemCode as varchar(20))as item ");
+        sb.append("from OITM it ");
+        sb.append("left join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode = it.ItemCode ");
+        sb.append("where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' and itMrto.ItemName is null and it.ItemCode='GA2500'");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+        }
+        return new ArrayList<>();
     }
 }

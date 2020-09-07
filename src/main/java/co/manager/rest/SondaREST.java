@@ -1,6 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
+import co.manager.ejb.ItemEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
 
@@ -31,6 +32,8 @@ public class SondaREST {
     PickingRecordFacade pickingRecordFacade;
     @EJB
     ItemSAPFacade itemSAPFacade;
+    @EJB
+    ItemEJB itemEJB;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -69,7 +72,7 @@ public class SondaREST {
         CONSOLE.log(Level.INFO, "Iniciando sincronizacion de campo picturName para [" + companyname + "]");
         List<String> items = itemSAPFacade.getListItemByPicture(companyname, testing);
         if (items == null || items.size() <= 0) {
-            CONSOLE.log(Level.INFO, "No se encontraron datos para sincronizar en [" + companyname +"]");
+            CONSOLE.log(Level.INFO, "No se encontraron datos para sincronizar en [" + companyname + "]");
             return Response.ok(new ResponseDTO(-1, "No se encontraron datos para sincronizar.")).build();
         }
 
@@ -83,6 +86,19 @@ public class SondaREST {
         }
         CONSOLE.log(Level.INFO, "Finalizando sincronizacion de campo picturName para [" + companyname + "]");
         return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion para [" + companyname + "]")).build();
+    }
+
+    @GET
+    @Path("sync-item-mrco/{companyname}/{testing}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncItemMotorepuesto(@PathParam("companyname") String companyname,
+                                         @PathParam("testing") boolean testing) {
+        List<Object[]> items = itemSAPFacade.listItemsPendingSyncMrco(companyname, testing);
+
+        //Item Entity = itemEJB.findItem((String) items[0],);
+
+        return Response.ok().build();
     }
 
     private boolean hasExpired(Date expires, Date now) {

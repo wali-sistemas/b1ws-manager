@@ -15,6 +15,7 @@ public class Constants {
     public static final String MAXIMO_OPEN_SESSIONS = "manager.b1ws.maxSession";
     public static final String B1WS_STATE_SERVICE = "StatesService";
     public static final String B1WS_ORDER_SERVICE = "OrdersService";
+    public static final String B1WS_ITEM_SERVICE = "ItemsService";
     public static final String B1WS_BUSINESS_SERVICE = "BusinessPartnersService";
     public static final String B1WS_QUOTATIONS_SERVICE = "QuotationsService";
     public static final String B1WS_INCOMING_PAYMENTS_SERVICE = "IncomingPayments";

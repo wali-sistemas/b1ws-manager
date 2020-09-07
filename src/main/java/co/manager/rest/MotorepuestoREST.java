@@ -83,6 +83,8 @@ public class MotorepuestoREST {
             dto.setNomWeb((String) obj[25]);
             dto.setPriceVenta((BigDecimal) obj[26]);
             dto.setPricePromo((BigDecimal) obj[27]);
+            dto.setDescripcionLarga((String) obj[28]);
+            dto.setUltimasOfertas((String) obj[29]);
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");
