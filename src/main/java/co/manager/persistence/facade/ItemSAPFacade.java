@@ -304,18 +304,19 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public List<Object[]> listItemsPendingSyncMrco(String companyName, boolean pruebas) {
+    public List<String> listItemsPendingSyncMrco(String companyName, boolean pruebas) {
         //TODO: listar items pendientes por crear en bd motorepuestos.
         StringBuilder sb = new StringBuilder();
-        sb.append("select Distinct cast(it.ItemCode as varchar(20))as item ");
+        sb.append("select distinct cast(it.ItemCode as varchar(20))as item ");
         sb.append("from OITM it ");
         sb.append("left join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode = it.ItemCode ");
-        sb.append("where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' and itMrto.ItemName is null and it.ItemCode='GA2500'");
+        sb.append("where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' and itMrto.ItemName is null ");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar los items pendientes por crear en motorepuesto. ", e);
         }
-        return new ArrayList<>();
+        return null;
     }
 }
