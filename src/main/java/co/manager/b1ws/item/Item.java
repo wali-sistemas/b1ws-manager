@@ -2166,10 +2166,54 @@ public class Item {
     protected String scsCode;
     @XmlElement(name = "SpProdType")
     protected String spProdType;
+    @XmlElement(name = "InCostRollup")
+    protected String inCostRoll;
+    @XmlElement(name = "VirtualAssetItem")
+    protected String virtAstItm;
+    @XmlElement(name = "EnforceAssetSerialNumbers")
+    protected String enAstSeri;
+    @XmlElement(name = "UpdateDate")
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar updateDate;
+    @XmlElement(name = "UpdateTime")
+    protected String updateTime;
+    @XmlElement(name = "GSTRelevnt")
+    protected String gstRelevnt;
+    @XmlElement(name = "SACEntry")
+    protected Long sacEntry;
+    @XmlElement(name = "GSTTaxCategory")
+    protected String gstTaxCtg;
+    @XmlElement(name = "ServiceCategoryEntry")
+    protected Long serviceCtg;
+    @XmlElement(name = "AssessableValue")
+    protected Double assblValue;
+    @XmlElement(name = "AssVal4WTR")
+    protected Double assVal4WTR;
+    @XmlElement(name = "SOIExcisable")
+    protected String soiExc;
+    @XmlElement(name = "ImportedItem")
+    protected String imported;
+    @XmlElement(name = "PricingPrc")
+    protected Double pricingPrc;
+    @XmlElement(name = "PricingUnit")
+    protected Long priceUnit;
+    @XmlElement(name = "CreateDate")
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar createDate;
+    @XmlElement(name = "CreateTime")
+    protected String createTime;
+    @XmlElement(name = "ProdStdCost")
+    protected Double prdStdCst;
+    @XmlElement(name = "U_Marcas_info")
+    protected String uMarcasInfo;
+    @XmlElement(name = "U_Grupo")
+    protected String uGrupo;
     @XmlElement(name = "U_Subgrupo")
     protected String uSubgrupo;
     @XmlElement(name = "U_Marca")
     protected String uMarca;
+    @XmlElement(name = "U_SUBMARCA")
+    protected String uSubMarca;
     @XmlElement(name = "U_Procedencia")
     protected String uProcedencia;
     @XmlElement(name = "U_Modelo")
@@ -2181,6 +2225,7 @@ public class Item {
     @XmlElement(name = "U_FEC_CREA")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar ufeccrea;
+    @XmlSchemaType(name = "date")
     @XmlElement(name = "U_UNI_PRO_VTAS")
     protected Double uuniprovtas;
     @XmlElement(name = "U_VLGX_VIV")
@@ -2188,6 +2233,7 @@ public class Item {
     @XmlElement(name = "U_VLGX_ORD")
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar uvlgxord;
+    @XmlSchemaType(name = "date")
     @XmlElement(name = "U_VLGX_BOM")
     protected String uvlgxbom;
     @XmlElement(name = "U_VLGX_PLN")
@@ -2216,7 +2262,65 @@ public class Item {
     protected String uResponsable;
     @XmlElement(name = "U_VLGX_CA")
     protected String uvlgxca;
-    
+    @XmlElement(name = "U_CATEGORIA")
+    protected String uCategoria;
+    @XmlElement(name = "U_CATALOGO")
+    protected String uCatalogo;
+    @XmlElement(name = "U_TIPO_LLANTA")
+    protected String uTipoLlanta;
+    @XmlElement(name = "U_ANCHO_LLANTA")
+    protected String uAnchoLlanta;
+    @XmlElement(name = "U_RIN_LLANTA")
+    protected String uRinLlanta;
+    @XmlElement(name = "U_PERFIL_LLANTA")
+    protected String uPerfilLlanta;
+    @XmlElement(name = "U_TALLA")
+    protected String uTalla;
+    @XmlElement(name = "U_COLOR_CADENA")
+    protected String uColorCadena;
+    @XmlElement(name = "U_VISCOSIDAD")
+    protected String uViscosidad;
+    @XmlElement(name = "U_BASE")
+    protected String uBase;
+    @XmlElement(name = "U_ARTICULO")
+    protected String uArticulo;
+    @XmlElement(name = "U_KEYWORDS")
+    protected String uKeywords;
+    @XmlElement(name = "U_PASO_CADENA")
+    protected String uPasoCadena;
+    @XmlElement(name = "U_TIPO")
+    protected String uTipo;
+    @XmlElement(name = "U_EsAIU")
+    protected String uEsAIU;
+    @XmlElement(name = "U_PorcAIU")
+    protected String uPorcAIU;
+    @XmlElement(name = "U_CalcAIU")
+    protected String uCalcAIU;
+    @XmlElement(name = "ItemPrices")
+    protected Item.ItemPrices itemPrices;
+    @XmlElement(name = "ItemWarehouseInfoCollection")
+    protected Item.ItemWarehouseInfoCollection itemWarehouseInfoCollection;
+    @XmlElement(name = "ItemPreferredVendors")
+    protected Item.ItemPreferredVendors itemPreferredVendors;
+    @XmlElement(name = "ItemLocalizationInfos")
+    protected Item.ItemLocalizationInfos itemLocalizationInfos;
+    @XmlElement(name = "ItemProjects")
+    protected Item.ItemProjects itemProjects;
+    @XmlElement(name = "ItemDistributionRules")
+    protected Item.ItemDistributionRules itemDistributionRules;
+    @XmlElement(name = "ItemAttributeGroups")
+    protected String itemAttributeGroups;
+    @XmlElement(name = "ItemBarCodeCollection")
+    protected Item.ItemBarCodeCollection itemBarCodeCollection;
+    @XmlElement(name = "ItemDepreciationParameters")
+    protected Item.ItemDepreciationParameters itemDepreciationParameters;
+    @XmlElement(name = "ItemIntrastatExtension")
+    protected Item.ItemIntrastatExtension itemIntrastatExtension;
+    @XmlElement(name = "ItemPeriodControls")
+    protected Item.ItemPeriodControls itemPeriodControls;
+    @XmlElement(name = "ItemUnitOfMeasurementCollection")
+    protected Item.ItemUnitOfMeasurementCollection itemUnitOfMeasurementCollection;
+
     /**
      * Obtiene el valor de la propiedad itemCode.
      * 
@@ -8047,6 +8151,694 @@ public class Item {
      */
     public void setSpProdType(String value) {
         this.spProdType = value;
+    }
+
+    public String getInCostRoll() {
+        return inCostRoll;
+    }
+
+    public void setInCostRoll(String inCostRoll) {
+        this.inCostRoll = inCostRoll;
+    }
+
+    public String getVirtAstItm() {
+        return virtAstItm;
+    }
+
+    public void setVirtAstItm(String virtAstItm) {
+        this.virtAstItm = virtAstItm;
+    }
+
+    public String getEnAstSeri() {
+        return enAstSeri;
+    }
+
+    public void setEnAstSeri(String enAstSeri) {
+        this.enAstSeri = enAstSeri;
+    }
+
+    public XMLGregorianCalendar getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(XMLGregorianCalendar updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public void setCreateDate(XMLGregorianCalendar createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getgSTRelevnt() {
+        return gstRelevnt;
+    }
+
+    public void setgSTRelevnt(String gSTRelevnt) {
+        this.gstRelevnt = gSTRelevnt;
+    }
+
+    public Long getsACEntry() {
+        return sacEntry;
+    }
+
+    public void setsACEntry(Long sACEntry) {
+        this.sacEntry = sACEntry;
+    }
+
+    public String getGstTaxCtg() {
+        return gstTaxCtg;
+    }
+
+    public void setGstTaxCtg(String gstTaxCtg) {
+        this.gstTaxCtg = gstTaxCtg;
+    }
+
+    public Long getServiceCtg() {
+        return serviceCtg;
+    }
+
+    public void setServiceCtg(Long serviceCtg) {
+        this.serviceCtg = serviceCtg;
+    }
+
+    public Double getAssblValue() {
+        return assblValue;
+    }
+
+    public void setAssblValue(Double assblValue) {
+        this.assblValue = assblValue;
+    }
+
+    public Double getAssVal4WTR() {
+        return assVal4WTR;
+    }
+
+    public void setAssVal4WTR(Double assVal4WTR) {
+        this.assVal4WTR = assVal4WTR;
+    }
+
+    public String getSoiExc() {
+        return soiExc;
+    }
+
+    public void setSoiExc(String soiExc) {
+        this.soiExc = soiExc;
+    }
+
+    public String getImported() {
+        return imported;
+    }
+
+    public void setImported(String imported) {
+        this.imported = imported;
+    }
+
+    public Double getPricingPrc() {
+        return pricingPrc;
+    }
+
+    public void setPricingPrc(Double pricingPrc) {
+        this.pricingPrc = pricingPrc;
+    }
+
+    public Long getPriceUnit() {
+        return priceUnit;
+    }
+
+    public void setPriceUnit(Long priceUnit) {
+        this.priceUnit = priceUnit;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getuMarcasInfo() {
+        return uMarcasInfo;
+    }
+
+    public void setuMarcasInfo(String uMarcasInfo) {
+        this.uMarcasInfo = uMarcasInfo;
+    }
+
+    public String getuSubMarca() {
+        return uSubMarca;
+    }
+
+    public void setuSubMarca(String uSubMarca) {
+        this.uSubMarca = uSubMarca;
+    }
+
+    public String getuGrupo() {
+        return uGrupo;
+    }
+
+    public void setuGrupo(String uGrupo) {
+        this.uGrupo = uGrupo;
+    }
+
+    public String getuCategoria() {
+        return uCategoria;
+    }
+
+    public void setuCategoria(String uCategoria) {
+        this.uCategoria = uCategoria;
+    }
+
+    public String getuCatalogo() {
+        return uCatalogo;
+    }
+
+    public void setuCatalogo(String uCatalogo) {
+        this.uCatalogo = uCatalogo;
+    }
+
+    public String getuTipo() {
+        return uTipo;
+    }
+
+    public void setuTipo(String uTipo) {
+        this.uTipo = uTipo;
+    }
+
+    public ItemPrices getItemPrices() {
+        return itemPrices;
+    }
+
+    public void setItemPrices(ItemPrices itemPrices) {
+        this.itemPrices = itemPrices;
+    }
+
+    public ItemWarehouseInfoCollection getItemWarehouseInfoCollection() {
+        return itemWarehouseInfoCollection;
+    }
+
+    public void setItemWarehouseInfoCollection(ItemWarehouseInfoCollection itemWarehouseInfoCollection) {
+        this.itemWarehouseInfoCollection = itemWarehouseInfoCollection;
+    }
+
+    public ItemPreferredVendors getItemPreferredVendors() {
+        return itemPreferredVendors;
+    }
+
+    public void setItemPreferredVendors(ItemPreferredVendors itemPreferredVendors) {
+        this.itemPreferredVendors = itemPreferredVendors;
+    }
+
+    public ItemLocalizationInfos getItemLocalizationInfos() {
+        return itemLocalizationInfos;
+    }
+
+    public void setItemLocalizationInfos(ItemLocalizationInfos itemLocalizationInfos) {
+        this.itemLocalizationInfos = itemLocalizationInfos;
+    }
+
+    public ItemProjects getItemProjects() {
+        return itemProjects;
+    }
+
+    public void setItemProjects(ItemProjects itemProjects) {
+        this.itemProjects = itemProjects;
+    }
+
+    public ItemDistributionRules getItemDistributionRules() {
+        return itemDistributionRules;
+    }
+
+    public void setItemDistributionRules(ItemDistributionRules itemDistributionRules) {
+        this.itemDistributionRules = itemDistributionRules;
+    }
+
+    public ItemBarCodeCollection getItemBarCodeCollection() {
+        return itemBarCodeCollection;
+    }
+
+    public void setItemBarCodeCollection(ItemBarCodeCollection itemBarCodeCollection) {
+        this.itemBarCodeCollection = itemBarCodeCollection;
+    }
+
+    public ItemDepreciationParameters getItemDepreciationParameters() {
+        return itemDepreciationParameters;
+    }
+
+    public void setItemDepreciationParameters(ItemDepreciationParameters itemDepreciationParameters) {
+        this.itemDepreciationParameters = itemDepreciationParameters;
+    }
+
+    public ItemIntrastatExtension getItemIntrastatExtension() {
+        return itemIntrastatExtension;
+    }
+
+    public void setItemIntrastatExtension(ItemIntrastatExtension itemIntrastatExtension) {
+        this.itemIntrastatExtension = itemIntrastatExtension;
+    }
+
+    public ItemPeriodControls getItemPeriodControls() {
+        return itemPeriodControls;
+    }
+
+    public void setItemPeriodControls(ItemPeriodControls itemPeriodControls) {
+        this.itemPeriodControls = itemPeriodControls;
+    }
+
+    public ItemUnitOfMeasurementCollection getItemUnitOfMeasurementCollection() {
+        return itemUnitOfMeasurementCollection;
+    }
+
+    public void setItemUnitOfMeasurementCollection(ItemUnitOfMeasurementCollection itemUnitOfMeasurementCollection) {
+        this.itemUnitOfMeasurementCollection = itemUnitOfMeasurementCollection;
+    }
+
+    public Double getPrdStdCst() {
+        return prdStdCst;
+    }
+
+    public void setPrdStdCst(Double prdStdCst) {
+        this.prdStdCst = prdStdCst;
+    }
+
+    public String getuTipoLlanta() {
+        return uTipoLlanta;
+    }
+
+    public void setuTipoLlanta(String uTipoLlanta) {
+        this.uTipoLlanta = uTipoLlanta;
+    }
+
+    public String getuAnchoLlanta() {
+        return uAnchoLlanta;
+    }
+
+    public void setuAnchoLlanta(String uAnchoLlanta) {
+        this.uAnchoLlanta = uAnchoLlanta;
+    }
+
+    public String getuRinLlanta() {
+        return uRinLlanta;
+    }
+
+    public void setuRinLlanta(String uRinLlanta) {
+        this.uRinLlanta = uRinLlanta;
+    }
+
+    public String getuPerfilLlanta() {
+        return uPerfilLlanta;
+    }
+
+    public void setuPerfilLlanta(String uPerfilLlanta) {
+        this.uPerfilLlanta = uPerfilLlanta;
+    }
+
+    public String getuTalla() {
+        return uTalla;
+    }
+
+    public void setuTalla(String uTalla) {
+        this.uTalla = uTalla;
+    }
+
+    public String getuColorCadena() {
+        return uColorCadena;
+    }
+
+    public void setuColorCadena(String uColorCadena) {
+        this.uColorCadena = uColorCadena;
+    }
+
+    public String getuViscosidad() {
+        return uViscosidad;
+    }
+
+    public void setuViscosidad(String uViscosidad) {
+        this.uViscosidad = uViscosidad;
+    }
+
+    public String getuBase() {
+        return uBase;
+    }
+
+    public void setuBase(String uBase) {
+        this.uBase = uBase;
+    }
+
+    public String getuArticulo() {
+        return uArticulo;
+    }
+
+    public void setuArticulo(String uArticulo) {
+        this.uArticulo = uArticulo;
+    }
+
+    public String getuKeywords() {
+        return uKeywords;
+    }
+
+    public void setuKeywords(String uKeywords) {
+        this.uKeywords = uKeywords;
+    }
+
+    public String getuPasoCadena() {
+        return uPasoCadena;
+    }
+
+    public void setuPasoCadena(String uPasoCadena) {
+        this.uPasoCadena = uPasoCadena;
+    }
+
+    public String getuEsAIU() {
+        return uEsAIU;
+    }
+
+    public void setuEsAIU(String uEsAIU) {
+        this.uEsAIU = uEsAIU;
+    }
+
+    public String getuPorcAIU() {
+        return uPorcAIU;
+    }
+
+    public void setuPorcAIU(String uPorcAIU) {
+        this.uPorcAIU = uPorcAIU;
+    }
+
+    public String getuCalcAIU() {
+        return uCalcAIU;
+    }
+
+    public void setuCalcAIU(String uCalcAIU) {
+        this.uCalcAIU = uCalcAIU;
+    }
+
+    public String getItemAttributeGroups() {
+        return itemAttributeGroups;
+    }
+
+    public void setItemAttributeGroups(String itemAttributeGroups) {
+        this.itemAttributeGroups = itemAttributeGroups;
+    }
+
+    public String getEcRevenuesAccount() {
+        return ecRevenuesAccount;
+    }
+
+    public void setEcRevenuesAccount(String ecRevenuesAccount) {
+        this.ecRevenuesAccount = ecRevenuesAccount;
+    }
+
+    public String getEcExpensesAccount() {
+        return ecExpensesAccount;
+    }
+
+    public void setEcExpensesAccount(String ecExpensesAccount) {
+        this.ecExpensesAccount = ecExpensesAccount;
+    }
+
+    public String getGlMethod() {
+        return glMethod;
+    }
+
+    public void setGlMethod(String glMethod) {
+        this.glMethod = glMethod;
+    }
+
+    public String getWtLiable() {
+        return wtLiable;
+    }
+
+    public void setWtLiable(String wtLiable) {
+        this.wtLiable = wtLiable;
+    }
+
+    public String getSww() {
+        return sww;
+    }
+
+    public void setSww(String sww) {
+        this.sww = sww;
+    }
+
+    public String getSriAndBatchManageMethod() {
+        return sriAndBatchManageMethod;
+    }
+
+    public void setSriAndBatchManageMethod(String sriAndBatchManageMethod) {
+        this.sriAndBatchManageMethod = sriAndBatchManageMethod;
+    }
+
+    public Long getNcmCode() {
+        return ncmCode;
+    }
+
+    public void setNcmCode(Long ncmCode) {
+        this.ncmCode = ncmCode;
+    }
+
+    public Long getDnfEntry() {
+        return dnfEntry;
+    }
+
+    public void setDnfEntry(Long dnfEntry) {
+        this.dnfEntry = dnfEntry;
+    }
+
+    public String getGtsItemSpec() {
+        return gtsItemSpec;
+    }
+
+    public void setGtsItemSpec(String gtsItemSpec) {
+        this.gtsItemSpec = gtsItemSpec;
+    }
+
+    public String getGtsItemTaxCategory() {
+        return gtsItemTaxCategory;
+    }
+
+    public void setGtsItemTaxCategory(String gtsItemTaxCategory) {
+        this.gtsItemTaxCategory = gtsItemTaxCategory;
+    }
+
+    public String getGstRelevnt() {
+        return gstRelevnt;
+    }
+
+    public void setGstRelevnt(String gstRelevnt) {
+        this.gstRelevnt = gstRelevnt;
+    }
+
+    public Long getSacEntry() {
+        return sacEntry;
+    }
+
+    public void setSacEntry(Long sacEntry) {
+        this.sacEntry = sacEntry;
+    }
+
+    public XMLGregorianCalendar getCreateDate() {
+        return createDate;
+    }
+
+    public String getuSubgrupo() {
+        return uSubgrupo;
+    }
+
+    public void setuSubgrupo(String uSubgrupo) {
+        this.uSubgrupo = uSubgrupo;
+    }
+
+    public String getuMarca() {
+        return uMarca;
+    }
+
+    public void setuMarca(String uMarca) {
+        this.uMarca = uMarca;
+    }
+
+    public String getuProcedencia() {
+        return uProcedencia;
+    }
+
+    public void setuProcedencia(String uProcedencia) {
+        this.uProcedencia = uProcedencia;
+    }
+
+    public String getuModelo() {
+        return uModelo;
+    }
+
+    public void setuModelo(String uModelo) {
+        this.uModelo = uModelo;
+    }
+
+    public String getuCodAnterior() {
+        return uCodAnterior;
+    }
+
+    public void setuCodAnterior(String uCodAnterior) {
+        this.uCodAnterior = uCodAnterior;
+    }
+
+    public String getUcostoimp() {
+        return ucostoimp;
+    }
+
+    public void setUcostoimp(String ucostoimp) {
+        this.ucostoimp = ucostoimp;
+    }
+
+    public XMLGregorianCalendar getUfeccrea() {
+        return ufeccrea;
+    }
+
+    public void setUfeccrea(XMLGregorianCalendar ufeccrea) {
+        this.ufeccrea = ufeccrea;
+    }
+
+    public Double getUuniprovtas() {
+        return uuniprovtas;
+    }
+
+    public void setUuniprovtas(Double uuniprovtas) {
+        this.uuniprovtas = uuniprovtas;
+    }
+
+    public String getUvlgxviv() {
+        return uvlgxviv;
+    }
+
+    public void setUvlgxviv(String uvlgxviv) {
+        this.uvlgxviv = uvlgxviv;
+    }
+
+    public XMLGregorianCalendar getUvlgxord() {
+        return uvlgxord;
+    }
+
+    public void setUvlgxord(XMLGregorianCalendar uvlgxord) {
+        this.uvlgxord = uvlgxord;
+    }
+
+    public String getUvlgxbom() {
+        return uvlgxbom;
+    }
+
+    public void setUvlgxbom(String uvlgxbom) {
+        this.uvlgxbom = uvlgxbom;
+    }
+
+    public String getUvlgxpln() {
+        return uvlgxpln;
+    }
+
+    public void setUvlgxpln(String uvlgxpln) {
+        this.uvlgxpln = uvlgxpln;
+    }
+
+    public String getUvlgxsup() {
+        return uvlgxsup;
+    }
+
+    public void setUvlgxsup(String uvlgxsup) {
+        this.uvlgxsup = uvlgxsup;
+    }
+
+    public String getuVarrocItemCode() {
+        return uVarrocItemCode;
+    }
+
+    public void setuVarrocItemCode(String uVarrocItemCode) {
+        this.uVarrocItemCode = uVarrocItemCode;
+    }
+
+    public String getUwmsVelocity() {
+        return uwmsVelocity;
+    }
+
+    public void setUwmsVelocity(String uwmsVelocity) {
+        this.uwmsVelocity = uwmsVelocity;
+    }
+
+    public String getuAplicacion() {
+        return uAplicacion;
+    }
+
+    public void setuAplicacion(String uAplicacion) {
+        this.uAplicacion = uAplicacion;
+    }
+
+    public String getuType() {
+        return uType;
+    }
+
+    public void setuType(String uType) {
+        this.uType = uType;
+    }
+
+    public Double getUnwrscrp() {
+        return unwrscrp;
+    }
+
+    public void setUnwrscrp(Double unwrscrp) {
+        this.unwrscrp = unwrscrp;
+    }
+
+    public Long getUnwrwopo() {
+        return unwrwopo;
+    }
+
+    public void setUnwrwopo(Long unwrwopo) {
+        this.unwrwopo = unwrwopo;
+    }
+
+    public Long getUnwrmatrix() {
+        return unwrmatrix;
+    }
+
+    public void setUnwrmatrix(Long unwrmatrix) {
+        this.unwrmatrix = unwrmatrix;
+    }
+
+    public String getUnwrAutoShipment() {
+        return unwrAutoShipment;
+    }
+
+    public void setUnwrAutoShipment(String unwrAutoShipment) {
+        this.unwrAutoShipment = unwrAutoShipment;
+    }
+
+    public String getuTipoInventario() {
+        return uTipoInventario;
+    }
+
+    public void setuTipoInventario(String uTipoInventario) {
+        this.uTipoInventario = uTipoInventario;
+    }
+
+    public String getuResponsable() {
+        return uResponsable;
+    }
+
+    public void setuResponsable(String uResponsable) {
+        this.uResponsable = uResponsable;
+    }
+
+    public String getUvlgxca() {
+        return uvlgxca;
+    }
+
+    public void setUvlgxca(String uvlgxca) {
+        this.uvlgxca = uvlgxca;
     }
 
     /**

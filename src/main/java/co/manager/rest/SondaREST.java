@@ -1,5 +1,6 @@
 package co.manager.rest;
 
+import co.manager.b1ws.item.Item;
 import co.manager.dto.ResponseDTO;
 import co.manager.ejb.ItemEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
@@ -15,8 +16,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,11 +33,11 @@ import java.util.logging.Logger;
 public class SondaREST {
     private static final Logger CONSOLE = Logger.getLogger(SondaREST.class.getSimpleName());
     @EJB
+    ItemEJB itemEJB;
+    @EJB
     PickingRecordFacade pickingRecordFacade;
     @EJB
     ItemSAPFacade itemSAPFacade;
-    @EJB
-    ItemEJB itemEJB;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -94,11 +98,44 @@ public class SondaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response syncItemMotorepuesto(@PathParam("companyname") String companyname,
                                          @PathParam("testing") boolean testing) {
-        List<Object[]> items = itemSAPFacade.listItemsPendingSyncMrco(companyname, testing);
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion de items a motorepuesto.");
+        List<String> items = itemSAPFacade.listItemsPendingSyncMrco(companyname, testing);
 
-        //Item Entity = itemEJB.findItem((String) items[0],);
+        if (items.equals(null)) {
+            CONSOLE.log(Level.WARNING, "Sin datos para sincronizar en motorepuesto.");
+            return Response.ok(new ResponseDTO(-1, "Sin datos para sincronizar en motorepuesto.")).build();
+        }
 
-        return Response.ok().build();
+        for (int i = 0; i < items.size(); i++) {
+            Item entity = itemEJB.getMasterItem(companyname, items.get(i));
+            if (!entity.getItemCode().equals(null)) {
+                entity.setSeries(48l);
+                entity.setMainsupplier("P811011909");
+                entity.setApTaxCode("IVAD01");
+                entity.setArTaxCode("IVAV01");
+                entity.setValid("N");
+                entity.setFrozen("Y");
+                entity.setItemsGroupCode(100l);
+                entity.setManufacturer(1l);
+
+                try {
+                    GregorianCalendar date = new GregorianCalendar();
+                    XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
+                    entity.setCreateDate(date2);
+                    entity.setUpdateDate(date2);
+                } catch (Exception e) {
+                }
+
+                String itemMotorepuesto = itemEJB.addItem(entity, "VELEZ");
+                if (itemMotorepuesto != null) {
+                    CONSOLE.log(Level.INFO, "Sincronización del item {0} en motorepuesto exitosa.", entity.getItemCode());
+                } else {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error sincronizando el item " + entity.getItemCode() + " en motorepuesto.");
+                }
+            }
+        }
+
+        return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion de items a motorepuesto.")).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {
