@@ -93,8 +93,8 @@ public class MotorepuestoREST {
 
     @POST
     @Path("create-customer")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createCustomer(BusinessPartnerDTO dto) {
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
@@ -104,13 +104,11 @@ public class MotorepuestoREST {
 
     @POST
     @Path("create-payments")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(BusinessPartnerDTO dto) {
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
-
-
 }
