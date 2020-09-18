@@ -102,6 +102,10 @@ public class SondaREST {
         List<String> items = itemSAPFacade.listItemsPendingSyncMrco(companyname, testing);
 
         if (items.equals(null)) {
+            CONSOLE.log(Level.WARNING, "Ocurrio un error consultando los items.");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error consulatando los items.")).build();
+        }
+        if (items.size() <= 0) {
             CONSOLE.log(Level.WARNING, "Sin datos para sincronizar en motorepuesto.");
             return Response.ok(new ResponseDTO(-1, "Sin datos para sincronizar en motorepuesto.")).build();
         }

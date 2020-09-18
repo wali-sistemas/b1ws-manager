@@ -12,6 +12,7 @@ import co.manager.persistence.facade.TicketTIFacade;
 import co.manager.persistence.facade.TicketTINotesFacade;
 import co.manager.persistence.facade.TicketTITypeFacade;
 import co.manager.persistence.facade.UsersFacade;
+import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
 
 import javax.ejb.EJB;
@@ -22,6 +23,9 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -50,7 +54,7 @@ public class TicketREST {
 
     @GET
     @Path("list/{empId}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListTickets(@PathParam("empId") String empId) {
         CONSOLE.log(Level.INFO, "Listando tickets TI actuales");
@@ -93,7 +97,7 @@ public class TicketREST {
 
     @GET
     @Path("notes/{idTicket}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListTicketNotes(@PathParam("idTicket") Integer idTicket) {
         CONSOLE.log(Level.INFO, "Listando notas del ticket TI #{0}", idTicket.toString());
@@ -114,7 +118,7 @@ public class TicketREST {
 
     @GET
     @Path("type-tickets")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListTypeTickets() {
         return Response.ok(ticketTITypeFacade.listTypeTickets()).build();
@@ -122,11 +126,11 @@ public class TicketREST {
 
     @POST
     @Path("assign-ticket")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response assignTicket(@QueryParam("username") String username, TicketDTO dto) {
-        boolean resp = ticketTIFacade.assignTicket(dto.idTicket, dto.empSet, dto.priority, "ASIGNADO");
+        boolean resp = ticketTIFacade.assignTicket(dto.getIdTicket(), dto.getEmpSet(), dto.getPriority(), "ASIGNADO");
 
         if (!resp) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error asigando el ticket #{0}", dto.getIdTicket());
@@ -138,7 +142,7 @@ public class TicketREST {
         entity.setIdTicket(dto.idTicket.longValue());
         entity.setDate(new Date());
         entity.setEmpId(username);
-        entity.setNote("Ticket asignado al empleado " + dto.empSet + " con prioridad " + dto.getPriority());
+        entity.setNote("Ticket asignado al empleado " + dto.getEmpSet() + " con prioridad " + dto.getPriority());
 
         try {
             ticketTINotesFacade.create(entity, "", false);
@@ -160,7 +164,7 @@ public class TicketREST {
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             params.put("note", "Ticket asignado al empleado " + dto.getEmpSet() + " con prioridad " + dto.getPriority());
 
-            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
@@ -176,11 +180,11 @@ public class TicketREST {
 
     @POST
     @Path("add-note")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addTicketNote(TicketNotesDTO dto) {
-        CONSOLE.log(Level.INFO, "Iniciando creación de nota para el ticket TI #{0}", dto.idTicket.toString());
+        CONSOLE.log(Level.INFO, "Iniciando creación de nota para el ticket TI #{0}", dto.getIdTicket().toString());
         if (dto.getIdTicket() == null || dto.getIdTicket() <= 0) {
             CONSOLE.log(Level.SEVERE, "Campo idTicket es obligatorio para crear la nota");
             return Response.ok(new ResponseDTO(-1, "Campo idTicket es obligatorio para crear la nota.")).build();
@@ -195,16 +199,16 @@ public class TicketREST {
         }
 
         TicketTINotes entity = new TicketTINotes();
-        entity.setIdTicket(dto.idTicket.longValue());
+        entity.setIdTicket(dto.getIdTicket().longValue());
         entity.setDate(new Date());
-        entity.setEmpId(dto.empNote);
-        entity.setNote(dto.note);
+        entity.setEmpId(dto.getEmpNote());
+        entity.setNote(dto.getNote());
 
-        TicketTI entityTicket = ticketTIFacade.find(dto.idTicket, "", false);
+        TicketTI entityTicket = ticketTIFacade.find(dto.getIdTicket(), "", false);
 
         try {
             ticketTINotesFacade.create(entity, "", false);
-            CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.idTicket.toString());
+            CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.getIdTicket().toString());
             try {
                 //TODO: Notificar vía mail la nota del ticket
                 Map<String, String> params = new HashMap<>();
@@ -219,7 +223,7 @@ public class TicketREST {
                 params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
                 params.put("note", entity.getNote());
 
-                Object[] user = usersFacade.getAttributeUser(dto.empNote);
+                Object[] user = usersFacade.getAttributeUser(entityTicket.getEmpIdAdd());
                 if (user != null) {
                     params.put("empName", (String) user[0] + " " + user[1]);
                 }
@@ -232,34 +236,44 @@ public class TicketREST {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la creacion del ticket.")).build();
             }
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.idTicket.toString(), e);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #{0}" + dto.idTicket.toString())).build();
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.getIdTicket().toString(), e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la nota para el ticket TI #{0}" + dto.getIdTicket().toString())).build();
         }
     }
 
     @POST
+    @Path("add-file-ticket")
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addFile(File fichero,
+                            @QueryParam("size") Integer size,
+                            @QueryParam("name") String name,
+                            @QueryParam("idTicket") Integer idTicket) {
+        return Response.ok(uploadAttachment(idTicket, name, size, fichero)).build();
+    }
+
+    @POST
     @Path("add-new-ticket")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addNewTicket(TicketDTO dto,
                                  @QueryParam("newNote") String newNote) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de un nuevo ticket {0}", dto.toString());
 
         TicketTI entity = new TicketTI();
-        entity.setIdTicketType(dto.idTypeTicket);
+        entity.setIdTicketType(dto.getIdTypeTicket());
         entity.setDate(new Date());
-        entity.setDepartmentName(dto.department);
-        entity.setEmpIdAdd(dto.empAdd);
+        entity.setDepartmentName(dto.getDepartment());
+        entity.setEmpIdAdd(dto.getEmpAdd());
         entity.setEmpIdSet(null);
-        entity.setUrlAttached(dto.urlAttached);
-        entity.setPriority(dto.priority);
-        entity.setCompanyName(dto.company);
-        entity.setAsunt(dto.asunt);
+        entity.setUrlAttached(dto.getUrlAttached());
+        entity.setPriority(dto.getPriority());
+        entity.setCompanyName(dto.getCompany());
+        entity.setAsunt(dto.getAsunt());
         entity.setStatus("ABIERTO");
 
         try {
-            ticketTIFacade.create(entity, dto.company, false);
+            ticketTIFacade.create(entity, dto.getCompany(), false);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el ticket", e);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el ticket.")).build();
@@ -279,7 +293,7 @@ public class TicketREST {
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
             params.put("note", newNote == null ? "SIN NOTA" : newNote);
 
-            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
@@ -295,12 +309,12 @@ public class TicketREST {
 
     @POST
     @Path("update-status-ticket")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response updateStatusTicket(TicketDTO dto,
                                        @QueryParam("note") String note) {
-        if (!ticketTIFacade.changeStatusTicket(dto.idTicket, dto.status)) {
+        if (!ticketTIFacade.changeStatusTicket(dto.getIdTicket(), dto.getStatus())) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado a {0} al ticket #{1}", new Object[]{dto.getStatus(), dto.getIdTicket()});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el estado a " + dto.getStatus() + " al ticket #" + dto.getIdTicket())).build();
         }
@@ -309,7 +323,7 @@ public class TicketREST {
             TicketTINotes entity = new TicketTINotes();
             entity.setIdTicket(dto.idTicket.longValue());
             entity.setDate(new Date());
-            entity.setEmpId(dto.empSet);
+            entity.setEmpId(dto.getEmpSet());
             entity.setNote(note);
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {
@@ -330,7 +344,7 @@ public class TicketREST {
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             params.put("note", note);
 
-            Object[] user = usersFacade.getAttributeUser(dto.empAdd);
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
@@ -358,6 +372,23 @@ public class TicketREST {
             emailManager.sendEmail(dtoMail);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
+        }
+    }
+
+    private boolean uploadAttachment(Integer idTicket, String name, int size, File attached) {
+        byte[] byt = new byte[size];
+        try {
+            FileInputStream fileInput = new FileInputStream(attached);
+            fileInput.read(byt);
+            FileOutputStream fileOut = new FileOutputStream(new File(managerAppBean.obtenerValorPropiedad(Constants.URL_SHARED) + File.separator + "uploads" + File.separator + name));
+            fileOut.write(byt);
+            fileInput.close();
+            fileOut.close();
+            CONSOLE.log(Level.INFO, "Se guardo el adjunto para el ticket {0} correctamente.", idTicket.toString());
+            return true;
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error guardando el adjunto para el ticket " + idTicket.toString(), e.getMessage());
+            return false;
         }
     }
 

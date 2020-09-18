@@ -87,7 +87,7 @@ public class PedBoxREST {
 
     @GET
     @Path("items/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListItems(@PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
@@ -118,7 +118,7 @@ public class PedBoxREST {
 
     @GET
     @Path("items/extranet/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getListItemsByFiltres(@PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
@@ -169,7 +169,7 @@ public class PedBoxREST {
 
     @GET
     @Path("customers-portfolio/extranet/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getAllCustomersPortfolioByCustomer(@PathParam("companyname") String companyname,
                                                        @QueryParam("cardcode") String cardCode) {
@@ -232,7 +232,7 @@ public class PedBoxREST {
 
     @GET
     @Path("price-list/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getPriceList(@PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Iniciando retorno de lista de precios para {0}", companyname);
@@ -257,7 +257,7 @@ public class PedBoxREST {
 
     @GET
     @Path("customers/{slpcode}/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getCustomers(@PathParam("slpcode") String slpCode,
                                  @PathParam("companyname") String companyname) {
@@ -324,7 +324,7 @@ public class PedBoxREST {
 
     @GET
     @Path("stock-current/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getStockCurrent(@PathParam("companyname") String companyname,
                                     @QueryParam("itemcode") String itemCode,
@@ -368,7 +368,7 @@ public class PedBoxREST {
 
     @GET
     @Path("status-order/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getStatusOrder(@PathParam("companyname") String companyname) {
         CONSOLE.log(Level.INFO, "Listando estados disponibles para las ordenes de la empresa [{0}]", companyname);
@@ -378,7 +378,7 @@ public class PedBoxREST {
 
     @GET
     @Path("orders-stopped/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listOrdersStopped(@PathParam("companyname") String companyname,
                                       @QueryParam("slpcode") String slpCode) {
@@ -414,7 +414,7 @@ public class PedBoxREST {
 
     @GET
     @Path("detail-orders-stopped/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listDetailOrdersStopped(@PathParam("companyname") String companyname,
                                             @QueryParam("slpcode") String slpCode) {
@@ -473,7 +473,7 @@ public class PedBoxREST {
 
     @GET
     @Path("customer-portfolio/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getOnlyCustomerPortfolioBySalesPerson(@PathParam("companyname") String companyname,
                                                           @QueryParam("slpcode") String slpCode,
@@ -490,7 +490,7 @@ public class PedBoxREST {
 
     @GET
     @Path("customers-portfolio/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getAllCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
                                                           @QueryParam("slpcode") String slpCode) {
@@ -550,7 +550,7 @@ public class PedBoxREST {
 
     @GET
     @Path("invoices-history/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
                                                 @QueryParam("cardcode") String cardCode) {
@@ -584,7 +584,7 @@ public class PedBoxREST {
 
     @GET
     @Path("payments-history/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listInvoicesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                  @QueryParam("cardcode") String cardCode) {
@@ -614,7 +614,7 @@ public class PedBoxREST {
 
     @GET
     @Path("credit-notes-history/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listCreditNotesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                     @QueryParam("cardcode") String cardCode) {
@@ -645,7 +645,7 @@ public class PedBoxREST {
 
     @GET
     @Path("orders-history/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
                                                @QueryParam("cardcode") String cardCode) {
@@ -673,7 +673,7 @@ public class PedBoxREST {
 
     @GET
     @Path("orders-detail/extranet/{companyname}")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listOrderDetail(@PathParam("companyname") String companyname,
                                     @QueryParam("docNum") Integer docNum) {
@@ -705,8 +705,8 @@ public class PedBoxREST {
 
     @POST
     @Path("create-order")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
         if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
@@ -760,8 +760,8 @@ public class PedBoxREST {
 
     @POST
     @Path("update-geolocation-customer")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response updateGeolocationCustomer(GeolocationDTO dto) {
         if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
@@ -813,8 +813,8 @@ public class PedBoxREST {
 
     @POST
     @Path("create-quotation")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createQuotation(QuotationDTO dto) {
         return Response.ok(quotationsEJB.createSalesOrder(dto)).build();
@@ -822,8 +822,8 @@ public class PedBoxREST {
 
     @POST
     @Path("create-payment")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(IncomingPaymentDTO dto) {
         CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
