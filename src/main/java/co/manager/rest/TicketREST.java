@@ -380,7 +380,7 @@ public class TicketREST {
         try {
             FileInputStream fileInput = new FileInputStream(attached);
             fileInput.read(byt);
-            FileOutputStream fileOut = new FileOutputStream(new File(managerAppBean.obtenerValorPropiedad(Constants.URL_SHARED) + File.separator + "uploads" + File.separator + name));
+            FileOutputStream fileOut = new FileOutputStream(new File(managerAppBean.obtenerValorPropiedad("url.archivo") + File.separator + "uploads" + File.separator + "[" + idTicket.toString() + "]" + name));
             fileOut.write(byt);
             fileInput.close();
             fileOut.close();
