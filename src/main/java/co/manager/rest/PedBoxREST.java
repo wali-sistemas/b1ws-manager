@@ -737,16 +737,11 @@ public class PedBoxREST {
             CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
             return Response.ok(new ResponseDTO(0, docNum)).build();
         }
-        //TODO: validar shipToCode y PayToCode
+        //TODO: validar PayToCode
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
-                if (!dto.getShipToCode().equals(obj[0])) {
-                    dto.setShipToCode((String) obj[0]);
-                }
-                if (!dto.getPayToCode().equals(obj[1])) {
-                    dto.setPayToCode((String) obj[1]);
-                }
+                dto.setPayToCode((String) obj[1]);
             }
         }
         //Consultando id de la transportadora asignada al cliente

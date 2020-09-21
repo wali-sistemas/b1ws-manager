@@ -35,7 +35,7 @@ public class WarehouseSAPFacade {
             sb.append("'01', '05', '26'");
         } else {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '09', '26', '44'");
+            sb.append("'01', '08', '26', '44'");
         }
         sb.append(") order by o.WhsCode ASC");
 

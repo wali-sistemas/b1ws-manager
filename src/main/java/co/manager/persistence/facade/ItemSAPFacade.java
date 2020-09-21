@@ -87,7 +87,7 @@ public class ItemSAPFacade {
             sb.append("'01', '05', '26'");
         } else {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '09', '26', '44'");
+            sb.append("'01', '08', '26', '44'");
         }
         sb.append(") and pre.PriceList =");
         if (companyName.equals("IGB")) {
@@ -136,7 +136,7 @@ public class ItemSAPFacade {
             sb.append("'01','05','26')");
         } else {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01','09','26','44')");
+            sb.append("'01','08','26','44')");
         }
 
         sb.append(" left join [@MARCAS]mar on mar.Code = it.U_Marca and it.U_Marca<>'' ");
@@ -206,7 +206,7 @@ public class ItemSAPFacade {
             sb.append("'01', '05', '26'");
         } else {
             //TODO: Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '09', '26', '44'");
+            sb.append("'01', '08', '26', '44'");
         }
         sb.append(") and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
         if (!itemCode.equals("0")) {
@@ -265,9 +265,9 @@ public class ItemSAPFacade {
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.PurPackMsr as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select isnull(sum(de.onHandQty),0) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)>0 ");
-        sb.append(" then((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in('01','09','26','44') and s.ItemCode=it.ItemCode)-it.iscommited-(select ");
+        sb.append(" then((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in('01','08','26','44') and s.ItemCode=it.ItemCode)-it.iscommited-(select ");
         sb.append(" sum(de.onHandQty) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)) ");
-        sb.append(" else((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in('01','09','26','44') and s.ItemCode=it.ItemCode)-it.iscommited) end as int)as Stock, ");
+        sb.append(" else((select SUM(s.OnHand) from [SBOMOTOREPUESTO].[VARROC].[DBO].OITW s where s.WhsCode in('01','08','26','44') and s.ItemCode=it.ItemCode)-it.iscommited) end as int)as Stock, ");
         sb.append(" cast(it.PicturName as varchar)as PicturName,cast(c.Name as varchar(100))as Categoria,cast(mar.Name as varchar(50))as Marca,'' as SubMarca, ");
         sb.append(" cast(gru.Name as varchar(50))as Grupo,cast(sub.Name as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto,cast(tll.Name as varchar(50))as TipoLlanta,cast(anc.Name as varchar(50))as AnchoLlanta, ");
