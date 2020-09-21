@@ -294,7 +294,7 @@ public class ItemSAPFacade {
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode=itMrto.ItemCode and prMrto.PriceList=1 ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto2 on prMrto2.ItemCode=itMrto.ItemCode and prMrto2.PriceList=2 ");
-        sb.append("where t.Stock>0 order by Producto ASC");
+        sb.append("order by Producto ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

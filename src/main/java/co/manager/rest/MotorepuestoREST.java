@@ -57,7 +57,7 @@ public class MotorepuestoREST {
             dto.setPresentation((String) obj[1]);
             dto.setIva((Integer) obj[2]);
             dto.setWhsCode((String) obj[3]);
-            dto.setStock((Integer) obj[4]);
+            dto.setStock((Integer) obj[4] < 0 ? 0 : (Integer) obj[4]);
             dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/motorepuesto/" + obj[5]);
             dto.setPictureMarcaUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/motorepuesto/" + obj[7] + ".jpg");
             dto.setCategory((String) obj[6]);
