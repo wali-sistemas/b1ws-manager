@@ -224,4 +224,24 @@ public class BusinessPartnerSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public boolean checkFieldDiscountCommercial(String cardCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(QryGroup12 as varchar(1))as QryGroup12 from OCRD where CardCode = '");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            if (em.createNativeQuery(sb.toString()).getSingleResult().equals("Y")) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar ");
+        }
+        return false;
+    }
 }
