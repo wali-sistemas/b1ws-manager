@@ -130,7 +130,7 @@ public class TicketREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response assignTicket(@QueryParam("username") String username, TicketDTO dto) {
-        boolean resp = ticketTIFacade.assignTicket(dto.getIdTicket(), dto.getEmpSet(), dto.getPriority(), "ASIGNADO");
+        boolean resp = ticketTIFacade.assignTicket(dto.getIdTicket(), dto.getEmpSet().toLowerCase(), dto.getPriority(), "ASIGNADO");
 
         if (!resp) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error asigando el ticket #{0}", dto.getIdTicket());
@@ -142,7 +142,7 @@ public class TicketREST {
         entity.setIdTicket(dto.idTicket.longValue());
         entity.setDate(new Date());
         entity.setEmpId(username);
-        entity.setNote("Ticket asignado al empleado " + dto.getEmpSet() + " con prioridad " + dto.getPriority());
+        entity.setNote("Ticket asignado al empleado " + dto.getEmpSet().toLowerCase() + " con prioridad " + dto.getPriority());
 
         try {
             ticketTINotesFacade.create(entity, "", false);
@@ -155,16 +155,16 @@ public class TicketREST {
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", dto.getIdTicket().toString());
             params.put("status", "ASIGNADO");
-            params.put("empIdAdd", dto.getEmpAdd());
+            params.put("empIdAdd", dto.getEmpAdd().toLowerCase());
             params.put("companyName", dto.getCompany());
             params.put("department", dto.getDepartment());
             params.put("priority", dto.getPriority());
-            params.put("empIdSet", dto.getEmpSet());
+            params.put("empIdSet", dto.getEmpSet().toLowerCase());
             params.put("asunt", dto.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-            params.put("note", "Ticket asignado al empleado " + dto.getEmpSet() + " con prioridad " + dto.getPriority());
+            params.put("note", "Ticket asignado al empleado " + dto.getEmpSet().toLowerCase() + " con prioridad " + dto.getPriority());
 
-            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd().toLowerCase());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
@@ -264,7 +264,7 @@ public class TicketREST {
         entity.setIdTicketType(dto.getIdTypeTicket());
         entity.setDate(new Date());
         entity.setDepartmentName(dto.getDepartment());
-        entity.setEmpIdAdd(dto.getEmpAdd());
+        entity.setEmpIdAdd(dto.getEmpAdd().toLowerCase());
         entity.setEmpIdSet(null);
         entity.setUrlAttached(dto.getUrlAttached());
         entity.setPriority(dto.getPriority());
@@ -284,7 +284,7 @@ public class TicketREST {
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", entity.getId().toString());
             params.put("status", entity.getStatus());
-            params.put("empIdAdd", entity.getEmpIdAdd());
+            params.put("empIdAdd", entity.getEmpIdAdd().toLowerCase());
             params.put("companyName", entity.getCompanyName());
             params.put("department", entity.getDepartmentName());
             params.put("priority", entity.getPriority());
@@ -293,7 +293,7 @@ public class TicketREST {
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
             params.put("note", newNote == null ? "SIN NOTA" : newNote);
 
-            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd().toLowerCase());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }
@@ -323,7 +323,7 @@ public class TicketREST {
             TicketTINotes entity = new TicketTINotes();
             entity.setIdTicket(dto.idTicket.longValue());
             entity.setDate(new Date());
-            entity.setEmpId(dto.getEmpSet());
+            entity.setEmpId(dto.getEmpSet().toLowerCase());
             entity.setNote(note);
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {
@@ -335,16 +335,16 @@ public class TicketREST {
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", dto.getIdTicket().toString());
             params.put("status", dto.getStatus());
-            params.put("empIdAdd", dto.getEmpAdd());
+            params.put("empIdAdd", dto.getEmpAdd().toLowerCase());
             params.put("companyName", dto.getCompany());
             params.put("department", dto.getDepartment());
             params.put("priority", dto.getPriority());
-            params.put("empIdSet", dto.getEmpSet() == null ? "SIN ASIGNAR" : dto.getEmpSet());
+            params.put("empIdSet", dto.getEmpSet().toLowerCase() == null ? "SIN ASIGNAR" : dto.getEmpSet().toLowerCase());
             params.put("asunt", dto.getAsunt());
             params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
             params.put("note", note);
 
-            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd());
+            Object[] user = usersFacade.getAttributeUser(dto.getEmpAdd().toLowerCase());
             if (user != null) {
                 params.put("empName", (String) user[0] + " " + user[1]);
             }

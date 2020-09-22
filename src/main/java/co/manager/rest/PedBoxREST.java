@@ -737,11 +737,18 @@ public class PedBoxREST {
             CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
             return Response.ok(new ResponseDTO(0, docNum)).build();
         }
-        //TODO: validar PayToCode
+        //TODO: validar PayToCode= id direccion de factura
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
                 dto.setPayToCode((String) obj[1]);
+            }
+        }
+        //TODO: Validar descuento comercial.Marcar con estado revisar y no autorizar sepearcion.
+        if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
+            if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
+                dto.setStatus("REVISAR");
+                dto.setConfirmed("N");
             }
         }
         //Consultando id de la transportadora asignada al cliente
