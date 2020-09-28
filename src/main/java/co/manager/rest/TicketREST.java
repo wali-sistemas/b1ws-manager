@@ -201,7 +201,7 @@ public class TicketREST {
         TicketTINotes entity = new TicketTINotes();
         entity.setIdTicket(dto.getIdTicket().longValue());
         entity.setDate(new Date());
-        entity.setEmpId(dto.getEmpNote());
+        entity.setEmpId(dto.getEmpNote().toLowerCase());
         entity.setNote(dto.getNote());
 
         TicketTI entityTicket = ticketTIFacade.find(dto.getIdTicket(), "", false);

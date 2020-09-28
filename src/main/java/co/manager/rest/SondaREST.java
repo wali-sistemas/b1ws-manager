@@ -5,6 +5,7 @@ import co.manager.dto.ResponseDTO;
 import co.manager.ejb.ItemEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
+import co.manager.persistence.facade.SalesOrderSAPFacade;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -38,6 +39,8 @@ public class SondaREST {
     PickingRecordFacade pickingRecordFacade;
     @EJB
     ItemSAPFacade itemSAPFacade;
+    @EJB
+    SalesOrderSAPFacade salesOrderSAPFacade;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -121,6 +124,7 @@ public class SondaREST {
                 entity.setFrozen("Y");
                 entity.setItemsGroupCode(100l);
                 entity.setManufacturer(1l);
+                entity.setProperties2("N");
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
@@ -140,6 +144,26 @@ public class SondaREST {
         }
 
         return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion de items a motorepuesto.")).build();
+    }
+
+    @GET
+    @Path("sync-tranport-order/{companyname}/{testing}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncTranspotOrder(@PathParam("companyname") String companyname,
+                                      @PathParam("testing") boolean testing) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion de transportadora en las ordenes de {0}", companyname);
+        List<Object[]> orders = salesOrderSAPFacade.listOrdersForValidateTransport(companyname, testing);
+
+        if (orders.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "Sin datos para sincronizar transporte.");
+            return Response.ok(new ResponseDTO(-1, "Sin datos para sincronizar transporte.")).build();
+        }
+
+        for (Object[] obj : orders) {
+            salesOrderSAPFacade.updateTransport((Integer) obj[0], (String) obj[1], companyname, false);
+        }
+        return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion de transportadora en las ordenes de " + companyname)).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {
