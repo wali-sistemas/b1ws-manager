@@ -1,10 +1,16 @@
 package co.manager.persistence.facade;
 
 
+import co.manager.persistence.entity.SalesOrderSAP;
+import co.manager.persistence.entity.SalesOrderSAP_;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -148,5 +154,38 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el detalle de la orden " + docNum.toString() + " en " + companyName, e);
         }
         return new ArrayList<>();
+    }
+
+    public List<Object[]> listOrdersForValidateTransport(String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.DocNum as int)as DocNum, cast(m.U_COD_TRA as varchar(2))as U_COD_TRA ");
+        sb.append("from  ORDR o ");
+        sb.append("inner join RDR12 d on o.DocEntry=d.DocEntry ");
+        sb.append("inner join [@TRANSP] t on o.U_TRANSP=t.Code ");
+        sb.append("inner join [@TRANSP_TAR] m on m.code=d.BlockS ");
+        sb.append("where o.DocStatus='O' and t.code<>m.U_COD_TRA and o.Pick='N'");
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "", e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void updateTransport(Integer docNum, String trasnport, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaUpdate<SalesOrderSAP> cu = cb.createCriteriaUpdate(SalesOrderSAP.class);
+        Root<SalesOrderSAP> root = cu.from(SalesOrderSAP.class);
+
+        cu.set(root.get(SalesOrderSAP_.uTransp), trasnport);
+        cu.where(cb.equal(root.get(SalesOrderSAP_.docNum), docNum));
+        try {
+            em.createQuery(cu).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando la transportadora en la orden " + docNum.toString(), e);
+        }
     }
 }
