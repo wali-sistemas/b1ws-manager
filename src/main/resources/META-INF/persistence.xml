@@ -43,6 +43,8 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="VARROCPruebasPU" transaction-type="JTA">
@@ -50,6 +52,8 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="VELEZPU" transaction-type="JTA">
@@ -57,6 +61,8 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
 </persistence>
