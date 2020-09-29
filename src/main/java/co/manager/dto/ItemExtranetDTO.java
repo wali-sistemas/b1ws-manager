@@ -19,7 +19,6 @@ public class ItemExtranetDTO {
     private Integer discountPorc;
     private BigDecimal price;
     private Integer stock;
-    //TODO: campos para filtros en extranet
     private String categoria;
     private String grupo;
     private String subgrupo;

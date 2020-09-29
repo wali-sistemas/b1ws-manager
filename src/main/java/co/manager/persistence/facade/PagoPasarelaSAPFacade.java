@@ -35,7 +35,7 @@ public class PagoPasarelaSAPFacade {
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el siguiente id de pago para {0} ", companyNane);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el siguiente id de pago para " + companyNane, e);
         }
         return false;
     }

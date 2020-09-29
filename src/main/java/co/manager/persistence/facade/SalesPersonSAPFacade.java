@@ -1,6 +1,5 @@
 package co.manager.persistence.facade;
 
-
 import co.manager.persistence.entity.SalesPersonSAP;
 import co.manager.persistence.entity.SalesPersonSAP_;
 import co.manager.util.Constants;

@@ -103,7 +103,7 @@ public class PedBoxREST {
             ItemDTO dto = new ItemDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
-            dto.setUnit("UND");//TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
+            dto.setUnit("UND");//Modificar hasta que compras termine el proyecto de unidad de empaque.
             dto.setPresentation((Integer) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
@@ -134,7 +134,7 @@ public class PedBoxREST {
             ItemExtranetDTO dto = new ItemExtranetDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
-            //TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
+            //Modificar hasta que compras termine el proyecto de unidad de empaque.
             dto.setPresentation((String) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
@@ -143,7 +143,7 @@ public class PedBoxREST {
             dto.setDiscountItem(0);
             dto.setDiscountPorc(0);
             dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
-            //TODO: filtros para extranet
+            //filtros para extranet
             dto.setModeloMoto((String) obj[8]);
             dto.setTipoLlanta((String) obj[9]);
             dto.setAnchoLlanta((String) obj[10]);
@@ -160,7 +160,6 @@ public class PedBoxREST {
             if (companyname.equals("VARROC")) {
                 dto.setUrlFichaTecnica(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + companyname + "/fileItem/" + obj[0] + ".pdf");
             }
-
             stock.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
@@ -198,7 +197,7 @@ public class PedBoxREST {
 
             for (Object[] obj : objects) {
                 if (dto.getCardCode().equals(obj[0])) {
-                    //TODO: Encabezado del CustomerDTO.
+                    //Encabezado del CustomerDTO.
                     dto.setCardName((String) obj[1]);
                     dto.setLicTradNum((String) obj[2]);
                     dto.setSlpName((String) obj[10]);
@@ -206,7 +205,7 @@ public class PedBoxREST {
                     dto.setCupo((BigDecimal) obj[12]);
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
-                    //TODO: Detalle de direcciones al CustomerDTO
+                    //Detalle de direcciones al CustomerDTO
                     PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
                     dto2.setDocType((String) obj[3]);
                     dto2.setDocNum((Integer) obj[4]);
@@ -286,7 +285,7 @@ public class PedBoxREST {
 
             for (Object[] obj : objects) {
                 if (dto.getCardCode().equals(obj[0])) {
-                    //TODO: Encabezado del CustomerDTO.
+                    //Encabezado del CustomerDTO.
                     dto.setNit((String) obj[1]);
                     dto.setCardName((String) obj[2]);
                     dto.setAddressToDef((String) obj[3]);
@@ -306,7 +305,7 @@ public class PedBoxREST {
                     dto.setCondition((String) obj[17]);
                     dto.setExcent((String) obj[18]);
                     dto.setCupo((BigDecimal) obj[19]);
-                    //TODO: Detalle de direcciones al CustomerDTO
+                    //Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((String) obj[20]);
                     dto2.setAddress((String) obj[21]);
@@ -331,7 +330,7 @@ public class PedBoxREST {
                                     @QueryParam("whscode") String whsCode) {
         CONSOLE.log(Level.INFO, "Listando stock actual para el item [{0}] en la empresa [{1}]", new Object[]{itemCode, companyname});
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
-        //TODO: seteando sucursal pedBox lo maneja como integer.
+        //seteando sucursal pedBox lo maneja como integer.
         String sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
 
         List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, false);
@@ -443,7 +442,7 @@ public class PedBoxREST {
 
             for (Object[] obj : objects) {
                 if (dto.getDocNum().equals(obj[0])) {
-                    //TODO: Encabezado del DetailSalesOrderStoppedDTO.
+                    //Encabezado del DetailSalesOrderStoppedDTO.
                     dto.setCardCode((String) obj[1]);
                     dto.setNit((String) obj[2]);
                     dto.setCardName((String) obj[3]);
@@ -454,7 +453,7 @@ public class PedBoxREST {
                     dto.setSlpName((String) obj[8]);
                     dto.setStatus((String) obj[9]);
                     dto.setMonth((String) obj[10]);
-                    //TODO: Detalle de direcciones al DetailItemDTO
+                    //Detalle de direcciones al DetailItemDTO
                     DetailSalesOrderStoppedDTO.DetailItemDTO dto2 = new DetailSalesOrderStoppedDTO.DetailItemDTO();
                     dto2.setItemCode((String) obj[11]);
                     dto2.setDscription((String) obj[12]);
@@ -519,7 +518,7 @@ public class PedBoxREST {
 
             for (Object[] obj : objects) {
                 if (dto.getCardCode().equals(obj[0])) {
-                    //TODO: Encabezado del CustomerDTO.
+                    //Encabezado del CustomerDTO.
                     dto.setCardName((String) obj[1]);
                     dto.setLicTradNum((String) obj[2]);
                     dto.setSlpName((String) obj[10]);
@@ -527,7 +526,7 @@ public class PedBoxREST {
                     dto.setCupo((BigDecimal) obj[12]);
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
-                    //TODO: Detalle de direcciones al CustomerDTO
+                    //Detalle de direcciones al CustomerDTO
                     PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
                     dto2.setDocType((String) obj[3]);
                     dto2.setDocNum((Integer) obj[4]);
@@ -555,7 +554,7 @@ public class PedBoxREST {
     public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
                                                 @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de facturas para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
-        //TODO: historial de facturas de los últimos 3 meses.
+        //historial de facturas de los últimos 3 meses.
         List<Object[]> objects = invoiceSAPFacade.listInvoicesHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -589,8 +588,7 @@ public class PedBoxREST {
     public Response listInvoicesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                  @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de pagos para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
-        //TODO: historial de pagos de los últimos 3 meses.
-
+        //historial de pagos de los últimos 3 meses.
         List<Object[]> objects = incomingPaymentsSAPFacade.listPaymentsHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -619,7 +617,7 @@ public class PedBoxREST {
     public Response listCreditNotesHitoryByCustomer(@PathParam("companyname") String companyname,
                                                     @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de notas credito para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
-        //TODO: historial de notas crédito de los últimos 3 meses.
+        //historial de notas crédito de los últimos 3 meses.
         List<Object[]> objects = creditNotesSAPFacade.listCreditNotesHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -650,7 +648,7 @@ public class PedBoxREST {
     public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
                                                @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de ordenes para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
-        //TODO: historial de ordenes de los últimos 3 meses.
+        //historial de ordenes de los últimos 3 meses.
         List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
@@ -737,14 +735,14 @@ public class PedBoxREST {
             CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
             return Response.ok(new ResponseDTO(0, docNum)).build();
         }
-        //TODO: validar PayToCode= id direccion de factura
+        //validar PayToCode= id direccion de factura
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
                 dto.setPayToCode((String) obj[1]);
             }
         }
-        //TODO: Validar descuento comercial.Marcar con estado revisar y no autorizar sepearcion.
+        //Validar descuento comercial.Marcar con estado revisar y no autorizar sepearcion.
         if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
@@ -784,8 +782,8 @@ public class PedBoxREST {
 
     @POST
     @Path("create-customer")
-    @Consumes(MediaType.APPLICATION_JSON + ";charset=utf-8")
-    @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createCustomer(BusinessPartnerDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
@@ -796,18 +794,6 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio.")).build();
         }
-
-/*
-        private String cardCode;
-        private String cardName;
-        private Character cardType;
-        private String licTradNum;
-        private String uBPCORTC;
-        private String companyName;
-        private Integer uBPCOTDC;
-        private Integer uBPCOCS;
-
- */
 
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
@@ -854,7 +840,7 @@ public class PedBoxREST {
             CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Lo sentimos. Ya existe un registro con ese id de pago en " + dto.getCompanyName())).build();
         }
-        //TODO: registrar en tabla temporal el pago recibido por placeToPay
+        //registrar en tabla temporal el pago recibido por placeToPay
         String idPago = (new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getCardCode();
 
         PagoPasarelaSAP entityEnc = new PagoPasarelaSAP();
@@ -871,7 +857,7 @@ public class PedBoxREST {
         try {
             pagoPasarelaSAPFacade.create(entityEnc, dto.getCompanyName(), false);
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del pago recibido para {0}", dto.getCompanyName());
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del pago recibido para + " + dto.getCompanyName(), e);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del pago recibido para " + dto.getCompanyName())).build();
         }
 
@@ -888,7 +874,7 @@ public class PedBoxREST {
             try {
                 detPagoPasarelaSAPFacade.create(entityDet, dto.getCompanyName(), false);
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del detalle de pago recibido para {0}", dto.getCompanyName());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName(), e);
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName())).build();
             }
         }

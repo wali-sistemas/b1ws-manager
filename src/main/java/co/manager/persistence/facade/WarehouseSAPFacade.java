@@ -31,19 +31,18 @@ public class WarehouseSAPFacade {
         sb.append("where o.WhsCode IN (");
 
         if (companyName.equals("IGB")) {
-            //TODO: Filtro bodegas de solo ventas para IGB
+            //Filtro bodegas de solo ventas para IGB
             sb.append("'01', '05', '26'");
         } else {
-            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01', '08', '26', '44'");
         }
         sb.append(") order by o.WhsCode ASC");
-
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las bodegas de ventas para mostrar en pedBox para {0}", companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las bodegas de ventas para mostrar en pedBox para " + companyName, e);
         }
         return null;
     }

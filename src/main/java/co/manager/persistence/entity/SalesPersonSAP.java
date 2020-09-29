@@ -6,8 +6,6 @@ import java.io.Serializable;
 /**
  * @author jguisao
  */
-
-/***SAP***/
 @Entity
 @Table(name = "OSLP")
 public class SalesPersonSAP implements Serializable {

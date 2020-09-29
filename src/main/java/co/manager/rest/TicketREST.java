@@ -12,7 +12,6 @@ import co.manager.persistence.facade.TicketTIFacade;
 import co.manager.persistence.facade.TicketTINotesFacade;
 import co.manager.persistence.facade.TicketTITypeFacade;
 import co.manager.persistence.facade.UsersFacade;
-import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
 
 import javax.ejb.EJB;
@@ -77,7 +76,7 @@ public class TicketREST {
         List<TicketDTO> ticketTI = new ArrayList<>();
         for (Object[] obj : objects) {
             TicketDTO dto = new TicketDTO();
-            //TODO: Encabezado del TicketDTO.
+            //Encabezado del TicketDTO.
             dto.setIdTicket((Integer) obj[0]);
             dto.setTypeTicket((String) obj[1]);
             dto.setDateTicket((Date) obj[2]);
@@ -137,7 +136,7 @@ public class TicketREST {
             return Response.ok(resp).build();
         }
 
-        //TODO: Agregar nota al ticket, de que fue asignado
+        //Agregar nota al ticket, de que fue asignado
         TicketTINotes entity = new TicketTINotes();
         entity.setIdTicket(dto.idTicket.longValue());
         entity.setDate(new Date());
@@ -147,7 +146,7 @@ public class TicketREST {
         try {
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {
-            CONSOLE.log(Level.WARNING, "No se agrego la nota al ticket #{0}", dto.getIdTicket());
+            CONSOLE.log(Level.WARNING, "No se agrego la nota al ticket #" + dto.getIdTicket(), e);
         }
 
         try {
@@ -210,7 +209,7 @@ public class TicketREST {
             ticketTINotesFacade.create(entity, "", false);
             CONSOLE.log(Level.INFO, "Creacion de nota exitosa para el ticket TI #{0}", dto.getIdTicket().toString());
             try {
-                //TODO: Notificar vía mail la nota del ticket
+                //Notificar vía mail la nota del ticket
                 Map<String, String> params = new HashMap<>();
                 params.put("idTicket", entity.getIdTicket().toString());
                 params.put("status", entityTicket.getStatus());
@@ -280,7 +279,7 @@ public class TicketREST {
         }
 
         try {
-            //TODO: Notificar vía mail la creación del ticket
+            //Notificar vía mail la creación del ticket
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", entity.getId().toString());
             params.put("status", entity.getStatus());
@@ -331,7 +330,7 @@ public class TicketREST {
         }
 
         try {
-            //TODO: Notificar vía mail la modificación de estado del ticket
+            //Notificar vía mail la modificación de estado del ticket
             Map<String, String> params = new HashMap<>();
             params.put("idTicket", dto.getIdTicket().toString());
             params.put("status", dto.getStatus());
@@ -371,7 +370,7 @@ public class TicketREST {
         try {
             emailManager.sendEmail(dtoMail);
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion. ", e);
         }
     }
 
