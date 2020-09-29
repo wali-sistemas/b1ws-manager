@@ -48,7 +48,7 @@ public class TicketTIFacade {
             return (Long) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el ultimo ticket creado.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el ultimo ticket creado. ", e);
         }
         return 0l;
     }
@@ -67,12 +67,11 @@ public class TicketTIFacade {
             sb.append("'");
         }
         sb.append(" order by t.idticket DESC;");
-
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los ticket.");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los ticket. ", e);
             return null;
         }
         return new ArrayList<>();
@@ -95,7 +94,7 @@ public class TicketTIFacade {
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket.toString(), e);
         }
         return false;
     }
@@ -115,7 +114,7 @@ public class TicketTIFacade {
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket.toString(), e);
         }
         return false;
     }

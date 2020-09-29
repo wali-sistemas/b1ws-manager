@@ -1,6 +1,5 @@
 package co.manager.persistence.facade;
 
-
 import co.manager.persistence.entity.SalesOrderSAP;
 import co.manager.persistence.entity.SalesOrderSAP_;
 
@@ -132,6 +131,7 @@ public class SalesOrderSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historico de ordenes del cliente " + cardCode, e);
         }
         return new ArrayList<>();
     }
@@ -169,7 +169,7 @@ public class SalesOrderSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la validacion de la transportadora. ", e);
         }
         return new ArrayList<>();
     }

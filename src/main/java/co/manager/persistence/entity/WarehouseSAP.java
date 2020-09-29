@@ -1,13 +1,11 @@
 package co.manager.persistence.entity;
 
-/**
- * @author jguisao
- */
-
 import javax.persistence.*;
 import java.io.Serializable;
 
-/***SAP***/
+/**
+ * @author jguisao
+ */
 @Entity
 @Table(name = "OWHS")
 public class WarehouseSAP implements Serializable {

@@ -2,6 +2,9 @@ package co.manager.dto;
 
 import java.math.BigDecimal;
 
+/**
+ * @author jguisao
+ */
 public class PriceListDTO {
     private String itemCode;
     private Integer codPriceList;

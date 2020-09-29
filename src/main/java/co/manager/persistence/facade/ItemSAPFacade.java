@@ -40,7 +40,7 @@ public class ItemSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los items sin foto en SAP.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los items sin foto en SAP. ", e);
         }
         return null;
     }
@@ -58,7 +58,7 @@ public class ItemSAPFacade {
             em.createQuery(cu).executeUpdate();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el picturName para el item #[" + itemCode + "] de la empresa [" + companyName + "]");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el picturName para el item #[" + itemCode + "] de la empresa [" + companyName + "]", e);
         }
     }
 
@@ -83,10 +83,10 @@ public class ItemSAPFacade {
         sb.append("inner join OITW inv on inv.ItemCode = it.ItemCode ");
         sb.append("where inv.OnHand > 0 and it.validFor = 'Y' and it.ItemType = 'I' and it.U_Marca <> '' and inv.WhsCode in (");
         if (companyName.equals("IGB")) {
-            //TODO: Filtro bodegas de solo ventas para IGB
+            //Filtro bodegas de solo ventas para IGB
             sb.append("'01', '05', '26'");
         } else {
-            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01', '08', '26', '44'");
         }
         sb.append(") and pre.PriceList =");
@@ -101,7 +101,7 @@ public class ItemSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para [{0}]", companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
         }
         return null;
     }
@@ -122,7 +122,7 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.Name as varchar(50))as Viscosidad,cast(bs.Name as varchar(50))as Base ");
         sb.append(" from  OITM it ");
         sb.append(" inner join ITM1 pre on it.ItemCode = pre.itemcode and pre.PriceList=");
-        //TODO: Lista de precio 4 para IGB y 1 para Motozone
+
         if (companyName.equals("IGB")) {
             sb.append(4);
         } else {
@@ -132,10 +132,10 @@ public class ItemSAPFacade {
         sb.append(" inner join OITW inv on inv.ItemCode = it.ItemCode and inv.OnHand>0 and inv.WhsCode in(");
 
         if (companyName.equals("IGB")) {
-            //TODO: Filtro bodegas de solo ventas para IGB
+            //Filtro bodegas de solo ventas para IGB
             sb.append("'01','05','26')");
         } else {
-            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01','08','26','44')");
         }
 
@@ -156,7 +156,7 @@ public class ItemSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para [{0}]", companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
         }
         return new ArrayList<>();
     }
@@ -179,7 +179,7 @@ public class ItemSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando la lista de precios para {0}", companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando la lista de precios para " + companyName, e);
         }
         return null;
     }
@@ -202,10 +202,10 @@ public class ItemSAPFacade {
         sb.append("inner join OITW it on it.ItemCode = oi.ItemCode ");
         sb.append("where it.WhsCode in (");
         if (companyName.equals("IGB")) {
-            //TODO: Filtro bodegas de solo ventas para IGB
+            //Filtro bodegas de solo ventas para IGB
             sb.append("'01', '05', '26'");
         } else {
-            //TODO: Filtro bodegas de solo ventas para MOTOZONE
+            //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01', '08', '26', '44'");
         }
         sb.append(") and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
@@ -223,7 +223,7 @@ public class ItemSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para {0}", companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para " + companyName, e);
         }
         return null;
     }
@@ -234,7 +234,6 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select t.*,cast(itMrto.ItemName as varchar(100))as NombreWeb,cast(prMrto.Price as numeric(18,2))as PrecioInicial,cast(prMrto2.Price as numeric(18,2))as PrecioOferta, ");
         sb.append(" cast(itMrto.u_descripcion_larga as varchar(max))as DescripcionLarga,cast(itMrto.QryGroup2 as varchar(100))as UltimasOfertas from(");
-        //TODO: macth con IGB
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.InvntryUom as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select isnull(sum(de.onHandQty),0) from OBIN ub inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)>0 ");
@@ -261,7 +260,6 @@ public class ItemSAPFacade {
         sb.append(" left join [@PRODUCTO_PADRE] pp on pp.Code=it.U_ARTICULO ");
         sb.append(" where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' ");
         sb.append("UNION ALL ");
-        //TODO: macth con Motozone
         sb.append(" select distinct cast(it.ItemCode as varchar(50))as Producto,cast(it.PurPackMsr as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select isnull(sum(de.onHandQty),0) from [SBOMOTOREPUESTO].[VARROC].[DBO].OBIN ub inner join [SBOMOTOREPUESTO].[VARROC].[DBO].OIBQ de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)>0 ");
@@ -290,7 +288,6 @@ public class ItemSAPFacade {
         sb.append(" left join [SBOMOTOREPUESTO].[VARROC].[DBO].[@PRODUCTO_PADRE] pp on pp.Code=it.U_ARTICULO ");
         sb.append(" where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' ");
         sb.append(")as t ");
-        //TODO: macth con Motorepuesto
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode=itMrto.ItemCode and prMrto.PriceList=1 ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto2 on prMrto2.ItemCode=itMrto.ItemCode and prMrto2.PriceList=2 ");

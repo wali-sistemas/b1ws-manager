@@ -11,7 +11,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "ticket_ti")
 public class TicketTI implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Basic(optional = false)

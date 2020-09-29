@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- *
  * @author jguisao
  */
 @Entity
@@ -181,6 +180,19 @@ public class PickingRecord implements Serializable {
 
     @Override
     public String toString() {
-        return "PickingRecord{" + "id=" + id + ", orderNumber=" + orderNumber + ", itemCode=" + itemCode + ", quantity=" + quantity + ", binFrom=" + binFrom + ", binTo=" + binTo + ", stockTransferDocEntry=" + stockTransferDocEntry + ", empId=" + empId + ", transactionDate=" + transactionDate + ", status=" + status + ", expires=" + expires + ", companyName=" + companyName + '}';
+        return "PickingRecord{" +
+                "id=" + id +
+                ", orderNumber=" + orderNumber +
+                ", itemCode='" + itemCode + '\'' +
+                ", quantity=" + quantity +
+                ", binFrom=" + binFrom +
+                ", binTo=" + binTo +
+                ", stockTransferDocEntry=" + stockTransferDocEntry +
+                ", empId='" + empId + '\'' +
+                ", transactionDate=" + transactionDate +
+                ", status='" + status + '\'' +
+                ", expires=" + expires +
+                ", companyName='" + companyName + '\'' +
+                '}';
     }
 }

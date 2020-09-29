@@ -45,7 +45,7 @@ public class BusinessPartnerSAPFacade {
         if (companyName.equals("IGB")) {
             sb.append("cast(isnull(sn.Discount,0) as numeric(18,2)) as DescuentComercial, ");
         } else {
-            //TODO: se envia 0 para motozone, hasta que se definan los descuentos logisticos.
+            //se envia 0 para motozone, hasta que se definan los descuentos logisticos.
             sb.append("cast(0 as numeric(18,2)) as DescuentComercial, ");
         }
 
@@ -66,7 +66,7 @@ public class BusinessPartnerSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes del vendedor", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes del vendedor. ", e);
         }
         return null;
     }
@@ -82,7 +82,7 @@ public class BusinessPartnerSAPFacade {
             return (String) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la transportadora del cliente.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la transportadora del cliente. ", e);
         }
         return null;
     }
@@ -106,7 +106,7 @@ public class BusinessPartnerSAPFacade {
             return dto;
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera del cliente.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera del cliente. ", e);
         }
         return null;
     }
@@ -143,7 +143,7 @@ public class BusinessPartnerSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes. ", e);
         }
         return null;
     }
@@ -182,7 +182,7 @@ public class BusinessPartnerSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la cartera de los clientes. ", e);
         }
         return null;
     }
@@ -240,7 +240,7 @@ public class BusinessPartnerSAPFacade {
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar ");
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la propiedad del SN " + cardCode, e);
         }
         return false;
     }

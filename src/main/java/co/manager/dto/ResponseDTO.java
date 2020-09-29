@@ -1,11 +1,9 @@
 package co.manager.dto;
 
 /**
- *
  * @author jguisao
  */
 public class ResponseDTO {
-
     private int code;
     private Object content;
 
@@ -32,5 +30,4 @@ public class ResponseDTO {
     public void setContent(Object content) {
         this.content = content;
     }
-
 }

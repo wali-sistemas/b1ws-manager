@@ -101,7 +101,6 @@ public class MotorepuestoREST {
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
 
-
     @POST
     @Path("create-payments")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})

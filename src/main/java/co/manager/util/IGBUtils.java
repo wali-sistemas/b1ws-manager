@@ -1,7 +1,6 @@
 package co.manager.util;
 
 /**
- *
  * @author jguisao
  */
 public class IGBUtils {

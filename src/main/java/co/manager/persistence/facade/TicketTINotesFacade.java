@@ -38,7 +38,7 @@ public class TicketTINotesFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando las notas para el ticket #", idTicket.toString());
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando las notas para el ticket #" + idTicket.toString(), e);
         }
         return new ArrayList<>();
     }

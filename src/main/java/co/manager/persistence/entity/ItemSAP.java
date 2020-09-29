@@ -2,11 +2,10 @@ package co.manager.persistence.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+
 /**
  * @author jguisao
  */
-
-/***SAP***/
 @Entity
 @Table(name = "OITM")
 public class ItemSAP implements Serializable {

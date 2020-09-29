@@ -36,7 +36,7 @@ public class ClientFeriaSAPFacade {
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los datos capturados del cliente feria", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los datos capturados del cliente feria. ", e);
             return null;
         }
     }
@@ -71,7 +71,7 @@ public class ClientFeriaSAPFacade {
         try {
             persistenceConf.chooseSchema(dto.getCompanyName(), testing, DB_TYPE).createNativeQuery(sb.toString()).executeUpdate();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al insertar los datos capturados al cliente feria", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al insertar los datos capturados al cliente feria. ", e);
             return false;
         }
         return true;
@@ -88,10 +88,8 @@ public class ClientFeriaSAPFacade {
         try {
             return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getSingleResult();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el mail del regional.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el mail del regional. ", e);
             return "";
         }
     }
-
-
 }

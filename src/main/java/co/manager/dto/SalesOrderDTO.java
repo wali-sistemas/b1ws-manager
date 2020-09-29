@@ -10,7 +10,6 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SalesOrderDTO {
-
     private String cardCode;
     private String comments;
     private String companyName;
