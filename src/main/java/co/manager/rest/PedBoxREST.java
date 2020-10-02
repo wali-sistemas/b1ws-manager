@@ -59,6 +59,60 @@ public class PedBoxREST {
     private PagoPasarelaSAPFacade pagoPasarelaSAPFacade;
     @EJB
     private DetallePagoPasarelaSAPFacade detPagoPasarelaSAPFacade;
+    @EJB
+    private CitySAPFacade citySAPFacade;
+
+    @GET
+    @Path("list-municipios/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getMunicipios(@PathParam("companyname") String companyname) {
+        List<Object[]> objects = citySAPFacade.listMunicipios(companyname, false);
+        List<CityDTO> municipios = new ArrayList<>();
+
+        for (Object[] obj : objects) {
+            CityDTO dto = new CityDTO();
+            dto.setCode((String) obj[0]);
+            dto.setName((String) obj[1]);
+            municipios.add(dto);
+        }
+        return Response.ok(municipios).build();
+    }
+
+    @GET
+    @Path("list-departamentos/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getDepartamentos(@PathParam("companyname") String companyname) {
+        List<Object[]> objects = citySAPFacade.listDepartamentos(companyname, false);
+        List<CityDTO> departamentos = new ArrayList<>();
+
+        for (Object[] obj : objects) {
+            CityDTO dto = new CityDTO();
+            dto.setCode((String) obj[0]);
+            dto.setName((String) obj[1]);
+            departamentos.add(dto);
+        }
+        return Response.ok(departamentos).build();
+    }
+
+    @GET
+    @Path("list-type-document/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getTypeDocument(@PathParam("companyname") String companyname) {
+        List<Object[]> objects = businessPartnerSAPFacade.listTypeDocument(companyname, false);
+        List<TypeDocDTO> typeDocDTO = new ArrayList<>();
+
+        for (Object[] obj : objects) {
+            TypeDocDTO dto = new TypeDocDTO();
+            dto.setCode((String) obj[0]);
+            dto.setDocument((String) obj[1]);
+            dto.setType((String) obj[2]);
+            typeDocDTO.add(dto);
+        }
+        return Response.ok(typeDocDTO).build();
+    }
 
     @GET
     @Path("warehouses/{companyname}")

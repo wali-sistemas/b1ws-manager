@@ -244,4 +244,19 @@ public class BusinessPartnerSAPFacade {
         }
         return false;
     }
+
+    public List<Object[]> listTypeDocument(String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(Code as varchar(20))as Code,cast(Name as varchar(100))as Doc,cast(U_TicpoDocICA as varchar(5))as Tipo ");
+        sb.append("from [@BPCO_TD] where Code not in(11,12,21,42,43)");
+        try {
+            return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE,"Ocurrio un error al consultar los tipos de documentos en " + companyName, e);
+        }
+        return new ArrayList<>();
+    }
 }

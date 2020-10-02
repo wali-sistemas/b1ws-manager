@@ -2014,6 +2014,12 @@ public class BusinessPartner {
     protected String uEsAutorret;
     @XmlElement(name = "U_OK1_AC_ECO")
     protected String uok1ACECO;
+    @XmlElement(name = "U_DocFormEnt")
+    protected Long uDocFormEntFE;
+    @XmlElement(name = "U_addInFaElectronica_email_contacto_FE")
+    protected String uAddInFaElectronicaEmailContactoFE;
+    @XmlElement(name = "U_Celular")
+    protected String uCelularFE;
     @XmlElement(name = "BPAddresses")
     protected BusinessPartner.BPAddresses bpAddresses;
     @XmlElement(name = "ContactEmployees")
@@ -8661,6 +8667,29 @@ public class BusinessPartner {
         this.uok1ACECO = value;
     }
 
+    public Long getuDocFormEntFE() {
+        return uDocFormEntFE;
+    }
+
+    public void setuDocFormEntFE(Long uDocFormEntFE) {
+        this.uDocFormEntFE = uDocFormEntFE;
+    }
+
+    public String getuAddInFaElectronicaEmailContactoFE() {
+        return uAddInFaElectronicaEmailContactoFE;
+    }
+
+    public void setuAddInFaElectronicaEmailContactoFE(String uAddInFaElectronicaEmailContactoFE) {
+        this.uAddInFaElectronicaEmailContactoFE = uAddInFaElectronicaEmailContactoFE;
+    }
+
+    public String getuCelularFE() {
+        return uCelularFE;
+    }
+
+    public void setuCelularFE(String uCelularFE) {
+        this.uCelularFE = uCelularFE;
+    }
     /**
      * Obtiene el valor de la propiedad bpAddresses.
      * 
