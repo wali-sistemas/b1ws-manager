@@ -761,25 +761,25 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
-        if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+        if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio.")).build();
-        } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+        } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo cardCode es obligatorio.")).build();
         } else if (dto.getDetailSalesOrder().size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
-        } else if (dto.getSlpCode().equals(null) || dto.getSlpCode() <= 0) {
+        } else if (dto.getSlpCode() == null || dto.getSlpCode() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
-        } else if (dto.getNumAtCard().equals(null) || dto.getNumAtCard().isEmpty()) {
+        } else if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
-        } else if (dto.getStatus().equals(null) || dto.getStatus().isEmpty()) {
+        } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo status es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo status es obligatorio.")).build();
-        } else if (dto.getConfirmed().equals(null) || dto.getConfirmed().isEmpty()) {
+        } else if (dto.getConfirmed() == null || dto.getConfirmed().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo confirmed es obligatorio.")).build();
         }
@@ -818,16 +818,16 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response updateGeolocationCustomer(GeolocationDTO dto) {
-        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+        if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo cardcode es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo cardcode es obligatorio.")).build();
-        } else if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+        } else if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo companyName es obligatorio.")).build();
-        } else if (dto.getLatitud().equals(null) || dto.getLatitud().isEmpty()) {
+        } else if (dto.getLatitud() == null || dto.getLatitud().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo latitud es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo latitud es obligatorio.")).build();
-        } else if (dto.getLongitud().equals(null) || dto.getLongitud().isEmpty()) {
+        } else if (dto.getLongitud() == null || dto.getLongitud().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la geolocalizacion. Campo longitud es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al actualizar la geolocalizacion. Campo longitud es obligatorio.")).build();
         }
@@ -841,10 +841,10 @@ public class PedBoxREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createCustomer(BusinessPartnerDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
-        if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+        if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio.")).build();
-        } else if (dto.getCardName().equals(null) || dto.getCardName().isEmpty()) {
+        } else if (dto.getCardName() == null || dto.getCardName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio.")).build();
         }
@@ -869,19 +869,19 @@ public class PedBoxREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(IncomingPaymentDTO dto) {
         CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
-        if (dto.getCompanyName().equals(null) || dto.getCompanyName().isEmpty()) {
+        if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo companyName es obligatorio.")).build();
-        } else if (dto.getIdPayment().equals(null) || dto.getIdPayment() <= 0) {
+        } else if (dto.getIdPayment() == null || dto.getIdPayment() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo IdPayment es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo IdPayment es obligatorio.")).build();
-        } else if (dto.getCardCode().equals(null) || dto.getCardCode().isEmpty()) {
+        } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cardCode es obligatorio.")).build();
-        } else if (dto.getTransferReference().equals(null) || dto.getTransferReference().isEmpty()) {
+        } else if (dto.getTransferReference() == null || dto.getTransferReference().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo companyName es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo transferReference es obligatorio.")).build();
-        } else if (dto.getCashSum().equals(null) || dto.getCashSum().equals(BigDecimal.ZERO)) {
+        } else if (dto.getCashSum() == null || dto.getCashSum().equals(BigDecimal.ZERO)) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago para {0}. Campo cashSum es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo cashSum es obligatorio.")).build();
         } else if (dto.getIncomingPaymentInvoices().size() <= 0) {
