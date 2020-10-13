@@ -11,7 +11,7 @@ import java.util.Objects;
 @Table(name = "ticket_ti_notes")
 public class TicketTIType implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idticket_ti_type")
     private Integer id;

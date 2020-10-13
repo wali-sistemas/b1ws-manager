@@ -61,7 +61,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("where  sn.CardType = 'C' and sn.frozenFor = 'N' and cs.Country = 'CO' and sn.SlpCode <> -1 ");
         sb.append("       and cr.AdresType = 'S' and sn.SlpCode =");
         sb.append(slpCode);
-        sb.append(" order by sn.CardCode, LineNum asc");
+        sb.append(" order by sn.CardCode asc, LineNum DESC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
