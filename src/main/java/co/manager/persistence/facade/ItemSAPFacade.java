@@ -73,10 +73,10 @@ public class ItemSAPFacade {
         sb.append("      cast(imp.Rate as int) as PorcentajeIva, cast(it.DfltWH as varchar(20)) as Bodega, ");
         sb.append("      cast(case when (select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry = de.BinAbs ");
         sb.append("      where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode) > 0 ");
-        sb.append("      then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
+        sb.append("      then (inv.onHAND - inv.iscommited - (select sum(de.onHandQty) ");
         sb.append("      from OBIN ub ");
         sb.append("      inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = it.ItemCode)) ");
-        sb.append("      else (it.onHAND - it.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName ");
+        sb.append("      else (inv.onHAND - inv.iscommited) end as int) as Stock, cast(it.PicturName as varchar(50)) as PicturName ");
         sb.append("from  OITM it ");
         sb.append("inner join ITM1 pre on it.ItemCode = pre.itemcode ");
         sb.append("inner join OSTC imp on imp.Code = it.TaxCodeAR ");
@@ -114,8 +114,8 @@ public class ItemSAPFacade {
         sb.append(" select distinct cast(it.ItemCode as varchar(20))as Producto,cast(it.ItemName as varchar(100))as Descripcion, ");
         sb.append("  cast(it.InvntryUom as varchar(15))as Presentacion,cast(pre.Price as decimal(18,0))as Precio,cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(20))as Bodega, ");
         sb.append("  cast(case when(select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)>0 ");
-        sb.append("  then (it.onHAND-it.iscommited-(select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)) ");
-        sb.append("  else (it.onHAND-it.iscommited) end as int)as Stock,cast(it.PicturName as varchar)as PicturName, ");
+        sb.append("  then (inv.OnHand-inv.iscommited-(select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)) ");
+        sb.append("  else (inv.OnHand-inv.iscommited) end as int)as Stock,cast(it.PicturName as varchar)as PicturName, ");
         sb.append("  cast(it.U_Aplicacion as varchar(MAX))as ModeloMoto,cast(tll.Name as varchar(20))as TipoLlanta,cast(anc.Name as varchar(20))as AnchoLlanta, ");
         sb.append("  cast(pe.Name as varchar(20))as PerfilLlanta,cast(rin.Name as varchar(20))as RinLlanta,cast(ta.Name as varchar(20))as Talla, ");
         sb.append("  cast(c.Name as varchar(100))as Categoria,cast(gru.Name as varchar(20))as Grupo,cast(sub.Name as varchar(20))as Subgrupo,cast(mar.Name as varchar(20))as Marca, ");
