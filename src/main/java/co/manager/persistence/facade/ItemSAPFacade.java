@@ -188,37 +188,36 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(oi.ItemCode as varchar(20)) as Producto, ");
-        sb.append("       cast(it.WhsCode as varchar(20)) as Bodega, ");
-        sb.append("       cast(case when (select sum(de.onHandQty) ");
-        sb.append("                        from OBIN ub ");
-        sb.append("                        inner join oibq de on ub.AbsEntry = de.BinAbs ");
-        sb.append("                        where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = oi.ItemCode) > 0 ");
-        sb.append("       then (it.onHAND - it.iscommited - (select sum(de.onHandQty) ");
-        sb.append("                                           from OBIN ub ");
-        sb.append("                                           inner join oibq de on ub.AbsEntry = de.BinAbs where ub.Attr4Val = 'N' and de.onHandQty > 0 and de.ItemCode = oi.ItemCode)) ");
-        sb.append("       else (it.onHAND - it.iscommited) end as int) as Stock ");
-        sb.append("from OITM oi ");
-        sb.append("inner join OITW it on it.ItemCode = oi.ItemCode ");
-        sb.append("where it.WhsCode in (");
+        sb.append("select * from ( ");
+        sb.append(" select cast(oi.ItemCode as varchar(20))as Producto,cast(it.WhsCode as varchar(20))as Bodega,cast(case when (select sum(de.onHandQty) ");
+        sb.append(" from OBIN ub ");
+        sb.append(" inner join oibq de on ub.AbsEntry=de.BinAbs ");
+        sb.append(" where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=oi.ItemCode)>0 then (it.onHAND-it.iscommited-(select sum(de.onHandQty) ");
+        sb.append("  from OBIN ub ");
+        sb.append("  inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=oi.ItemCode)) ");
+        sb.append(" else (it.onHAND-it.iscommited) end as int)as Stock ");
+        sb.append(" from OITM oi ");
+        sb.append(" inner join OITW it on it.ItemCode=oi.ItemCode ");
+        sb.append(" where it.WhsCode in (");
         if (companyName.equals("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01', '05', '26'");
+            sb.append("'01','05','26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '08', '26', '44'");
+            sb.append("'01','08','26','44'");
         }
-        sb.append(") and oi.frozenFor = 'N' and oi.SellItem = 'Y' and oi.InvntItem = 'Y' and (it.onHand - it.IsCommited) > 0 ");
+        sb.append(") and oi.frozenFor='N' and oi.SellItem='Y' and oi.InvntItem='Y' ");
         if (!itemCode.equals("0")) {
-            sb.append(" and oi.ItemCode = '");
+            sb.append(" and oi.ItemCode='");
             sb.append(itemCode);
             sb.append("'");
         }
         if (!whsCode.equals("0")) {
-            sb.append(" and it.WhsCode = '");
+            sb.append(" and it.WhsCode='");
             sb.append(whsCode);
             sb.append("'");
         }
+        sb.append(")as t where t.Stock>=0");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
