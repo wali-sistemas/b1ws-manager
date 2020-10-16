@@ -22,6 +22,8 @@ public class PersistenceConf {
     private EntityManager emVARROCPruebas;
     @PersistenceContext(unitName = "VELEZPU")
     private EntityManager emVELEZ;
+    @PersistenceContext(unitName = "WMSPU")
+    private EntityManager emWMS;
     @PersistenceContext(unitName = "MySQLPU")
     private EntityManager emWali;
     @PersistenceContext(unitName = "MySQLPruebasPU")
@@ -33,7 +35,7 @@ public class PersistenceConf {
             if (testing) {
                 return emWaliPruebas;
             } else {
-                return emWali;
+                return emWMS;
             }
         } else {
             switch (companyName) {

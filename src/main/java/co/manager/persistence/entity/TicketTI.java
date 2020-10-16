@@ -12,7 +12,7 @@ import java.util.Objects;
 @Table(name = "ticket_ti")
 public class TicketTI implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idticket")
     private Integer id;
