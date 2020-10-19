@@ -18,17 +18,17 @@ import java.util.logging.Logger;
 @Stateless
 public class TicketTITypeFacade {
     private static final Logger CONSOLE = Logger.getLogger(TicketTIType.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
+    private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
 
     @EJB
     private PersistenceConf persistenceConf;
 
     public void create(TicketTIType ticketTiType, String companyName, boolean testing) {
-        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTiType);
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).persist(ticketTiType);
     }
 
     public List<Object[]> listTypeTickets() {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
         sb.append("select idticket_ti_type, type_ticket from ticket_ti_type where status = 'open' order by idticket_ti_type ASC");
         try {

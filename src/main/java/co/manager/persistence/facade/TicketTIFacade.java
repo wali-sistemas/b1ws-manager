@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class TicketTIFacade {
 
     private static final Logger CONSOLE = Logger.getLogger(TicketTI.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
+    private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
 
     @EJB
     private PersistenceConf persistenceConf;
@@ -33,15 +33,15 @@ public class TicketTIFacade {
     }
 
     public void create(TicketTI ticketTi, String companyName, boolean testing) {
-        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTi);
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).persist(ticketTi);
     }
 
     public TicketTI find(Integer idTicket, String companyName, boolean testing) {
-        return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).find(TicketTI.class, idTicket);
+        return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).find(TicketTI.class, idTicket);
     }
 
     public Long getIdTicket() {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
         sb.append("selet max(idticket) from ticket_ti");
         try {
@@ -54,7 +54,7 @@ public class TicketTIFacade {
     }
 
     public List<Object[]> listTickets(String empId, boolean admUser) {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(t.idticket as int)as idticket,cast(p.type_ticket as varchar(50))as type_ticket,cast(t.date as date)as date, ");
         sb.append(" cast(t.department_name as varchar(50))as department_name,cast(t.emp_id_add as varchar(50))as emp_id_add, cast(t.emp_id_set as varchar(50))as emp_id_set,");
@@ -80,7 +80,7 @@ public class TicketTIFacade {
     }
 
     public boolean assignTicket(Integer idTicket, String idEmp, String priority, String status) {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaUpdate<TicketTI> cu = cb.createCriteriaUpdate(TicketTI.class);
         Root<TicketTI> root = cu.from(TicketTI.class);
@@ -102,7 +102,7 @@ public class TicketTIFacade {
     }
 
     public boolean changeStatusTicket(Integer idTicket, String status) {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaUpdate<TicketTI> cu = cb.createCriteriaUpdate(TicketTI.class);
         Root<TicketTI> root = cu.from(TicketTI.class);
