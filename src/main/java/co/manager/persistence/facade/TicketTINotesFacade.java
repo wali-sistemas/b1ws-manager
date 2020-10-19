@@ -19,17 +19,17 @@ import java.util.logging.Logger;
 public class TicketTINotesFacade {
 
     private static final Logger CONSOLE = Logger.getLogger(TicketTINotes.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
+    private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
 
     @EJB
     private PersistenceConf persistenceConf;
 
     public void create(TicketTINotes ticketTiNotes, String companyName, boolean testing) {
-        persistenceConf.chooseSchema(companyName, testing, DB_TYPE).persist(ticketTiNotes);
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).persist(ticketTiNotes);
     }
 
     public List<Object[]> listNotesTicket(Integer idTicket) {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
         sb.append("select n.* from ticket_ti_notes n where n.idTicket = ");
         sb.append(idTicket);
