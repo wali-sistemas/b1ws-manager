@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Stateless
 public class UsersFacade {
     private static final Logger CONSOLE = Logger.getLogger(UsersFacade.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MYSQL;
+    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
 
     @EJB
     private PersistenceConf persistenceConf;
