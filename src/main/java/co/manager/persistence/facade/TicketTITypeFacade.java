@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 @Stateless
 public class TicketTITypeFacade {
     private static final Logger CONSOLE = Logger.getLogger(TicketTIType.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MYSQL;
+    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
 
     @EJB
     private PersistenceConf persistenceConf;

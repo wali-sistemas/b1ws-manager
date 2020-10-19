@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class TicketTIFacade {
 
     private static final Logger CONSOLE = Logger.getLogger(TicketTI.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MYSQL;
+    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
 
     @EJB
     private PersistenceConf persistenceConf;

@@ -31,12 +31,14 @@ public class PersistenceConf {
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
 
-        if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_MYSQL)) {
+        if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
+            return emWMS;
+        /*} else if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_MYSQL)) {
             if (testing) {
                 return emWaliPruebas;
             } else {
-                return emWMS;
-            }
+                return emWali;
+            }*/
         } else {
             switch (companyName) {
                 case "IGB":
