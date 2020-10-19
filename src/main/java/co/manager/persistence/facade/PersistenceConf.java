@@ -33,12 +33,6 @@ public class PersistenceConf {
 
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
             return emWMS;
-        /*} else if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_MYSQL)) {
-            if (testing) {
-                return emWaliPruebas;
-            } else {
-                return emWali;
-            }*/
         } else {
             switch (companyName) {
                 case "IGB":

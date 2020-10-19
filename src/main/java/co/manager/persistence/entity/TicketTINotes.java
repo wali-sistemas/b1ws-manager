@@ -21,6 +21,7 @@ public class TicketTINotes implements Serializable {
     private Long idTicket;
     @Basic(optional = false)
     @Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
     @Basic(optional = false)
     @Column(name = "emp_id")

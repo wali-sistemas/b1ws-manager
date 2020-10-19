@@ -21,6 +21,7 @@ public class TicketTI implements Serializable {
     private Integer idTicketType;
     @Basic(optional = false)
     @Column(name = "date")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
     @Basic(optional = false)
     @Column(name = "department_name")

@@ -139,7 +139,6 @@ public class TicketREST {
         //Agregar nota al ticket, de que fue asignado
         TicketTINotes entity = new TicketTINotes();
         entity.setIdTicket(dto.idTicket.longValue());
-        entity.setDate(new Date());
         entity.setEmpId(username);
         entity.setNote("Ticket asignado al empleado " + dto.getEmpSet().toLowerCase() + " con prioridad " + dto.getPriority());
 
@@ -199,7 +198,6 @@ public class TicketREST {
 
         TicketTINotes entity = new TicketTINotes();
         entity.setIdTicket(dto.getIdTicket().longValue());
-        entity.setDate(new Date());
         entity.setEmpId(dto.getEmpNote().toLowerCase());
         entity.setNote(dto.getNote());
 
@@ -219,7 +217,7 @@ public class TicketREST {
                 params.put("priority", entityTicket.getPriority());
                 params.put("empIdSet", entityTicket.getEmpIdSet());
                 params.put("asunt", entityTicket.getAsunt());
-                params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getDate()));
+                params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                 params.put("note", entity.getNote());
 
                 Object[] user = usersFacade.getAttributeUser(entityTicket.getEmpIdAdd());
@@ -231,8 +229,8 @@ public class TicketREST {
                         "soporte@igbcolombia.com", null, null, params);
                 return Response.ok(new ResponseDTO(0, "Creacion de nota exitosa.")).build();
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la creacion del ticket", e);
-                return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la creacion del ticket.")).build();
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de la creacion de la nota al ticket", e);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de la creacion de la nota al ticket.")).build();
             }
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la nota para el ticket TI #" + dto.getIdTicket().toString(), e);
@@ -261,7 +259,6 @@ public class TicketREST {
 
         TicketTI entity = new TicketTI();
         entity.setIdTicketType(dto.getIdTypeTicket());
-        entity.setDate(new Date());
         entity.setDepartmentName(dto.getDepartment());
         entity.setEmpIdAdd(dto.getEmpAdd().toLowerCase());
         entity.setEmpIdSet(null);
@@ -321,7 +318,6 @@ public class TicketREST {
         try {
             TicketTINotes entity = new TicketTINotes();
             entity.setIdTicket(dto.idTicket.longValue());
-            entity.setDate(new Date());
             entity.setEmpId(dto.getEmpSet().toLowerCase());
             entity.setNote(note);
             ticketTINotesFacade.create(entity, "", false);

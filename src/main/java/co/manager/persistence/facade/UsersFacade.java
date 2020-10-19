@@ -26,7 +26,8 @@ public class UsersFacade {
     public Object[] getAttributeUser(String username) {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
-        sb.append("select name, surname, email from users where username = '");
+        sb.append("select cast(name as varchar(45))as name,cast(surname as varchar(45))as surname,cast(email as varchar(80))as email ");
+        sb.append("from users where username = '");
         sb.append(username);
         sb.append("'");
         try {
