@@ -31,7 +31,8 @@ public class TicketTINotesFacade {
     public List<Object[]> listNotesTicket(Integer idTicket) {
         EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
-        sb.append("select n.* from ticket_ti_notes n where n.idTicket = ");
+        sb.append("select n.idticket_ti_notes,n.idticket,cast(n.date as varchar(10))as createDate,n.emp_id,note ");
+        sb.append("from ticket_ti_notes n where n.idTicket = ");
         sb.append(idTicket);
         sb.append(" order by n.idticket_ti_notes DESC, n.date ASC");
         try {

@@ -12,7 +12,7 @@ public class TicketDTO {
     public Integer idTicket;
     public Integer idTypeTicket;
     public String typeTicket;
-    public Date dateTicket;
+    public String dateTicket;
     public String department;
     public String empAdd;
     public String empSet;
@@ -25,7 +25,7 @@ public class TicketDTO {
     public TicketDTO() {
     }
 
-    public TicketDTO(Integer idTicket, Integer idTypeTicket, String typeTicket, Date dateTicket, String department, String empAdd, String empSet, String urlAttached, String priority, String company, String asunt, String status) {
+    public TicketDTO(Integer idTicket, Integer idTypeTicket, String typeTicket, String dateTicket, String department, String empAdd, String empSet, String urlAttached, String priority, String company, String asunt, String status) {
         this.idTicket = idTicket;
         this.idTypeTicket = idTypeTicket;
         this.typeTicket = typeTicket;
@@ -64,11 +64,11 @@ public class TicketDTO {
         this.typeTicket = typeTicket;
     }
 
-    public Date getDateTicket() {
+    public String getDateTicket() {
         return dateTicket;
     }
 
-    public void setDateTicket(Date dateTicket) {
+    public void setDateTicket(String dateTicket) {
         this.dateTicket = dateTicket;
     }
 

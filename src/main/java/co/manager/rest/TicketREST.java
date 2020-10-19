@@ -79,7 +79,7 @@ public class TicketREST {
             //Encabezado del TicketDTO.
             dto.setIdTicket((Integer) obj[0]);
             dto.setTypeTicket((String) obj[1]);
-            dto.setDateTicket((Date) obj[2]);
+            dto.setDateTicket((String) obj[2]);
             dto.setDepartment((String) obj[3]);
             dto.setEmpAdd((String) obj[4]);
             dto.setEmpSet((String) obj[5]);
@@ -106,7 +106,7 @@ public class TicketREST {
         for (Object[] obj : objects) {
             TicketNotesDTO dto = new TicketNotesDTO();
             dto.setIdTicket((Integer) obj[1]);
-            dto.setDateNote((Date) obj[2]);
+            dto.setDateNote((String) obj[2]);
             dto.setEmpNote((String) obj[3]);
             dto.setNote((String) obj[4]);
             ticketNotes.add(dto);

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Stateless
 public class UsersFacade {
     private static final Logger CONSOLE = Logger.getLogger(UsersFacade.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
+    private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
 
     @EJB
     private PersistenceConf persistenceConf;
@@ -24,7 +24,7 @@ public class UsersFacade {
     }
 
     public Object[] getAttributeUser(String username) {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
         StringBuilder sb = new StringBuilder();
         sb.append("select name, surname, email from users where username = '");
         sb.append(username);

@@ -10,14 +10,14 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TicketNotesDTO {
     public Integer idTicket;
-    public Date dateNote;
+    public String dateNote;
     public String empNote;
     public String note;
 
     public TicketNotesDTO() {
     }
 
-    public TicketNotesDTO(Integer idTicket, Date dateNote, String empNote, String note) {
+    public TicketNotesDTO(Integer idTicket, String dateNote, String empNote, String note) {
         this.idTicket = idTicket;
         this.dateNote = dateNote;
         this.empNote = empNote;
@@ -32,11 +32,11 @@ public class TicketNotesDTO {
         this.idTicket = idTicket;
     }
 
-    public Date getDateNote() {
+    public String getDateNote() {
         return dateNote;
     }
 
-    public void setDateNote(Date dateNote) {
+    public void setDateNote(String dateNote) {
         this.dateNote = dateNote;
     }
 
