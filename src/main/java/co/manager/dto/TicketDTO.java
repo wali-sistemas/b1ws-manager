@@ -2,8 +2,6 @@ package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.Date;
-
 /**
  * @author jguisao
  */
@@ -25,15 +23,10 @@ public class TicketDTO {
     public TicketDTO() {
     }
 
-    public TicketDTO(Integer idTicket, Integer idTypeTicket, String typeTicket, String dateTicket, String department, String empAdd, String empSet, String urlAttached, String priority, String company, String asunt, String status) {
-        this.idTicket = idTicket;
-        this.idTypeTicket = idTypeTicket;
-        this.typeTicket = typeTicket;
-        this.dateTicket = dateTicket;
+    public TicketDTO(String department, String empAdd, String empSet, String priority, String company, String asunt, String status) {
         this.department = department;
         this.empAdd = empAdd;
         this.empSet = empSet;
-        this.urlAttached = urlAttached;
         this.priority = priority;
         this.company = company;
         this.asunt = asunt;

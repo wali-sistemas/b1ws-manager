@@ -21,7 +21,7 @@ public class TicketTI implements Serializable {
     private Integer idTicketType;
     @Basic(optional = false)
     @Column(name = "date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date date;
     @Basic(optional = false)
     @Column(name = "department_name")
@@ -52,6 +52,21 @@ public class TicketTI implements Serializable {
     private Date modifyDate;
 
     public TicketTI() {
+    }
+
+    public TicketTI(Integer id, Integer idTicketType, Date date, String departmentName, String empIdAdd, String empIdSet, String urlAttached, String priority, String companyName, String asunt, String status, Date modifyDate) {
+        this.id = id;
+        this.idTicketType = idTicketType;
+        this.date = date;
+        this.departmentName = departmentName;
+        this.empIdAdd = empIdAdd;
+        this.empIdSet = empIdSet;
+        this.urlAttached = urlAttached;
+        this.priority = priority;
+        this.companyName = companyName;
+        this.asunt = asunt;
+        this.status = status;
+        this.modifyDate = modifyDate;
     }
 
     public Integer getId() {

@@ -201,7 +201,7 @@ public class TicketREST {
         entity.setEmpId(dto.getEmpNote().toLowerCase());
         entity.setNote(dto.getNote());
 
-        TicketTI entityTicket = ticketTIFacade.find(dto.getIdTicket(), "", false);
+        TicketDTO ticketDTO = ticketTIFacade.getTicket(dto.getIdTicket(), "", false);
 
         try {
             ticketTINotesFacade.create(entity, "", false);
@@ -210,17 +210,17 @@ public class TicketREST {
                 //Notificar vía mail la nota del ticket
                 Map<String, String> params = new HashMap<>();
                 params.put("idTicket", entity.getIdTicket().toString());
-                params.put("status", entityTicket.getStatus());
-                params.put("empIdAdd", entityTicket.getEmpIdAdd());
-                params.put("companyName", entityTicket.getCompanyName());
-                params.put("department", entityTicket.getDepartmentName());
-                params.put("priority", entityTicket.getPriority());
-                params.put("empIdSet", entityTicket.getEmpIdSet());
-                params.put("asunt", entityTicket.getAsunt());
+                params.put("status", ticketDTO.getStatus());
+                params.put("empIdAdd", ticketDTO.getEmpAdd());
+                params.put("companyName", ticketDTO.getCompany());
+                params.put("department", ticketDTO.getDepartment());
+                params.put("priority", ticketDTO.getPriority());
+                params.put("empIdSet", ticketDTO.getEmpSet());
+                params.put("asunt", ticketDTO.getAsunt());
                 params.put("createDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                 params.put("note", entity.getNote());
 
-                Object[] user = usersFacade.getAttributeUser(entityTicket.getEmpIdAdd());
+                Object[] user = usersFacade.getAttributeUser(ticketDTO.getEmpAdd());
                 if (user != null) {
                     params.put("empName", (String) user[0] + " " + user[1]);
                 }
@@ -259,6 +259,7 @@ public class TicketREST {
 
         TicketTI entity = new TicketTI();
         entity.setIdTicketType(dto.getIdTypeTicket());
+        entity.setDate(new Date());
         entity.setDepartmentName(dto.getDepartment());
         entity.setEmpIdAdd(dto.getEmpAdd().toLowerCase());
         entity.setEmpIdSet(null);

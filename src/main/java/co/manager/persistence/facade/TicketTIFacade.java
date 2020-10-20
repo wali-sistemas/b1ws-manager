@@ -1,5 +1,6 @@
 package co.manager.persistence.facade;
 
+import co.manager.dto.TicketDTO;
 import co.manager.persistence.entity.TicketTI;
 import co.manager.persistence.entity.TicketTI_;
 import co.manager.util.Constants;
@@ -51,6 +52,23 @@ public class TicketTIFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el ultimo ticket creado. ", e);
         }
         return 0l;
+    }
+
+    public TicketDTO getTicket(Integer idTicket, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select department_name,emp_id_add,emp_id_set,priority,company_name,asunt,status ");
+        sb.append("from ticket_ti where idticket=");
+        sb.append(idTicket);
+        try {
+            Object[] obj = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+            TicketDTO dto = new TicketDTO((String) obj[0], (String) obj[1], (String) obj[2], (String) obj[3], (String) obj[4], (String) obj[5], (String) obj[6]);
+            return dto;
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando datos del ticker " + idTicket.toString(), e);
+        }
+        return null;
     }
 
     public List<Object[]> listTickets(String empId, boolean admUser) {
