@@ -110,7 +110,9 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("select * from (");
+        sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
+        sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("from ( ");
         sb.append(" select distinct cast(it.ItemCode as varchar(20))as Producto,cast(it.ItemName as varchar(100))as Descripcion, ");
         sb.append("  cast(it.InvntryUom as varchar(15))as Presentacion,cast(pre.Price as decimal(18,0))as Precio,cast(19 as int)as PorcentajeIva,cast(it.DfltWH as varchar(20))as Bodega, ");
         sb.append("  cast(case when(select sum(de.onHandQty) from OBIN ub inner join oibq de on ub.AbsEntry=de.BinAbs where ub.Attr4Val='N' and de.onHandQty>0 and de.ItemCode=it.ItemCode)>0 ");
@@ -151,7 +153,10 @@ public class ItemSAPFacade {
         sb.append(" left join [@VISCOSIDAD]vis on vis.Code = it.U_VISCOSIDAD ");
         sb.append(" left join [@BASE]bs on bs.Code = it.U_BASE ");
         sb.append(" where it.validFor='Y' and it.ItemType='I' and it.InvntItem='Y' and it.SellItem='Y'");
-        sb.append(")as t where t.Stock>0 order by Producto ASC");
+        sb.append(")as t where t.Stock>0 ");
+        sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
+        sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("order by Producto ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
