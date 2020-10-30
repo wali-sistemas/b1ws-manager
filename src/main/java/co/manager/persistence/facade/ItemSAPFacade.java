@@ -292,9 +292,10 @@ public class ItemSAPFacade {
         sb.append(" left join [SBOMOTOREPUESTO].[VARROC].[DBO].[@PRODUCTO_PADRE] pp on pp.Code=it.U_ARTICULO ");
         sb.append(" where it.validFor='Y' and it.ItemType='I' and it.QryGroup2='Y' ");
         sb.append(")as t ");
-        sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto ");
+        sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].OITM itMrto on itMrto.ItemCode=t.Producto and itMrto.validFor='Y' ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto on prMrto.ItemCode=itMrto.ItemCode and prMrto.PriceList=1 ");
         sb.append("inner join [SBOMOTOREPUESTO].[VELEZ].[DBO].ITM1 prMrto2 on prMrto2.ItemCode=itMrto.ItemCode and prMrto2.PriceList=2 ");
+        sb.append("where t.Stock > 0 ");
         sb.append("order by Producto ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
