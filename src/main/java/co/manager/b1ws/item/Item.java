@@ -2296,6 +2296,8 @@ public class Item {
     protected String uPorcAIU;
     @XmlElement(name = "U_CalcAIU")
     protected String uCalcAIU;
+    @XmlElement(name = "U_LARGO_CADENA")
+    protected String uLargoCadena;
     @XmlElement(name = "ItemPrices")
     protected Item.ItemPrices itemPrices;
     @XmlElement(name = "ItemWarehouseInfoCollection")
@@ -8539,6 +8541,14 @@ public class Item {
 
     public void setuCalcAIU(String uCalcAIU) {
         this.uCalcAIU = uCalcAIU;
+    }
+
+    public String getuLargoCadena() {
+        return uLargoCadena;
+    }
+
+    public void setuLargoCadena(String uLargoCadena) {
+        this.uLargoCadena = uLargoCadena;
     }
 
     public String getItemAttributeGroups() {
