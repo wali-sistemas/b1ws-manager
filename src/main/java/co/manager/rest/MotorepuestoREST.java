@@ -6,6 +6,7 @@ import co.manager.dto.ResponseDTO;
 import co.manager.ejb.BasicFunctions;
 import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.ManagerApplicationBean;
+import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.util.Constants;
 
@@ -39,6 +40,8 @@ public class MotorepuestoREST {
     private BusinessPartnerEJB businessPartnerEJB;
     @EJB
     private BasicFunctions basicFunctions;
+    @EJB
+    private BusinessPartnerSAPFacade businessPartnerSAPFacade;
 
     @GET
     @Path("items")
@@ -137,6 +140,13 @@ public class MotorepuestoREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo acceptHabeasData es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo acceptHabeasData es obligatorio.")).build();
         }
+
+        //Validar si ya existe el cliente en SAP.
+        if (businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false)) {
+            CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
+            return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
+        }
+
         CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en " + dto.getCompanyName(), dto.toString());
 
         int digito = basicFunctions.getDigitoDian(dto.getDocument());

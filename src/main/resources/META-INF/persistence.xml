@@ -65,6 +65,15 @@
             <property name="hibernate.format_sql" value="false"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="VELEZPruebasPU" transaction-type="JTA">
+        <jta-data-source>java:/VELEZPruebasDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="false"/>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="WMSPU" transaction-type="JTA">
         <jta-data-source>java:/WMSDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
