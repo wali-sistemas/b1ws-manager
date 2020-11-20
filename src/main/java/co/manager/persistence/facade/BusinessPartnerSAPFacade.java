@@ -255,8 +255,27 @@ public class BusinessPartnerSAPFacade {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE,"Ocurrio un error al consultar los tipos de documentos en " + companyName, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar los tipos de documentos en " + companyName, e);
         }
         return new ArrayList<>();
+    }
+
+    public boolean findCustomer(String cardCode, String companyName, boolean pruebas) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE);
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(CardCode as varchar(20))as CardCode from OCRD where CardCode = '");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            if (em.createNativeQuery(sb.toString()).getSingleResult().equals(cardCode)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el cliente [" + cardCode + "] en [" + companyName + ']', e);
+        }
+        return false;
     }
 }
