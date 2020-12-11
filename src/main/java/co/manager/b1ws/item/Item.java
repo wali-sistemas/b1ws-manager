@@ -2204,8 +2204,6 @@ public class Item {
     protected String createTime;
     @XmlElement(name = "ProdStdCost")
     protected Double prdStdCst;
-    @XmlElement(name = "attachmentEntry")
-    protected String atcEntry;
     @XmlElement(name = "U_Marcas_info")
     protected String uMarcasInfo;
     @XmlElement(name = "U_Grupo")
@@ -4112,15 +4110,6 @@ public class Item {
     public Double getPurchaseFactor1() {
         return purchaseFactor1;
     }
-
-    public String getAtcEntry() {
-        return atcEntry;
-    }
-
-    public void setAtcEntry(String atcEntry) {
-        this.atcEntry = atcEntry;
-    }
-
     /**
      * Define el valor de la propiedad purchaseFactor1.
      * 
