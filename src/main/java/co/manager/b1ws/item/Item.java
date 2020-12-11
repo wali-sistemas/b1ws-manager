@@ -2204,6 +2204,10 @@ public class Item {
     protected String createTime;
     @XmlElement(name = "ProdStdCost")
     protected Double prdStdCst;
+    @XmlElement(name = "AttachmentEntry")
+    protected Integer AtcEntry;
+    @XmlElement(name = "U_Equiv_Box")
+    protected Integer uEquivBox;
     @XmlElement(name = "U_Marcas_info")
     protected String uMarcasInfo;
     @XmlElement(name = "U_Grupo")
@@ -8260,6 +8264,22 @@ public class Item {
 
     public void setImported(String imported) {
         this.imported = imported;
+    }
+
+    public Integer getAtcEntry() {
+        return AtcEntry;
+    }
+
+    public void setAtcEntry(Integer atcEntry) {
+        AtcEntry = atcEntry;
+    }
+
+    public Integer getuEquivBox() {
+        return uEquivBox;
+    }
+
+    public void setuEquivBox(Integer uEquivBox) {
+        this.uEquivBox = uEquivBox;
     }
 
     public Double getPricingPrc() {
