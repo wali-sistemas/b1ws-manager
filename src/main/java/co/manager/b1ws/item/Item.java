@@ -2204,8 +2204,8 @@ public class Item {
     protected String createTime;
     @XmlElement(name = "ProdStdCost")
     protected Double prdStdCst;
-    @XmlElement(name = "AtcEntry")
-    protected String attachmentEntry;
+    @XmlElement(name = "attachmentEntry")
+    protected String atcEntry;
     @XmlElement(name = "U_Marcas_info")
     protected String uMarcasInfo;
     @XmlElement(name = "U_Grupo")
@@ -4113,12 +4113,12 @@ public class Item {
         return purchaseFactor1;
     }
 
-    public String getAttachmentEntry() {
-        return attachmentEntry;
+    public String getAtcEntry() {
+        return atcEntry;
     }
 
-    public void setAttachmentEntry(String attachmentEntry) {
-        this.attachmentEntry = attachmentEntry;
+    public void setAtcEntry(String atcEntry) {
+        this.atcEntry = atcEntry;
     }
 
     /**
