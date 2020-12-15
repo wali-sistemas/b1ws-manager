@@ -26,10 +26,6 @@ public class PersistenceConf {
     private EntityManager emVELEZPruebas;
     @PersistenceContext(unitName = "WMSPU")
     private EntityManager emWMS;
-    @PersistenceContext(unitName = "MySQLPU")
-    private EntityManager emWali;
-    @PersistenceContext(unitName = "MySQLPruebasPU")
-    private EntityManager emWaliPruebas;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
 
