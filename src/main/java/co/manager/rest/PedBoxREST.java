@@ -783,7 +783,7 @@ public class PedBoxREST {
 
             presupuestos.add(dto);
         }
-        return Response.ok(presupuestos).build();
+        return Response.ok(new ResponseDTO(0, presupuestos)).build();
     }
 
     @POST
