@@ -755,6 +755,28 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(0, detailOrder)).build();
     }
 
+    @GET
+    @Path("budget-sales/{companyname}/{slpcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSalesBudgetBySeller(@PathParam("slpcode") String slpCode,
+                                           @PathParam("companyname") String companyname,
+                                           @QueryParam("year") Integer year,
+                                           @QueryParam("month") String month) {
+        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para el asesor {0} en la empresa {1}. ano[{2}]-mes[{3}]", new Object[]{slpCode, companyname, year, month});
+        Object[] obj = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month, companyname, false);
+
+        SalesBudgetDTO dto = new SalesBudgetDTO();
+        dto.setSlpCode(slpCode);
+        dto.setCompanyName(companyname);
+        dto.setYear((Integer) obj[0]);
+        dto.setMonth((String) obj[1]);
+        dto.setVentas((BigDecimal) obj[2]);
+        dto.setPresupuesto((BigDecimal) obj[3]);
+
+        return Response.ok(dto).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
