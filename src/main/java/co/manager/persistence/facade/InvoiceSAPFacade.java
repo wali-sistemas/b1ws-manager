@@ -40,4 +40,44 @@ public class InvoiceSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public Object[] getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select t.Ano,t.Mes,sum(t.Ventas)-sum(t.Devoluciones)as VentasNetas,cast(p.U_VALOR_PRES as numeric(18,2))as Presupuesto ");
+        sb.append("from ( ");
+        sb.append(" select cast(year(f.DocDate)as int)as Ano,cast(month(f.DocDate)as varchar(2))as Mes,f.SlpCode,");
+        sb.append("  cast(sum(f.DocTotal-f.VatSum-f.TotalExpns+f.WTSum)as numeric(18,2))as Ventas,0 as Devoluciones ");
+        sb.append(" from  OINV f ");
+        sb.append(" where f.DocType='I' and year(f.DocDate)='");
+        sb.append(year);
+        sb.append("' and month(f.DocDate)='");
+        sb.append(month);
+        sb.append("' and f.SlpCode='");
+        sb.append(slpCode);
+        sb.append("' group by year(f.DocDate),month(f.DocDate),f.SlpCode ");
+        sb.append("union all ");
+        sb.append(" select cast(year(n.DocDate)as int)as Ano,cast(month(n.DocDate)as varchar(2))as Mes,n.SlpCode, ");
+        sb.append("  0 as Ventas,cast(sum(n.DocTotal-n.VatSum-n.TotalExpns+n.WTSum)as numeric(18,2))as Devoluciones ");
+        sb.append(" from  ORIN n ");
+        sb.append(" where n.DocType='I' and year(n.DocDate)='");
+        sb.append(year);
+        sb.append("' and month(n.DocDate)='");
+        sb.append(month);
+        sb.append("' and n.SlpCode='");
+        sb.append(slpCode);
+        sb.append("' group by year(n.DocDate),month(n.DocDate),n.SlpCode ");
+        sb.append(")as t ");
+        sb.append("inner join OSLP a on a.SlpCode=t.SlpCode ");
+        sb.append("left  join [@PRES_ZONA_VEND] p on p.U_VEND_PRES=a.SlpName ");
+        sb.append("where p.U_MES_PRES='");
+        sb.append(month);
+        sb.append("' group by t.Ano,t.Mes,p.U_VALOR_PRES");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el presupuesto para el asesor " + slpCode + " en " + companyName, e);
+        }
+        return null;
+    }
 }
