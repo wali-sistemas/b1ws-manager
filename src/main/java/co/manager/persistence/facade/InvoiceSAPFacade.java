@@ -43,7 +43,7 @@ public class InvoiceSAPFacade {
 
     public List<Object[]> getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.Ano,t.Mes,sum(t.Ventas)-sum(t.Devoluciones)as VentasNetas,cast(p.U_VALOR_PRES as numeric(18,2))as Presupuesto ");
+        sb.append("select t.Asesor,t.Ano,t.Mes,sum(t.Ventas)-sum(t.Devoluciones)as VentasNetas,cast(p.U_VALOR_PRES as numeric(18,2))as Presupuesto ");
         sb.append("from ( ");
         sb.append(" select cast(year(f.DocDate)as int)as Ano,cast(month(f.DocDate)as varchar(2))as Mes,cast(f.SlpCode as varchar(10))as Asesor,");
         sb.append("  cast(sum(f.DocTotal-f.VatSum-f.TotalExpns+f.WTSum)as numeric(18,2))as Ventas,0 as Devoluciones ");

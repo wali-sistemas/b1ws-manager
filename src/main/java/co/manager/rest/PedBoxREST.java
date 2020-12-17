@@ -774,12 +774,12 @@ public class PedBoxREST {
         List<SalesBudgetDTO> presupuestos = new ArrayList<>();
         for (Object[] obj : objects) {
             SalesBudgetDTO dto = new SalesBudgetDTO();
-            dto.setSlpCode(slpCode);
             dto.setCompanyName(companyname);
-            dto.setYear((Integer) obj[0]);
-            dto.setMonth((String) obj[1]);
-            dto.setVentas((BigDecimal) obj[2]);
-            dto.setPresupuesto((BigDecimal) obj[3]);
+            dto.setSlpCode((String) obj[0]);
+            dto.setYear((Integer) obj[1]);
+            dto.setMonth((String) obj[2]);
+            dto.setVentas((BigDecimal) obj[3]);
+            dto.setPresupuesto((BigDecimal) obj[4]);
 
             presupuestos.add(dto);
         }
