@@ -756,25 +756,34 @@ public class PedBoxREST {
     }
 
     @GET
-    @Path("budget-sales/{companyname}/{slpcode}")
+    @Path("budget-sales/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getSalesBudgetBySeller(@PathParam("slpcode") String slpCode,
-                                           @PathParam("companyname") String companyname,
+    public Response getSalesBudgetBySeller(@PathParam("companyname") String companyname,
+                                           @QueryParam("slpcode") String slpCode,
                                            @QueryParam("year") Integer year,
                                            @QueryParam("month") String month) {
-        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para el asesor {0} en la empresa {1}. ano[{2}]-mes[{3}]", new Object[]{slpCode, companyname, year, month});
-        Object[] obj = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month, companyname, false);
+        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0}. ano[{1}]-mes[{2}]", new Object[]{companyname, year, month});
+        List<Object[]> objects = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month, companyname, false);
 
-        SalesBudgetDTO dto = new SalesBudgetDTO();
-        dto.setSlpCode(slpCode);
-        dto.setCompanyName(companyname);
-        dto.setYear((Integer) obj[0]);
-        dto.setMonth((String) obj[1]);
-        dto.setVentas((BigDecimal) obj[2]);
-        dto.setPresupuesto((BigDecimal) obj[3]);
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para ", companyname);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los presupuestos para " + companyname)).build();
+        }
 
-        return Response.ok(dto).build();
+        List<SalesBudgetDTO> presupuestos = new ArrayList<>();
+        for (Object[] obj : objects) {
+            SalesBudgetDTO dto = new SalesBudgetDTO();
+            dto.setSlpCode(slpCode);
+            dto.setCompanyName(companyname);
+            dto.setYear((Integer) obj[0]);
+            dto.setMonth((String) obj[1]);
+            dto.setVentas((BigDecimal) obj[2]);
+            dto.setPresupuesto((BigDecimal) obj[3]);
+
+            presupuestos.add(dto);
+        }
+        return Response.ok(presupuestos).build();
     }
 
     @POST
