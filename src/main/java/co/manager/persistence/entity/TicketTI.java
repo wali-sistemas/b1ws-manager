@@ -50,6 +50,12 @@ public class TicketTI implements Serializable {
     @Basic(optional = false)
     @Column(name = "modify_date")
     private Date modifyDate;
+    @Basic(optional = false)
+    @Column(name = "type")
+    private String type;
+    @Basic(optional = false)
+    @Column(name = "date_end")
+    private Date dateEnd;
 
     public TicketTI() {
     }
@@ -165,6 +171,22 @@ public class TicketTI implements Serializable {
         this.modifyDate = modifyDate;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Date getDateEnd() {
+        return dateEnd;
+    }
+
+    public void setDateEnd(Date dateEnd) {
+        this.dateEnd = dateEnd;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -205,6 +227,8 @@ public class TicketTI implements Serializable {
                 ", asunt='" + asunt + '\'' +
                 ", status='" + status + '\'' +
                 ", modifyDate=" + modifyDate +
+                ", type='" + type + '\'' +
+                ", dateEnd=" + dateEnd +
                 '}';
     }
 }

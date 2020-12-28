@@ -88,6 +88,8 @@ public class TicketREST {
             dto.setCompany((String) (obj[8] == "VARROC" ? "MOTOZONE" : "IGB"));
             dto.setAsunt((String) obj[9]);
             dto.setStatus((String) obj[10]);
+            dto.setType((String) obj[11]);
+            dto.setDateEnd((Date) obj[12]);
             ticketTI.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando tickets TI actuales");
@@ -268,6 +270,8 @@ public class TicketREST {
         entity.setCompanyName(dto.getCompany());
         entity.setAsunt(dto.getAsunt());
         entity.setStatus("ABIERTO");
+        entity.setType(dto.getType());
+        entity.setDateEnd(dto.getDateEnd());
 
         try {
             ticketTIFacade.create(entity, dto.getCompany(), false);
