@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -89,7 +90,7 @@ public class TicketREST {
             dto.setAsunt((String) obj[9]);
             dto.setStatus((String) obj[10]);
             dto.setType((String) obj[11]);
-            dto.setDateEnd((Date) obj[12]);
+            dto.setDateEnd((String) obj[12]);
             ticketTI.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando tickets TI actuales");
@@ -256,7 +257,7 @@ public class TicketREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addNewTicket(TicketDTO dto,
-                                 @QueryParam("newNote") String newNote) {
+                                 @QueryParam("newNote") String newNote) throws ParseException {
         CONSOLE.log(Level.INFO, "Iniciando creacion de un nuevo ticket {0}", dto.toString());
 
         TicketTI entity = new TicketTI();
@@ -271,7 +272,7 @@ public class TicketREST {
         entity.setAsunt(dto.getAsunt());
         entity.setStatus("ABIERTO");
         entity.setType(dto.getType());
-        entity.setDateEnd(dto.getDateEnd());
+        entity.setDateEnd(dto.getType().equals("PROYECTO") ? new SimpleDateFormat("yyyy-MM-dd").parse(dto.getDateEnd()) : null);
 
         try {
             ticketTIFacade.create(entity, dto.getCompany(), false);
