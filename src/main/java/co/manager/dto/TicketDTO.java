@@ -22,7 +22,7 @@ public class TicketDTO {
     public String asunt;
     public String status;
     public String type;
-    public Date dateEnd;
+    public String dateEnd;
 
     public TicketDTO() {
     }
@@ -141,11 +141,11 @@ public class TicketDTO {
         this.type = type;
     }
 
-    public Date getDateEnd() {
+    public String getDateEnd() {
         return dateEnd;
     }
 
-    public void setDateEnd(Date dateEnd) {
+    public void setDateEnd(String dateEnd) {
         this.dateEnd = dateEnd;
     }
 

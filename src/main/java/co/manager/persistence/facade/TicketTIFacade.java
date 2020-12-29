@@ -77,7 +77,7 @@ public class TicketTIFacade {
         sb.append("select cast(t.idticket as int)as idticket,cast(p.type_ticket as varchar(45))as type_ticket,cast(t.date as varchar(10))as createDate, ");
         sb.append(" cast(t.department_name as varchar(45))as department_name,cast(t.emp_id_add as varchar(45))as emp_id_add, cast(t.emp_id_set as varchar(45))as emp_id_set, ");
         sb.append(" cast(t.url_attached as varchar(100))as url_attached,cast(t.priority as varchar(10))as priority,cast(t.company_name as varchar(20))as company_name, ");
-        sb.append(" cast(t.asunt as varchar(100))as asunt,cast(t.status as varchar(15))as status,cast(t.type as varchar(20))as type,cast(t.date_end as date)as dateEnd ");
+        sb.append(" cast(t.asunt as varchar(100))as asunt,cast(t.status as varchar(15))as status,cast(t.type as varchar(20))as type,cast(t.date_end as varchar(10))as dateEnd ");
         sb.append("from  ticket_ti t ");
         sb.append("inner join ticket_ti_type p ON p.idticket_ti_type = t.idticket_ti_type ");
 

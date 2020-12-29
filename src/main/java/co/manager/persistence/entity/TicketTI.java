@@ -53,7 +53,6 @@ public class TicketTI implements Serializable {
     @Basic(optional = false)
     @Column(name = "type")
     private String type;
-    @Basic(optional = false)
     @Column(name = "date_end")
     private Date dateEnd;
 
