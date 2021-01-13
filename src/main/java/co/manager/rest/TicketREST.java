@@ -144,6 +144,7 @@ public class TicketREST {
         entity.setIdTicket(dto.idTicket.longValue());
         entity.setEmpId(username);
         entity.setNote("Ticket asignado al empleado " + dto.getEmpSet().toLowerCase() + " con prioridad " + dto.getPriority());
+        entity.setDate(new Date());
 
         try {
             ticketTINotesFacade.create(entity, "", false);
@@ -327,6 +328,7 @@ public class TicketREST {
             entity.setIdTicket(dto.idTicket.longValue());
             entity.setEmpId(dto.getEmpSet().toLowerCase());
             entity.setNote(note);
+            entity.setDate(new Date());
             ticketTINotesFacade.create(entity, "", false);
         } catch (Exception e) {
             CONSOLE.log(Level.WARNING, "Ocurrio un novedad agregando la nota al ticket #{0}", dto.getIdTicket());
