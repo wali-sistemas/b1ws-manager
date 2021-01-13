@@ -203,6 +203,7 @@ public class TicketREST {
         entity.setIdTicket(dto.getIdTicket().longValue());
         entity.setEmpId(dto.getEmpNote().toLowerCase());
         entity.setNote(dto.getNote());
+        entity.setDate(new Date());
 
         TicketDTO ticketDTO = ticketTIFacade.getTicket(dto.getIdTicket(), "", false);
 
