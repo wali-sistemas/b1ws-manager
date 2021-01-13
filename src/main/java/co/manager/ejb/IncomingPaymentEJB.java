@@ -82,7 +82,7 @@ public class IncomingPaymentEJB {
                 payment.setDocType("C");
                 payment.setCardCode(dto.getCardCode());
                 payment.setDocCurrency("$");
-                payment.setTransferAccount("11100510");
+                payment.setTransferAccount("11250525");//itau fiducia
                 payment.setTransferReference(dto.getTransferReference());
                 payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 payment.setCashSum(dto.getCashSum());
