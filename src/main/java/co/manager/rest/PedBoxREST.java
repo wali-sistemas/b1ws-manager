@@ -764,7 +764,7 @@ public class PedBoxREST {
                                            @QueryParam("year") Integer year,
                                            @QueryParam("month") String month) {
         CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0}. ano[{1}]-mes[{2}]", new Object[]{companyname, year, month});
-        List<Object[]> objects = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month, companyname, false);
+        List<Object[]> objects = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month.length() == 1 ? '0' + month : month, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para ", companyname);
@@ -780,6 +780,7 @@ public class PedBoxREST {
             dto.setMonth((String) obj[2]);
             dto.setVentas((BigDecimal) obj[3]);
             dto.setPresupuesto((BigDecimal) obj[4]);
+            dto.setPendiente((BigDecimal) obj[5]);
 
             presupuestos.add(dto);
         }
@@ -966,11 +967,11 @@ public class PedBoxREST {
 
         CONSOLE.log(Level.INFO, dto.toString());
 
-        //if (dto.getCompanyName().contains("VARROC")) {
-        //return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
-        //} else {
-        CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
-        return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
-        //}
+        if (dto.getCompanyName().contains("VARROC")) {
+            return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
+        } else {
+            CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
+            return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
+        }
     }
 }

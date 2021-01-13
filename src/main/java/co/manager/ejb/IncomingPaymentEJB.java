@@ -84,7 +84,7 @@ public class IncomingPaymentEJB {
                 payment.setDocCurrency("$");
                 payment.setTransferAccount("11100510");
                 payment.setTransferReference(dto.getTransferReference());
-                payment.setJournalRemarks("Pagos recibidos Ecommerce - " + dto.getCardCode());
+                payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 payment.setCashSum(dto.getCashSum());
 
                 try {

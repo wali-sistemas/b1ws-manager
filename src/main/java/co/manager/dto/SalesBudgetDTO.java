@@ -15,6 +15,7 @@ public class SalesBudgetDTO {
     private String month;
     private BigDecimal ventas;
     private BigDecimal presupuesto;
+    private BigDecimal pendiente;
 
     public SalesBudgetDTO() {
     }
@@ -76,15 +77,24 @@ public class SalesBudgetDTO {
         this.presupuesto = presupuesto;
     }
 
+    public BigDecimal getPendiente() {
+        return pendiente;
+    }
+
+    public void setPendiente(BigDecimal pendiente) {
+        this.pendiente = pendiente;
+    }
+
     @Override
     public String toString() {
         return "SalesBudgetDTO{" +
-                "slpCode='" + slpCode + '\'' +
+                "year=" + year +
+                ", slpCode='" + slpCode + '\'' +
                 ", companyName='" + companyName + '\'' +
-                ", year=" + year +
-                ", month=" + month +
+                ", month='" + month + '\'' +
                 ", ventas=" + ventas +
                 ", presupuesto=" + presupuesto +
+                ", pendiente=" + pendiente +
                 '}';
     }
 }
