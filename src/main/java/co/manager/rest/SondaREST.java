@@ -117,14 +117,21 @@ public class SondaREST {
             Item entity = itemEJB.getMasterItem(companyname, items.get(i));
             if (!entity.getItemCode().equals(null)) {
                 entity.setSeries(48l);
-                entity.setMainsupplier("P811011909");
                 entity.setApTaxCode("IVAD01");
                 entity.setArTaxCode("IVAV01");
                 entity.setValid("N");
                 entity.setFrozen("Y");
-                entity.setItemsGroupCode(100l);
                 entity.setManufacturer(1l);
                 entity.setProperties2("N");
+                entity.setAtcEntry(null);
+
+                if (companyname.equals("IGB")) {
+                    entity.setItemsGroupCode(100l);
+                    entity.setMainsupplier("P811011909");
+                } else {
+                    entity.setItemsGroupCode(102l);
+                    entity.setMainsupplier("P900255414");
+                }
 
                 try {
                     GregorianCalendar date = new GregorianCalendar();
