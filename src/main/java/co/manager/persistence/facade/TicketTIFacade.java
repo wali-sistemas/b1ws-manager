@@ -126,6 +126,11 @@ public class TicketTIFacade {
         Root<TicketTI> root = cu.from(TicketTI.class);
         cu.set(root.get(TicketTI_.status), status);
         cu.set(root.get(TicketTI_.modifyDate), new Date());
+
+        if (status.equals("CERRADO")) {
+            cu.set(root.get(TicketTI_.dateEnd), new Date());
+        }
+
         cu.where(cb.equal(root.get(TicketTI_.id), idTicket));
         try {
             int rows = em.createQuery(cu).executeUpdate();
@@ -134,7 +139,7 @@ public class TicketTIFacade {
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando el tickit TI #" + idTicket.toString(), e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error modificando estado al tickit TI #" + idTicket.toString(), e);
         }
         return false;
     }
