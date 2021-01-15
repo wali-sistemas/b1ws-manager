@@ -82,11 +82,10 @@ public class IncomingPaymentEJB {
                 payment.setDocType("C");
                 payment.setCardCode(dto.getCardCode());
                 payment.setDocCurrency("$");
-                payment.setTransferAccount("11250525");//itau fiducia
+                payment.setTransferAccount("11250525");//itau fiducia solo motozone
                 payment.setTransferReference(dto.getTransferReference());
                 payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
-                payment.setCashSum(dto.getCashSum());
-
+                payment.setTransferSum(dto.getCashSum());
                 try {
                     GregorianCalendar date = new GregorianCalendar();
                     XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
