@@ -126,7 +126,11 @@ public class TicketTIFacade {
         Root<TicketTI> root = cu.from(TicketTI.class);
         cu.set(root.get(TicketTI_.status), status);
         cu.set(root.get(TicketTI_.modifyDate), new Date());
-        cu.set(root.get(TicketTI_.dateEnd), new Date());
+
+        if (status.equals("CERRADO")) {
+            cu.set(root.get(TicketTI_.dateEnd), new Date());
+        }
+
         cu.where(cb.equal(root.get(TicketTI_.id), idTicket));
         try {
             int rows = em.createQuery(cu).executeUpdate();
