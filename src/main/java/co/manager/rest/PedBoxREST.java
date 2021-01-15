@@ -953,7 +953,8 @@ public class PedBoxREST {
             entityDet.setCode(idDetPago);
             entityDet.setName(idDetPago);
             entityDet.setuIdPago(entityEnc.getuIdPago());
-            entityDet.setuDocEntryFv(String.valueOf(detPago.getDocEntry()));
+            entityDet.setuDocEntryFv(String.valueOf(invoiceSAPFacade.getDocEntry(detPago.getDocEntry(), dto.getCompanyName(), false)));
+            detPago.setDocEntry(Long.parseLong(entityDet.getuDocEntryFv()));
             entityDet.setuLineNumFv(detPago.getLineNum());
             entityDet.setuSumAppliedFv(detPago.getSumApplied());
 
