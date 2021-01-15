@@ -764,7 +764,7 @@ public class PedBoxREST {
                                            @QueryParam("year") Integer year,
                                            @QueryParam("month") String month) {
         CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0}. ano[{1}]-mes[{2}]", new Object[]{companyname, year, month});
-        List<Object[]> objects = invoiceSAPFacade.getSaleBudgetBySeller(slpCode, year, month.length() == 1 ? '0' + month : month, companyname, false);
+        List<Object[]> objects = salesPersonSAPFacade.getSaleBudgetBySeller(slpCode, year, month.length() == 1 ? '0' + month : month, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para ", companyname);
