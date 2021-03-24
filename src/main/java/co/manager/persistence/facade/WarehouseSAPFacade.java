@@ -16,8 +16,7 @@ import java.util.logging.Logger;
 @Stateless
 public class WarehouseSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(WarehouseSAP.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
-
+    private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
     @EJB
     private PersistenceConf persistenceConf;
 
@@ -26,9 +25,9 @@ public class WarehouseSAPFacade {
 
     public List<Object[]> getListWarehouse(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(o.WhsCode as varchar(20)) as Bodega, cast(o.WhsName as varchar(50)) as Descripcion ");
+        sb.append("select cast(o.\"WhsCode\" as varchar(20)) as Bodega, cast(o.\"WhsName\" as varchar(50)) as Descripcion ");
         sb.append("from OWHS o ");
-        sb.append("where o.WhsCode IN (");
+        sb.append("where o.\"WhsCode\" IN (");
 
         if (companyName.equals("IGB")) {
             //Filtro bodegas de solo ventas para IGB
@@ -37,9 +36,9 @@ public class WarehouseSAPFacade {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'01', '08', '26', '44'");
         }
-        sb.append(") order by o.WhsCode ASC");
+        sb.append(") order by o.\"WhsCode\" ASC");
         try {
-            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getResultList();
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las bodegas de ventas para mostrar en pedBox para " + companyName, e);

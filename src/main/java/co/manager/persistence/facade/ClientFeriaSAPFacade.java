@@ -17,8 +17,7 @@ import java.util.logging.Logger;
 @Stateless
 public class ClientFeriaSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(ClientFeriaSAPFacade.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
-
+    private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
     @EJB
     private PersistenceConf persistenceConf;
 
@@ -27,12 +26,11 @@ public class ClientFeriaSAPFacade {
 
     public String getClienteFeria(String documento, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT CAST(U_documento AS varchar(20)) FROM [@CLIENTES_FERIA] WHERE U_documento = '");
+        sb.append("select cast(\"U_documento\" AS varchar(20)) from \"@CLIENTES_FERIA\" where \"U_documento\" = '");
         sb.append(documento);
         sb.append("'");
-
         try {
-            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getSingleResult();
+            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException e) {
             return null;
         } catch (Exception e) {
@@ -44,7 +42,7 @@ public class ClientFeriaSAPFacade {
     public boolean addClienteFeria(ClientFeriaDTO dto, boolean testing) {
         String id = String.valueOf(System.currentTimeMillis());
         StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO [@CLIENTES_FERIA] VALUES ('");
+        sb.append("INSERT INTO \"@CLIENTES_FERIA\" VALUES ('");
         sb.append(id);//code
         sb.append("','");
         sb.append(id);//name
@@ -67,29 +65,12 @@ public class ClientFeriaSAPFacade {
         sb.append("','");
         sb.append(dto.getCiudad());
         sb.append("');");
-
         try {
-            persistenceConf.chooseSchema(dto.getCompanyName(), testing, DB_TYPE).createNativeQuery(sb.toString()).executeUpdate();
+            persistenceConf.chooseSchema(dto.getCompanyName(), testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al insertar los datos capturados al cliente feria. ", e);
             return false;
         }
         return true;
-    }
-
-    public String getMailRegional(String regional, String companyName, boolean testing) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("SELECT CAST(Email as varchar(50)) as Email ");
-        sb.append("FROM   OSLP s ");
-        sb.append("WHERE  Email IS NOT NULL AND Memo = '");
-        sb.append(regional);
-        sb.append("'");
-
-        try {
-            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el mail del regional. ", e);
-            return "";
-        }
     }
 }

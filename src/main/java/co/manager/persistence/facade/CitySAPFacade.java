@@ -17,15 +17,14 @@ import java.util.logging.Logger;
 @Stateless
 public class CitySAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(CitySAPFacade.class.getSimpleName());
-    private static final String DB_TYPE = Constants.DATABASE_TYPE_MSSQL;
-
+    private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
     @EJB
     private PersistenceConf persistenceConf;
 
     public List<Object[]> listMunicipios(String companyName, boolean testing) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(Code as varchar(20))as Code,cast(Name as varchar(100))as Municipio from [@BPCO_MU]");
+        sb.append("select cast(\"Code\" as varchar(20))as Code,cast(\"Name\" as varchar(100))as Municipio from \"@BPCO_MU\"");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -36,9 +35,9 @@ public class CitySAPFacade {
     }
 
     public List<Object[]> listDepartamentos(String companyName, boolean testing) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE);
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(Code as varchar(20))as Code, cast(Name as varchar(100))as Departamento from OCST where Country = 'CO'");
+        sb.append("select cast(\"Code\" as varchar(20))as Code, cast(\"Name\" as varchar(100))as Departamento from OCST where \"Country\" = 'CO'");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
