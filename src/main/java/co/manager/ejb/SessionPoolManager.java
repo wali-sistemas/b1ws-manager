@@ -15,7 +15,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * @author dbotero
  */
@@ -23,15 +22,14 @@ import java.util.logging.Logger;
 @Named("sessionPoolManager")
 public class SessionPoolManager implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(SessionPoolManager.class.getSimpleName());
-
     private ConcurrentHashMap<String, LinkedBlockingQueue<B1WSSession>> availableSessions = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, B1WSSession> borrowedSessions = new ConcurrentHashMap<>();
     private int maxOpenSessions;
     private long sessionMaxAge;
     @EJB
-    private SessionManager sessionManager;
-    @EJB
     private StateManager stateManager;
+    @EJB
+    private SessionManager sessionManager;
     @Inject
     private ManagerApplicationBean appBean;
 
@@ -39,9 +37,6 @@ public class SessionPoolManager implements Serializable {
     private void initialize() {
         maxOpenSessions = Integer.parseInt(appBean.obtenerValorPropiedad("manager.b1ws.maxOpenSessions"));
         sessionMaxAge = Long.parseLong(appBean.obtenerValorPropiedad("manager.b1ws.sessionMaxAge"));
-    }
-
-    public SessionPoolManager() {
     }
 
     public String getSession(String companyName) {
@@ -88,7 +83,7 @@ public class SessionPoolManager implements Serializable {
         return session.getSessionId();
     }
 
-    public void returnSession(String sessionId) {
+    public String returnSession(String sessionId) {
         CONSOLE.log(Level.INFO, "Recibiendo sesion {0} del usuario", sessionId);
         // Obtiene la sesion asociada con el id recibido y la elimina del mapa de sesiones prestadas
         B1WSSession borrowedSession = borrowedSessions.remove(sessionId);
@@ -97,8 +92,7 @@ public class SessionPoolManager implements Serializable {
             //si la sesion no se encuentra en el mapa, puede significar que el usuario la tenia asignada desde antes de
             //un reinicio del servicio. se procede a intentar cerrar la sesion en SAP y no se vuelve a agregar a la lista
             //de sesiones disponibles
-            sessionManager.logout(sessionId);
-            return;
+            return sessionManager.logout(sessionId);
         }
 
         // si la sesion si se encuentra en el mapa de sesiones prestadas, valida cuando fue creada
@@ -107,7 +101,7 @@ public class SessionPoolManager implements Serializable {
             CONSOLE.log(Level.INFO, "La sesion {0} ha cumplido el tiempo maximo de vida y sera cerrada", sessionId);
             // si el tiempo desde que fue creada la sesion supera 3 horas, la cierra y no vuelve a agregarla a
             // la lista de disponibles
-            sessionManager.logout(sessionId);
+            return sessionManager.logout(sessionId);
         } else {
             CONSOLE.log(Level.INFO, "La sesion {0} ha sido devuelta a la lista de sesiones disponibles", sessionId);
             // si el tiempo es inferior, la agrega a la lista de disponibles, en el ultimo lugar
@@ -121,9 +115,11 @@ public class SessionPoolManager implements Serializable {
                 }
             } catch (InterruptedException e) {
                 CONSOLE.log(Level.WARNING, "Ocurrio un error al devolver la sesion (" + borrowedSession + ") a la lista de disponibles. ", e);
+                return "error";
             }
         }
         logSessionStatus();
+        return "success";
     }
 
     private String validateSession(String sessionId, String companyName) {
