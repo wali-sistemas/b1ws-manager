@@ -27,9 +27,7 @@ import java.util.regex.Pattern;
 @Named("managerApplicationBean")
 @Path("application")
 public class ManagerApplicationBean implements Serializable {
-
     private static final Logger CONSOLE = Logger.getLogger(ManagerApplicationBean.class.getSimpleName());
-
     private Properties props = new Properties();
     private HashSet<String> excludedPaths;
     private List<Pattern> excludedPathTemplates;
