@@ -8,7 +8,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.core.Response;
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,8 +26,6 @@ public class SessionPoolManager implements Serializable {
     private int maxOpenSessions;
     private long sessionMaxAge;
     @EJB
-    private StateManager stateManager;
-    @EJB
     private SessionManager sessionManager;
     @Inject
     private ManagerApplicationBean appBean;
@@ -46,7 +43,8 @@ public class SessionPoolManager implements Serializable {
             session = availableSessions.get(companyName).poll();
             if (session != null && session.getTimesBorrowed() % 10 == 0) {
                 //Validar que la sesion se encuentre activa antes de retornarla
-                session.setSessionId(validateSession(session.getSessionId(), companyName));
+                //session.setSessionId(validateSession(session.getSessionId(), companyName));
+                session.setSessionId(getSession(companyName));
             }
         }
         if (session == null) {
@@ -120,17 +118,6 @@ public class SessionPoolManager implements Serializable {
         }
         logSessionStatus();
         return "success";
-    }
-
-    private String validateSession(String sessionId, String companyName) {
-        if (sessionId != null && !sessionId.isEmpty() && companyName != null && !companyName.isEmpty()) {
-            CONSOLE.log(Level.INFO, "Validando si la sesion {0} se encuentra activa en el Di Server", sessionId);
-            Response res = stateManager.getState(sessionId);
-            if (res == null) {
-                return getSession(companyName);
-            }
-        }
-        return sessionId;
     }
 
     private void logSessionStatus() {
