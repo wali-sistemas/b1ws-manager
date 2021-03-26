@@ -24,7 +24,7 @@ public class DetallePagoPasarelaSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("insert into \"@PAGO_PASARELA_DET\" values ('");
         sb.append(detallePagoPasarelaSAP.getCode());
-        sb.append(',');
+        sb.append("','");
         sb.append(detallePagoPasarelaSAP.getName());
         sb.append("',");
         sb.append(detallePagoPasarelaSAP.getuIdDetalle());
@@ -36,6 +36,7 @@ public class DetallePagoPasarelaSAPFacade {
         sb.append(detallePagoPasarelaSAP.getuLineNumFv());
         sb.append(",");
         sb.append(detallePagoPasarelaSAP.getuSumAppliedFv());
+        sb.append(");");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (NoResultException ex) {

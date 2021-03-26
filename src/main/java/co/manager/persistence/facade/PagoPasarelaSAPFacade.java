@@ -6,6 +6,7 @@ import co.manager.util.Constants;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,8 +54,9 @@ public class PagoPasarelaSAPFacade {
         sb.append(pagoPasarelaSAP.getuStatus());
         sb.append("','");
         sb.append(pagoPasarelaSAP.getuPasarela());
-        sb.append("',");
-        sb.append(pagoPasarelaSAP.getuCreateDate());
+        sb.append("','");
+        sb.append(new SimpleDateFormat("yyyy-MM-dd").format(pagoPasarelaSAP.getuCreateDate()));
+        sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (NoResultException ex) {
