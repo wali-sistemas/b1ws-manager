@@ -941,7 +941,7 @@ public class PedBoxREST {
         entityEnc.setuCreateDate(new Date());
 
         try {
-            pagoPasarelaSAPFacade.create(entityEnc, dto.getCompanyName(), false);
+            pagoPasarelaSAPFacade.addPago(entityEnc, dto.getCompanyName(), false);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del pago recibido para + " + dto.getCompanyName(), e);
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del pago recibido para " + dto.getCompanyName())).build();
@@ -952,6 +952,7 @@ public class PedBoxREST {
             DetallePagoPasarelaSAP entityDet = new DetallePagoPasarelaSAP();
             entityDet.setCode(idDetPago);
             entityDet.setName(idDetPago);
+            entityDet.setuIdDetalle(entityEnc.getuIdPago());
             entityDet.setuIdPago(entityEnc.getuIdPago());
             entityDet.setuDocEntryFv(String.valueOf(invoiceSAPFacade.getDocEntry(detPago.getDocEntry(), dto.getCompanyName(), false)));
             detPago.setDocEntry(Long.parseLong(entityDet.getuDocEntryFv()));
@@ -959,7 +960,7 @@ public class PedBoxREST {
             entityDet.setuSumAppliedFv(detPago.getSumApplied());
 
             try {
-                detPagoPasarelaSAPFacade.create(entityDet, dto.getCompanyName(), false);
+                detPagoPasarelaSAPFacade.addDetailPago(entityDet, dto.getCompanyName(), false);
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName(), e);
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName())).build();
