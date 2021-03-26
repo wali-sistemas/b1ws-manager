@@ -11,7 +11,6 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class PersistenceConf {
-
     @PersistenceContext(unitName = "IGBPU")
     private EntityManager emIGB;
     @PersistenceContext(unitName = "IGBPruebasPU")
@@ -26,9 +25,12 @@ public class PersistenceConf {
     private EntityManager emVELEZPruebas;
     @PersistenceContext(unitName = "WMSPU")
     private EntityManager emWMS;
+    @PersistenceContext(unitName = "HANAIGBPU")
+    private EntityManager emHANAIGB;
+    @PersistenceContext(unitName = "HANAVARROCPU")
+    private EntityManager emHANAVARROC;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
-
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
             return emWMS;
         } else {
@@ -38,9 +40,9 @@ public class PersistenceConf {
                 case "VARROC":
                     return emVARROC;
                 case "IGBPruebas":
-                    return emIGBPruebas;
+                    return emHANAIGB;
                 case "VARROCPruebas":
-                    return emVARROCPruebas;
+                    return emHANAVARROC;
                 case "VELEZ":
                     return emVELEZ;
                 case "VELEZPruebas":
