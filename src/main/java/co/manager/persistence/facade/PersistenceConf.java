@@ -41,6 +41,10 @@ public class PersistenceConf {
                     return emVARROC;
                 case "IGBPruebas":
                     return emHANAIGB;
+                case "DBIGBTH":
+                    return emHANAIGB;
+                case "DBVARROCTH":
+                    return emHANAVARROC;
                 case "VARROCPruebas":
                     return emHANAVARROC;
                 case "VELEZ":
