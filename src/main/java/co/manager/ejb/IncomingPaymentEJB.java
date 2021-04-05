@@ -91,8 +91,8 @@ public class IncomingPaymentEJB {
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de pago recido para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
-                String JSON = gson.toJson(payment);
-                CONSOLE.log(Level.INFO, JSON);
+                String json = gson.toJson(payment);
+                CONSOLE.log(Level.INFO, json);
                 PaymentRestDTO res = service.addPayment(payment, sessionId);
                 docEntry = res.getDocEntry();
 

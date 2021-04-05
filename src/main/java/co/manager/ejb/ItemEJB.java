@@ -87,8 +87,8 @@ public class ItemEJB {
         if (sessionId != null) {
             try {
                 Gson gson = new Gson();
-                String JSON = gson.toJson(item);
-                CONSOLE.log(Level.INFO, JSON);
+                String json = gson.toJson(item);
+                CONSOLE.log(Level.INFO, json);
                 ItemsRestDTO res = service.addItem(item, sessionId);
                 itemCode = res.getItemCode();
             } catch (Exception e) {

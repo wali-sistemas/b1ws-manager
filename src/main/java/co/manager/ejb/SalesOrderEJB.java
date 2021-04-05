@@ -100,8 +100,8 @@ public class SalesOrderEJB {
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de orden de la venta para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
-                String JSON = gson.toJson(order);
-                CONSOLE.log(Level.INFO, JSON);
+                String json = gson.toJson(order);
+                CONSOLE.log(Level.INFO, json);
                 OrderRestDTO res = service.addOrder(order, sessionId);
                 docEntry = res.getDocEntry();
                 if (docEntry == 0) {

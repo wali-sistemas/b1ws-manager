@@ -87,8 +87,8 @@ public class QuotationsEJB {
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de cotizacion para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
-                String JSON = gson.toJson(quotation);
-                CONSOLE.log(Level.INFO, JSON);
+                String json = gson.toJson(quotation);
+                CONSOLE.log(Level.INFO, json);
                 QuotationsRestDTO res = service.addQuotation(quotation, sessionId);
                 docEntry = res.getDocEntry();
 

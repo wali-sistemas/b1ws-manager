@@ -114,8 +114,8 @@ public class BusinessPartnerEJB {
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
-                String JSON = gson.toJson(businessPartner);
-                CONSOLE.log(Level.INFO, JSON);
+                String json = gson.toJson(businessPartner);
+                CONSOLE.log(Level.INFO, json);
                 BusinessPartnersRestDTO res = service.addPayment(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 
