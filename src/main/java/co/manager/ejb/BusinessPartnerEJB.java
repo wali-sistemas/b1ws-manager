@@ -1,19 +1,21 @@
 package co.manager.ejb;
 
-import co.manager.b1ws.businessPartners.*;
 import co.manager.dto.BusinessPartnerDTO;
 import co.manager.dto.ResponseDTO;
+import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
 public class BusinessPartnerEJB {
     private static final Logger CONSOLE = Logger.getLogger(BusinessPartnerEJB.class.getSimpleName());
     private static final String taxCodeMotorepuesto = "IVAV01";
-    private BusinessPartnersService service;
+    private BusinessPartnersClient service;
 
     @Inject
     private ManagerApplicationBean appBean;
@@ -34,27 +36,10 @@ public class BusinessPartnerEJB {
     @PostConstruct
     private void initialize() {
         try {
-            service = new BusinessPartnersService(new URL(String.format(appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_BUSINESS_SERVICE)));
-        } catch (MalformedURLException e) {
-            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de BusinessPartnersService. ", e);
+            service = new BusinessPartnersClient(Constants.HANAWS_SL_URL);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de BusinessPartnersServiceLayer. ", e);
         }
-    }
-
-    private String createBusinessPartnerDocument(BusinessPartner document, String sessionId) throws MalformedURLException {
-        BusinessPartnersService service = new BusinessPartnersService(new URL(String.format(appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_BUSINESS_SERVICE)));
-        Add add = new Add();
-        add.setBusinessPartner(document);
-
-        MsgHeader header = new MsgHeader();
-        header.setServiceName("BusinessPartnersService");
-        header.setSessionID(sessionId);
-
-        CONSOLE.log(Level.INFO, "Creando socio de negocio en SAP con sessionId [{0}]", sessionId);
-
-        AddResponse response = service.getBusinessPartnersServiceSoap12().add(add, header);
-        String cardCode = response.getBusinessPartnerParams().getCardCode();
-        CONSOLE.log(Level.INFO, "Socio de negocio creado con cardCode {0}", cardCode);
-        return cardCode;
     }
 
     public ResponseDTO createBusinessPartner(BusinessPartnerDTO dto) {
@@ -74,8 +59,7 @@ public class BusinessPartnerEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                BusinessPartner businessPartner = new BusinessPartner();
-
+                BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
                 businessPartner.setCardCode(dto.getCardCode());
                 businessPartner.setCardName(dto.getCardName());
                 businessPartner.setCardType("C");
@@ -85,52 +69,56 @@ public class BusinessPartnerEJB {
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail());
-                businessPartner.setUManejo("DIA");
+                businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
                 businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail());
                 businessPartner.setuCelularFE(dto.getCellular());
-                businessPartner.setUBPCORTC("RS");
-                businessPartner.setUBPCOTDC("13");
-                businessPartner.setUBPCOTP("01");
-                businessPartner.setUBPCOCS(dto.getCodMunicipio());
-                businessPartner.setUBPCOCity(dto.getCodMunicipio());
-                businessPartner.setUBPCONombre(dto.getFirstname());
-                businessPartner.setUBPCO1Apellido(dto.getLastname1());
-                businessPartner.setUBPCO2Apellido(dto.getLastname2());
-                businessPartner.setUBPCOAddress(dto.getAddress());
-
-                BusinessPartner.BPAddresses addresses = new BusinessPartner.BPAddresses();
-                for (int i = 0; i < 2; i++) {
-                    BusinessPartner.BPAddresses.BPAddress addres = new BusinessPartner.BPAddresses.BPAddress();
-                    addres.setAddressName("DIR WEB");
-                    addres.setStreet(dto.getAddress());
-                    addres.setBlock("SABANETA");
-                    addres.setState(dto.getCodDepartamento());
-                    addres.setCountry("CO");
-
-                    if (i == 0) {
-                        addres.setAddressType("bo_BillTo");
-                    } else {
-                        addres.setAddressType("bo_ShipTo");
-                        addres.setTaxCode(taxCodeMotorepuesto);
-                    }
-
-                    addres.setBPCode(dto.getCardCode());
-                    addres.setRowNum(0l);
-                    addres.setUMunicipio(dto.getCodMunicipio());
-                    addresses.getBPAddress().add(addres);
-                }
-                businessPartner.setBPAddresses(addresses);
+                businessPartner.setUbpcortc("RS");
+                businessPartner.setUbpcotdc("13");
+                businessPartner.setUbpcotp("01");
+                businessPartner.setUbpcocs(dto.getCodMunicipio());
+                businessPartner.setUbpcoCity(dto.getCodMunicipio());
+                businessPartner.setUbpcoNombre(dto.getFirstname());
+                businessPartner.setUbpco1Apellido(dto.getLastname1());
+                businessPartner.setUbpco2Apellido(dto.getLastname2());
+                businessPartner.setUbpcoAddress(dto.getAddress());
 
                 try {
-                    GregorianCalendar date = new GregorianCalendar();
-                    XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
-                    businessPartner.setUFECCREA(date2);
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    businessPartner.setUfeccrea(date2);
                 } catch (Exception e) {
                 }
 
+                List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
+                    address.setAddressName("DIR WEB");
+                    address.setStreet(dto.getAddress());
+                    address.setBlock("SABANETA");
+                    address.setState(dto.getCodDepartamento());
+                    address.setCountry("CO");
+
+                    if (i == 0) {
+                        address.setAddressType("bo_BillTo");
+                    } else {
+                        address.setAddressType("bo_ShipTo");
+                        address.setTaxCode(taxCodeMotorepuesto);
+                    }
+
+                    address.setBpCode(dto.getCardCode());
+                    address.setRowNum(0l);
+                    address.setuMunicipio(dto.getCodMunicipio());
+                    addresses.add(address);
+                }
+                businessPartner.setBpAddresses(addresses);
+
                 CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
-                cardCode = createBusinessPartnerDocument(businessPartner, sessionId);
+                Gson gson = new Gson();
+                String json = gson.toJson(businessPartner);
+                CONSOLE.log(Level.INFO, json);
+                BusinessPartnersRestDTO res = service.addPayment(businessPartner, sessionId);
+                cardCode = res.getCardCode();
+
                 if (cardCode.isEmpty()) {
                     CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
                     return new ResponseDTO(-1, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");

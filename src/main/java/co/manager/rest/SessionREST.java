@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,7 @@ import java.util.logging.Logger;
  */
 @Stateless
 @Path("session")
-public class SessionREST {
+public class SessionREST implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(SessionREST.class.getSimpleName());
     @Inject
     private ManagerApplicationBean appBean;
@@ -33,7 +34,7 @@ public class SessionREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response openSession(@PathParam("companyname") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando sesion de DI Server para la compañia [" + companyName + "]");
-        String response = sessionManager.login(companyName);//login(companyName);
+        String response = sessionManager.login(companyName);
         return Response.ok(new ResponseDTO(response == null ? -1 : 0, response)).build();
     }
 

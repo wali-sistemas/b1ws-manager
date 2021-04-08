@@ -31,10 +31,9 @@ import java.util.logging.Logger;
 @Stateless
 @Path("report")
 public class ReportREST implements Serializable {
-
+    private static final Logger CONSOLE = Logger.getLogger(ReportREST.class.getSimpleName());
     @Inject
     private ManagerApplicationBean appBean;
-    private static final Logger CONSOLE = Logger.getLogger(ReportREST.class.getSimpleName());
 
     @POST
     @Path("generate-report/")
@@ -68,7 +67,7 @@ public class ReportREST implements Serializable {
                 cn = "java:/VARROCDS";
             }
         } else {
-            cn = "java:/MySQLDS";
+            cn = "java:/WMSDS";
         }
         DataSource dataSource = (DataSource) initialContext.lookup(cn);
         Connection connection = dataSource.getConnection();

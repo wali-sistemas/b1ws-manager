@@ -1,20 +1,21 @@
 package co.manager.ejb;
 
-import co.manager.b1ws.quotations.*;
 import co.manager.dto.DetailQuotationDTO;
 import co.manager.dto.QuotationDTO;
 import co.manager.dto.ResponseDTO;
+import co.manager.hanaws.client.quotation.QuotationsClient;
+import co.manager.hanaws.dto.quotation.QuotationsDTO;
+import co.manager.hanaws.dto.quotation.QuotationsRestDTO;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
 @Stateless
 public class QuotationsEJB {
     private static final Logger CONSOLE = Logger.getLogger(QuotationsEJB.class.getSimpleName());
-    private QuotationsService service;
+    private QuotationsClient service;
 
     @Inject
     private ManagerApplicationBean appBean;
@@ -35,27 +36,10 @@ public class QuotationsEJB {
     @PostConstruct
     private void initialize() {
         try {
-            service = new QuotationsService(new URL(String.format(appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_QUOTATIONS_SERVICE)));
-        } catch (MalformedURLException e) {
-            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de QuotationsService. ", e);
+            service = new QuotationsClient(Constants.HANAWS_SL_URL);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de QuotationsServiceLayer. ", e);
         }
-    }
-
-    private Long createQuotationsDocument(Document document, String sessionId) throws MalformedURLException {
-        QuotationsService service = new QuotationsService(new URL(String.format(appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_QUOTATIONS_SERVICE)));
-        Add add = new Add();
-        add.setDocument(document);
-
-        MsgHeader header = new MsgHeader();
-        header.setServiceName("QuotationsService");
-        header.setSessionID(sessionId);
-
-        CONSOLE.log(Level.INFO, "Creando cotizacion en SAP con sessionId [{0}]", sessionId);
-
-        AddResponse response = service.getQuotationsServiceSoap12().add(add, header);
-        Long docEntry = response.getDocumentParams().getDocEntry();
-        CONSOLE.log(Level.INFO, "Cotizacion creado con docEntry {0}", docEntry);
-        return docEntry;
     }
 
     public ResponseDTO createSalesOrder(QuotationDTO dto) {
@@ -75,8 +59,8 @@ public class QuotationsEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                Document quotation = new Document();
-                Document.DocumentLines detailQuotation = new Document.DocumentLines();
+                QuotationsDTO quotation = new QuotationsDTO();
+                List<QuotationsDTO.DocumentLines.DocumentLine> detailQuotation = new ArrayList<>();
                 quotation.setSeries(17l);
                 quotation.setCardCode(dto.getCardCode());
                 quotation.setComments(dto.getComments());
@@ -84,8 +68,7 @@ public class QuotationsEJB {
                 quotation.setSalesPersonCode(dto.getSlpCode());
 
                 try {
-                    GregorianCalendar date = new GregorianCalendar();
-                    XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     quotation.setDocDate(date2);
                     quotation.setDocDueDate(date2);
                 } catch (Exception e) {
@@ -93,17 +76,22 @@ public class QuotationsEJB {
 
                 List<DetailQuotationDTO> lines = dto.getDetailQuotation();
                 for (DetailQuotationDTO line : lines) {
-                    Document.DocumentLines.DocumentLine quotationLine = new Document.DocumentLines.DocumentLine();
+                    QuotationsDTO.DocumentLines.DocumentLine quotationLine = new QuotationsDTO.DocumentLines.DocumentLine();
                     quotationLine.setItemCode(line.getItemCode());
                     quotationLine.setQuantity(line.getQuantity().doubleValue());
                     quotationLine.setWarehouseCode(line.getWhsCode());
 
-                    detailQuotation.getDocumentLine().add(quotationLine);
+                    detailQuotation.add(quotationLine);
                 }
                 quotation.setDocumentLines(detailQuotation);
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de cotizacion para {0}", dto.getCompanyName());
-                docEntry = createQuotationsDocument(quotation, sessionId);
+                Gson gson = new Gson();
+                String json = gson.toJson(quotation);
+                CONSOLE.log(Level.INFO, json);
+                QuotationsRestDTO res = service.addQuotation(quotation, sessionId);
+                docEntry = res.getDocEntry();
+
                 if (docEntry == 0) {
                     CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");
                     return new ResponseDTO(-1, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");

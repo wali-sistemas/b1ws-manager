@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -20,17 +21,14 @@ import java.util.logging.Logger;
  */
 @WebFilter("/res/*")
 public class HeaderDecorationFilter implements Filter {
-
     private static final Logger CONSOLE = Logger.getLogger(HeaderDecorationFilter.class.getSimpleName());
     private static final String ALLOWED_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, X-Company-Name, Authorization, X-Employee, X-Warehouse-Code, X-Pruebas";
     private static final String ALLOWED_METHODS = "GET, OPTIONS, POST, PUT, DELETE";
-
     @Inject
     private ManagerApplicationBean appBean;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
@@ -44,6 +42,7 @@ public class HeaderDecorationFilter implements Filter {
 
         HttpServletRequest req = (HttpServletRequest) request;
         chain.doFilter(request, response);
+        CONSOLE.log(Level.FINE, "Processing {0} method", req.getMethod());
     }
 
     @Override

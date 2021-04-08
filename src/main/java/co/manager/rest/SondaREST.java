@@ -3,6 +3,8 @@ package co.manager.rest;
 import co.manager.b1ws.item.Item;
 import co.manager.dto.ResponseDTO;
 import co.manager.ejb.ItemEJB;
+import co.manager.hanaws.dto.item.ItemsDTO;
+import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
@@ -19,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -114,38 +117,37 @@ public class SondaREST {
         }
 
         for (int i = 0; i < items.size(); i++) {
-            Item entity = itemEJB.getMasterItem(companyname, items.get(i));
-            if (!entity.getItemCode().equals(null)) {
-                entity.setSeries(48l);
-                entity.setApTaxCode("IVAD01");
-                entity.setArTaxCode("IVAV01");
-                entity.setValid("N");
-                entity.setFrozen("Y");
-                entity.setManufacturer(1l);
-                entity.setProperties2("N");
-                entity.setAtcEntry(null);
+            ItemsRestDTO res = itemEJB.getMasterItem(companyname, items.get(i));
+            if (!res.getItemCode().equals(null)) {
+                res.setSeries(48l);
+                res.setApTaxCode("IVAD01");
+                res.setArTaxCode("IVAV01");
+                res.setValid("N");
+                res.setFrozen("Y");
+                res.setManufacturer(1l);
+                res.setProperties2("N");
+                res.setAtcEntry(null);
 
                 if (companyname.equals("IGB")) {
-                    entity.setItemsGroupCode(100l);
-                    entity.setMainsupplier("P811011909");
+                    res.setItemsGroupCode(100l);
+                    res.setMainsupplier("P811011909");
                 } else {
-                    entity.setItemsGroupCode(102l);
-                    entity.setMainsupplier("P900255414");
+                    res.setItemsGroupCode(102l);
+                    res.setMainsupplier("P900255414");
                 }
 
                 try {
-                    GregorianCalendar date = new GregorianCalendar();
-                    XMLGregorianCalendar date2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(date);
-                    entity.setCreateDate(date2);
-                    entity.setUpdateDate(date2);
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    res.setCreateDate(date2);
+                    res.setUpdateDate(date2);
                 } catch (Exception e) {
                 }
 
-                String itemMotorepuesto = itemEJB.addItem(entity, "VELEZ");
+                String itemMotorepuesto = itemEJB.addItem(res, "VELEZ");
                 if (itemMotorepuesto != null) {
-                    CONSOLE.log(Level.INFO, "Sincronización del item {0} en motorepuesto exitosa.", entity.getItemCode());
+                    CONSOLE.log(Level.INFO, "Sincronización del item {0} en motorepuesto exitosa.", res.getItemCode());
                 } else {
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error sincronizando el item " + entity.getItemCode() + " en motorepuesto.");
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error sincronizando el item " + res.getItemCode() + " en motorepuesto.");
                 }
             }
         }

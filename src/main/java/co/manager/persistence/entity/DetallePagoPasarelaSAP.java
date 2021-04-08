@@ -22,6 +22,10 @@ public class DetallePagoPasarelaSAP implements Serializable {
     private String name;
     @Basic(optional = false)
     @NotNull
+    @Column(name = "U_idDetalle")
+    private Integer uIdDetalle;
+    @Basic(optional = false)
+    @NotNull
     @Column(name = "U_idPago")
     private Integer uIdPago;
     @Basic(optional = false)
@@ -55,6 +59,14 @@ public class DetallePagoPasarelaSAP implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getuIdDetalle() {
+        return uIdDetalle;
+    }
+
+    public void setuIdDetalle(Integer uIdDetalle) {
+        this.uIdDetalle = uIdDetalle;
     }
 
     public Integer getuIdPago() {
@@ -111,6 +123,7 @@ public class DetallePagoPasarelaSAP implements Serializable {
         return "DetallePagoPasarelaSAP{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
+                ", uIdDetalle=" + uIdDetalle +
                 ", uIdPago=" + uIdPago +
                 ", uDocEntryFv='" + uDocEntryFv + '\'' +
                 ", uLineNumFv=" + uLineNumFv +

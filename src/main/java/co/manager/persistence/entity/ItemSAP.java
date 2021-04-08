@@ -62,7 +62,7 @@ public class ItemSAP implements Serializable {
     @Override
     public String toString() {
         return "ItemSAP{" +
-                "itemCode=" + itemCode +
+                "itemCode='" + itemCode + '\'' +
                 ", picturName='" + picturName + '\'' +
                 '}';
     }

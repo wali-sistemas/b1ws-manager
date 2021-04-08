@@ -27,9 +27,7 @@ import java.util.regex.Pattern;
 @Named("managerApplicationBean")
 @Path("application")
 public class ManagerApplicationBean implements Serializable {
-
     private static final Logger CONSOLE = Logger.getLogger(ManagerApplicationBean.class.getSimpleName());
-
     private Properties props = new Properties();
     private HashSet<String> excludedPaths;
     private List<Pattern> excludedPathTemplates;
@@ -87,7 +85,7 @@ public class ManagerApplicationBean implements Serializable {
     public String obtenerValorPropiedad(String prop) {
         String value = props.getProperty(prop);
         if (value.equals("IGB,Pa$$w0rd;VARROC,Pa$$w0rd;IGBPruebas,Pa$$w0rd;VARROCPruebas,Pa$$w0rd")) {
-            value = value + ";VELEZ,Pa$$w0rd;VELEZPruebas,Pa$$w0rd";
+            value = value + ";VELEZ,Pa$$w0rd;VELEZPruebas,Pa$$w0rd;DBIGBTH,Pa$$w0rd";
         }
         return value;
     }

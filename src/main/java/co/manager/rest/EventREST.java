@@ -5,6 +5,7 @@ import co.manager.dto.MailMessageDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.ejb.EmailManager;
 import co.manager.persistence.facade.ClientFeriaSAPFacade;
+import co.manager.persistence.facade.SalesPersonSAPFacade;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -32,9 +33,10 @@ import java.util.logging.Logger;
 public class EventREST implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(EventREST.class.getSimpleName());
     private String emailTelemercader;
-
     @EJB
     private ClientFeriaSAPFacade clientFeriaSAPFacade;
+    @EJB
+    private SalesPersonSAPFacade salesPersonSAPFacade;
     @Inject
     private EmailManager emailManager;
 
@@ -71,7 +73,7 @@ public class EventREST implements Serializable {
                     }
                     break;
                 case "IGB":
-                    emailTelemercader = clientFeriaSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
+                    emailTelemercader = salesPersonSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
                     break;
                 default:
                     emailTelemercader = null;

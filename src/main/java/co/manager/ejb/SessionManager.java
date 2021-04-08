@@ -1,17 +1,16 @@
 package co.manager.ejb;
 
-import co.manager.b1ws.login.LoginService;
-import co.manager.b1ws.login.Logout;
-import co.manager.b1ws.login.MsgHeader;
+import co.manager.hanaws.client.login.LoginClient;
+import co.manager.hanaws.dto.login.LoginDTO;
+import co.manager.hanaws.dto.login.LoginRestDTO;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
+import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,34 +19,33 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class SessionManager implements Serializable {
-
     private static final Logger CONSOLE = Logger.getLogger(SessionManager.class.getSimpleName());
-    private LoginService service;
-
+    private LoginClient service;
     @Inject
     private ManagerApplicationBean appBean;
 
     @PostConstruct
     private void initialize() {
         try {
-            service = new LoginService(
-                    new URL(String.format(
-                            appBean.obtenerValorPropiedad(Constants.B1WS_WSDL_URL), Constants.B1WS_LOGIN_SERVICE)));
-        } catch (MalformedURLException e) {
-            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de LoginService. ", e);
+            service = new LoginClient(Constants.HANAWS_SL_URL);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "No fue posible iniciar la instancia de LoginServiceLayer. ", e);
         }
     }
 
     public String login(String companyName) {
+        CONSOLE.log(Level.INFO, "Iniciando peticion se sessionId para {0}", companyName);
         try {
-            return service.getLoginServiceSoap12().login(
-                    appBean.obtenerValorPropiedad(Constants.B1WS_DATABASE_SERVER),
-                    IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_DATABASE_NAME), companyName),
-                    appBean.obtenerValorPropiedad(Constants.B1WS_DATABASE_TYPE),
-                    IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_USERNAME), companyName),
+            LoginDTO dto = new LoginDTO(companyName,
                     IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_PASSWORD), companyName),
-                    appBean.obtenerValorPropiedad(Constants.B1WS_LANGUAGE),
-                    appBean.obtenerValorPropiedad(Constants.B1WS_LICENSE_SERVER));
+                    IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_USERNAME), companyName));
+
+            Gson gson = new Gson();
+            String json = gson.toJson(dto);
+            CONSOLE.log(Level.INFO, json);
+
+            LoginRestDTO res = service.getSessionId(dto);
+            return res.getSessionId();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server. ", e);
             return null;
@@ -55,11 +53,10 @@ public class SessionManager implements Serializable {
     }
 
     public String logout(String sessionId) {
+        CONSOLE.log(Level.INFO, "Iniciando cierre de sessionID ", sessionId);
         try {
-            MsgHeader header = new MsgHeader();
-            header.setSessionID(sessionId);
-            Logout parameters = new Logout();
-            service.getLoginServiceSoap12().logout(parameters, header);
+            //pendiente duda para cerrar sessionId
+            //service.closeSessionId(sessionId);
             CONSOLE.log(Level.INFO, "Sesion [{0}] DI Server finalizada con exito", sessionId);
             return "success";
         } catch (Exception e) {
