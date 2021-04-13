@@ -37,7 +37,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(substring(ifnull(sn.\"Cellular\",''),1,10) as varchar(10)) as Celular, cast(upper(sn.\"E_Mail\") as varchar(50)) as Email, ");
         sb.append("       cast(oc.\"PymntGroup\" as varchar(20)) as FormaPago, cast(((oc.\"ExtraMonth\" * 30) + oc.\"ExtraDays\") as int) as Plazo, ");
         sb.append("       cast(sn.\"CntctPrsn\" as varchar(100)) as Contacto, cast(sn.\"SlpCode\" as varchar(15)) as Vendedor, ");
-        sb.append("       cast(ifnull(sn.\"U_LONGITUD\", 0) as varchar(20)) as Longitud, cast(ifnull(sn.\"U_LATITUD\", 0) as varchar(20)) as Latitud, ");
+        sb.append("       cast(sn.\"U_LONGITUD\" as varchar(20)) as Longitud, cast(sn.\"U_LATITUD\" as varchar(20)) as Latitud, ");
         sb.append("       cast(sn.\"ListNum\" as int) as listaPrecio, '' as Notas, ");
 
         if (companyName.contains("IGB")) {
