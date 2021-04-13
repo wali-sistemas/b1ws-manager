@@ -11,24 +11,14 @@ import javax.persistence.PersistenceContext;
  */
 @Stateless
 public class PersistenceConf {
-    @PersistenceContext(unitName = "IGBPU")
-    private EntityManager emIGB;
-    @PersistenceContext(unitName = "IGBPruebasPU")
-    private EntityManager emIGBPruebas;
-    @PersistenceContext(unitName = "VARROCPU")
-    private EntityManager emVARROC;
-    @PersistenceContext(unitName = "VARROCPruebasPU")
-    private EntityManager emVARROCPruebas;
-    @PersistenceContext(unitName = "VELEZPU")
-    private EntityManager emVELEZ;
-    @PersistenceContext(unitName = "VELEZPruebasPU")
-    private EntityManager emVELEZPruebas;
     @PersistenceContext(unitName = "WMSPU")
     private EntityManager emWMS;
     @PersistenceContext(unitName = "HANAIGBPU")
     private EntityManager emHANAIGB;
     @PersistenceContext(unitName = "HANAVARROCPU")
     private EntityManager emHANAVARROC;
+    @PersistenceContext(unitName = "HANAVELEZPU")
+    private EntityManager emHANAVELEZ;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
@@ -36,21 +26,11 @@ public class PersistenceConf {
         } else {
             switch (companyName) {
                 case "IGB":
-                    return emIGB;
+                    return emHANAIGB;
                 case "VARROC":
-                    return emVARROC;
-                case "IGBPruebas":
-                    return emHANAIGB;
-                case "DBIGBTH":
-                    return emHANAIGB;
-                case "DBVARROCTH":
-                    return emHANAVARROC;
-                case "VARROCPruebas":
                     return emHANAVARROC;
                 case "VELEZ":
-                    return emVELEZ;
-                case "VELEZPruebas":
-                    return emVELEZPruebas;
+                    return emHANAVELEZ;
                 default:
                     return null;
             }
