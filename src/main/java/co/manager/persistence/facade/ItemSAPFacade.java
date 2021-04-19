@@ -222,7 +222,7 @@ public class ItemSAPFacade {
     }
 
     public List<Object[]> listItemMasterMotorepuesto() {
-        EntityManager em = persistenceConf.chooseSchema("IGBPruebas", false, DB_TYPE_HANA);
+        EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.*,cast(itMrto.\"ItemName\" as varchar(100))as NombreWeb,cast(prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast(prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
         sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA\" as varchar(1000))as DescripcionLarga,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas from(");
