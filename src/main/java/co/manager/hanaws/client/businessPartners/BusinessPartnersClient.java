@@ -26,8 +26,8 @@ public class BusinessPartnersClient {
         webTarget = client.target(BASE_URI).path(path);
     }
 
-    public BusinessPartnersRestDTO addPayment(BusinessPartnersDTO dto, String sessionId) {
-        return webTarget.path("IncomingPayments").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+    public BusinessPartnersRestDTO addBusinessPartner(BusinessPartnersDTO dto, String sessionId) {
+        return webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), BusinessPartnersRestDTO.class);
     }
 }

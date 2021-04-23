@@ -355,36 +355,51 @@ public class BusinessPartnersDTO implements Serializable {
                 this.uMunicipio = uMunicipio;
             }
 
-            /*
-                        @JsonProperty("ZipCode")
-            protected String zipCode;
-            @JsonProperty("City")
-            protected String city;
-            @JsonProperty("County")
-            protected String county;
-
-            @JsonProperty("FederalTaxID")
-            protected String federalTaxID;
-
-            @JsonProperty("BuildingFloorRoom")
-            protected String buildingFloorRoom;
-
-            @JsonProperty("AddressName2")
-            protected String addressName2;
-            @JsonProperty("AddressName3")
-            protected String addressName3;
-            @JsonProperty("TypeOfAddress")
-            protected String typeOfAddress;
-            @JsonProperty("StreetNo")
-            protected String streetNo;
-
-
-            @JsonProperty("GlobalLocationNumber")
-            protected String globalLocationNumber;
-            @JsonProperty("Nationality")
-            protected String nationality;*/
-
-
+            @Override
+            public String toString() {
+                return "BPAddress{" +
+                        "addressName='" + addressName + '\'' +
+                        ", street='" + street + '\'' +
+                        ", block='" + block + '\'' +
+                        ", state='" + state + '\'' +
+                        ", country='" + country + '\'' +
+                        ", addressType='" + addressType + '\'' +
+                        ", taxCode='" + taxCode + '\'' +
+                        ", bpCode='" + bpCode + '\'' +
+                        ", rowNum=" + rowNum +
+                        ", uMunicipio='" + uMunicipio + '\'' +
+                        '}';
+            }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BusinessPartnersDTO{" +
+                "cardCode='" + cardCode + '\'' +
+                ", cardName='" + cardName + '\'' +
+                ", cardType='" + cardType + '\'' +
+                ", federalTaxID='" + federalTaxID + '\'' +
+                ", properties13='" + properties13 + '\'' +
+                ", groupCode=" + groupCode +
+                ", phone1='" + phone1 + '\'' +
+                ", cellular='" + cellular + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", uManejo='" + uManejo + '\'' +
+                ", ufeccrea='" + ufeccrea + '\'' +
+                ", uDocFormEntFE=" + uDocFormEntFE +
+                ", uAddInFaElectronicaEmailContactoFE='" + uAddInFaElectronicaEmailContactoFE + '\'' +
+                ", uCelularFE='" + uCelularFE + '\'' +
+                ", ubpcortc='" + ubpcortc + '\'' +
+                ", ubpcotdc='" + ubpcotdc + '\'' +
+                ", ubpcotp='" + ubpcotp + '\'' +
+                ", ubpcocs='" + ubpcocs + '\'' +
+                ", ubpcoCity='" + ubpcoCity + '\'' +
+                ", ubpcoNombre='" + ubpcoNombre + '\'' +
+                ", ubpco1Apellido='" + ubpco1Apellido + '\'' +
+                ", ubpco2Apellido='" + ubpco2Apellido + '\'' +
+                ", ubpcoAddress='" + ubpcoAddress + '\'' +
+                ", bpAddresses=" + bpAddresses +
+                '}';
     }
 }

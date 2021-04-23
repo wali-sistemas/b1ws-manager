@@ -61,27 +61,27 @@ public class BusinessPartnerEJB {
             try {
                 BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
                 businessPartner.setCardCode(dto.getCardCode());
-                businessPartner.setCardName(dto.getCardName());
+                businessPartner.setCardName(dto.getCardName().toUpperCase());
                 businessPartner.setCardType("C");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setProperties13(dto.getAcceptHabeasData());
                 businessPartner.setGroupCode(114l);
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
-                businessPartner.setEmailAddress(dto.getMail());
+                businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
-                businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail());
+                businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
                 businessPartner.setuCelularFE(dto.getCellular());
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
                 businessPartner.setUbpcotp("01");
                 businessPartner.setUbpcocs(dto.getCodMunicipio());
                 businessPartner.setUbpcoCity(dto.getCodMunicipio());
-                businessPartner.setUbpcoNombre(dto.getFirstname());
-                businessPartner.setUbpco1Apellido(dto.getLastname1());
-                businessPartner.setUbpco2Apellido(dto.getLastname2());
-                businessPartner.setUbpcoAddress(dto.getAddress());
+                businessPartner.setUbpcoNombre(dto.getFirstname().toUpperCase());
+                businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
+                businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
+                businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -93,7 +93,7 @@ public class BusinessPartnerEJB {
                 for (int i = 0; i < 2; i++) {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
                     address.setAddressName("DIR WEB");
-                    address.setStreet(dto.getAddress());
+                    address.setStreet(dto.getAddress().toUpperCase());
                     address.setBlock("SABANETA");
                     address.setState(dto.getCodDepartamento());
                     address.setCountry("CO");
@@ -116,7 +116,7 @@ public class BusinessPartnerEJB {
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
-                BusinessPartnersRestDTO res = service.addPayment(businessPartner, sessionId);
+                BusinessPartnersRestDTO res = service.addBusinessPartner(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 
                 if (cardCode.isEmpty()) {

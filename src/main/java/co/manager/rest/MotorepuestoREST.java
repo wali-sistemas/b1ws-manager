@@ -153,7 +153,7 @@ public class MotorepuestoREST {
 
         dto.setLicTradNum(dto.getDocument() + "-" + digito);
         dto.setCardCode("C" + dto.getDocument());
-        dto.setCardName(dto.getLastname1() + " " + dto.getLastname2() + " " + dto.getFirstname());
+        dto.setCardName(dto.getLastname1().toUpperCase() + " " + dto.getLastname2().toUpperCase() + " " + dto.getFirstname().toUpperCase());
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
