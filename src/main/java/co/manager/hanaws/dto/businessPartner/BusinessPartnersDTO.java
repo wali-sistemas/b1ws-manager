@@ -57,6 +57,11 @@ public class BusinessPartnersDTO implements Serializable {
     protected String ubpco2Apellido;
     @JsonProperty("U_BPCO_Address")
     protected String ubpcoAddress;
+    @JsonProperty("U_TRASP")
+    protected String uTrasp;
+    @JsonProperty("DebitorAccount")
+    protected String debitorAccount;
+
     @JsonProperty("BPAddresses")
     protected List<BusinessPartnersDTO.BPAddresses.BPAddress> bpAddresses;
 
@@ -244,6 +249,22 @@ public class BusinessPartnersDTO implements Serializable {
         this.ubpcoAddress = ubpcoAddress;
     }
 
+    public String getuTrasp() {
+        return uTrasp;
+    }
+
+    public void setuTrasp(String uTrasp) {
+        this.uTrasp = uTrasp;
+    }
+
+    public String getDebitorAccount() {
+        return debitorAccount;
+    }
+
+    public void setDebitorAccount(String debitorAccount) {
+        this.debitorAccount = debitorAccount;
+    }
+
     public List<BusinessPartnersDTO.BPAddresses.BPAddress> getBpAddresses() {
         return bpAddresses;
     }
@@ -260,6 +281,8 @@ public class BusinessPartnersDTO implements Serializable {
             protected String street;
             @JsonProperty("Block")
             protected String block;
+            @JsonProperty("City")
+            protected String city;
             @JsonProperty("State")
             protected String state;
             @JsonProperty("Country")
@@ -297,6 +320,14 @@ public class BusinessPartnersDTO implements Serializable {
 
             public void setBlock(String block) {
                 this.block = block;
+            }
+
+            public String getCity() {
+                return city;
+            }
+
+            public void setCity(String city) {
+                this.city = city;
             }
 
             public String getState() {
@@ -361,6 +392,7 @@ public class BusinessPartnersDTO implements Serializable {
                         "addressName='" + addressName + '\'' +
                         ", street='" + street + '\'' +
                         ", block='" + block + '\'' +
+                        ", city='" + city + '\'' +
                         ", state='" + state + '\'' +
                         ", country='" + country + '\'' +
                         ", addressType='" + addressType + '\'' +
@@ -399,6 +431,8 @@ public class BusinessPartnersDTO implements Serializable {
                 ", ubpco1Apellido='" + ubpco1Apellido + '\'' +
                 ", ubpco2Apellido='" + ubpco2Apellido + '\'' +
                 ", ubpcoAddress='" + ubpcoAddress + '\'' +
+                ", uTrasp='" + uTrasp + '\'' +
+                ", debitorAccount='" + debitorAccount + '\'' +
                 ", bpAddresses=" + bpAddresses +
                 '}';
     }

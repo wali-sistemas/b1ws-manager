@@ -65,13 +65,13 @@ public class BusinessPartnerEJB {
                 businessPartner.setCardType("C");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setProperties13(dto.getAcceptHabeasData());
-                businessPartner.setGroupCode(114l);
+                businessPartner.setGroupCode(100l);
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
-                businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
+                businessPartner.setuAddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
                 businessPartner.setuCelularFE(dto.getCellular());
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
@@ -82,6 +82,8 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
                 businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartner.setuTrasp("03");
+                businessPartner.setDebitorAccount("11100520");
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -94,7 +96,7 @@ public class BusinessPartnerEJB {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
                     address.setAddressName("DIR WEB");
                     address.setStreet(dto.getAddress().toUpperCase());
-                    address.setBlock("SABANETA");
+                    address.setCity("SABANETA");
                     address.setState(dto.getCodDepartamento());
                     address.setCountry("CO");
 
