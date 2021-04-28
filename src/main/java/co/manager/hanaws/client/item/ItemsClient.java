@@ -26,7 +26,7 @@ public class ItemsClient {
     }
 
     public ItemsRestDTO getItem(String itemCode, String sessionId) {
-        return webTarget.path("Items(" + itemCode + ")").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+        return webTarget.path("Items('" + itemCode + "')").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .get(ItemsRestDTO.class);
     }
 
