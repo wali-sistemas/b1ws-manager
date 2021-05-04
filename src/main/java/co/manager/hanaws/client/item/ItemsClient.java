@@ -1,5 +1,6 @@
 package co.manager.hanaws.client.item;
 
+import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 
 import javax.ws.rs.client.Client;
@@ -30,7 +31,7 @@ public class ItemsClient {
                 .get(ItemsRestDTO.class);
     }
 
-    public ItemsRestDTO addItem(ItemsRestDTO dto, String sessionId) {
+    public ItemsRestDTO addItem(ItemsDTO dto, String sessionId) {
         return webTarget.path("Items").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), ItemsRestDTO.class);
     }

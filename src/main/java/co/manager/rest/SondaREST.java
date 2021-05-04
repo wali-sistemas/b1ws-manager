@@ -118,32 +118,51 @@ public class SondaREST {
 
         for (int i = 0; i < items.size(); i++) {
             ItemsRestDTO res = itemEJB.getMasterItem(companyname, items.get(i));
+            ItemsDTO itemDTO = new ItemsDTO();
             if (!res.getItemCode().equals(null)) {
-                res.setSeries(48l);
-                res.setApTaxCode("IVAD01");
-                res.setArTaxCode("IVAV01");
-                res.setValid("N");
-                res.setFrozen("Y");
-                res.setManufacturer(1l);
-                res.setProperties2("N");
-                res.setAtcEntry(null);
+                itemDTO.setItemCode(res.getItemCode());
+                itemDTO.setItemName(res.getItemName());
+                itemDTO.setItemType("itItems");
+                itemDTO.setForeignName(res.getForeignName());
+                itemDTO.setuSubgrupo(res.getuSubgrupo());
+                itemDTO.setuMarca(res.getuMarca());
+                itemDTO.setuCategoria(res.getuCategoria());
+                itemDTO.setuAplicacion(res.getuAplicacion());
+                itemDTO.setuArticulo(res.getuArticulo());
+                itemDTO.setuProcedencia(res.getuProcedencia());
+                itemDTO.setuModelo(res.getuModelo());
+                itemDTO.setuTalla(res.getuTalla());
+                itemDTO.setuTipo(res.getuTipo());
+                itemDTO.setuViscosidad(res.getuViscosidad());
 
                 if (companyname.equals("IGB")) {
-                    res.setItemsGroupCode(100l);
-                    res.setMainsupplier("P811011909");
+                    itemDTO.setItemsGroupCode(100l);
+                    itemDTO.setMainsupplier("P811011909");
                 } else {
-                    res.setItemsGroupCode(102l);
-                    res.setMainsupplier("P900255414");
+                    itemDTO.setItemsGroupCode(102l);
+                    itemDTO.setMainsupplier("P900255414");
                 }
+
+                itemDTO.setPicture(res.getPicture());
+                itemDTO.setuTipo(res.getuTipo());
+                itemDTO.setIndirectTax("tYES");
+                itemDTO.setTaxCodeAP("IVAD01");
+                itemDTO.setTaxCodeAR("IVAV01");
+                itemDTO.setManufacturer(1l);
+                itemDTO.setValidFor("tNO");
+                itemDTO.setFrozenFor("tYES");
+                itemDTO.setQryGroup2("tNO");
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                    res.setCreateDate(date2);
-                    res.setUpdateDate(date2);
+                    itemDTO.setCreateDate(date2);
+                    itemDTO.setUpdateDate(date2);
+                    itemDTO.setUfeccrea(date2);
+
                 } catch (Exception e) {
                 }
 
-                String itemMotorepuesto = itemEJB.addItem(res, "VELEZ");
+                String itemMotorepuesto = itemEJB.addItem(itemDTO, "VELEZ");
                 if (itemMotorepuesto != null) {
                     CONSOLE.log(Level.INFO, "Sincronización del item {0} en motorepuesto exitosa.", res.getItemCode());
                 } else {

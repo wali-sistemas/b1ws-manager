@@ -2,6 +2,7 @@ package co.manager.ejb;
 
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.item.ItemsClient;
+import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
@@ -69,7 +70,7 @@ public class ItemEJB {
         return documento;
     }
 
-    public String addItem(ItemsRestDTO item, String companyName) {
+    public String addItem(ItemsDTO item, String companyName) {
         String itemCode = null;
         //1. Login
         String sessionId = null;
