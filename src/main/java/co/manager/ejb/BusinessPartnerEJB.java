@@ -3,8 +3,11 @@ package co.manager.ejb;
 import co.manager.dto.BusinessPartnerDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
+import co.manager.hanaws.client.udo.FeResFisSnClient;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
+import co.manager.hanaws.dto.udo.FeResFisSnDTO;
+import co.manager.hanaws.dto.udo.FeResFisSnRestDTO;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
 
@@ -126,6 +129,8 @@ public class BusinessPartnerEJB {
                     return new ResponseDTO(-1, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente");
+                    //agregar las resposabilidades fiscales al socio de negocio
+                    addRespFisSN(cardCode, res.getCardName(), sessionId, dto.getCompanyName());
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
@@ -142,5 +147,58 @@ public class BusinessPartnerEJB {
             }
         }
         return new ResponseDTO(0, cardCode);
+    }
+
+    private void addRespFisSN(String cardCode, String cardName, String sessionId, String companyName) {
+        FeResFisSnClient client = new FeResFisSnClient(Constants.HANAWS_SL_URL);
+        FeResFisSnDTO header = new FeResFisSnDTO();
+        List<FeResFisSnDTO.FeResFisSnLDTO> detail = new ArrayList<>();
+
+        header.setPeriod(151l);
+        header.setInstance(0l);
+        header.setHandwrtten("N");
+        header.setStatus("O");
+        header.setRequestStatus("W");
+        header.setCanceled("N");
+        header.setObject("FE_RES_FIS_SN");
+        header.setTransfered("N");
+        header.setDataSource("O");
+        header.setuCardCode(cardCode);
+        header.setuCardName(cardName);
+
+        try {
+            String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            header.setCreateDate(date2);
+            header.setUpdateDate(date2);
+        } catch (Exception e) {
+        }
+
+        FeResFisSnDTO.FeResFisSnLDTO detailLine = new FeResFisSnDTO.FeResFisSnLDTO();
+        detailLine.setLineId(1l);
+        detailLine.setVisOrder(1l);
+        detailLine.setObject("FE_RES_FIS_SN");
+        detailLine.setLogInst(null);
+        detailLine.setuCodeResFis("R-99-PN");
+        detailLine.setuDescResFis("No responsable");
+        detailLine.setuLineNum(1l);
+
+        detail.add(detailLine);
+        header.setFeResFisSnLDTO(detail);
+
+        CONSOLE.log(Level.INFO, "Iniciando creacion de responsabilidad fiscal para {0}", companyName);
+        Gson gson = new Gson();
+        String json = gson.toJson(header);
+        CONSOLE.log(Level.INFO, json);
+
+        try {
+            FeResFisSnRestDTO res = client.addResFisSN(header, sessionId);
+            if (res.getuCardCode().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Ocurrio una novedad registrando las responsabilidades fiscales para el socio de negocio {0} en {1}", new Object[]{cardCode, companyName});
+            } else {
+                CONSOLE.log(Level.INFO, "Registro de responsabilidades fiscales exitoso.");
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error registrando las responsabilidades fiscales. ", e);
+        }
     }
 }
