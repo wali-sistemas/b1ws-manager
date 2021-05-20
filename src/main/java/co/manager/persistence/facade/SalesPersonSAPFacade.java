@@ -56,12 +56,36 @@ public class SalesPersonSAPFacade {
     public List<Object[]> getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(a.\"SlpCode\" as varchar(10))as Asesor,cast(year(p.\"U_ANO_PRES\")as int)as Ano,cast(p.\"U_MES_PRES\" as varchar(2))as Mes, ");
-        sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones),0)as VentasNetas,cast(p.\"U_VALOR_PRES\" as numeric(18,2))as Presupuesto, ");
-        sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente ");
+        //TODO: Solo motozone se mide por litros
+        if (companyName.contains("VARROC")) {
+            sb.append(" ifnull(sum(t.\"LitrosFv\"-t.\"LitrosNc\"),0)as VentasNetas, ");
+        } else {
+            sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones),0)as VentasNetas, ");
+        }
+
+        sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
+
+        if (companyName.contains("VARROC")) {
+            sb.append(" ifnull(sum(t.\"LitrosFv\"-t.\"LitrosNc\"),0)-cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Pendiente ");
+        } else {
+            sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente ");
+        }
+
         sb.append("from  \"@PRES_ZONA_VEND\" p ");
         sb.append("inner join OSLP a on p.\"U_VEND_PRES\"=a.\"SlpName\" ");
         sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(f.\"DocTotal\"-f.\"VatSum\"-f.\"TotalExpns\"+f.\"WTSum\")as numeric(18,2))as Ventas,0 as Devoluciones ");
+
+        if (companyName.contains("VARROC")) {
+            sb.append(",sum((d.\"Quantity\"*a.\"SVolume\"))as \"LitrosFv\",0 as \"LitrosNc\" ");
+        }
+
         sb.append("  from  OINV f ");
+
+        if (companyName.contains("VARROC")) {
+            sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
+            sb.append("inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        }
+
         sb.append("  where f.\"DocType\"='I' and year(f.\"DocDate\")='");
         sb.append(year);
         sb.append("' and month(f.\"DocDate\")='");
@@ -71,11 +95,26 @@ public class SalesPersonSAPFacade {
             sb.append("' and f.\"SlpCode\"='");
             sb.append(slpCode);
         }
+        //TODO: Se discrimina en motozone ventas de productos solo impuesto
+        if (companyName.contains("VARROC")) {
+            sb.append("' and d.\"TaxOnly\"='N' ");
+        }
 
-        sb.append("' group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
+        sb.append(" group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
         sb.append("union all ");
         sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(n.\"DocTotal\"-n.\"VatSum\"-n.\"TotalExpns\"+n.\"WTSum\")as numeric(18,2))as Devoluciones ");
+
+        if (companyName.contains("VARROC")) {
+            sb.append(",0 as \"LitrosFv\",sum((d.\"Quantity\"*a.\"SVolume\"))as \"LitrosNc\" ");
+        }
+
         sb.append("  from  ORIN n ");
+
+        if (companyName.contains("VARROC")) {
+            sb.append("inner join RIN1 d on d.\"DocEntry\"=n.\"DocEntry\" ");
+            sb.append("inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        }
+
         sb.append("  where n.\"DocType\"='I' and year(n.\"DocDate\")='");
         sb.append(year);
         sb.append("' and month(n.\"DocDate\")='");
@@ -85,8 +124,12 @@ public class SalesPersonSAPFacade {
             sb.append("' and n.\"SlpCode\"='");
             sb.append(slpCode);
         }
+        //TODO: Se discrimina en motozone notas de productos solo impuesto
+        if (companyName.contains("VARROC")) {
+            sb.append("' and d.\"TaxOnly\"='N' ");
+        }
 
-        sb.append("' group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\")as t on a.\"SlpCode\"=t.Asesor ");
+        sb.append(" group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\")as t on a.\"SlpCode\"=t.Asesor ");
         sb.append("where p.\"U_ANO_PRES\"='");
         sb.append(year);
         sb.append("' and p.\"U_MES_PRES\"='");
