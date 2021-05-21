@@ -66,7 +66,7 @@ public class SalesPersonSAPFacade {
         sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
 
         if (companyName.contains("VARROC")) {
-            sb.append(" ifnull(sum(t.\"LitrosFv\"-t.\"LitrosNc\"),0)-cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Pendiente ");
+            sb.append(" ifnull((select sum((d.\"Quantity\"*a.\"SVolume\"))as Pendiente from ORDR o inner join RDR1 d ON o.\"DocEntry\"=d.\"DocEntry\" inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" where o.\"DocStatus\"='O' and year(o.\"DocDate\")=p.\"U_ANO_PRES\" and o.\"SlpCode\"=t.Asesor and month(o.\"DocDate\")=p.\"U_MES_PRES\" and d.\"TaxOnly\"='N'),0)as Pendiente ");
         } else {
             sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente ");
         }
