@@ -781,8 +781,8 @@ public class PedBoxREST {
                 dto.setYear((Integer) obj[1]);
                 dto.setMonth((String) obj[2]);
                 dto.setVentas((BigDecimal) obj[3]);
-                dto.setPresupuesto(dto.getVentas().equals(0) ? dto.getVentas() : (BigDecimal) obj[4]);
-                dto.setPendiente(dto.getPresupuesto().subtract(dto.getVentas()));
+                dto.setPresupuesto((BigDecimal) obj[4]);
+                dto.setPendiente((BigDecimal) obj[5]);
 
                 presupuestos.add(dto);
             }
