@@ -1,5 +1,6 @@
 package co.manager.persistence.facade;
 
+import co.manager.dto.ClientCalidosoDTO;
 import co.manager.dto.CupoDTO;
 import co.manager.dto.GeolocationDTO;
 import co.manager.util.Constants;
@@ -269,5 +270,139 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el cliente [" + cardCode + "] en [" + companyName + ']', e);
         }
         return false;
+    }
+
+    public List<ClientCalidosoDTO> listClientCalidosos(String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"CardCode\" as varchar(20))as CardCode,cast(\"CardName\" as varchar(20))as CardName,cast(\"LicTradNum\" as varchar(20))as LicTradNum ");
+        sb.append("from OCRD ");
+        sb.append("where \"CardType\"='C' and \"validFor\"='Y' and \"QryGroup15\"='Y' and \"SlpCode\" not in ('22','81','15','19') ");
+        sb.append("order by \"CardName\" asc");
+        try {
+            List<ClientCalidosoDTO> listConcepts = new ArrayList<>();
+            for (Object[] obj : (List<Object[]>) persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList()) {
+                ClientCalidosoDTO dto = new ClientCalidosoDTO();
+                dto.setCardCode((String) obj[0]);
+                dto.setCardName((String) obj[1]);
+                dto.setLicTradNum((String) obj[2]);
+                listConcepts.add(dto);
+            }
+            return listConcepts;
+
+
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes activos en los calidosos. ", e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> listHistoryPointsCalidosos(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(t.\"DocNum\" as int)as \"DocNum\",cast(t.\"TypeDoc\" as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(t.\"DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\", ");
+        sb.append(" case when t.\"Programa\"<>'Vendedor de Mostrador' then cast(sum(\"PuntosCL\")as int) else cast(sum(\"PuntosVM\")as int)end as \"Puntos\" ");
+        sb.append("from (");
+        sb.append("  select e.\"CardCode\",e.\"DocNum\",'FV' as \"TypeDoc\",e.\"DocDate\", ");
+        sb.append("   case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0)) ");
+        sb.append("    else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\" as numeric(18,0))end \"PuntosCL\", ");
+        sb.append("   case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
+        sb.append("    else case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\") ");
+        sb.append("          else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")end ");
+        sb.append("         end as \"PuntosVM\",c.\"Name\" as \"Programa\" ");
+        sb.append("  from OINV e ");
+        sb.append("  inner join INV1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
+        sb.append("  inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+
+        if (!cardCode.equals("0")) {
+            sb.append(" and e.\"CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",c.\"Name\" ");
+        sb.append(" union all ");
+        sb.append("  select e.\"CardCode\",e.\"DocNum\",'NC' as \"TypeDoc\",e.\"DocDate\", ");
+        sb.append("   case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0))*-1 ");
+        sb.append("    else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\" as numeric(18,0))*-1 end \"PuntosCL\", ");
+        sb.append("   case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
+        sb.append("    else case when m.\"U_Puntos\">0 then (cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 ");
+        sb.append("          else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 end ");
+        sb.append("         end as \"PuntosVM\",c.\"Name\" as \"Programa\" ");
+        sb.append("  from ORIN e ");
+        sb.append("  inner join RIN1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
+        sb.append("  inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+
+        if (!cardCode.equals("0")) {
+            sb.append(" and e.\"CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",c.\"Name\" ");
+        sb.append(" union all ");
+        sb.append("  select v.\"U_Documento\" as \"CardCode\",e.\"DocNum\",'FV' as \"TypeDoc\",e.\"DocDate\", ");
+        sb.append("   case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0)) ");
+        sb.append("    else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\" as numeric(18,0))end \"PuntosCL\", ");
+        sb.append("   case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
+        sb.append("    else case when m.\"U_Puntos\">0 then (cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")) ");
+        sb.append("          else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))end ");
+        sb.append("         end as \"PuntosVM\",c.\"Name\" as \"Programa\" ");
+        sb.append("  from OINV e ");
+        sb.append("  inner join INV1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
+        sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+
+        if (!cardCode.equals("0")) {
+            sb.append(" and e.\"CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",v.\"U_Documento\",c.\"Name\" ");
+        sb.append(" union all ");
+        sb.append("  select v.\"U_Documento\" as \"CardCode\",e.\"DocNum\",'NC' as \"TypeDoc\",e.\"DocDate\", ");
+        sb.append("   case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0))*-1 ");
+        sb.append("    else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\" as numeric(18,0))*-1 end \"PuntosCL\", ");
+        sb.append("   case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
+        sb.append("    else ");
+        sb.append("   case when m.\"U_Puntos\">0 then (cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 ");
+        sb.append("    else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0))/(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 end");
+        sb.append("   end as \"PuntosVM\",c.\"Name\" as \"Programa\" ");
+        sb.append("  from ORIN e ");
+        sb.append("  inner join RIN1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
+        sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+
+        if (!cardCode.equals("0")) {
+            sb.append(" and e.\"CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",v.\"U_Documento\",c.\"Name\" ");
+        sb.append(") as t ");
+        sb.append("group by t.\"DocNum\",t.\"CardCode\",t.\"TypeDoc\",t.\"DocDate\",t.\"Programa\" ");
+        sb.append("order by t.\"TypeDoc\",t.\"DocNum\",t.\"Programa\" ASC");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los puntos para el participante " + cardCode, e);
+        }
+        return new ArrayList<>();
     }
 }
