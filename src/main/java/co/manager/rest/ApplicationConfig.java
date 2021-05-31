@@ -31,5 +31,6 @@ public class ApplicationConfig extends Application {
         resources.add(ReportREST.class);
         resources.add(TicketREST.class);
         resources.add(MotorepuestoREST.class);
+        resources.add(CalidososREST.class);
     }
 }
