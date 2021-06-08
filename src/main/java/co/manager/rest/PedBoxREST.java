@@ -926,6 +926,7 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo detailSalesOrder es obligatorio.")).build();
         }
         CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para la empresa {0}", dto.getCompanyName());
+        CONSOLE.log(Level.INFO, dto.toString());
 
         if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), true)) {
             CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
@@ -959,7 +960,7 @@ public class PedBoxREST {
             entityDet.setName(idDetPago);
             entityDet.setuIdDetalle(entityEnc.getuIdPago());
             entityDet.setuIdPago(entityEnc.getuIdPago());
-            entityDet.setuDocEntryFv(String.valueOf(invoiceSAPFacade.getDocEntry(detPago.getDocEntry(), dto.getCompanyName(), false)));
+            entityDet.setuDocEntryFv(invoiceSAPFacade.getDocEntry(detPago.getDocEntry(), dto.getCompanyName(), false));
             detPago.setDocEntry(Long.parseLong(entityDet.getuDocEntryFv()));
             entityDet.setuLineNumFv(detPago.getLineNum());
             entityDet.setuSumAppliedFv(detPago.getSumApplied());
@@ -971,8 +972,6 @@ public class PedBoxREST {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando el registro del detalle de pago recibido para " + dto.getCompanyName())).build();
             }
         }
-
-        CONSOLE.log(Level.INFO, dto.toString());
 
         if (dto.getCompanyName().contains("VARROC")) {
             return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();

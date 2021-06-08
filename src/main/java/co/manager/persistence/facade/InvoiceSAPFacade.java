@@ -40,12 +40,12 @@ public class InvoiceSAPFacade {
         return new ArrayList<>();
     }
 
-    public Integer getDocEntry(Long docNum, String companyName, boolean testing) {
+    public String getDocEntry(Long docNum, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"DocEntry\" as int)as DocEntry from OINV where \"DocNum\"=");
+        sb.append("select cast(\"DocEntry\" as varchar)as DocEntry from OINV where \"DocNum\"=");
         sb.append(docNum);
         try {
-            return (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el docEntry de la factura de venta " + docNum, e);
