@@ -1,13 +1,15 @@
 package co.manager.rest;
 
-import co.manager.b1ws.item.Item;
 import co.manager.dto.ResponseDTO;
 import co.manager.ejb.ItemEJB;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
+import co.manager.modulaws.dto.item.ItemModulaDTO;
+import co.manager.modulaws.ejb.ItemModulaEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
+import com.google.gson.Gson;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -19,12 +21,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,13 +36,15 @@ import java.util.logging.Logger;
 public class SondaREST {
     private static final Logger CONSOLE = Logger.getLogger(SondaREST.class.getSimpleName());
     @EJB
-    ItemEJB itemEJB;
+    private ItemEJB itemEJB;
     @EJB
-    PickingRecordFacade pickingRecordFacade;
+    private PickingRecordFacade pickingRecordFacade;
     @EJB
-    ItemSAPFacade itemSAPFacade;
+    private ItemSAPFacade itemSAPFacade;
     @EJB
-    SalesOrderSAPFacade salesOrderSAPFacade;
+    private SalesOrderSAPFacade salesOrderSAPFacade;
+    @EJB
+    private ItemModulaEJB itemModulaEJB;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -192,6 +193,50 @@ public class SondaREST {
             salesOrderSAPFacade.updateTransport((Integer) obj[0], (String) obj[1], companyname, false);
         }
         return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion de transportadora en las ordenes de " + companyname)).build();
+    }
+
+    @GET
+    @Path("sync-item-modula/{companyname}/{testing}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncItemsModula(@PathParam("companyname") String companyName,
+                                    @PathParam("testing") boolean testing) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion automatica de articulos a crear en modula en ", companyName);
+        ItemModulaDTO itemModulaDTO = new ItemModulaDTO();
+        List<ItemModulaDTO.item> items = new ArrayList<>();
+
+        List<Object[]> objects = itemSAPFacade.listItemsToSyncModula(companyName, testing);
+        if (objects == null || objects.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items a sincronizar en modula para ", companyName);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los items a sincronizar en modula para " + companyName)).build();
+        }
+
+        for (Object[] obj : objects) {
+            ItemModulaDTO.item dto = new ItemModulaDTO.item();
+            dto.setArtOperacione("A");
+            dto.setArtArticolo((String) obj[0]);
+            dto.setArtDes((String) obj[1]);
+            dto.setArtDisp((Integer) obj[3]);
+            dto.setArtSottosco((Integer) obj[4]);
+            items.add(dto);
+        }
+        itemModulaDTO.setImpArticuli(items);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(itemModulaDTO);
+        CONSOLE.log(Level.INFO, json);
+
+        String res = itemModulaEJB.addItem(itemModulaDTO);
+        if (!res.isEmpty()) {
+            for (ItemModulaDTO.item item : itemModulaDTO.getImpArticuli()) {
+                try {
+                    itemSAPFacade.updateAttributeModula(item.getArtArticolo(), companyName, testing);
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        return Response.ok(res).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {

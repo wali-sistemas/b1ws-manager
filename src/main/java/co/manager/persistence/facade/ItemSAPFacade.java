@@ -308,4 +308,55 @@ public class ItemSAPFacade {
         }
         return null;
     }
+
+    public List<Object[]> listStockModulaSAP(String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(art.\"ItemCode\" as varchar(20))as itemCode, ");
+        sb.append(" cast(art.\"ItemName\" as varchar(200))as itemName, ");
+        sb.append(" cast(sal.\"OnHand\" as int)as qty, ");
+        sb.append(" cast(sal.\"WhsCode\" as varchar(10))as whsCode, ");
+        sb.append(" 'SAP' as binCode, ");
+        sb.append(" cast(alm.\"WhsName\" as varchar(30))as whsName ");
+        sb.append("from OITM art ");
+        sb.append("inner join OITW sal on sal.\"ItemCode\"=art.\"ItemCode\" ");
+        sb.append("inner join OWHS alm on alm.\"WhsCode\"=sal.\"WhsCode\" ");
+        sb.append("where sal.\"OnHand\">0 and sal.\"WhsCode\"='30' and art.\"validFor\"='Y' and art.\"ItemType\"='I' and art.\"SellItem\"='Y'");
+        sb.append("order by art.\"ItemCode\"");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual de modula en SAP. ", e);
+            return null;
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> listItemsToSyncModula(String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
+        sb.append(" cast(s.\"OnHand\" as int)as Stock,0 as StockMin,0 as StockMax ");
+        sb.append("from OITM a ");
+        sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
+        sb.append("where s.\"OnHand\">0 and a.\"QryGroup3\"='Y' and s.\"WhsCode\"='01'");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items habilitados para modula.", e);
+        }
+        return null;
+    }
+
+    public void updateAttributeModula(String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+             persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un actualizando el campo de usuario parta replicar en modula.");
+        }
+    }
 }

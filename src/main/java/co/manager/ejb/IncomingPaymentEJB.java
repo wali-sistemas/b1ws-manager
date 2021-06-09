@@ -97,8 +97,8 @@ public class IncomingPaymentEJB {
                 docEntry = res.getDocEntry();
 
                 if (docEntry <= 0L) {
-                    CONSOLE.log(Level.WARNING, "Ocurriun problema al crear el pago recibido. Resetear el sesiID.");
-                    return new ResponseDTO(-1, "Ocurrio un problema al crear el pago recibido. Resetear el sesiID.");
+                    CONSOLE.log(Level.WARNING, "Ocurrio un problema al crear el pago recibido");
+                    return new ResponseDTO(-1, "Ocurrio un problema al crear el pago recibido.");
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el pago recibido #{0} satisfactoriamente", res.getDocNum());
                 }
