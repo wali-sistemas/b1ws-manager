@@ -1,14 +1,8 @@
 package co.manager.rest;
 
-import co.manager.dto.PointCalidosoDTO;
-import co.manager.dto.ProductCalidosoDTO;
-import co.manager.dto.ResponseDTO;
-import co.manager.dto.VendedorMostradorDTO;
+import co.manager.dto.*;
 import co.manager.ejb.ManagerApplicationBean;
-import co.manager.persistence.facade.BusinessPartnerSAPFacade;
-import co.manager.persistence.facade.ConceptoSAPFacade;
-import co.manager.persistence.facade.RedimeProductoSAPFacade;
-import co.manager.persistence.facade.VendedorMostradorSAPFacade;
+import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
 
@@ -44,6 +38,8 @@ public class CalidososREST {
     private VendedorMostradorSAPFacade vendedorMostradorSAPFacade;
     @EJB
     private RedimeProductoSAPFacade redimeProductoSAPFacade;
+    @EJB
+    private RedimePuntosSAPFacade redimePuntosSAPFacade;
 
     @GET
     @Path("programas")
@@ -70,7 +66,7 @@ public class CalidososREST {
         List<Object[]> objects = redimeProductoSAPFacade.listActiveProducts("IGB", false);
 
         List<ProductCalidosoDTO> products = new ArrayList<>();
-        for (Object[] obj: objects) {
+        for (Object[] obj : objects) {
             ProductCalidosoDTO dto = new ProductCalidosoDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
@@ -78,9 +74,10 @@ public class CalidososREST {
             dto.setPrice((BigDecimal) obj[3]);
             dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/calidosos/" + obj[4]);
             dto.setCondiction((String) obj[5]);
+            dto.setAliado((String) obj[6]);
             products.add(dto);
         }
-        CONSOLE.log(Level.INFO, "Retornando lista de productos activos a redimir en los calidosos.");
+        CONSOLE.log(Level.INFO, "Retornando lista de productos activos a redimir en los calidosos");
         return Response.ok(products).build();
     }
 
@@ -89,7 +86,7 @@ public class CalidososREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getHistoryPointsOfCustomer(@QueryParam("cardCode") String cardCode) {
-        CONSOLE.log(Level.INFO, "Listando historial de puntos por clientes en los calidosos.");
+        CONSOLE.log(Level.INFO, "Listando historial de puntos por clientes en los calidosos");
         List<Object[]> objects = businessPartnerSAPFacade.listHistoryPointsCalidosos(cardCode, "IGB", false);
 
         if (objects.size() <= 0) {
@@ -101,9 +98,9 @@ public class CalidososREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el historico de puntos en los calidosos para " + cardCode)).build();
         }
 
-        List<PointCalidosoDTO> pointCalidosoDTO = new ArrayList<>();
+        List<PointHistoryCalidosoDTO> pointHistoryCalidosoDTO = new ArrayList<>();
         for (Object[] obj : objects) {
-            PointCalidosoDTO dto = new PointCalidosoDTO();
+            PointHistoryCalidosoDTO dto = new PointHistoryCalidosoDTO();
             dto.setCardCode((String) obj[0]);
             dto.setConcept((String) obj[1]);
             dto.setDocNum((Integer) obj[2]);
@@ -111,59 +108,160 @@ public class CalidososREST {
             dto.setDocDate((String) obj[4]);
             dto.setPoint((Integer) obj[5]);
 
-            pointCalidosoDTO.add(dto);
+            pointHistoryCalidosoDTO.add(dto);
         }
 
         CONSOLE.log(Level.INFO, "Retornando historico de puntos en los calidosos.");
-        return Response.ok(new ResponseDTO(0, pointCalidosoDTO)).build();
+        return Response.ok(new ResponseDTO(0, pointHistoryCalidosoDTO)).build();
+    }
+
+    @GET
+    @Path("total-registros")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getProgramsCount() {
+        return Response.ok(conceptoSAPFacade.countNumberRegister("IGB", false)).build();
+    }
+
+    @GET
+    @Path("data-login")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getDataLogin(@HeaderParam("X-TOKEN") String token) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objs = vendedorMostradorSAPFacade.listDataLoginCalidoso("IGB", false);
+            List<LoginCalidosoDTO> data = new ArrayList<>();
+
+            for (Object[] obj : objs) {
+                LoginCalidosoDTO dto = new LoginCalidosoDTO();
+                dto.setDocumento((String) obj[0]);
+                dto.setPrograma((String) obj[1]);
+                dto.setMail((String) obj[2]);
+                dto.setCelular((String) obj[3]);
+
+                data.add(dto);
+            }
+            return Response.ok(data).build();
+        } else {
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
+    }
+
+    @GET
+    @Path("disponible-puntos")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getAvailablePoints(@QueryParam("cardCode") String cardCode,
+                                       @HeaderParam("X-TOKEN") String token) {
+        CONSOLE.log(Level.INFO, "Listando puntos disponibles en los calidosos.");
+        List<PointAvailableCalidosoDTO> availablePoints = new ArrayList<>();
+
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objs = redimePuntosSAPFacade.listAvailablePoints(cardCode, "IGB", false);
+            for (Object[] obj : objs) {
+                PointAvailableCalidosoDTO dto = new PointAvailableCalidosoDTO();
+                dto.setCardCode((String) obj[0]);
+                dto.setConcept((String) obj[1]);
+                dto.setPoint((Integer) obj[2]);
+
+                availablePoints.add(dto);
+            }
+            return Response.ok(availablePoints).build();
+        } else {
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
     }
 
     @POST
     @Path("add-vendedor-mostrador")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response addVendedorMostrador(VendedorMostradorDTO dto) {
-        CONSOLE.log(Level.INFO, "Iniciando un nuevo registro de vendedor mostrador en los calidosos.");
-        if (dto.getDocumento() == null || dto.getDocumento().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Documento] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo Documento es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getNombres() == null || dto.getNombres().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Nombres] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo Nombres es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getApellidos() == null || dto.getApellidos().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Apellidos] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo Apellidos es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getCorreo() == null || dto.getCorreo().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Correo] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo Correo es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getCelular() == null || dto.getCelular().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Celular] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo Celular es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getAceptoTermino() <= 0 || dto.getAceptoTratamientoDatos() <= 0) {
-            CONSOLE.log(Level.WARNING, "Debe aceptar terminos de condiciones para participar en los calidoso.");
-            return Response.ok(new ResponseDTO(-2, "Debe aceptar terminos de condiciones para participar en los calidoso.")).build();
-        } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [Sucursal] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo [Sucursal] es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getCiudad() == null || dto.getCiudad().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [ciudad] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo [Ciudad] es obligatorio para participar en los calidosos.")).build();
-        } else if (dto.getDepartamento() == null || dto.getDepartamento().isEmpty()) {
-            CONSOLE.log(Level.WARNING, "Campo [departamento] es obligatorio para participar en los calidosos.");
-            return Response.ok(new ResponseDTO(-2, "Campo [departamento] es obligatorio para participar en los calidosos.")).build();
+    public Response addVendedorMostrador(@HeaderParam("X-TOKEN") String token,
+                                         VendedorMostradorDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando un nuevo registro de vendedor mostrador en los calidosos");
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            if (dto.getDocumento() == null || dto.getDocumento().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Documento] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo Documento es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getNombres() == null || dto.getNombres().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Nombres] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo Nombres es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getApellidos() == null || dto.getApellidos().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Apellidos] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo Apellidos es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getCorreo() == null || dto.getCorreo().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Correo] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo Correo es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getCelular() == null || dto.getCelular().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Celular] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo Celular es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getAceptoTermino() <= 0 || dto.getAceptoTratamientoDatos() <= 0) {
+                CONSOLE.log(Level.WARNING, "Debe aceptar terminos de condiciones para participar en los calidoso");
+                return Response.ok(new ResponseDTO(-2, "Debe aceptar terminos de condiciones para participar en los calidoso.")).build();
+            } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Sucursal] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Sucursal] es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getCiudad() == null || dto.getCiudad().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Ciudad] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Ciudad] es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getDepartamento() == null || dto.getDepartamento().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Departamento] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Departamento] es obligatorio para participar en los calidosos.")).build();
+            }
+
+            Gson gson = new Gson();
+            String json = gson.toJson(dto);
+            CONSOLE.log(Level.INFO, json);
+
+            try {
+                vendedorMostradorSAPFacade.addVendedorMostrador(dto, "IGB", false);
+                CONSOLE.log(Level.INFO, "Creación vendedor mostrador exitosa.");
+                return Response.ok(new ResponseDTO(0, "Creación vendedor mostrador exitosa.")).build();
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando vendedor mostrador en los calidosos ", e);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando vendedor mostrador en los calidosos.")).build();
+            }
+        } else {
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
+    }
 
-        Gson gson = new Gson();
-        String JSON = gson.toJson(dto);
-        CONSOLE.log(Level.INFO, JSON);
+    @POST
+    @Path("add-puntos-redimidos")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response redeemPoints(@HeaderParam("X-TOKEN") String token,
+                                 PointRedeemCalidosoDTO dto) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            CONSOLE.log(Level.INFO, "Iniciando servicio para redimir puntos");
+            if (dto.getDocumento() == null || dto.getDocumento().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Documento] es obligatorio para redimir puntos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Documento] es obligatorio para redimir puntos.")).build();
+            } else if (dto.getPuntos() <= 0) {
+                CONSOLE.log(Level.WARNING, "Campo [Puntos] es obligatorio para redimir puntos");
+                return Response.ok(new ResponseDTO(-2, "campo [Puntos] es obligatorio para redimir puntos.")).build();
+            } else if (dto.getConcepto() == null || dto.getConcepto().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Concepto] es obligatorio para redimir puntos");
+                return Response.ok().build();
+            } else if (dto.getComprobante() == null || dto.getComprobante().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Comprobante] es obligatorio para redimir puntos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Comprobante] es obligatorio para redimir puntos")).build();
+            }
 
-        try {
-            vendedorMostradorSAPFacade.addVendedorMostrador(dto, "IGB", false);
-            CONSOLE.log(Level.INFO, "Creación vendedor mostrador exitosa.");
-            return Response.ok(new ResponseDTO(0, "Creación vendedor mostrador exitosa.")).build();
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando vendedor mostrador en los calidosos. ", e);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando vendedor mostrador en los calidosos.")).build();
+            Gson gson = new Gson();
+            String json = gson.toJson(dto);
+            CONSOLE.log(Level.INFO, json);
+            try {
+                redimePuntosSAPFacade.addRedeemPoints(dto, "IGB", false);
+            } catch (Exception e) {
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error redimiento los puntos para el participante" + dto.getDocumento())).build();
+            }
+            CONSOLE.log(Level.INFO, "Redención de puntos exitoso");
+            return Response.ok(new ResponseDTO(0, "Redención de puntos exitoso.")).build();
+        } else {
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
 }

@@ -7,7 +7,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,5 +63,24 @@ public class VendedorMostradorSAPFacade {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el registro del vendedor mostrador id=" + dto.getDocumento(), e);
         }
+    }
+
+    public List<Object[]> listDataLoginCalidoso(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,'Vendedor Mostrador' as Programa,cast(v.\"U_Correo\" as varchar(100))as mail,cast(v.\"U_Celular\" as varchar(50))as celular ");
+        sb.append("from \"@REDENCION_VENDMOSTR\" v ");
+        sb.append("where \"U_Activo\"='S' ");
+        sb.append("union all ");
+        sb.append("select cast(c.\"CardCode\" as varchar(20))as id,cast(r.\"Name\" as varchar(100))as Programa,cast(c.\"E_Mail\" as varchar(100))as mail,'0' as celular ");
+        sb.append("from OCRD c ");
+        sb.append("inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
+        sb.append("where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los datos para login en los calidosos. ", e);
+        }
+        return new ArrayList<>();
     }
 }

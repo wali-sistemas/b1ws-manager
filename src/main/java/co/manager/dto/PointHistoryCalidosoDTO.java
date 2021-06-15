@@ -3,7 +3,7 @@ package co.manager.dto;
 /**
  * @author jguisao
  */
-public class PointCalidosoDTO {
+public class PointHistoryCalidosoDTO {
     private String cardCode;
     private String concept;
     private Integer docNum;
@@ -11,10 +11,10 @@ public class PointCalidosoDTO {
     private String docDate;
     private Integer point;
 
-    public PointCalidosoDTO() {
+    public PointHistoryCalidosoDTO() {
     }
 
-    public PointCalidosoDTO(String cardCode, String concept, Integer docNum, String docType, String docDate, Integer point) {
+    public PointHistoryCalidosoDTO(String cardCode, String concept, Integer docNum, String docType, String docDate, Integer point) {
         this.cardCode = cardCode;
         this.concept = concept;
         this.docNum = docNum;

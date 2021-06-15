@@ -42,4 +42,24 @@ public class ConceptoSAPFacade {
         }
         return null;
     }
+
+    public List<Object[]> countNumberRegister(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(R.\"Name\" as varchar(100))as Programa,cast(count(c.\"CardCode\")as int)as Nro ");
+        sb.append("from OCRD c ");
+        sb.append("inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
+        sb.append("where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y' ");
+        sb.append("group by r.\"Name\" ");
+        sb.append("union all ");
+        sb.append("select 'Vendedor Mostrador' as Programa,cast(count(v.\"U_Documento\")as int)as Nro ");
+        sb.append("from \"@REDENCION_VENDMOSTR\" v ");
+        sb.append("where v.\"U_Activo\"='S'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los numeros de regitros en los calidosos. ", e);
+        }
+        return new ArrayList<>();
+    }
 }

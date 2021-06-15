@@ -65,7 +65,7 @@ public class IncomingPaymentEJB {
                 payment.setDocType("C");
                 payment.setCardCode(dto.getCardCode());
                 payment.setDocCurrency("$");
-                payment.setTransferAccount("11250525");//itau fiducia solo motozone
+                payment.setTransferAccount("11100510");//itau fiducia solo motozone
                 payment.setTransferReference(dto.getTransferReference());
                 payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 payment.setTransferSum(dto.getCashSum());
