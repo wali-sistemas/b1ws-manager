@@ -14,6 +14,8 @@ public class Constants {
     public static final String DATABASE_TYPE_HANA = "HANA";
     public static final String URL_SHARED = "url.shared";
     public static final String HANAWS_SL_URL = "https://slhana.igbcolombia.com:50000/b1s/";
+    public static final String MODULAWS_URL = "http://192.168.10.102:3001/api/";
+    public static final String TOKEN_CALIDOSOS = "token.calidosos";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }

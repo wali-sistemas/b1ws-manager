@@ -27,7 +27,8 @@ public class RedimeProductoSAPFacade {
         sb.append(" cast(\"U_Description\" as varchar(4000))as Description, ");
         sb.append(" cast(\"U_Price\" as numeric(18,0))as Price, ");
         sb.append(" cast(\"U_PictureName\" as varchar(30))as PictureName, ");
-        sb.append(" cast(\"U_Condition\" as varchar(4000))as Condiction ");
+        sb.append(" cast(\"U_Condition\" as varchar(4000))as Condiction, ");
+        sb.append(" cast(\"U_Supplier\" as varchar(50))as Aliados ");
         sb.append("from \"@REDENCION_PRODUCTOS\" ");
         sb.append("where \"U_Active\"='Y'");
         try {

@@ -11,6 +11,7 @@ public class ProductCalidosoDTO {
     private String description;
     private String condiction;
     private String urlPhoto;
+    private String aliado;
     private BigDecimal price;
 
     public ProductCalidosoDTO() {
@@ -64,6 +65,14 @@ public class ProductCalidosoDTO {
         this.price = price;
     }
 
+    public String getAliado() {
+        return aliado;
+    }
+
+    public void setAliado(String aliado) {
+        this.aliado = aliado;
+    }
+
     @Override
     public String toString() {
         return "ProductCalidosoDTO{" +
@@ -72,6 +81,7 @@ public class ProductCalidosoDTO {
                 ", description='" + description + '\'' +
                 ", condiction='" + condiction + '\'' +
                 ", urlPhoto='" + urlPhoto + '\'' +
+                ", aliado='" + aliado + '\'' +
                 ", price=" + price +
                 '}';
     }
