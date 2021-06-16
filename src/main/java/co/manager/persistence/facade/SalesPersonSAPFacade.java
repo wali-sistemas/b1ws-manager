@@ -97,10 +97,10 @@ public class SalesPersonSAPFacade {
         }
         //TODO: Se discrimina en motozone ventas de productos solo impuesto
         if (companyName.contains("VARROC")) {
-            sb.append("' and d.\"TaxOnly\"='N' ");
+            sb.append("' and d.\"TaxOnly\"='N");
         }
 
-        sb.append(" group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
+        sb.append("' group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
         sb.append("union all ");
         sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(n.\"DocTotal\"-n.\"VatSum\"-n.\"TotalExpns\"+n.\"WTSum\")as numeric(18,2))as Devoluciones ");
 
@@ -126,10 +126,10 @@ public class SalesPersonSAPFacade {
         }
         //TODO: Se discrimina en motozone notas de productos solo impuesto
         if (companyName.contains("VARROC")) {
-            sb.append("' and d.\"TaxOnly\"='N' ");
+            sb.append("' and d.\"TaxOnly\"='N");
         }
 
-        sb.append(" group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\")as t on a.\"SlpCode\"=t.Asesor ");
+        sb.append("' group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\")as t on a.\"SlpCode\"=t.Asesor ");
         sb.append("where p.\"U_ANO_PRES\"='");
         sb.append(year);
         sb.append("' and p.\"U_MES_PRES\"='");
