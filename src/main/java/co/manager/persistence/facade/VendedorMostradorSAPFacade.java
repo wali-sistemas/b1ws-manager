@@ -83,4 +83,29 @@ public class VendedorMostradorSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public List<Object[]> listVendMostradorByClient(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(v.\"U_CardCode\" as varchar(20))as cliente, ");
+        sb.append(" cast(row_number() over(partition by v.\"U_CardCode\" order by v.\"U_Documento\")as int)as row, ");
+        sb.append(" cast(v.\"U_Documento\" as varchar(20))as VendMostrador ");
+        sb.append("from \"@REDENCION_VENDMOSTR\" v ");
+        sb.append("inner join OCRD c on v.\"U_CardCode\"=c.\"CardCode\" ");
+        sb.append("where c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
+
+        if (!cardCode.equals("0")) {
+            sb.append("and v.\"U_CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("order by 1,3");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los vendedores mosrador par ael cliente " + cardCode, e);
+        }
+        return new ArrayList<>();
+    }
 }

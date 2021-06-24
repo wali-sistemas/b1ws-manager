@@ -51,7 +51,8 @@ public class RedimePuntosSAPFacade {
 
     public List<Object[]> listAvailablePoints(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(t.\"CardCode\" as varchar(20))as CardCode,cast(t.\"Programa\" as varchar(50))as Programa,cast(sum(t.\"PtsDisp\")as int)as PtsDisp ");
+        sb.append("select r.\"CardCode\",r.\"Programa\",sum(\"PtsDisp\")as \"PtsDisp\" from(select * from(");
+        sb.append("select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(sum(t.\"PtsDisp\")as int)as \"PtsDisp\" ");
         sb.append("from (");
         sb.append(" select e.\"CardCode\",case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0)) ");
         sb.append("  else cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\" as numeric(18,0))end \"PtsDisp\",c.\"Name\" as \"Programa\" ");
@@ -61,7 +62,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
         sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
-        sb.append(" where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",c.\"Name\" ");
         sb.append("union all ");
         sb.append(" select e.\"CardCode\",case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0))*-1 ");
@@ -72,7 +73,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
         sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
-        sb.append(" where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",c.\"Name\" ");
         sb.append("union all ");
         sb.append(" select distinct v.\"U_Documento\" as \"CardCode\",case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
@@ -87,7 +88,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
         sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
-        sb.append(" where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",v.\"U_Documento\",c.\"Name\",e.\"CardCode\" ");
         sb.append("union all ");
         sb.append(" select distinct v.\"U_Documento\" as \"CardCode\",case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
@@ -103,7 +104,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
         sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
-        sb.append(" where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",v.\"U_Documento\",c.\"Name\", e.\"CardCode\" ");
         sb.append("union all ");
         sb.append(" select distinct cast(p.\"U_CardCode\" as varchar(50)) as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\", ");
@@ -123,7 +124,22 @@ public class RedimePuntosSAPFacade {
         }
 
         sb.append("group by t.\"CardCode\",t.\"Programa\" ");
-        sb.append("order by t.\"CardCode\",t.\"Programa\" ASC ");
+
+        sb.append(") as y ");
+        sb.append("union all ");
+        sb.append("select cast(\"U_CardCode\" as varchar(20))as \"CardCode\",cast(\"U_Programa\" as varchar(50))as \"Programa\",cast(SUM(\"U_Puntos\") as int)as \"PtsDisp\" ");
+        sb.append("from \"@REDENCION_HISTPUNTO\" ");
+
+        if (!cardCode.equals("0")) {
+            sb.append("where \"U_CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("group by \"U_CardCode\",\"U_Programa\" ");
+        sb.append(") as r ");
+        sb.append("group by r.\"CardCode\",r.\"Programa\"");
+        sb.append("order by r.\"CardCode\",r.\"Programa\" ASC ");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

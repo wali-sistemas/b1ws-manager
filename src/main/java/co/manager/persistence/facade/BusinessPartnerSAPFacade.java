@@ -299,6 +299,7 @@ public class BusinessPartnerSAPFacade {
 
     public List<Object[]> listHistoryPointsCalidosos(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
+        sb.append("select * from (");
         sb.append("select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(t.\"DocNum\" as int)as \"DocNum\",cast(t.\"TypeDoc\" as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(t.\"DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\", ");
         sb.append(" case when t.\"Programa\"<>'Vendedor de Mostrador' then cast(sum(\"PuntosCL\")as int) else cast(sum(\"PuntosVM\")as int)end as \"Puntos\" ");
         sb.append("from (");
@@ -315,7 +316,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
-        sb.append("  where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
@@ -338,7 +339,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" ");
-        sb.append("  where year(e.\"DocDate\")=year(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
@@ -361,7 +362,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
-        sb.append("  where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
@@ -385,7 +386,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' ");
-        sb.append("  where year(e.\"DocDate\")=year(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
+        sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
@@ -396,7 +397,19 @@ public class BusinessPartnerSAPFacade {
         sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",v.\"U_Documento\",c.\"Name\" ");
         sb.append(") as t ");
         sb.append("group by t.\"DocNum\",t.\"CardCode\",t.\"TypeDoc\",t.\"DocDate\",t.\"Programa\" ");
-        sb.append("order by t.\"TypeDoc\",t.\"DocNum\",t.\"Programa\" ASC");
+        sb.append(") as y ");
+        sb.append("union all ");
+        sb.append("select cast(\"U_CardCode\" as varchar(20))as \"CardCode\",cast(\"U_Programa\" as varchar(50))as \"Programa\",cast(\"U_DocNum\" as int)as \"DocNum\", ");
+        sb.append(" cast(\"U_TypeDoc\" as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(\"U_DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\",cast(\"U_Puntos\" as int)as \"Puntos\" ");
+        sb.append("from \"@REDENCION_HISTPUNTO\" ");
+
+        if (!cardCode.equals("0")) {
+            sb.append("where \"U_CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
+        sb.append("order by y.\"TypeDoc\",y.\"DocNum\",y.\"Programa\" ASC");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

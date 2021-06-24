@@ -2,6 +2,9 @@ package co.manager.dto;
 
 import java.util.Date;
 
+/**
+ * @author jguisao
+ */
 public class VendedorMostradorDTO {
     private String documento;
     private String nombres;
