@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,82 +46,109 @@ public class CalidososREST {
     @Path("programas")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listActivePrograms() {
-        return Response.ok(conceptoSAPFacade.listActivePrograms("IGB", false)).build();
+    public Response listActivePrograms(@HeaderParam("X-TOKEN") String token) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            return Response.ok(conceptoSAPFacade.listActivePrograms("IGB", false)).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
     }
 
     @GET
     @Path("sucursales")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listActiveClients() {
-        return Response.ok(businessPartnerSAPFacade.listClientCalidosos("IGB", false)).build();
+    public Response listActiveClients(@HeaderParam("X-TOKEN") String token) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            return Response.ok(businessPartnerSAPFacade.listClientCalidosos("IGB", false)).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
     }
 
     @GET
     @Path("productos")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response ListProducts() {
+    public Response ListProducts(@HeaderParam("X-TOKEN") String token) {
         CONSOLE.log(Level.INFO, "Iniciando servicio de listar productos a redimir en los calidosos");
-        List<Object[]> objects = redimeProductoSAPFacade.listActiveProducts("IGB", false);
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objects = redimeProductoSAPFacade.listActiveProducts("IGB", false);
 
-        List<ProductCalidosoDTO> products = new ArrayList<>();
-        for (Object[] obj : objects) {
-            ProductCalidosoDTO dto = new ProductCalidosoDTO();
-            dto.setItemCode((String) obj[0]);
-            dto.setItemName((String) obj[1]);
-            dto.setDescription((String) obj[2]);
-            dto.setPrice((BigDecimal) obj[3]);
-            dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/calidosos/" + obj[4]);
-            dto.setCondiction((String) obj[5]);
-            dto.setAliado((String) obj[6]);
-            products.add(dto);
+            List<ProductCalidosoDTO> products = new ArrayList<>();
+            for (Object[] obj : objects) {
+                ProductCalidosoDTO dto = new ProductCalidosoDTO();
+                dto.setItemCode((String) obj[0]);
+                dto.setItemName((String) obj[1]);
+                dto.setDescription((String) obj[2]);
+                dto.setPrice((BigDecimal) obj[3]);
+                dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/calidosos/" + obj[4]);
+                dto.setCondiction((String) obj[5]);
+                dto.setAliado((String) obj[6]);
+                products.add(dto);
+            }
+            CONSOLE.log(Level.INFO, "Retornando lista de productos activos a redimir en los calidosos");
+            return Response.ok(products).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
-        CONSOLE.log(Level.INFO, "Retornando lista de productos activos a redimir en los calidosos");
-        return Response.ok(products).build();
     }
 
     @GET
     @Path("historial-puntos")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getHistoryPointsOfCustomer(@QueryParam("cardCode") String cardCode) {
+    public Response getHistoryPointsOfCustomer(@QueryParam("cardCode") String cardCode,
+                                               @HeaderParam("X-TOKEN") String token) {
         CONSOLE.log(Level.INFO, "Listando historial de puntos por clientes en los calidosos");
-        List<Object[]> objects = businessPartnerSAPFacade.listHistoryPointsCalidosos(cardCode, "IGB", false);
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objects = businessPartnerSAPFacade.listHistoryPointsCalidosos(cardCode, "IGB", false);
 
-        if (objects.size() <= 0) {
-            CONSOLE.log(Level.WARNING, "No se encontro historico de puntos en los calidosos para {0}", cardCode);
-            return Response.ok(new ResponseDTO(-1, "No se encontro historico de puntos en los calidosos para " + cardCode)).build();
+            if (objects.size() <= 0) {
+                CONSOLE.log(Level.WARNING, "No se encontro historico de puntos en los calidosos para {0}", cardCode);
+                return Response.ok(new ResponseDTO(-1, "No se encontro historico de puntos en los calidosos para " + cardCode)).build();
+            }
+            if (objects == null) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el historico de puntos en los calidosos para {0}", cardCode);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el historico de puntos en los calidosos para " + cardCode)).build();
+            }
+
+            List<PointHistoryCalidosoDTO> pointHistoryCalidosoDTO = new ArrayList<>();
+            for (Object[] obj : objects) {
+                PointHistoryCalidosoDTO dto = new PointHistoryCalidosoDTO();
+                dto.setCardCode((String) obj[0]);
+                dto.setConcept((String) obj[1]);
+                dto.setDocNum((Integer) obj[2]);
+                dto.setDocType((String) obj[3]);
+                dto.setDocDate((String) obj[4]);
+                dto.setPoint((Integer) obj[5]);
+
+                pointHistoryCalidosoDTO.add(dto);
+            }
+
+            CONSOLE.log(Level.INFO, "Retornando historico de puntos en los calidosos.");
+            return Response.ok(new ResponseDTO(0, pointHistoryCalidosoDTO)).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
-        if (objects == null) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el historico de puntos en los calidosos para {0}", cardCode);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el historico de puntos en los calidosos para " + cardCode)).build();
-        }
-
-        List<PointHistoryCalidosoDTO> pointHistoryCalidosoDTO = new ArrayList<>();
-        for (Object[] obj : objects) {
-            PointHistoryCalidosoDTO dto = new PointHistoryCalidosoDTO();
-            dto.setCardCode((String) obj[0]);
-            dto.setConcept((String) obj[1]);
-            dto.setDocNum((Integer) obj[2]);
-            dto.setDocType((String) obj[3]);
-            dto.setDocDate((String) obj[4]);
-            dto.setPoint((Integer) obj[5]);
-
-            pointHistoryCalidosoDTO.add(dto);
-        }
-
-        CONSOLE.log(Level.INFO, "Retornando historico de puntos en los calidosos.");
-        return Response.ok(new ResponseDTO(0, pointHistoryCalidosoDTO)).build();
     }
 
     @GET
     @Path("total-registros")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getProgramsCount() {
-        return Response.ok(conceptoSAPFacade.countNumberRegister("IGB", false)).build();
+    public Response getProgramsCount(@HeaderParam("X-TOKEN") String token) {
+        CONSOLE.log(Level.INFO, "Listando total de registros en los calidosos");
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            return Response.ok(conceptoSAPFacade.countNumberRegister("IGB", false)).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
     }
 
     @GET
@@ -128,6 +156,7 @@ public class CalidososREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getDataLogin(@HeaderParam("X-TOKEN") String token) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio de listando datos para login en los calidosos");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             List<Object[]> objs = vendedorMostradorSAPFacade.listDataLoginCalidoso("IGB", false);
             List<LoginCalidosoDTO> data = new ArrayList<>();
@@ -141,8 +170,10 @@ public class CalidososREST {
 
                 data.add(dto);
             }
+            CONSOLE.log(Level.INFO, "Retornando listando datos para login en los calidosos");
             return Response.ok(data).build();
         } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -153,10 +184,9 @@ public class CalidososREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getAvailablePoints(@QueryParam("cardCode") String cardCode,
                                        @HeaderParam("X-TOKEN") String token) {
-        CONSOLE.log(Level.INFO, "Listando puntos disponibles en los calidosos.");
-        List<PointAvailableCalidosoDTO> availablePoints = new ArrayList<>();
-
+        CONSOLE.log(Level.INFO, "Iniciando listando puntos disponibles en los calidosos");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<PointAvailableCalidosoDTO> availablePoints = new ArrayList<>();
             List<Object[]> objs = redimePuntosSAPFacade.listAvailablePoints(cardCode, "IGB", false);
             for (Object[] obj : objs) {
                 PointAvailableCalidosoDTO dto = new PointAvailableCalidosoDTO();
@@ -166,8 +196,53 @@ public class CalidososREST {
 
                 availablePoints.add(dto);
             }
+            CONSOLE.log(Level.INFO,"Retornando listando puntos disponibles en los calidosos");
             return Response.ok(availablePoints).build();
         } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
+    }
+
+    @GET
+    @Path("cliente/vendedores-mostrador")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listVendedorMostradorByClient(@QueryParam("cardCode") String cardCode,
+                                                  @HeaderParam("X-TOKEN") String token) {
+        CONSOLE.log(Level.INFO, "Iniciando listando de vendedores mostrador por cliente en los calidosos");
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objects = vendedorMostradorSAPFacade.listVendMostradorByClient(cardCode, "IGB", false);
+            List<ClientVendMortradorDTO> clientVendMortradorDTO = new ArrayList<>();
+
+            HashMap<String, String> client = new HashMap<>();
+            for (Object[] obj : objects) {
+                client.put((String) obj[0], "id");
+            }
+
+            for (String sn : client.keySet()) {
+                List<ClientVendMortradorDTO.VendMostradorDTO> vendedoresMostrador = new ArrayList<>();
+                ClientVendMortradorDTO dto = new ClientVendMortradorDTO();
+                dto.setClient(sn);
+
+                for (Object[] obj : objects) {
+                    if (dto.getClient().equals(obj[0])) {
+                        //Clientes
+                        dto.setClient((String) obj[0]);
+                        //Vendedores Mostrador
+                        ClientVendMortradorDTO.VendMostradorDTO dto2 = new ClientVendMortradorDTO.VendMostradorDTO();
+                        dto2.setNro((Integer) obj[1]);
+                        dto2.setVendMostrador((String) obj[2]);
+                        vendedoresMostrador.add(dto2);
+                    }
+                }
+                dto.setVendedoresMostrador(vendedoresMostrador);
+                clientVendMortradorDTO.add(dto);
+            }
+            CONSOLE.log(Level.INFO, "Retornando el listado de vendedores mostrador para el cliente {0}", cardCode);
+            return Response.ok(clientVendMortradorDTO).build();
+        } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -223,6 +298,7 @@ public class CalidososREST {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando vendedor mostrador en los calidosos.")).build();
             }
         } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -261,6 +337,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Redención de puntos exitoso");
             return Response.ok(new ResponseDTO(0, "Redención de puntos exitoso.")).build();
         } else {
+            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
