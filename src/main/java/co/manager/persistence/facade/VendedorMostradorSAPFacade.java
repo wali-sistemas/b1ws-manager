@@ -88,7 +88,10 @@ public class VendedorMostradorSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(v.\"U_CardCode\" as varchar(20))as cliente, ");
         sb.append(" cast(row_number() over(partition by v.\"U_CardCode\" order by v.\"U_Documento\")as int)as row, ");
-        sb.append(" cast(v.\"U_Documento\" as varchar(20))as VendMostrador ");
+        sb.append(" cast(v.\"U_Documento\" as varchar(20))as VendMostrador, ");
+        sb.append(" cast(v.\"U_Nombres\" as varchar(100))as Nombres,cast(v.\"U_Apellidos\" as varchar(100))as Apellidos, ");
+        sb.append(" cast(v.\"U_Correo\" as varchar(100))as Correo,cast(v.\"U_Celular\" as varchar(50))as Celular, ");
+        sb.append(" cast(v.\"U_Ciudad\" as varchar(100))as Ciudad,cast(v.\"U_Departamento\" as varchar(100))as Departamento ");
         sb.append("from \"@REDENCION_VENDMOSTR\" v ");
         sb.append("inner join OCRD c on v.\"U_CardCode\"=c.\"CardCode\" ");
         sb.append("where c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");

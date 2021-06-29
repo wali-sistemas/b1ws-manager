@@ -31,6 +31,11 @@ public class ClientVendMortradorDTO {
     public static class VendMostradorDTO {
         private Integer nro;
         private String vendMostrador;
+        private String nombre;
+        private String correo;
+        private String celular;
+        private String ciudad;
+        private String departamento;
 
         public Integer getNro() {
             return nro;
@@ -48,11 +53,56 @@ public class ClientVendMortradorDTO {
             this.vendMostrador = vendMostrador;
         }
 
+        public String getNombre() {
+            return nombre;
+        }
+
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public String getCorreo() {
+            return correo;
+        }
+
+        public void setCorreo(String correo) {
+            this.correo = correo;
+        }
+
+        public String getCelular() {
+            return celular;
+        }
+
+        public void setCelular(String celular) {
+            this.celular = celular;
+        }
+
+        public String getCiudad() {
+            return ciudad;
+        }
+
+        public void setCiudad(String ciudad) {
+            this.ciudad = ciudad;
+        }
+
+        public String getDepartamento() {
+            return departamento;
+        }
+
+        public void setDepartamento(String departamento) {
+            this.departamento = departamento;
+        }
+
         @Override
         public String toString() {
             return "VendMostradorDTO{" +
                     "nro=" + nro +
                     ", vendMostrador='" + vendMostrador + '\'' +
+                    ", nombre='" + nombre + '\'' +
+                    ", correo='" + correo + '\'' +
+                    ", celular='" + celular + '\'' +
+                    ", ciudad='" + ciudad + '\'' +
+                    ", departamento='" + departamento + '\'' +
                     '}';
         }
     }

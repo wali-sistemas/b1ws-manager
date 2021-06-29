@@ -50,7 +50,7 @@ public class CalidososREST {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             return Response.ok(conceptoSAPFacade.listActivePrograms("IGB", false)).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -63,7 +63,7 @@ public class CalidososREST {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             return Response.ok(businessPartnerSAPFacade.listClientCalidosos("IGB", false)).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -92,7 +92,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Retornando lista de productos activos a redimir en los calidosos");
             return Response.ok(products).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -132,7 +132,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Retornando historico de puntos en los calidosos.");
             return Response.ok(new ResponseDTO(0, pointHistoryCalidosoDTO)).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -146,7 +146,7 @@ public class CalidososREST {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             return Response.ok(conceptoSAPFacade.countNumberRegister("IGB", false)).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -173,7 +173,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Retornando listando datos para login en los calidosos");
             return Response.ok(data).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -196,10 +196,10 @@ public class CalidososREST {
 
                 availablePoints.add(dto);
             }
-            CONSOLE.log(Level.INFO,"Retornando listando puntos disponibles en los calidosos");
+            CONSOLE.log(Level.INFO, "Retornando listando puntos disponibles en los calidosos");
             return Response.ok(availablePoints).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -233,6 +233,11 @@ public class CalidososREST {
                         ClientVendMortradorDTO.VendMostradorDTO dto2 = new ClientVendMortradorDTO.VendMostradorDTO();
                         dto2.setNro((Integer) obj[1]);
                         dto2.setVendMostrador((String) obj[2]);
+                        dto2.setNombre(obj[3] + " " + obj[4]);
+                        dto2.setCorreo((String) obj[5]);
+                        dto2.setCelular((String) obj[6]);
+                        dto2.setCiudad((String) obj[7]);
+                        dto2.setDepartamento((String) obj[8]);
                         vendedoresMostrador.add(dto2);
                     }
                 }
@@ -242,7 +247,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Retornando el listado de vendedores mostrador para el cliente {0}", cardCode);
             return Response.ok(clientVendMortradorDTO).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -298,7 +303,7 @@ public class CalidososREST {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando vendedor mostrador en los calidosos.")).build();
             }
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
@@ -337,7 +342,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, "Redención de puntos exitoso");
             return Response.ok(new ResponseDTO(0, "Redención de puntos exitoso.")).build();
         } else {
-            CONSOLE.log(Level.WARNING,"Token invalido para consumir servicio");
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
