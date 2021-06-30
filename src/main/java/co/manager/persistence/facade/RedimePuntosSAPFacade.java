@@ -40,6 +40,8 @@ public class RedimePuntosSAPFacade {
         sb.append(dto.getConcepto());
         sb.append("','");
         sb.append(dto.getComprobante());
+        sb.append("','");
+        sb.append(dto.getDescripcion());
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
