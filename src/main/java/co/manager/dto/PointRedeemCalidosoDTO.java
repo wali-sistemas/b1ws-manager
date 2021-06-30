@@ -11,6 +11,7 @@ public class PointRedeemCalidosoDTO {
     private Integer puntos;
     private String concepto;
     private String comprobante;
+    private String descripcion;
 
     public PointRedeemCalidosoDTO() {
     }
@@ -55,6 +56,14 @@ public class PointRedeemCalidosoDTO {
         this.comprobante = comprobante;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     @Override
     public String toString() {
         return "PointRedeemCalidosoDTO{" +
@@ -63,6 +72,7 @@ public class PointRedeemCalidosoDTO {
                 ", puntos=" + puntos +
                 ", concepto='" + concepto + '\'' +
                 ", comprobante='" + comprobante + '\'' +
+                ", descripcion='" + descripcion + '\'' +
                 '}';
     }
 }
