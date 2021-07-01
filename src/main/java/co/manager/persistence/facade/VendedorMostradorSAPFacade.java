@@ -67,11 +67,13 @@ public class VendedorMostradorSAPFacade {
 
     public List<Object[]> listDataLoginCalidoso(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,'Vendedor Mostrador' as Programa,cast(v.\"U_Correo\" as varchar(100))as mail,cast(v.\"U_Celular\" as varchar(50))as celular ");
+        sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,'Vendedor Mostrador' as Programa,cast(v.\"U_Correo\" as varchar(100))as mail, ");
+        sb.append(" cast(v.\"U_Celular\" as varchar(50))as celular,cast(v.\"U_Nombres\" ||' '|| v.\"U_Apellidos\" as varchar(100))as Nombres ");
         sb.append("from \"@REDENCION_VENDMOSTR\" v ");
         sb.append("where \"U_Activo\"='S' ");
         sb.append("union all ");
-        sb.append("select cast(c.\"CardCode\" as varchar(20))as id,cast(r.\"Name\" as varchar(100))as Programa,cast(c.\"E_Mail\" as varchar(100))as mail,'0' as celular ");
+        sb.append("select cast(c.\"CardCode\" as varchar(20))as id,cast(r.\"Name\" as varchar(100))as Programa, ");
+        sb.append(" cast(c.\"E_Mail\" as varchar(100))as mail,'0' as celular,cast(c.\"CardName\" as varchar(100))as Nombres ");
         sb.append("from OCRD c ");
         sb.append("inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
         sb.append("where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y'");
