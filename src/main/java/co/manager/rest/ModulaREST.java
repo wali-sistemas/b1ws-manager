@@ -40,7 +40,6 @@ public class ModulaREST {
     public Response getStockModula() {
         CONSOLE.log(Level.INFO, "Iniciando comparacion de stock entre modula vs SAP");
         List<StockRestDTO.ItemDTO.DetailDTO> stockModula = new ArrayList<>();
-        List<Object[]> stockModulaSAP = new ArrayList<>();
         List<StockMissingDTO> stockMissingDTO = new ArrayList<>();
 
         //obtener stock del api
@@ -63,7 +62,7 @@ public class ModulaREST {
             return Response.ok(new ResponseDTO(-1, "En modula no se encontraron datos para comparar.")).build();
         }
         //obtener stock de SAP almacen 30-modula
-        stockModulaSAP = itemSAPFacade.listStockModulaSAP("IGB", false);
+        List<Object[]> stockModulaSAP = itemSAPFacade.listStockSAPModula("IGB", false);
         if (stockModulaSAP == null) {
             CONSOLE.log(Level.SEVERE, "En sap no se encontraron datos para comparar");
             return Response.ok(new ResponseDTO(-1, "En sap no se encontraron datos para comparar.")).build();
