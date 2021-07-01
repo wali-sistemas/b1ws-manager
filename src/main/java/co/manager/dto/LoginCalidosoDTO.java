@@ -10,15 +10,17 @@ public class LoginCalidosoDTO implements Serializable {
     private String programa;
     private String mail;
     private String celular;
+    private String nombre;
 
     public LoginCalidosoDTO() {
     }
 
-    public LoginCalidosoDTO(String documento, String programa, String mail, String celular) {
+    public LoginCalidosoDTO(String documento, String programa, String mail, String celular, String nombre) {
         this.documento = documento;
         this.programa = programa;
         this.mail = mail;
         this.celular = celular;
+        this.nombre = nombre;
     }
 
     public String getDocumento() {
@@ -53,6 +55,14 @@ public class LoginCalidosoDTO implements Serializable {
         this.celular = celular;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     @Override
     public String toString() {
         return "LoginCalidosoDTO{" +
@@ -60,6 +70,7 @@ public class LoginCalidosoDTO implements Serializable {
                 ", programa='" + programa + '\'' +
                 ", mail='" + mail + '\'' +
                 ", celular='" + celular + '\'' +
+                ", nombre='" + nombre + '\'' +
                 '}';
     }
 }

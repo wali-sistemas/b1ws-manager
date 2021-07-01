@@ -167,6 +167,7 @@ public class CalidososREST {
                 dto.setPrograma((String) obj[1]);
                 dto.setMail((String) obj[2]);
                 dto.setCelular((String) obj[3]);
+                dto.setNombre((String) obj[4]);
 
                 data.add(dto);
             }
