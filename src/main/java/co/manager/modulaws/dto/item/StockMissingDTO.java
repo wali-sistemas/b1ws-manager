@@ -3,7 +3,7 @@ package co.manager.modulaws.dto.item;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StockMissingDTO {
+public class StockMissingDTO implements Comparable<StockMissingDTO>{
     private String itemCode;
     private String itemName;
     private String whsCode;
@@ -79,6 +79,15 @@ public class StockMissingDTO {
 
     public void setQtyMDL(Integer qtyMDL) {
         this.qtyMDL = qtyMDL;
+    }
+
+    @Override
+    public int compareTo(StockMissingDTO o) {
+        if (o == null || o.getItemCode() == null) {
+            return 1;
+        }
+
+        return this.itemCode.compareTo(o.getItemCode());
     }
 
     @Override

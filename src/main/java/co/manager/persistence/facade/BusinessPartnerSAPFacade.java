@@ -409,6 +409,17 @@ public class BusinessPartnerSAPFacade {
             sb.append("' ");
         }
 
+        sb.append(" union all ");
+        sb.append("select cast(p.\"U_CardCode\" as varchar(20))as \"CardCode\",cast('REDENCIÓN' as varchar(50))as \"Programa\",cast(0 as int)as \"DocNum\", ");
+        sb.append(" cast('RM' as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(p.\"U_DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\",cast(p.\"U_Point\" as int)*-1 as \"Puntos\" ");
+        sb.append("from \"@REDENCION_PUNTOS\" p ");
+
+        if (!cardCode.equals("0")) {
+            sb.append("where p.\"U_CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
+
         sb.append("order by y.\"TypeDoc\",y.\"DocNum\",y.\"Programa\" ASC");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
