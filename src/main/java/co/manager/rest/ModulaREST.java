@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +41,7 @@ public class ModulaREST {
     public Response getStockModula() {
         CONSOLE.log(Level.INFO, "Iniciando comparacion de stock entre modula vs SAP");
         List<StockRestDTO.ItemDTO.DetailDTO> stockModula = new ArrayList<>();
-        List<StockMissingDTO> stockMissingDTO = new ArrayList<>();
+        TreeSet<StockMissingDTO> stockMissingDTO = new TreeSet<>();
 
         //obtener stock del api
         StockRestDTO res = stockModulaEJB.getStock();
@@ -68,29 +69,38 @@ public class ModulaREST {
             return Response.ok(new ResponseDTO(-1, "En sap no se encontraron datos para comparar.")).build();
         }
 
-        for (StockRestDTO.ItemDTO.DetailDTO dto1 : stockModula) {
-            StockMissingDTO dto2 = new StockMissingDTO();
-            for (Object[] obj : stockModulaSAP) {
-                if (obj[0].equals(dto1.getItemCode()) && !obj[2].equals(dto1.getStock())) {
-                    dto2.setItemCode((String) obj[0]);
-                    dto2.setItemName((String) obj[1]);
-                    dto2.setQtySAP((Integer) obj[2]);
-                    dto2.setQtyMDL(Integer.parseInt(dto1.getStock().replace(",000", "")));
-                    dto2.setWhsCode((String) obj[3]);
-                    dto2.setBinCode((String) obj[4]);
-                    dto2.setWhsName((String) obj[5]);
-                    stockMissingDTO.add(dto2);
-                } else {
-                    dto2.setItemCode(dto1.getItemCode());
-                    dto2.setItemName(dto1.getItemName());
-                    dto2.setQtySAP(0);
-                    dto2.setQtyMDL(Integer.parseInt(dto1.getStock().replace(",000", "")));
-                    dto2.setBinCode("MODULA");
-                    dto2.setWhsCode("30");
-                    dto2.setWhsName("MODULA");
-                    stockMissingDTO.add(dto2);
+        for (Object[] sap : stockModulaSAP) {
+            StockMissingDTO dto = new StockMissingDTO();
+            dto.setItemCode((String) sap[0]);
+            dto.setItemName((String) sap[1]);
+            dto.setQtySAP(0);
+            dto.setQtyMDL(0);
+            dto.setWhsCode((String) sap[3]);
+            dto.setBinCode((String) sap[4]);
+            dto.setWhsName((String) sap[5]);
+            stockMissingDTO.add(dto);
+        }
+
+        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
+            StockMissingDTO dto = new StockMissingDTO();
+            dto.setItemCode(modula.getItemCode());
+            dto.setItemName(modula.getItemName());
+            dto.setQtySAP(0);
+            dto.setQtyMDL(0);
+            dto.setBinCode("MODULA");
+            dto.setWhsCode("30");
+            dto.setWhsName("MODULA");
+            stockMissingDTO.add(dto);
+        }
+
+        for (StockMissingDTO stock : stockMissingDTO) {
+            for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
+                if (stock.getItemCode().equals(modula.getItemCode())) {
+                    stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(",000", "")));
+                    break;
                 }
             }
+            stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), "IGB", false));
         }
         return Response.ok(stockMissingDTO).build();
     }
