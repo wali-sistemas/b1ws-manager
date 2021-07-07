@@ -33,7 +33,7 @@ public class RedimePuntosSAPFacade {
         sb.append("','");
         sb.append(dto.getDocumento());
         sb.append("','");
-        sb.append(new SimpleDateFormat("yyyy-MM-dd").format(dto.getFecha()));
+        sb.append(dto.getFecha());
         sb.append("',");
         sb.append(dto.getPuntos());
         sb.append(",'");
