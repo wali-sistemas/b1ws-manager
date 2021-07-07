@@ -255,9 +255,9 @@ public class ItemSAPFacade {
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(it.\"PurPackMsr\" as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append(" then((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
+        sb.append(" then((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
         sb.append(" sum(de.\"OnHandQty\") from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append(" else((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
+        sb.append(" else((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
         sb.append(" cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,'' as SubMarca, ");
         sb.append(" cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");

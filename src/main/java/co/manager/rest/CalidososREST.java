@@ -289,6 +289,9 @@ public class CalidososREST {
             } else if (dto.getDepartamento() == null || dto.getDepartamento().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Departamento] es obligatorio para participar en los calidosos");
                 return Response.ok(new ResponseDTO(-2, "Campo [Departamento] es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getDireccion() == null || dto.getDireccion().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Direccion] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Direccion] es obligatorio para participar en los calidosos.")).build();
             }
 
             Gson gson = new Gson();
