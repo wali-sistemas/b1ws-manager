@@ -14,6 +14,7 @@ public class VendedorMostradorDTO {
     private String cardCode;
     private String departamento;
     private String ciudad;
+    private String direccion;
     private Date fechaNacimiento;
     private char aceptoTermino;
     private char aceptoTratamientoDatos;
@@ -109,6 +110,14 @@ public class VendedorMostradorDTO {
         this.ciudad = ciudad;
     }
 
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
     @Override
     public String toString() {
         return "VendedorMostradorDTO{" +
@@ -120,6 +129,7 @@ public class VendedorMostradorDTO {
                 ", cardCode='" + cardCode + '\'' +
                 ", departamento='" + departamento + '\'' +
                 ", ciudad='" + ciudad + '\'' +
+                ", direccion='" + direccion + '\'' +
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", aceptoTermino=" + aceptoTermino +
                 ", aceptoTratamientoDatos=" + aceptoTratamientoDatos +
