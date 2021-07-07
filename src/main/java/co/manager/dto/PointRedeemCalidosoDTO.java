@@ -1,13 +1,11 @@
 package co.manager.dto;
 
-import java.util.Date;
-
 /**
  * @author jguisao
  */
 public class PointRedeemCalidosoDTO {
     private String documento;
-    private Date fecha;
+    private String fecha;
     private Integer puntos;
     private String concepto;
     private String comprobante;
@@ -24,11 +22,11 @@ public class PointRedeemCalidosoDTO {
         this.documento = documento;
     }
 
-    public Date getFecha() {
+    public String getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(String fecha) {
         this.fecha = fecha;
     }
 
