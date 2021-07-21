@@ -3,16 +3,18 @@ package co.manager.rest;
 import co.manager.dto.ResponseDTO;
 import co.manager.modulaws.dto.item.StockMissingDTO;
 import co.manager.modulaws.dto.item.StockRestDTO;
+import co.manager.modulaws.dto.order.OrderModulaDTO;
+import co.manager.modulaws.dto.order.OrderModulaRestDTO;
+import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.modulaws.ejb.StockModulaEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
+import com.google.gson.Gson;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class ModulaREST {
     @EJB
     private StockModulaEJB stockModulaEJB;
     @EJB
+    private OrderModulaEJB orderModulaEJB;
+    @EJB
     private ItemSAPFacade itemSAPFacade;
 
     @GET
@@ -40,23 +44,10 @@ public class ModulaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getStockModula() {
         CONSOLE.log(Level.INFO, "Iniciando comparacion de stock entre modula vs SAP");
-        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = new ArrayList<>();
         TreeSet<StockMissingDTO> stockMissingDTO = new TreeSet<>();
 
         //obtener stock del api
-        StockRestDTO res = stockModulaEJB.getStock();
-        if (res == null) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo datos del api modula");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error obteniendo datos del api modula.")).build();
-        }
-        //mapear datos obtenidos del api
-        for (StockRestDTO.ItemDTO.DetailDTO obj : res.getItem().getDetails()) {
-            StockRestDTO.ItemDTO.DetailDTO dto = new StockRestDTO.ItemDTO.DetailDTO();
-            dto.setItemCode(obj.getItemCode());
-            dto.setItemName(obj.getItemName());
-            dto.setStock(obj.getStock());
-            stockModula.add(dto);
-        }
+        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = listStockModula();
 
         if (stockModula.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "En modula no se encontraron datos para comparar");
@@ -103,5 +94,148 @@ public class ModulaREST {
             stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), "IGB", false));
         }
         return Response.ok(stockMissingDTO).build();
+    }
+
+    @GET
+    @Path("validate-item/{itemcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response validateItem(@PathParam("itemcode") String itemCode) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio de validacion del item {0} en modula", itemCode);
+        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = listStockModula();
+
+        if (stockModula.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "En modula no se encontraron datos para mostrar");
+            return Response.ok(new ResponseDTO(-1, "En modula no se encontraron datos para mostrar.")).build();
+        }
+
+        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
+            if (itemCode.equals(modula.getItemCode())) {
+                CONSOLE.log(Level.INFO, "El item {0} esta creado en modula", itemCode);
+                return Response.ok(new ResponseDTO(0, "El item " + itemCode + " esta creado en modula.")).build();
+            }
+        }
+        CONSOLE.log(Level.WARNING, "El item {0} no esta creado en modula", itemCode);
+        return Response.ok(new ResponseDTO(-1, "El item no esta creado en modula.")).build();
+    }
+
+    @POST
+    @Path("stock-deposit")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response depositStockToModula(OrderModulaDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando deposito de stock en modula");
+        if (dto.getDocEntry() == null || dto.getDocEntry().isEmpty()) {
+            CONSOLE.log(Level.WARNING, "Campo [DocNum] es obligatorio para lanzar peticion en modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [DocNum] es obligatorio para lanzar peticion en modula.")).build();
+        } else if (dto.getDetail().size() <= 0) {
+            CONSOLE.log(Level.WARNING, "Campo [detail] es obligatorio para lanzar peticion en modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [detail] es obligatorio para lanzar peticion en modula.")).build();
+        } else if (dto.getType() == null || dto.getType().isEmpty()) {
+            CONSOLE.log(Level.WARNING, "Campo [Type] es obligatorio para lanzar peticion a modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [Type] es obligatorio para lanzar peticion a modula")).build();
+        }
+
+        OrderModulaRestDTO.Header ordine = new OrderModulaRestDTO.Header();
+        List<OrderModulaRestDTO.Header.Ordine> header = new ArrayList<>();
+        OrderModulaRestDTO.Header.Ordine headerDto = new OrderModulaRestDTO.Header.Ordine();
+        headerDto.setDocNum(dto.getDocEntry());
+        headerDto.setComment("Depositar articulo");
+        headerDto.setType(dto.getType());
+        header.add(headerDto);
+        ordine.setOrder(header);
+
+        List<OrderModulaRestDTO.Header.Detail> detail = new ArrayList<>();
+        for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
+            OrderModulaRestDTO.Header.Detail detailDto = new OrderModulaRestDTO.Header.Detail();
+            detailDto.setDocNum(dto.getDocEntry());
+            detailDto.setItemCode(d.getItemCode());
+            detailDto.setQuantity(d.getQuantity().toString());
+            detail.add(detailDto);
+        }
+        ordine.setDetail(detail);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ordine);
+        CONSOLE.log(Level.INFO, json);
+
+        String res = orderModulaEJB.addOrdine(ordine);
+        if (res == null || res.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando stock en modula");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando stock en modula.")).build();
+        }
+        CONSOLE.log(Level.INFO, "Deposito de stock en modula exitoso");
+        return Response.ok(new ResponseDTO(0, "Deposito de stock en modula exitoso.")).build();
+    }
+
+    @POST
+    @Path("stock-inventory")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response inventoryStockModula(OrderModulaDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando inventario de stock en modula");
+        if (dto.getDocEntry() == null || dto.getDocEntry().isEmpty()) {
+            CONSOLE.log(Level.WARNING, "Campo [DocNum] es obligatorio para lanzar peticion en modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [DocNum] es obligatorio para lanzar peticion en modula.")).build();
+        } else if (dto.getDetail().size() <= 0) {
+            CONSOLE.log(Level.WARNING, "Campo [detail] es obligatorio para lanzar peticion en modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [detail] es obligatorio para lanzar peticion en modula.")).build();
+        } else if (dto.getType() == null || dto.getType().isEmpty()) {
+            CONSOLE.log(Level.WARNING, "Campo [Type] es obligatorio para lanzar peticion a modula");
+            return Response.ok(new ResponseDTO(-2, "Campo [Type] es obligatorio para lanzar peticion a modula")).build();
+        }
+
+        OrderModulaRestDTO.Header ordine = new OrderModulaRestDTO.Header();
+        List<OrderModulaRestDTO.Header.Ordine> header = new ArrayList<>();
+        OrderModulaRestDTO.Header.Ordine headerDto = new OrderModulaRestDTO.Header.Ordine();
+        headerDto.setDocNum(dto.getDocEntry());
+        headerDto.setComment("Inventariar articulo");
+        headerDto.setType(dto.getType());
+        header.add(headerDto);
+        ordine.setOrder(header);
+
+        List<OrderModulaRestDTO.Header.Detail> detail = new ArrayList<>();
+        for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
+            OrderModulaRestDTO.Header.Detail detailDto = new OrderModulaRestDTO.Header.Detail();
+            detailDto.setDocNum(dto.getDocEntry());
+            detailDto.setItemCode(d.getItemCode());
+            detailDto.setQuantity(d.getQuantity().toString());
+            detail.add(detailDto);
+        }
+        ordine.setDetail(detail);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ordine);
+        CONSOLE.log(Level.INFO, json);
+
+        String res = orderModulaEJB.addOrdine(ordine);
+        if (res == null || res.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error inventariando articulo en modula");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error inventariando articulo en modula.")).build();
+        }
+        CONSOLE.log(Level.INFO, "Inventariando articulo en modula exitoso");
+        return Response.ok(new ResponseDTO(0, "Inventariando articulo en modula exitoso.")).build();
+    }
+
+    private List<StockRestDTO.ItemDTO.DetailDTO> listStockModula() {
+        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = new ArrayList<>();
+
+        //obtener stock del api
+        StockRestDTO res = stockModulaEJB.getStock();
+        if (res == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo datos del api modula");
+            return new ArrayList<>();
+        }
+        //mapear datos obtenidos del api
+        for (StockRestDTO.ItemDTO.DetailDTO obj : res.getItem().getDetails()) {
+            StockRestDTO.ItemDTO.DetailDTO dto = new StockRestDTO.ItemDTO.DetailDTO();
+            dto.setItemCode(obj.getItemCode());
+            dto.setItemName(obj.getItemName());
+            dto.setStock(obj.getStock());
+            stockModula.add(dto);
+        }
+        return stockModula;
     }
 }

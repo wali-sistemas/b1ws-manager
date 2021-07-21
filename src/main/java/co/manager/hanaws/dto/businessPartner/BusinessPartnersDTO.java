@@ -57,11 +57,12 @@ public class BusinessPartnersDTO implements Serializable {
     protected String ubpco2Apellido;
     @JsonProperty("U_BPCO_Address")
     protected String ubpcoAddress;
+    @JsonProperty("U_BPV_TPER")
+    protected String ubpvtper;
     @JsonProperty("U_TRASP")
     protected String uTrasp;
     @JsonProperty("DebitorAccount")
     protected String debitorAccount;
-
     @JsonProperty("BPAddresses")
     protected List<BusinessPartnersDTO.BPAddresses.BPAddress> bpAddresses;
 
@@ -249,6 +250,14 @@ public class BusinessPartnersDTO implements Serializable {
         this.ubpcoAddress = ubpcoAddress;
     }
 
+    public String getUbpvtper() {
+        return ubpvtper;
+    }
+
+    public void setUbpvtper(String ubpvtper) {
+        this.ubpvtper = ubpvtper;
+    }
+
     public String getuTrasp() {
         return uTrasp;
     }
@@ -431,6 +440,7 @@ public class BusinessPartnersDTO implements Serializable {
                 ", ubpco1Apellido='" + ubpco1Apellido + '\'' +
                 ", ubpco2Apellido='" + ubpco2Apellido + '\'' +
                 ", ubpcoAddress='" + ubpcoAddress + '\'' +
+                ", ubpvtper='" + ubpvtper + '\'' +
                 ", uTrasp='" + uTrasp + '\'' +
                 ", debitorAccount='" + debitorAccount + '\'' +
                 ", bpAddresses=" + bpAddresses +

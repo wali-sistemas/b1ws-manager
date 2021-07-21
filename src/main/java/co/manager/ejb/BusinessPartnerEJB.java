@@ -85,6 +85,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
                 businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartner.setUbpvtper("PNRE");
                 businessPartner.setuTrasp("03");
                 businessPartner.setDebitorAccount("11100520");
 
