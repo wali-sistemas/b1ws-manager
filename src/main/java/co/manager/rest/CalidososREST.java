@@ -298,6 +298,8 @@ public class CalidososREST {
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
 
+            //TODO: Valida si el vendedor mostrador esta activo para una sucursal
+
             try {
                 vendedorMostradorSAPFacade.addVendedorMostrador(dto, "IGB", false);
                 CONSOLE.log(Level.INFO, "Creación vendedor mostrador exitosa.");
@@ -333,6 +335,13 @@ public class CalidososREST {
             } else if (dto.getComprobante() == null || dto.getComprobante().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Comprobante] es obligatorio para redimir puntos");
                 return Response.ok(new ResponseDTO(-2, "Campo [Comprobante] es obligatorio para redimir puntos")).build();
+            }
+
+            //Validar que el comprobante de redención no exista
+            String idRedeem = redimePuntosSAPFacade.getIdRedeemPoint(dto.getComprobante(), "IGB", false);
+            if (idRedeem != null) {
+                CONSOLE.log(Level.WARNING, "Ya existe un comprobante de redencion");
+                return Response.ok(new ResponseDTO(0, "Ya existe un comprobante de redencion.")).build();
             }
 
             Gson gson = new Gson();

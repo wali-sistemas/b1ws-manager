@@ -378,4 +378,20 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un actualizando el campo de usuario parta replicar en modula.");
         }
     }
+
+    public Integer getStockItemModula(String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(sum(s.\"OnHand\") as int)as Stock ");
+        sb.append("from \"OITW\" s ");
+        sb.append("where s.\"OnHand\">0 and s.\"WhsCode\"='30' and s.\"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando en SAP el stock del item [" + itemCode + "] en modula.", e);
+        }
+        return 0;
+    }
 }

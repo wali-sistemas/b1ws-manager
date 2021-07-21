@@ -150,4 +150,20 @@ public class RedimePuntosSAPFacade {
         }
         return null;
     }
+
+    public String getIdRedeemPoint(String code, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"U_Code\" as varchar(20)) ");
+        sb.append("from \"@REDENCION_PUNTOS\" ");
+        sb.append("where \"U_Code\" = '");
+        sb.append(code);
+        sb.append("'");
+        try {
+            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el id de la redencion.", e);
+        }
+        return null;
+    }
 }
