@@ -80,9 +80,9 @@ public class RedimePuntosSAPFacade {
         sb.append("union all ");
         sb.append(" select distinct v.\"U_Documento\" as \"CardCode\",case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
         sb.append("  else case when m.\"U_Puntos\">0 then (cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100)) ");
-        sb.append("        *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0)) ");
+        sb.append("        *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='S' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0)) ");
         sb.append("        /(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")) ");
-        sb.append("  else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0)) ");
+        sb.append("  else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='S' and \"Code\"='01') as numeric(18,0)) ");
         sb.append("        /(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))end end as \"PtsDisp\",c.\"Name\" as \"Programa\" ");
         sb.append(" from OINV e ");
         sb.append(" inner join INV1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");
@@ -95,10 +95,10 @@ public class RedimePuntosSAPFacade {
         sb.append("union all ");
         sb.append(" select distinct v.\"U_Documento\" as \"CardCode\",case when (select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\")<=0 then 0 ");
         sb.append("  else case when m.\"U_Puntos\">0 then (cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100)) ");
-        sb.append("   *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0)) ");
+        sb.append("   *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='S' and \"Code\"='01'))*m.\"U_Puntos\" as numeric(18,0)) ");
         sb.append("   /(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 ");
         sb.append("  else (cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100)) ");
-        sb.append("   *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='Y' and \"Code\"='01') as numeric(18,0)) ");
+        sb.append("   *(select \"U_PorcPuntos\" from \"@REDENCION_CONCEPTOS\" where \"U_Activo\"='S' and \"Code\"='01') as numeric(18,0)) ");
         sb.append("   /(select count(v.\"U_CardCode\") from \"@REDENCION_VENDMOSTR\" v where v.\"U_CardCode\"=e.\"CardCode\"))*-1 end end as \"PtsDisp\",c.\"Name\" as \"Programa\" ");
         sb.append(" from ORIN e ");
         sb.append(" inner join RIN1 d ON e.\"DocEntry\"=d.\"DocEntry\" ");

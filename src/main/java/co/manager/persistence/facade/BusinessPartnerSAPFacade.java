@@ -429,4 +429,19 @@ public class BusinessPartnerSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public List<Object[]> listClientsWithOutResFis(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(s.\"CardCode\" as varchar(20)),cast(s.\"CardName\" as varchar(20)) ");
+        sb.append("from OCRD s ");
+        sb.append("left join \"@OK1_FE_RES_FIS_SN\" e on e.\"U_CardCode\" = s.\"CardCode\" ");
+        sb.append("left join \"@OK1_FE_RES_FIS_SN_L\" d on d.\"DocEntry\" = e.\"DocEntry\" ");
+        sb.append("where s.\"validFor\"='Y' and e.\"U_CardCode\" is null and \"CardType\"='C' and s.\"U_BPCO_TP\" = '01'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes sin responsabilidad fiscal de " + companyName);
+        }
+        return new ArrayList<>();
+    }
 }

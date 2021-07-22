@@ -98,7 +98,7 @@ public class VendedorMostradorSAPFacade {
         sb.append(" cast(v.\"U_Ciudad\" as varchar(100))as Ciudad,cast(v.\"U_Departamento\" as varchar(100))as Departamento ");
         sb.append("from \"@REDENCION_VENDMOSTR\" v ");
         sb.append("inner join OCRD c on v.\"U_CardCode\"=c.\"CardCode\" ");
-        sb.append("where c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
+        sb.append("where v.\"U_Activo\"='S' and c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
 
         if (!cardCode.equals("0")) {
             sb.append("and v.\"U_CardCode\"='");

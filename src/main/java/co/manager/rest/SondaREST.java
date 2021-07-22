@@ -1,11 +1,13 @@
 package co.manager.rest;
 
 import co.manager.dto.ResponseDTO;
+import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.ItemEJB;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.modulaws.dto.item.ItemModulaDTO;
 import co.manager.modulaws.ejb.ItemModulaEJB;
+import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.PickingRecordFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
@@ -21,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +47,11 @@ public class SondaREST {
     @EJB
     private SalesOrderSAPFacade salesOrderSAPFacade;
     @EJB
+    private BusinessPartnerSAPFacade businessPartnerSAPFacade;
+    @EJB
     private ItemModulaEJB itemModulaEJB;
+    @EJB
+    private BusinessPartnerEJB businessPartnerEJB;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -237,6 +244,20 @@ public class SondaREST {
         }
 
         return Response.ok(res).build();
+    }
+
+    @GET
+    @Path("sync-respFiscal/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addRespoFisCustomer(@PathParam("companyname") String companyName) {
+        List<Object[]> list = businessPartnerSAPFacade.listClientsWithOutResFis(companyName, false);
+        if (list.size() == 0) {
+            CONSOLE.log(Level.SEVERE, "Sin Datos Para sincronizar");
+            return Response.ok(new ResponseDTO(-1, "Sin Datos Para sincronizar")).build();
+        }
+
+        return Response.ok(businessPartnerEJB.addRespFisMassiveSN(companyName, list)).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {
