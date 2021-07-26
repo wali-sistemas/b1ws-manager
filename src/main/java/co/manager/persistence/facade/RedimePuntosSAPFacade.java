@@ -166,4 +166,19 @@ public class RedimePuntosSAPFacade {
         }
         return null;
     }
+
+    public void deleteRedeemPointWithoutApproved(String code, String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("delete from \"@REDENCION_PUNTOS\" where \"U_CardCode\"='");
+        sb.append(cardCode);
+        sb.append("' and \"U_Code\"='");
+        sb.append(code);
+        sb.append("'");
+        try {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error eliminando la rendecion de punto con id [" + code + ']');
+        }
+    }
 }

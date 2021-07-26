@@ -359,4 +359,28 @@ public class CalidososREST {
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
         }
     }
+
+    @DELETE
+    @Path("delete-punto-redimido/{cardcode}/{code}")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response deleteRedeemPoint(@HeaderParam("X-TOKEN") String token,
+                                      @PathParam("cardcode") String cardCode,
+                                      @PathParam("code") String code) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            CONSOLE.log(Level.INFO, "Eliminado redencion de id [{0}] no aprobada para el participante {1}", new Object[]{code, cardCode});
+            try {
+                redimePuntosSAPFacade.deleteRedeemPointWithoutApproved(code, cardCode, "IGB", false);
+                CONSOLE.log(Level.INFO, "Redencion eliminada con exito");
+                return Response.ok(new ResponseDTO(0, "Redención eliminada con exito.")).build();
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error elminando la redencion de id [{0}] para participante {1}", new Object[]{code, cardCode});
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error elminando la redencion de id " + code)).build();
+            }
+        } else {
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
+    }
 }
