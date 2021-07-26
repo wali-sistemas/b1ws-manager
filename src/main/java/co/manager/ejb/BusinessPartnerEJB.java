@@ -85,6 +85,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
                 businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartner.setUbpvtper("PNRE");
                 businessPartner.setuTrasp("03");
                 businessPartner.setDebitorAccount("11100520");
 
@@ -200,5 +201,42 @@ public class BusinessPartnerEJB {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error registrando las responsabilidades fiscales. ", e);
         }
+    }
+
+    public ResponseDTO addRespFisMassiveSN(String companyName, List<Object[]> items) {
+        //1. Login0
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(companyName);
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                for (Object[] obj : items) {
+                    //agregar las resposabilidades fiscales al socio de negocio
+                    addRespFisSN((String) obj[0], (String) obj[1], sessionId, companyName);
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, "Registro de responsabilidades fiscales exitoso.");
     }
 }
