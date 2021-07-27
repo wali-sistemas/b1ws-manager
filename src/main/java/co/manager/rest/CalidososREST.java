@@ -1,6 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
+import co.manager.ejb.IncomingPaymentEJB;
 import co.manager.ejb.ManagerApplicationBean;
 import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
@@ -41,6 +42,8 @@ public class CalidososREST {
     private RedimeProductoSAPFacade redimeProductoSAPFacade;
     @EJB
     private RedimePuntosSAPFacade redimePuntosSAPFacade;
+    @EJB
+    private IncomingPaymentEJB incomingPaymentEJB;
 
     @GET
     @Path("programas")
@@ -348,7 +351,23 @@ public class CalidososREST {
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
             try {
-                redimePuntosSAPFacade.addRedeemPoints(dto, "IGB", false);
+                //TODO: Validar si es un abono a redimir, se crea en SAP un pago a cuenta
+                if (dto.getConcepto().equals("ABONO")) {
+                    IncomingPaymentDTO incomingPaymentDTO = new IncomingPaymentDTO();
+                    incomingPaymentDTO.setCardCode(dto.getDocumento());
+                    incomingPaymentDTO.setTransferSum(new BigDecimal(dto.getPuntos()));
+                    incomingPaymentDTO.setTransferReference("ABONO CALIDOSOS");
+                    incomingPaymentDTO.setCompanyName("IGB");
+
+                    ResponseDTO res = incomingPaymentEJB.createIncomingPaymentAccountCalidosoService(incomingPaymentDTO);
+                    if (res.getCode() < 0) {
+                        return Response.ok(res).build();
+                    } else {
+                        redimePuntosSAPFacade.addRedeemPoints(dto, (long) res.getContent(), "IGB", false);
+                    }
+                } else {
+                    redimePuntosSAPFacade.addRedeemPoints(dto, 0, "IGB", false);
+                }
             } catch (Exception e) {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error redimiento los puntos para el participante" + dto.getDocumento())).build();
             }

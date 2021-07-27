@@ -23,7 +23,7 @@ public class RedimePuntosSAPFacade {
     @EJB
     private PersistenceConf persistenceConf;
 
-    public void addRedeemPoints(PointRedeemCalidosoDTO dto, String companyName, boolean testing) {
+    public void addRedeemPoints(PointRedeemCalidosoDTO dto, long docEntryPago, String companyName, boolean testing) {
         String id = (new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getDocumento();
         StringBuilder sb = new StringBuilder();
         sb.append("insert into \"@REDENCION_PUNTOS\" values ('");
@@ -42,6 +42,8 @@ public class RedimePuntosSAPFacade {
         sb.append(dto.getComprobante());
         sb.append("','");
         sb.append(dto.getDescripcion());
+        sb.append("','");
+        sb.append(docEntryPago);
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
