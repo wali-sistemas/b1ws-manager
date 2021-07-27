@@ -36,6 +36,8 @@ public class PaymentDTO implements Serializable {
     protected String taxDate;
     @JsonProperty("PaymentInvoices")
     protected List<PaymentDTO.PaymentInvoices.PaymentInvoice> paymentInvoices;
+    @JsonProperty("PaymentAccounts")
+    protected List<PaymentDTO.PaymentAccounts.PaymentAccount> paymentAccounts;
     @JsonProperty("CashFlowAssignments")
     protected PaymentDTO.CashFlowAssignments cashFlowAssignments;
 
@@ -133,6 +135,14 @@ public class PaymentDTO implements Serializable {
 
     public void setPaymentInvoices(List<PaymentInvoices.PaymentInvoice> paymentInvoices) {
         this.paymentInvoices = paymentInvoices;
+    }
+
+    public List<PaymentAccounts.PaymentAccount> getPaymentAccounts() {
+        return paymentAccounts;
+    }
+
+    public void setPaymentAccounts(List<PaymentAccounts.PaymentAccount> paymentAccounts) {
+        this.paymentAccounts = paymentAccounts;
     }
 
     public CashFlowAssignments getCashFlowAssignments() {
@@ -393,6 +403,181 @@ public class PaymentDTO implements Serializable {
 
             public void setTotalDiscountSC(Double totalDiscountSC) {
                 this.totalDiscountSC = totalDiscountSC;
+            }
+        }
+    }
+
+    public static class PaymentAccounts {
+        public static class PaymentAccount {
+            @JsonProperty("LineNum")
+            protected Long lineNum;
+            @JsonProperty("AccountCode")
+            protected String accountCode;
+            @JsonProperty("SumPaid")
+            protected BigDecimal sumPaid;
+            @JsonProperty("SumPaidFC")
+            protected BigDecimal sumPaidFC;
+            @JsonProperty("Decription")
+            protected String decription;
+            @JsonProperty("VatGroup")
+            protected String vatGroup;
+            @JsonProperty("AccountName")
+            protected String accountName;
+            @JsonProperty("GrossAmount")
+            protected BigDecimal grossAmount;
+            @JsonProperty("ProfitCenter")
+            protected String profitCenter;
+            @JsonProperty("ProjectCode")
+            protected String projectCode;
+            @JsonProperty("VatAmount")
+            protected BigDecimal vatAmount;
+            @JsonProperty("ProfitCenter2")
+            protected String profitCenter2;
+            @JsonProperty("ProfitCenter3")
+            protected String profitCenter3;
+            @JsonProperty("ProfitCenter4")
+            protected String profitCenter4;
+            @JsonProperty("ProfitCenter5")
+            protected String profitCenter5;
+            @JsonProperty("LocationCode")
+            protected Long locationCode;
+            @JsonProperty("EqualizationVatAmount")
+            protected BigDecimal equalizationVatAmount;
+
+            public Long getLineNum() {
+                return lineNum;
+            }
+
+            public void setLineNum(Long lineNum) {
+                this.lineNum = lineNum;
+            }
+
+            public String getAccountCode() {
+                return accountCode;
+            }
+
+            public void setAccountCode(String accountCode) {
+                this.accountCode = accountCode;
+            }
+
+            public BigDecimal getSumPaid() {
+                return sumPaid;
+            }
+
+            public void setSumPaid(BigDecimal sumPaid) {
+                this.sumPaid = sumPaid;
+            }
+
+            public BigDecimal getSumPaidFC() {
+                return sumPaidFC;
+            }
+
+            public void setSumPaidFC(BigDecimal sumPaidFC) {
+                this.sumPaidFC = sumPaidFC;
+            }
+
+            public String getDecription() {
+                return decription;
+            }
+
+            public void setDecription(String decription) {
+                this.decription = decription;
+            }
+
+            public String getVatGroup() {
+                return vatGroup;
+            }
+
+            public void setVatGroup(String vatGroup) {
+                this.vatGroup = vatGroup;
+            }
+
+            public String getAccountName() {
+                return accountName;
+            }
+
+            public void setAccountName(String accountName) {
+                this.accountName = accountName;
+            }
+
+            public BigDecimal getGrossAmount() {
+                return grossAmount;
+            }
+
+            public void setGrossAmount(BigDecimal grossAmount) {
+                this.grossAmount = grossAmount;
+            }
+
+            public String getProfitCenter() {
+                return profitCenter;
+            }
+
+            public void setProfitCenter(String profitCenter) {
+                this.profitCenter = profitCenter;
+            }
+
+            public String getProjectCode() {
+                return projectCode;
+            }
+
+            public void setProjectCode(String projectCode) {
+                this.projectCode = projectCode;
+            }
+
+            public BigDecimal getVatAmount() {
+                return vatAmount;
+            }
+
+            public void setVatAmount(BigDecimal vatAmount) {
+                this.vatAmount = vatAmount;
+            }
+
+            public String getProfitCenter2() {
+                return profitCenter2;
+            }
+
+            public void setProfitCenter2(String profitCenter2) {
+                this.profitCenter2 = profitCenter2;
+            }
+
+            public String getProfitCenter3() {
+                return profitCenter3;
+            }
+
+            public void setProfitCenter3(String profitCenter3) {
+                this.profitCenter3 = profitCenter3;
+            }
+
+            public String getProfitCenter4() {
+                return profitCenter4;
+            }
+
+            public void setProfitCenter4(String profitCenter4) {
+                this.profitCenter4 = profitCenter4;
+            }
+
+            public String getProfitCenter5() {
+                return profitCenter5;
+            }
+
+            public void setProfitCenter5(String profitCenter5) {
+                this.profitCenter5 = profitCenter5;
+            }
+
+            public Long getLocationCode() {
+                return locationCode;
+            }
+
+            public void setLocationCode(Long locationCode) {
+                this.locationCode = locationCode;
+            }
+
+            public BigDecimal getEqualizationVatAmount() {
+                return equalizationVatAmount;
+            }
+
+            public void setEqualizationVatAmount(BigDecimal equalizationVatAmount) {
+                this.equalizationVatAmount = equalizationVatAmount;
             }
         }
     }

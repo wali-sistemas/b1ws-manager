@@ -30,7 +30,7 @@ public class VendedorMostradorSAPFacade {
         sb.append((new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getDocumento());
         sb.append("','");
         sb.append((new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getDocumento());
-        sb.append("','");
+        sb.append("',C'");
         sb.append(dto.getDocumento());
         sb.append("','");
         sb.append(dto.getNombres().toUpperCase());

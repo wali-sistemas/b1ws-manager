@@ -89,7 +89,7 @@ public class IncomingPaymentEJB {
                 }
                 payment.setPaymentInvoices(paymentInvoice);
 
-                CONSOLE.log(Level.INFO, "Iniciando creacion de pago recido para {0}", dto.getCompanyName());
+                CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
                 String json = gson.toJson(payment);
                 CONSOLE.log(Level.INFO, json);
@@ -104,6 +104,75 @@ public class IncomingPaymentEJB {
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago recibido. ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, docEntry);
+    }
+
+    public ResponseDTO createIncomingPaymentAccountCalidosoService(IncomingPaymentDTO dto) {
+        long docEntry = 0l;
+        //1. Login
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(dto.getCompanyName());
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                List<PaymentDTO.PaymentAccounts.PaymentAccount> paymentInvoice = new ArrayList<>();
+                PaymentDTO payment = new PaymentDTO();
+                payment.setSeries(Long.valueOf(18L));
+                payment.setDocType("C");
+                payment.setCardCode(dto.getCardCode());
+                payment.setDocCurrency("$");
+                payment.setTransferAccount("52356085");//Cuenta de fidelización
+                payment.setTransferSum(dto.getTransferSum());
+                payment.setTransferReference(dto.getTransferReference());
+                payment.setJournalRemarks("Redención de puntos Los Calidosos - " + dto.getCardCode());
+
+                try {
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    payment.setDocDate(date2);
+                    payment.setTransferDate(date2);
+                    payment.setTaxDate(date2);
+                } catch (Exception exception) {
+                }
+
+                payment.setPaymentAccounts(paymentInvoice);
+
+                CONSOLE.log(Level.INFO, "Iniciando creacion de pago a cuenta para {0}", dto.getCompanyName());
+                Gson gson = new Gson();
+                String json = gson.toJson(payment);
+                CONSOLE.log(Level.INFO, json);
+                PaymentRestDTO res = service.addPayment(payment, sessionId);
+                docEntry = res.getDocEntry();
+
+                if (docEntry <= 0L) {
+                    CONSOLE.log(Level.WARNING, "Ocurrio un problema al crear el pago a cuenta");
+                    return new ResponseDTO(-1, "Ocurrio un problema al crear el pago a cuenta.");
+                } else {
+                    CONSOLE.log(Level.INFO, "Se creo el pago a cuenta #{0} satisfactoriamente", res.getDocNum());
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago a cuenta. ", e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
