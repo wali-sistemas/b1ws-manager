@@ -728,6 +728,8 @@ public class OrderRestDTO implements Serializable {
     protected String uDespachoContado;
     @JsonProperty("U_totalImpoCo")
     protected Double utotalImpoCo;
+    @JsonProperty("U_SERIAL")
+    protected String serialMDL;
     protected OrderRestDTO.DocumentApprovalRequests documentApprovalRequests;
     protected List<DocumentLines.DocumentLine> documentLines;
     protected OrderRestDTO.ElectronicProtocols electronicProtocols;
@@ -3672,6 +3674,14 @@ public class OrderRestDTO implements Serializable {
 
     public void setAddressExtension(AddressExtension addressExtension) {
         this.addressExtension = addressExtension;
+    }
+
+    public String getSerialMDL() {
+        return serialMDL;
+    }
+
+    public void setSerialMDL(String serialMDL) {
+        this.serialMDL = serialMDL;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

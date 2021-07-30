@@ -1,11 +1,16 @@
 package co.manager.modulaws.ejb;
 
 import co.manager.modulaws.client.OrderClient;
-import co.manager.modulaws.dto.order.OrderModulaRestDTO;
+import co.manager.modulaws.dto.order.OrderExpModulaRestDTO;
+import co.manager.modulaws.dto.order.OrderModulaDTO;
+import co.manager.modulaws.dto.order.OrderImpModulaRestDTO;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,12 +31,46 @@ public class OrderModulaEJB {
         }
     }
 
-    public String addOrdine(OrderModulaRestDTO.Header dto) {
+    public String addOrdine(OrderModulaDTO dto, String comment) {
+        OrderImpModulaRestDTO.Header ordine = new OrderImpModulaRestDTO.Header();
+        List<OrderImpModulaRestDTO.Header.Ordine> header = new ArrayList<>();
+        OrderImpModulaRestDTO.Header.Ordine headerDto = new OrderImpModulaRestDTO.Header.Ordine();
+        headerDto.setDocNum(dto.getDocEntry());
+        headerDto.setComment(comment);
+        headerDto.setType(dto.getType());//Inventario=I Reabastecer=V Picking=P
+        header.add(headerDto);
+        ordine.setOrder(header);
+
+        List<OrderImpModulaRestDTO.Header.Detail> detail = new ArrayList<>();
+        for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
+            OrderImpModulaRestDTO.Header.Detail detailDto = new OrderImpModulaRestDTO.Header.Detail();
+            detailDto.setDocNum(dto.getDocEntry());
+            detailDto.setItemCode(d.getItemCode());
+            detailDto.setQuantity(d.getQuantity().toString());
+            detail.add(detailDto);
+        }
+        ordine.setDetail(detail);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ordine);
+        CONSOLE.log(Level.INFO, json);
+
         try {
-            return service.addOrdine(dto);
+            return service.addOrdine(ordine);
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando la respuesta de la instancia [CFG-IMP-ORDINI]" , e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden usando la instancia [CFG-IMP-ORDINI]", e);
             return null;
         }
+    }
+
+    public OrderExpModulaRestDTO listOrdineProcessed() {
+        OrderExpModulaRestDTO documento = new OrderExpModulaRestDTO();
+        try {
+            documento = service.listOrdineProcessed();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando el listando de ordenes procesadas usando la instancia [CFG-EXP-ORDINI]", e);
+            return null;
+        }
+        return documento;
     }
 }

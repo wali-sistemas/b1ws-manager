@@ -3,8 +3,8 @@ package co.manager.rest;
 import co.manager.dto.ResponseDTO;
 import co.manager.modulaws.dto.item.StockMissingDTO;
 import co.manager.modulaws.dto.item.StockRestDTO;
+import co.manager.modulaws.dto.order.OrderExpModulaRestDTO;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
-import co.manager.modulaws.dto.order.OrderModulaRestDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.modulaws.ejb.StockModulaEJB;
 import co.manager.persistence.facade.ItemSAPFacade;
@@ -119,6 +119,20 @@ public class ModulaREST {
         return Response.ok(new ResponseDTO(-1, "El item no esta creado en modula.")).build();
     }
 
+    @GET
+    @Path("orders-completed")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrderCompleted() {
+        CONSOLE.log(Level.INFO, "Listando ordenes procesadas en modula");
+
+
+        OrderExpModulaRestDTO res = orderModulaEJB.listOrdineProcessed();
+
+
+        return Response.ok(res).build();
+    }
+
     @POST
     @Path("stock-deposit")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -137,30 +151,13 @@ public class ModulaREST {
             return Response.ok(new ResponseDTO(-2, "Campo [Type] es obligatorio para lanzar peticion a modula")).build();
         }
 
-        OrderModulaRestDTO.Header ordine = new OrderModulaRestDTO.Header();
-        List<OrderModulaRestDTO.Header.Ordine> header = new ArrayList<>();
-        OrderModulaRestDTO.Header.Ordine headerDto = new OrderModulaRestDTO.Header.Ordine();
-        headerDto.setDocNum(dto.getDocEntry());
-        headerDto.setComment("Depositar articulo");
-        headerDto.setType(dto.getType());
-        header.add(headerDto);
-        ordine.setOrder(header);
-
-        List<OrderModulaRestDTO.Header.Detail> detail = new ArrayList<>();
-        for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
-            OrderModulaRestDTO.Header.Detail detailDto = new OrderModulaRestDTO.Header.Detail();
-            detailDto.setDocNum(dto.getDocEntry());
-            detailDto.setItemCode(d.getItemCode());
-            detailDto.setQuantity(d.getQuantity().toString());
-            detail.add(detailDto);
-        }
-        ordine.setDetail(detail);
+        String comment = dto.getType().equals("V") ? "Reabastecer articulo" : "";
 
         Gson gson = new Gson();
-        String json = gson.toJson(ordine);
+        String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        String res = orderModulaEJB.addOrdine(ordine);
+        String res = orderModulaEJB.addOrdine(dto, comment);
         if (res == null || res.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando stock en modula");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando stock en modula.")).build();
@@ -187,30 +184,13 @@ public class ModulaREST {
             return Response.ok(new ResponseDTO(-2, "Campo [Type] es obligatorio para lanzar peticion a modula")).build();
         }
 
-        OrderModulaRestDTO.Header ordine = new OrderModulaRestDTO.Header();
-        List<OrderModulaRestDTO.Header.Ordine> header = new ArrayList<>();
-        OrderModulaRestDTO.Header.Ordine headerDto = new OrderModulaRestDTO.Header.Ordine();
-        headerDto.setDocNum(dto.getDocEntry());
-        headerDto.setComment("Inventariar articulo");
-        headerDto.setType(dto.getType());
-        header.add(headerDto);
-        ordine.setOrder(header);
-
-        List<OrderModulaRestDTO.Header.Detail> detail = new ArrayList<>();
-        for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
-            OrderModulaRestDTO.Header.Detail detailDto = new OrderModulaRestDTO.Header.Detail();
-            detailDto.setDocNum(dto.getDocEntry());
-            detailDto.setItemCode(d.getItemCode());
-            detailDto.setQuantity(d.getQuantity().toString());
-            detail.add(detailDto);
-        }
-        ordine.setDetail(detail);
+        String comment = dto.getType().equals("I") ? "Inventariar articulo" : "";
 
         Gson gson = new Gson();
-        String json = gson.toJson(ordine);
+        String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        String res = orderModulaEJB.addOrdine(ordine);
+        String res = orderModulaEJB.addOrdine(dto, comment);
         if (res == null || res.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error inventariando articulo en modula");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error inventariando articulo en modula.")).build();

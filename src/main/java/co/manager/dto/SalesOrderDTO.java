@@ -20,6 +20,7 @@ public class SalesOrderDTO {
     private String startDatePack;
     private String shipToCode;
     private String payToCode;
+    private String serialMDL;
     private Long slpCode;
     private Double discountPercent;
     private List<DetailSalesOrderDTO> detailSalesOrder;
@@ -132,6 +133,14 @@ public class SalesOrderDTO {
         this.discountPercent = discountPercent;
     }
 
+    public String getSerialMDL() {
+        return serialMDL;
+    }
+
+    public void setSerialMDL(String serialMDL) {
+        this.serialMDL = serialMDL;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderDTO{" +
@@ -145,6 +154,7 @@ public class SalesOrderDTO {
                 ", startDatePack='" + startDatePack + '\'' +
                 ", shipToCode='" + shipToCode + '\'' +
                 ", payToCode='" + payToCode + '\'' +
+                ", serialMDL='" + serialMDL + '\'' +
                 ", slpCode=" + slpCode +
                 ", discountPercent=" + discountPercent +
                 ", detailSalesOrder=" + detailSalesOrder +
