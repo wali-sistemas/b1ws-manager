@@ -1,6 +1,7 @@
 package co.manager.modulaws.client;
 
-import co.manager.modulaws.dto.order.OrderModulaRestDTO;
+import co.manager.modulaws.dto.order.OrderExpModulaRestDTO;
+import co.manager.modulaws.dto.order.OrderImpModulaRestDTO;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -25,8 +26,13 @@ public class OrderClient {
         webTarget = client.target(BASE_URI).path(path);
     }
 
-    public String addOrdine(OrderModulaRestDTO.Header dto) {
+    public String addOrdine(OrderImpModulaRestDTO.Header dto) {
         return webTarget.path("CFG-IMP-ORDINI").request(MediaType.APPLICATION_JSON).header("Authorization", "BASIC UkVTVFVTRVI6V01TUmVzdFVzZXIh")
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), String.class);
+    }
+
+    public OrderExpModulaRestDTO listOrdineProcessed() {
+        return webTarget.path("CFG-EXP-ORDINI").request(MediaType.APPLICATION_JSON).header("Authorization", "BASIC UkVTVFVTRVI6V01TUmVzdFVzZXIh")
+                .get(OrderExpModulaRestDTO.class);
     }
 }

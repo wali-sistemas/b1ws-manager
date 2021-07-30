@@ -75,7 +75,7 @@ public class VendedorMostradorSAPFacade {
         sb.append("where \"U_Activo\"='S' ");
         sb.append("union all ");
         sb.append("select cast(c.\"CardCode\" as varchar(20))as id,cast(r.\"Name\" as varchar(100))as Programa, ");
-        sb.append(" cast(c.\"E_Mail\" as varchar(100))as mail,substring(c.\"Phone2\",0,10)as celular,cast(c.\"CardName\" as varchar(100))as Nombres ");
+        sb.append(" cast(c.\"E_Mail\" as varchar(100))as mail,substring(cast(c.\"Phone2\" as varchar(10)),0,10)as celular,cast(c.\"CardName\" as varchar(100))as Nombres ");
         sb.append("from OCRD c ");
         sb.append("inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
         sb.append("where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y'");

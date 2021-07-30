@@ -10,12 +10,12 @@ import java.util.List;
  * @author jguisao
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OrderModulaRestDTO implements Serializable {
+public class OrderImpModulaRestDTO implements Serializable {
     public static class Header {
         @JsonProperty("IMP_ORDINI")
-        public List<OrderModulaRestDTO.Header.Ordine> order;
+        public List<OrderImpModulaRestDTO.Header.Ordine> order;
         @JsonProperty("IMP_ORDINI_RIGHE")
-        public List<OrderModulaRestDTO.Header.Detail> detail;
+        public List<OrderImpModulaRestDTO.Header.Detail> detail;
 
         public List<Ordine> getOrder() {
             return order;

@@ -77,6 +77,7 @@ public class SalesOrderEJB {
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
                 order.setDiscountPercent(dto.getDiscountPercent());
+                order.setSerialMDL(dto.getSerialMDL());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());

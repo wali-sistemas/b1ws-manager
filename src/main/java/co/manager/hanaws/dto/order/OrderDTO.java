@@ -45,6 +45,8 @@ public class OrderDTO implements Serializable {
     protected String useparador;
     @JsonProperty("U_FEC_INI")
     protected String ufecini;
+    @JsonProperty("U_SERIAL")
+    protected String serialMDL;
     @JsonProperty("DocumentLines")
     protected List<OrderDTO.DocumentLines.DocumentLine> documentLines;
 
@@ -184,6 +186,14 @@ public class OrderDTO implements Serializable {
         this.ufecini = ufecini;
     }
 
+    public String getSerialMDL() {
+        return serialMDL;
+    }
+
+    public void setSerialMDL(String serialMDL) {
+        this.serialMDL = serialMDL;
+    }
+
     public List<OrderDTO.DocumentLines.DocumentLine> getDocumentLines() {
         return documentLines;
     }
@@ -267,6 +277,7 @@ public class OrderDTO implements Serializable {
                 ", utransp='" + utransp + '\'' +
                 ", useparador='" + useparador + '\'' +
                 ", ufecini='" + ufecini + '\'' +
+                ", serialMDL='" + serialMDL + '\'' +
                 ", documentLines=" + documentLines +
                 '}';
     }
