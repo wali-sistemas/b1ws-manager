@@ -120,17 +120,24 @@ public class ModulaREST {
     }
 
     @GET
-    @Path("orders-completed")
+    @Path("orders-completed/{order}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listOrderCompleted() {
-        CONSOLE.log(Level.INFO, "Listando ordenes procesadas en modula");
+    public Response listOrderCompleted(@PathParam("order") String docNum) {
+        CONSOLE.log(Level.INFO, "Listando ordenes procesadas en el wms de modula");
+        List<OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO> ordersCompleted = listOrdersModula();
 
+        if (ordersCompleted.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "En modula no se encontraron ordenes completadas.");
+            return Response.ok(new ResponseDTO(-1, "En modula no se encontraron ordenes completadas.")).build();
+        }
 
-        OrderExpModulaRestDTO res = orderModulaEJB.listOrdineProcessed();
-
-
-        return Response.ok(res).build();
+        for (OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO dto : ordersCompleted) {
+            if (dto.getDocNum().equals(docNum)) {
+                return Response.ok(true).build();
+            }
+        }
+        return Response.ok(false).build();
     }
 
     @POST
@@ -217,5 +224,26 @@ public class ModulaREST {
             stockModula.add(dto);
         }
         return stockModula;
+    }
+
+    private List<OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO> listOrdersModula() {
+        List<OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO> orderModula = new ArrayList<>();
+
+        //obtener stock del api
+        OrderExpModulaRestDTO res = orderModulaEJB.listOrdineProcessed();
+        if (res == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo datos del api modula");
+            return new ArrayList<>();
+        }
+
+        //mapear datos obtenidos del api
+        for (OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO obj : res.getOrder().getHeader()) {
+            OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO dto = new OrderExpModulaRestDTO.OrderExpRestDTO.HeaderDTO();
+            dto.setDocNum(obj.getDocNum());
+            dto.setType(obj.getType());
+            orderModula.add(dto);
+        }
+
+        return orderModula;
     }
 }

@@ -14,7 +14,7 @@ public class OrderExpModulaRestDTO implements Serializable {
     @JsonProperty("GUID")
     private String id;
     @JsonProperty("DATA")
-    private OrderExpModulaRestDTO.OrderExpRestDTO item;
+    private OrderExpModulaRestDTO.OrderExpRestDTO order;
     @JsonProperty("TransactionStatus")
     private String status;
 
@@ -26,12 +26,12 @@ public class OrderExpModulaRestDTO implements Serializable {
         this.id = id;
     }
 
-    public OrderExpRestDTO getItem() {
-        return item;
+    public OrderExpRestDTO getOrder() {
+        return order;
     }
 
-    public void setItem(OrderExpRestDTO item) {
-        this.item = item;
+    public void setOrder(OrderExpRestDTO order) {
+        this.order = order;
     }
 
     public String getStatus() {

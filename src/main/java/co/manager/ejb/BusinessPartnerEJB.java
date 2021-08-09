@@ -8,6 +8,7 @@ import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnRestDTO;
+import co.manager.persistence.facade.CitySAPFacade;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
 
@@ -35,6 +36,8 @@ public class BusinessPartnerEJB {
     private ManagerApplicationBean appBean;
     @EJB
     private SessionManager sessionManager;
+    @EJB
+    private CitySAPFacade citySAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -100,7 +103,7 @@ public class BusinessPartnerEJB {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
                     address.setAddressName("DIR WEB");
                     address.setStreet(dto.getAddress().toUpperCase());
-                    address.setCity("SABANETA");
+                    address.setCity(citySAPFacade.getNameMunicipio(dto.getCodMunicipio(), dto.getCompanyName(), false));
                     address.setState(dto.getCodDepartamento());
                     address.setCountry("CO");
 
