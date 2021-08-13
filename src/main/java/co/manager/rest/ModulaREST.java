@@ -7,6 +7,8 @@ import co.manager.modulaws.dto.order.OrderExpModulaRestDTO;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.modulaws.ejb.StockModulaEJB;
+import co.manager.persistence.entity.ItemModula;
+import co.manager.persistence.facade.ItemModulaFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import com.google.gson.Gson;
 
@@ -37,29 +39,32 @@ public class ModulaREST {
     private OrderModulaEJB orderModulaEJB;
     @EJB
     private ItemSAPFacade itemSAPFacade;
+    @EJB
+    private ItemModulaFacade itemModulaFacade;
 
     @GET
     @Path("stock-compare")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getStockModula() {
+    public Response getStockModula(@HeaderParam("X-Company-Name") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando comparacion de stock entre modula vs SAP");
         TreeSet<StockMissingDTO> stockMissingDTO = new TreeSet<>();
 
         //obtener stock del api
         List<StockRestDTO.ItemDTO.DetailDTO> stockModula = listStockModula();
-
-        if (stockModula.isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "En modula no se encontraron datos para comparar");
-            return Response.ok(new ResponseDTO(-1, "En modula no se encontraron datos para comparar.")).build();
+        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
+            StockMissingDTO dto = new StockMissingDTO();
+            dto.setItemCode(modula.getItemCode());
+            dto.setItemName(modula.getItemName());
+            dto.setQtySAP(0);
+            dto.setQtyMDL(0);
+            dto.setBinCode("MODULA");
+            dto.setWhsCode("30");
+            dto.setWhsName("MODULA");
+            stockMissingDTO.add(dto);
         }
         //obtener stock de SAP almacen 30-modula
-        List<Object[]> stockModulaSAP = itemSAPFacade.listStockSAPModula("IGB", false);
-        if (stockModulaSAP == null) {
-            CONSOLE.log(Level.SEVERE, "En sap no se encontraron datos para comparar");
-            return Response.ok(new ResponseDTO(-1, "En sap no se encontraron datos para comparar.")).build();
-        }
-
+        List<Object[]> stockModulaSAP = itemSAPFacade.listStockSAPModula(companyName, false);
         for (Object[] sap : stockModulaSAP) {
             StockMissingDTO dto = new StockMissingDTO();
             dto.setItemCode((String) sap[0]);
@@ -72,18 +77,6 @@ public class ModulaREST {
             stockMissingDTO.add(dto);
         }
 
-        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
-            StockMissingDTO dto = new StockMissingDTO();
-            dto.setItemCode(modula.getItemCode());
-            dto.setItemName(modula.getItemName());
-            dto.setQtySAP(0);
-            dto.setQtyMDL(0);
-            dto.setBinCode("MODULA");
-            dto.setWhsCode("30");
-            dto.setWhsName("MODULA");
-            stockMissingDTO.add(dto);
-        }
-
         for (StockMissingDTO stock : stockMissingDTO) {
             for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
                 if (stock.getItemCode().equals(modula.getItemCode())) {
@@ -91,7 +84,7 @@ public class ModulaREST {
                     break;
                 }
             }
-            stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), "IGB", false));
+            stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), companyName, false));
         }
         return Response.ok(stockMissingDTO).build();
     }
@@ -100,23 +93,19 @@ public class ModulaREST {
     @Path("validate-item/{itemcode}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response validateItem(@PathParam("itemcode") String itemCode) {
+    public Response validateItem(@PathParam("itemcode") String itemCode,
+                                 @HeaderParam("X-Company-Name") String companyName,
+                                 @HeaderParam("X-Pruebas") boolean testing) {
         CONSOLE.log(Level.INFO, "Iniciando servicio de validacion del item {0} en modula", itemCode);
-        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = listStockModula();
+        ItemModula entity = itemModulaFacade.find(itemCode, companyName, testing);
 
-        if (stockModula.isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "En modula no se encontraron datos para mostrar");
-            return Response.ok(new ResponseDTO(-1, "En modula no se encontraron datos para mostrar.")).build();
+        if (entity != null) {
+            CONSOLE.log(Level.INFO, "El item {0} esta creado en modula", itemCode);
+            return Response.ok(new ResponseDTO(0, "El item " + itemCode + " esta creado en modula.")).build();
+        } else {
+            CONSOLE.log(Level.WARNING, "El item {0} no esta creado en modula", itemCode);
+            return Response.ok(new ResponseDTO(-1, "El item no esta creado en modula.")).build();
         }
-
-        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
-            if (itemCode.equals(modula.getItemCode())) {
-                CONSOLE.log(Level.INFO, "El item {0} esta creado en modula", itemCode);
-                return Response.ok(new ResponseDTO(0, "El item " + itemCode + " esta creado en modula.")).build();
-            }
-        }
-        CONSOLE.log(Level.WARNING, "El item {0} no esta creado en modula", itemCode);
-        return Response.ok(new ResponseDTO(-1, "El item no esta creado en modula.")).build();
     }
 
     @GET
