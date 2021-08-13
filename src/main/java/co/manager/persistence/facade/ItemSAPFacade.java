@@ -354,10 +354,12 @@ public class ItemSAPFacade {
     public List<Object[]> listItemsToSyncModula(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
-        sb.append(" cast(s.\"OnHand\" as int)as Stock,0 as StockMin,0 as StockMax ");
+        sb.append(" cast(s.\"MinStock\" as int)as StockMin,cast(s.\"MaxStock\" as int)as StockMax, ");
+        sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(a.\"SWidth1\" as int)as Ancho, ");
+        sb.append(" cast(a.\"SLength1\" as int)as Largo,cast(a.\"SHeight1\" as int)as Alto,cast(a.\"SWeight1\" as int)as Peso ");
         sb.append("from OITM a ");
         sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
-        sb.append("where s.\"OnHand\">0 and a.\"QryGroup3\"='Y' and s.\"WhsCode\"='01'");
+        sb.append("where s.\"OnHand\">0 and a.\"QryGroup3\"='Y' and s.\"WhsCode\"='01' and a.\"ItemCode\" = 'ED0023' order by a.\"ItemCode\" limit 1");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -365,18 +367,6 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items habilitados para modula.", e);
         }
         return null;
-    }
-
-    public void updateAttributeModula(String itemCode, String companyName, boolean pruebas) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
-        sb.append(itemCode);
-        sb.append("'");
-        try {
-            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un actualizando el campo de usuario parta replicar en modula.");
-        }
     }
 
     public Object[] getStockItemMDLvsSAP(String itemCode, String companyName, boolean pruebas) {

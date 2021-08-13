@@ -30,9 +30,19 @@ public class ItemModulaDTO implements Serializable {
         @JsonProperty("ART_DES")
         private String artDes;
         @JsonProperty("ART_SOTTOSCO")
-        private Integer artSottosco;
-        @JsonProperty("ART_DISP")
-        private Integer artDisp;
+        private Integer artStockMin;
+        @JsonProperty("ART_STOCKMAX")
+        private Integer artStockMax;
+        @JsonProperty("ART_NOTE")
+        private String artActive;
+        @JsonProperty("ART_CREASCO_DIMX")
+        private Integer artDIMX;
+        @JsonProperty("ART_CREASCO_DIMY")
+        private Integer artDIMY;
+        @JsonProperty("ART_CREASCO_DIMZ")
+        private Integer artDIMZ;
+        @JsonProperty("ART_PMU")
+        private Integer artPMU;
 
         public String getArtOperacione() {
             return artOperacione;
@@ -58,20 +68,60 @@ public class ItemModulaDTO implements Serializable {
             this.artDes = artDes;
         }
 
-        public Integer getArtSottosco() {
-            return artSottosco;
+        public Integer getArtStockMin() {
+            return artStockMin;
         }
 
-        public void setArtSottosco(Integer artSottosco) {
-            this.artSottosco = artSottosco;
+        public void setArtStockMin(Integer artStockMin) {
+            this.artStockMin = artStockMin;
         }
 
-        public Integer getArtDisp() {
-            return artDisp;
+        public Integer getArtStockMax() {
+            return artStockMax;
         }
 
-        public void setArtDisp(Integer artDisp) {
-            this.artDisp = artDisp;
+        public void setArtStockMax(Integer artStockMax) {
+            this.artStockMax = artStockMax;
+        }
+
+        public String getArtActive() {
+            return artActive;
+        }
+
+        public void setArtActive(String artActive) {
+            this.artActive = artActive;
+        }
+
+        public Integer getArtDIMX() {
+            return artDIMX;
+        }
+
+        public void setArtDIMX(Integer artDIMX) {
+            this.artDIMX = artDIMX;
+        }
+
+        public Integer getArtDIMY() {
+            return artDIMY;
+        }
+
+        public void setArtDIMY(Integer artDIMY) {
+            this.artDIMY = artDIMY;
+        }
+
+        public Integer getArtDIMZ() {
+            return artDIMZ;
+        }
+
+        public void setArtDIMZ(Integer artDIMZ) {
+            this.artDIMZ = artDIMZ;
+        }
+
+        public Integer getArtPMU() {
+            return artPMU;
+        }
+
+        public void setArtPMU(Integer artPMU) {
+            this.artPMU = artPMU;
         }
     }
 }

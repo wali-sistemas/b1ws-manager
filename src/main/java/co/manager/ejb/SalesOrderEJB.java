@@ -77,7 +77,7 @@ public class SalesOrderEJB {
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
                 order.setDiscountPercent(dto.getDiscountPercent());
-                order.setSerialMDL(dto.getSerialMDL());
+                order.setUserialMDL(dto.getSerialMDL());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -95,6 +95,10 @@ public class SalesOrderEJB {
                     orderLine.setQuantity(line.getQuantity().doubleValue());
                     orderLine.setWarehouseCode(line.getWhsCode());
                     orderLine.setCostingCode(lines.get(0).getOcrCode());
+                    orderLine.setBaseLine(line.getBaseLine());
+                    orderLine.setBaseType(line.getBaseType());
+                    orderLine.setBaseEntry(line.getBaseEntry());
+
                     listDet.add(orderLine);
                 }
                 order.setDocumentLines(listDet);

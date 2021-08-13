@@ -301,6 +301,11 @@ public class CalidososREST {
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
 
+            //Validar que no se duplique un vendedor mostrador
+            if (!vendedorMostradorSAPFacade.validateVendMostrador(dto.getDocumento(), "IGB", false)) {
+                CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya exite en los calidosos", dto.getDocumento());
+                return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya exite en los calidosos.")).build();
+            }
             //TODO: Valida si el vendedor mostrador esta activo para una sucursal
 
             try {

@@ -36,7 +36,7 @@ public class SessionManager implements Serializable {
     public String login(String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando peticion se sessionId para {0}", companyName);
         try {
-            LoginDTO dto = new LoginDTO(companyName,
+            LoginDTO dto = new LoginDTO(companyName.equals("IGBPruebas") ? "DBIGBTH" : companyName,
                     IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_PASSWORD), companyName),
                     IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_USERNAME), companyName));
 

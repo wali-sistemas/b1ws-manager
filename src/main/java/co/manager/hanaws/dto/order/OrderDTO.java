@@ -46,7 +46,7 @@ public class OrderDTO implements Serializable {
     @JsonProperty("U_FEC_INI")
     protected String ufecini;
     @JsonProperty("U_SERIAL")
-    protected String serialMDL;
+    protected String userialMDL;
     @JsonProperty("DocumentLines")
     protected List<OrderDTO.DocumentLines.DocumentLine> documentLines;
 
@@ -186,12 +186,12 @@ public class OrderDTO implements Serializable {
         this.ufecini = ufecini;
     }
 
-    public String getSerialMDL() {
-        return serialMDL;
+    public String getUserialMDL() {
+        return userialMDL;
     }
 
-    public void setSerialMDL(String serialMDL) {
-        this.serialMDL = serialMDL;
+    public void setUserialMDL(String userialMDL) {
+        this.userialMDL = userialMDL;
     }
 
     public List<OrderDTO.DocumentLines.DocumentLine> getDocumentLines() {
@@ -202,8 +202,10 @@ public class OrderDTO implements Serializable {
         this.documentLines = documentLines;
     }
 
-    public static class DocumentLines {
-        public static class DocumentLine {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class DocumentLines implements Serializable {
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class DocumentLine implements Serializable {
             @JsonProperty("ItemCode")
             protected String itemCode;
             @JsonProperty("Quantity")
@@ -212,6 +214,12 @@ public class OrderDTO implements Serializable {
             protected String warehouseCode;
             @JsonProperty("CostingCode")
             protected String costingCode;
+            @JsonProperty("BaseType")
+            protected Long baseType;
+            @JsonProperty("BaseEntry")
+            protected Long baseEntry;
+            @JsonProperty("BaseLine")
+            protected Long baseLine;
 
             public String getItemCode() {
                 return itemCode;
@@ -245,14 +253,28 @@ public class OrderDTO implements Serializable {
                 this.costingCode = costingCode;
             }
 
-            @Override
-            public String toString() {
-                return "DocumentLine{" +
-                        "itemCode='" + itemCode + '\'' +
-                        ", quantity=" + quantity +
-                        ", warehouseCode='" + warehouseCode + '\'' +
-                        ", costingCode='" + costingCode + '\'' +
-                        '}';
+            public Long getBaseType() {
+                return baseType;
+            }
+
+            public void setBaseType(Long baseType) {
+                this.baseType = baseType;
+            }
+
+            public Long getBaseEntry() {
+                return baseEntry;
+            }
+
+            public void setBaseEntry(Long baseEntry) {
+                this.baseEntry = baseEntry;
+            }
+
+            public Long getBaseLine() {
+                return baseLine;
+            }
+
+            public void setBaseLine(Long baseLine) {
+                this.baseLine = baseLine;
             }
         }
     }
@@ -277,7 +299,7 @@ public class OrderDTO implements Serializable {
                 ", utransp='" + utransp + '\'' +
                 ", useparador='" + useparador + '\'' +
                 ", ufecini='" + ufecini + '\'' +
-                ", serialMDL='" + serialMDL + '\'' +
+                ", userialMDL='" + userialMDL + '\'' +
                 ", documentLines=" + documentLines +
                 '}';
     }
