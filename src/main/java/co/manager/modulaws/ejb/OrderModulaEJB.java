@@ -35,7 +35,7 @@ public class OrderModulaEJB {
         OrderImpModulaRestDTO.Header ordine = new OrderImpModulaRestDTO.Header();
         List<OrderImpModulaRestDTO.Header.Ordine> header = new ArrayList<>();
         OrderImpModulaRestDTO.Header.Ordine headerDto = new OrderImpModulaRestDTO.Header.Ordine();
-        headerDto.setDocNum(dto.getDocEntry());
+        headerDto.setDocNum(dto.getDocNum());
         headerDto.setComment(comment);
         headerDto.setType(dto.getType());//Inventario=I Reabastecer=V Picking=P
         header.add(headerDto);
@@ -44,7 +44,7 @@ public class OrderModulaEJB {
         List<OrderImpModulaRestDTO.Header.Detail> detail = new ArrayList<>();
         for (OrderModulaDTO.DetailModulaDTO d : dto.getDetail()) {
             OrderImpModulaRestDTO.Header.Detail detailDto = new OrderImpModulaRestDTO.Header.Detail();
-            detailDto.setDocNum(dto.getDocEntry());
+            detailDto.setDocNum(dto.getDocNum());
             detailDto.setItemCode(d.getItemCode());
             detailDto.setQuantity(d.getQuantity().toString());
             detail.add(detailDto);

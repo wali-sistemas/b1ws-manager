@@ -9,16 +9,16 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderModulaDTO {
-    private String docEntry;
+    private String docNum;
     private String type;
     private List<DetailModulaDTO> detail;
 
-    public String getDocEntry() {
-        return docEntry;
+    public String getDocNum() {
+        return docNum;
     }
 
-    public void setDocEntry(String docEntry) {
-        this.docEntry = docEntry;
+    public void setDocNum(String docNum) {
+        this.docNum = docNum;
     }
 
     public String getType() {
@@ -89,7 +89,7 @@ public class OrderModulaDTO {
     @Override
     public String toString() {
         return "OrderModulaDTO{" +
-                "docEntry='" + docEntry + '\'' +
+                "docNum='" + docNum + '\'' +
                 ", type='" + type + '\'' +
                 ", detail=" + detail +
                 '}';

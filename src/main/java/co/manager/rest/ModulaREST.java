@@ -136,7 +136,7 @@ public class ModulaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response depositStockToModula(OrderModulaDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando deposito de stock en modula");
-        if (dto.getDocEntry() == null || dto.getDocEntry().isEmpty()) {
+        if (dto.getDocNum() == null || dto.getDocNum().isEmpty()) {
             CONSOLE.log(Level.WARNING, "Campo [DocNum] es obligatorio para lanzar peticion en modula");
             return Response.ok(new ResponseDTO(-2, "Campo [DocNum] es obligatorio para lanzar peticion en modula.")).build();
         } else if (dto.getDetail().size() <= 0) {
@@ -169,7 +169,7 @@ public class ModulaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response inventoryStockModula(OrderModulaDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando inventario de stock en modula");
-        if (dto.getDocEntry() == null || dto.getDocEntry().isEmpty()) {
+        if (dto.getDocNum() == null || dto.getDocNum().isEmpty()) {
             CONSOLE.log(Level.WARNING, "Campo [DocNum] es obligatorio para lanzar peticion en modula");
             return Response.ok(new ResponseDTO(-2, "Campo [DocNum] es obligatorio para lanzar peticion en modula.")).build();
         } else if (dto.getDetail().size() <= 0) {

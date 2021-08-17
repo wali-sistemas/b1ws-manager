@@ -21,9 +21,9 @@ public class ItemSAP implements Serializable {
     public ItemSAP() {
     }
 
-    public ItemSAP(String itemCode, String picture) {
+    public ItemSAP(String itemCode, String picturName) {
         this.itemCode = itemCode;
-        this.picturName = picture;
+        this.picturName = picturName;
     }
 
     public String getItemCode() {
@@ -34,12 +34,12 @@ public class ItemSAP implements Serializable {
         this.itemCode = itemCode;
     }
 
-    public String getPicture() {
+    public String getPicturName() {
         return picturName;
     }
 
-    public void setPicture(String picture) {
-        this.picturName = picture;
+    public void setPicturName(String picturName) {
+        this.picturName = picturName;
     }
 
     @Override

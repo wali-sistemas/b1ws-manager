@@ -181,4 +181,20 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando la transportadora en la orden " + docNum.toString(), e);
         }
     }
+
+    public List<Object[]> listOrdersApprovedForModula(String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"DocNum\" as varchar(20))as DocNun, cast(d.\"ItemCode\" as varchar(20))as ItemCode,cast(d.\"Quantity\" as int)as Qty ");
+        sb.append("from ORDR p ");
+        sb.append("inner join RDR1 d on p.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("where p.\"DocStatus\"='O' and d.\"WhsCode\"='30' and days_between(p.\"DocDate\",current_date)<45");
+        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\"<>'M'");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las ordenes aprobadas para enviar a wms-modula.", e);
+        }
+        return new ArrayList<>();
+    }
 }

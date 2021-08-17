@@ -1,11 +1,17 @@
 package co.manager.persistence.facade;
 
+import co.manager.persistence.entity.ItemSAP;
+import co.manager.persistence.entity.ItemSAP_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -353,13 +359,13 @@ public class ItemSAPFacade {
 
     public List<Object[]> listItemsToSyncModula(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
+        sb.append("select distinct cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
         sb.append(" cast(s.\"MinStock\" as int)as StockMin,cast(s.\"MaxStock\" as int)as StockMax, ");
         sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(a.\"SWidth1\" as int)as Ancho, ");
         sb.append(" cast(a.\"SLength1\" as int)as Largo,cast(a.\"SHeight1\" as int)as Alto,cast(a.\"SWeight1\" as int)as Peso ");
         sb.append("from OITM a ");
         sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
-        sb.append("where s.\"OnHand\">0 and a.\"QryGroup3\"='Y' and s.\"WhsCode\"='01' and a.\"ItemCode\" = 'ED0023' order by a.\"ItemCode\" limit 1");
+        sb.append("where s.\"WhsCode\"='30' and a.\"QryGroup3\"='Y' order by 1");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -400,5 +406,17 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando en SAP el stock actual del item [" + itemCode + "] en modula.", e);
         }
         return null;
+    }
+
+    public void updateFieldSyncModula(String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el UDF sync-modula para el item[" + itemCode + "]", e);
+        }
     }
 }
