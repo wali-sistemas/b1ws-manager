@@ -45,4 +45,17 @@ public class WarehouseSAPFacade {
         }
         return null;
     }
+
+    public Integer getConsumePorcModula(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"U_PORCENTAJE\" as int)as porc ");
+        sb.append("from OWHS ");
+        sb.append("where \"WhsCode\"='30' ");
+        try {
+            return (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el porcentaje a consumir de wms-modula");
+        }
+        return 0;
+    }
 }

@@ -8,7 +8,9 @@ import co.manager.ejb.ItemEJB;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.modulaws.dto.item.ItemModulaDTO;
+import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.ItemModulaEJB;
+import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.persistence.entity.ItemModula;
 import co.manager.persistence.facade.*;
 import com.google.gson.Gson;
@@ -27,6 +29,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +61,8 @@ public class SondaREST {
     private SalesQuotationSAPFacade salesQuotationSAPFacade;
     @EJB
     private PedBoxREST pedBoxREST;
+    @EJB
+    private OrderModulaEJB orderModulaEJB;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -214,7 +219,7 @@ public class SondaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response syncItemsModula(@PathParam("companyname") String companyName,
                                     @PathParam("testing") boolean testing) {
-        CONSOLE.log(Level.INFO, "Iniciando sincronizacion automatica de articulos a crear en modula en ", companyName);
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion automatica de creacion de articulos en wms-modula");
         ItemModulaDTO itemModulaDTO = new ItemModulaDTO();
         List<ItemModulaDTO.item> items = new ArrayList<>();
 
@@ -245,7 +250,7 @@ public class SondaREST {
         CONSOLE.log(Level.INFO, json);
 
         String res = itemModulaEJB.addItem(itemModulaDTO);
-        if (!res.isEmpty()) {
+        if (res != null) {
             for (ItemModulaDTO.item item : itemModulaDTO.getImpArticuli()) {
                 try {
                     ItemModula entity = new ItemModula();
@@ -258,12 +263,18 @@ public class SondaREST {
                     entity.setLargo(item.getArtDIMY());
                     entity.setAlto(item.getArtDIMZ());
                     entity.setPeso(item.getArtPMU());
+                    //TODO: crear registro local de creacion de items
                     itemModulaFacade.create(entity, companyName, testing);
+                    //TODO: Actualizando el UDF sync-modula a estado="N"
+                    itemSAPFacade.updateFieldSyncModula(entity.getItemCode(), companyName, false);
                 } catch (Exception e) {
                 }
             }
+        } else {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando los articulos en wms-modula");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando los articulos en wms-modula.")).build();
         }
-
+        CONSOLE.log(Level.INFO, "Finalizando sincronizacion automatica de articulos creados en wms-modula");
         return Response.ok(res).build();
     }
 
@@ -341,11 +352,62 @@ public class SondaREST {
                 } catch (Exception e) {
                 }
             } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el pedido");
                 salesQuotationSAPFacade.updateStatus(docEntry.longValue(), 'E', companyName, false);
             }
         }
-
+        CONSOLE.log(Level.INFO, "Finalizando creacion automatica de pedido con base de una oferta de venta");
         return Response.ok(orders).build();
+    }
+
+    @GET
+    @Path("sync-order-modula")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createSalesOrder() {
+        CONSOLE.log(Level.INFO, "Iniciando sinc-automatica de orden de venta autorizada para separar en wms-modula.");
+
+        List<Object[]> orders = salesOrderSAPFacade.listOrdersApprovedForModula("IGBPruebas", false);
+        if (orders.isEmpty() || orders == null) {
+            CONSOLE.log(Level.WARNING, "No se encontraron ordenes para sincronizar en wms-modula");
+            return Response.ok(new ResponseDTO(-2, "No se encontraron ordenes para sincronizar en wms-modula.")).build();
+        }
+
+        HashMap<String, String> order = new HashMap<>();
+        for (Object[] obj : orders) {
+            order.put((String) obj[0], "id");
+        }
+
+        OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
+        for (String docNum : order.keySet()) {
+            orderModulaDTO.setDocNum(docNum);
+            orderModulaDTO.setType("P");//TODO: Se envia solicitud a wms modula de tipo depostivo estado=P
+
+            List<OrderModulaDTO.DetailModulaDTO> items = new ArrayList<>();
+            for (Object[] obj : orders) {
+                if (orderModulaDTO.getDocNum().equals(obj[0])) {
+                    //Encabezado
+                    orderModulaDTO.setDocNum((String) obj[0]);
+                    //Detalle
+                    OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
+                    detailModulaDTO.setItemCode((String) obj[1]);
+                    detailModulaDTO.setQuantity((Integer) obj[2]);
+                    items.add(detailModulaDTO);
+                }
+            }
+            orderModulaDTO.setDetail(items);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(orderModulaDTO);
+            CONSOLE.log(Level.INFO, json);
+
+            String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
+            if (resMDL == null || resMDL.isEmpty()) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
+            }
+        }
+        return Response.ok(order).build();
     }
 
     private boolean hasExpired(Date expires, Date now) {
