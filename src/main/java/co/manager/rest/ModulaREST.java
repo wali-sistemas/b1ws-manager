@@ -86,6 +86,18 @@ public class ModulaREST {
             }
             stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), companyName, false));
         }
+
+        List<StockMissingDTO> removeItem = new ArrayList<>();
+        for (StockMissingDTO dto : stockMissingDTO) {
+            if (dto.getQtySAP() == dto.getQtyMDL()) {
+                removeItem.add(dto);
+            }
+        }
+
+        for (StockMissingDTO dto : removeItem) {
+            stockMissingDTO.remove(dto);
+        }
+
         return Response.ok(stockMissingDTO).build();
     }
 
