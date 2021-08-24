@@ -101,9 +101,9 @@ public class SalesOrderSAPFacade {
     public Integer getDocNumOrderByNumAtCard(String numAtCard, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" = '");
+        sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" like '");
         sb.append(numAtCard);
-        sb.append("'");
+        sb.append("%' limit 1");
         try {
             return (Integer) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
@@ -196,5 +196,18 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las ordenes aprobadas para enviar a wms-modula.", e);
         }
         return new ArrayList<>();
+    }
+
+    public void updateStatus(String docNum, Character status, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update ORDR set \"U_ESTADO_WMS\"='");
+        sb.append(status);
+        sb.append("' where \"DocNum\"=");
+        sb.append(docNum);
+        try {
+            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualiando el estado de la orden de venta docEntry=[" + docNum + "]", e);
+        }
     }
 }

@@ -315,7 +315,7 @@ public class SondaREST {
             dto.setCardCode((String) obj[0]);
             dto.setComments((String) obj[1]);
             dto.setCompanyName(companyName);
-            dto.setNumAtCard((new SimpleDateFormat("yyyyMMdd").format(new Date())) + dto.getCardCode());
+            dto.setNumAtCard((new SimpleDateFormat("yyyyMMdd").format(new Date())) + dto.getCardCode() + new SimpleDateFormat("hmmss").format(new Date()));
             dto.setIdTransport((String) obj[2]);
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
@@ -353,7 +353,10 @@ public class SondaREST {
                 }
             } else {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el pedido");
-                salesQuotationSAPFacade.updateStatus(docEntry.longValue(), 'E', companyName, false);
+                try {
+                    salesQuotationSAPFacade.updateStatus(docEntry.longValue(), 'E', companyName, false);
+                } catch (Exception e) {
+                }
             }
         }
         CONSOLE.log(Level.INFO, "Finalizando creacion automatica de pedido con base de una oferta de venta");
@@ -361,13 +364,13 @@ public class SondaREST {
     }
 
     @GET
-    @Path("sync-order-modula")
+    @Path("sync-order-modula/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response createSalesOrder() {
+    public Response createSalesOrderModula(@PathParam("companyname") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando sinc-automatica de orden de venta autorizada para separar en wms-modula.");
 
-        List<Object[]> orders = salesOrderSAPFacade.listOrdersApprovedForModula("IGBPruebas", false);
+        List<Object[]> orders = salesOrderSAPFacade.listOrdersApprovedForModula(companyName, false);
         if (orders.isEmpty() || orders == null) {
             CONSOLE.log(Level.WARNING, "No se encontraron ordenes para sincronizar en wms-modula");
             return Response.ok(new ResponseDTO(-2, "No se encontraron ordenes para sincronizar en wms-modula.")).build();
@@ -403,8 +406,19 @@ public class SondaREST {
 
             String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
             if (resMDL == null || resMDL.isEmpty()) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
-                return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula docNum [{0}]", docNum);
+                try {
+                    //actualizar estado de la orden=Error
+                    salesOrderSAPFacade.updateStatus(docNum, 'E', companyName, false);
+                } catch (Exception e) {
+                }
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta " + docNum + " en modula.")).build();
+            } else {
+                try {
+                    //actualizar estado de la orden=Modula
+                    salesOrderSAPFacade.updateStatus(docNum, 'M', companyName, false);
+                } catch (Exception e) {
+                }
             }
         }
         return Response.ok(order).build();
