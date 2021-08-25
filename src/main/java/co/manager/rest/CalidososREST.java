@@ -87,7 +87,7 @@ public class CalidososREST {
                 dto.setItemName((String) obj[1]);
                 dto.setDescription((String) obj[2]);
                 dto.setPrice((BigDecimal) obj[3]);
-                dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/calidosos/" + obj[4]);
+                dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED_HTTPS) + "images/calidosos/" + obj[4]);
                 dto.setCondiction((String) obj[5]);
                 dto.setAliado((String) obj[6]);
                 products.add(dto);
