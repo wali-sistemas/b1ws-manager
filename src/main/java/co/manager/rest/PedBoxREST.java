@@ -2,6 +2,8 @@ package co.manager.rest;
 
 import co.manager.dto.*;
 import co.manager.ejb.*;
+import co.manager.modulaws.dto.order.OrderModulaDTO;
+import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.persistence.entity.DetallePagoPasarelaSAP;
 import co.manager.persistence.entity.PagoPasarelaSAP;
 import co.manager.persistence.facade.*;
@@ -61,6 +63,8 @@ public class PedBoxREST {
     private DetallePagoPasarelaSAPFacade detPagoPasarelaSAPFacade;
     @EJB
     private CitySAPFacade citySAPFacade;
+    @EJB
+    private OrderModulaEJB orderModulaEJB;
 
     @GET
     @Path("list-municipios/{companyname}")
@@ -828,7 +832,7 @@ public class PedBoxREST {
                 dto.setPayToCode((String) obj[1]);
             }
         }
-        //Validar descuento comercial.Marcar con estado revisar y no autorizar sepearcion.
+        //Validar descuento comercial.Marcar con estado revisar y no autorizar separacion.
         if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
@@ -838,10 +842,116 @@ public class PedBoxREST {
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
         //Consultando el centro de costo
-        dto.getDetailSalesOrder().get(0).setOcrCode(salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false));
+        String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
+        dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
         CONSOLE.log(Level.INFO, dto.toString());
 
-        return Response.ok(salesOrderEJB.createSalesOrder(dto)).build();
+        String numAtCard = dto.getNumAtCard();
+        String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
+        List<DetailSalesOrderDTO> itemsSAP = new ArrayList<>();
+
+        //Separar pedido 30Modula - 01CEDI
+        for (DetailSalesOrderDTO detailSalesOrderDTO : dto.getDetailSalesOrder()) {
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(detailSalesOrderDTO.getItemCode(), dto.getCompanyName(), false);
+
+            if (((Integer) stockCurrent[0] - detailSalesOrderDTO.getQuantity()) > (((Integer) stockCurrent[0] * warehouseSAPFacade.getConsumePorcModula(dto.getCompanyName(), false)) / 100)) {
+                if ((Integer) stockCurrent[0] >= detailSalesOrderDTO.getQuantity()) {
+                    // Llenamos detalle para enviar a modula
+                    DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
+                } else {
+                    // Llenamos detalle para enviar a modula
+                    DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity((Integer) stockCurrent[0]);
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
+                }
+            } else {
+                // llenamos detalle para enviar a cedi
+                DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                detailDTO.setWhsCode("01");
+                detailDTO.setOcrCode(ocrCode);
+                detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                itemsSAP.add(detailDTO);
+
+                if ((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]) > 0) {
+                    // Llenamos detalle para enviar a modula
+                    detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]));
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
+                }
+            }
+        }
+
+        ResponseDTO res = new ResponseDTO();
+        if (itemsMDL.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(itemsMDL);
+            dto.setNumAtCard(numAtCard + "M");
+            dto.setSerialMDL(serial);
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() == 0) {
+                if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
+                    //TODO: Se envia solicitud a wms modula de tipo depostivo estado=P
+                    OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
+                    orderModulaDTO.setDocNum(res.getContent().toString());
+                    orderModulaDTO.setType("P");
+
+                    List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
+                    for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
+                        OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
+                        detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                        detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                        details.add(detailModulaDTO);
+                    }
+
+                    orderModulaDTO.setDetail(details);
+
+                    String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
+                    if (resMDL == null || resMDL.isEmpty()) {
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
+                        return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
+                    }
+                }
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
+                return Response.ok(res).build();
+            }
+        }
+
+        if (itemsSAP.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(itemsSAP);
+            dto.setNumAtCard(numAtCard + "S");
+            dto.setSerialMDL(serial);
+
+            res = salesOrderEJB.createSalesOrder(dto);
+        }
+        return Response.ok(res).build();
     }
 
     @POST
