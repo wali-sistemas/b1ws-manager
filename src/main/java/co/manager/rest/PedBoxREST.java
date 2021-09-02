@@ -846,6 +846,12 @@ public class PedBoxREST {
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
         CONSOLE.log(Level.INFO, dto.toString());
 
+        ResponseDTO res = new ResponseDTO();
+        if (dto.getCompanyName().contains("VARROC") || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+            res = salesOrderEJB.createSalesOrder(dto);
+            return Response.ok(res).build();
+        }
+
         String numAtCard = dto.getNumAtCard();
         String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
@@ -906,7 +912,6 @@ public class PedBoxREST {
             }
         }
 
-        ResponseDTO res = new ResponseDTO();
         if (itemsMDL.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(itemsMDL);
