@@ -1,11 +1,17 @@
 package co.manager.persistence.facade;
 
+import co.manager.persistence.entity.ItemSAP;
+import co.manager.persistence.entity.ItemSAP_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -126,10 +132,10 @@ public class ItemSAPFacade {
 
         if (companyName.contains("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26')");
+            sb.append("'01','30','05','26')");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01','08','26','44')");
+            sb.append("'13','26','44')");
         }
 
         sb.append(" left join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
@@ -150,6 +156,75 @@ public class ItemSAPFacade {
         sb.append("order by Producto ASC");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> getListItemsExtranetBySeller(String slpCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
+        sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("from (");
+        sb.append(" select r.*,cast(19 as int)as PorcentajeIva,cast(tll.\"Name\" as varchar(20))as TipoLlanta,cast(anc.\"Name\" as varchar(20))as AnchoLlanta, ");
+        sb.append("  cast(pe.\"Name\" as varchar(20))as PerfilLlanta,cast(rin.\"Name\" as varchar(20))as RinLlanta,cast(ta.\"Name\" as varchar(20))as Talla, ");
+        sb.append("  cast(c.\"Name\" as varchar(100))as Categoria,cast(gru.\"Name\" as varchar(20))as Grupo,cast(sub.\"Name\" as varchar(20))as Subgrupo, ");
+        sb.append("  cast(mar.\"Name\" as varchar(20))as Marca,cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base");
+        sb.append(" from ( ");
+        sb.append("  select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
+        sb.append("   cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
+        sb.append("   cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("   then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock, cast(it.\"PicturName\" as varchar)as PicturName,cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto ");
+        sb.append("  from OITM it ");
+        sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('01','30') ");
+        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append(" union all ");
+        sb.append("  select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
+        sb.append("   cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
+        sb.append("   cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("   then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock,cast(it.\"PicturName\" as varchar)as PicturName,cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto ");
+        sb.append("  from OITM it ");
+        sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='05' ");
+        sb.append("  inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
+        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"<>'96' ");
+        sb.append(" union all ");
+        sb.append("  select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
+        sb.append("   cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(20))as Bodega, ");
+        sb.append("   cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("   then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock,cast(it.\"PicturName\" as varchar)as PicturName,cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto ");
+        sb.append("  from OITM it ");
+        sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('05','26') ");
+        sb.append("  inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
+        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"='96' and ase.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append("  )as r ");
+        sb.append(" inner join OITM it on it.\"ItemCode\" = r.Producto ");
+        sb.append(" left  join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
+        sb.append(" left  join \"@GRUPOS\" gru on gru.\"Code\" = it.\"U_Grupo\" ");
+        sb.append(" left  join \"@SUBGRUPOS\" sub on sub.\"Code\" = it.\"U_Subgrupo\" ");
+        sb.append(" left  join \"@TIPO_LLANTA\" tll on tll.\"Code\" = it.\"U_TIPO_LLANTA\" ");
+        sb.append(" left  join \"@ANCHO_LLANTA\" anc on anc.\"Code\" = it.\"U_ANCHO_LLANTA\" ");
+        sb.append(" left  join \"@PERFIL_LLANTA\" pe on pe.\"Code\" = it.\"U_PERFIL_LLANTA\" ");
+        sb.append(" left  join \"@RIN_LLANTA\" rin on rin.\"Code\" = it.\"U_RIN_LLANTA\" ");
+        sb.append(" left  join \"@TALLA\" ta on ta.\"Code\" = it.\"U_TALLA\" ");
+        sb.append(" left  join \"@CATEGORIA\" c on c.\"Code\" = it.\"U_CATEGORIA\" ");
+        sb.append(" left  join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
+        sb.append(" left  join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
+        sb.append(" where r.Stock>0");
+        sb.append(")as t ");
+        sb.append("where t.Stock>0 ");
+        sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto,t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("order by Producto ASC");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
@@ -195,10 +270,10 @@ public class ItemSAPFacade {
         sb.append(" where it.\"WhsCode\" in (");
         if (companyName.contains("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
+            sb.append("'01','30','05','26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01','08','26','44'");
+            sb.append("'13','26','44'");
         }
         sb.append(") and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
         if (!itemCode.equals("0")) {
@@ -229,9 +304,9 @@ public class ItemSAPFacade {
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(it.\"InvntryUom\" as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append(" then((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
+        sb.append(" then((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','30','05','26') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
         sb.append(" sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append(" else((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
+        sb.append(" else((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','30','05','26') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
         sb.append(" cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,cast(it.\"U_SUBMARCA\" as varchar(50))as SubMarca, ");
         sb.append(" cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
@@ -255,9 +330,9 @@ public class ItemSAPFacade {
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(it.\"PurPackMsr\" as varchar(15))as Presentacion, ");
         sb.append(" cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega, ");
         sb.append(" cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append(" then((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
+        sb.append(" then((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('13','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
         sb.append(" sum(de.\"OnHandQty\") from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append(" else((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('01','08','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
+        sb.append(" else((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('13','26','44','PUBLICID','80','81','48') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)as Stock, ");
         sb.append(" cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,'' as SubMarca, ");
         sb.append(" cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append(" cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
@@ -353,11 +428,13 @@ public class ItemSAPFacade {
 
     public List<Object[]> listItemsToSyncModula(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
-        sb.append(" cast(s.\"OnHand\" as int)as Stock,0 as StockMin,0 as StockMax ");
+        sb.append("select distinct cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
+        sb.append(" cast(s.\"MinStock\" as int)as StockMin,cast(s.\"MaxStock\" as int)as StockMax, ");
+        sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(a.\"SWidth1\" as int)as Ancho, ");
+        sb.append(" cast(a.\"SLength1\" as int)as Largo,cast(a.\"SHeight1\" as int)as Alto,cast(a.\"SWeight1\" as int)as Peso ");
         sb.append("from OITM a ");
         sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
-        sb.append("where s.\"OnHand\">0 and a.\"QryGroup3\"='Y' and s.\"WhsCode\"='01'");
+        sb.append("where s.\"WhsCode\"='30' and a.\"QryGroup3\"='Y' order by 1");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -365,18 +442,6 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items habilitados para modula.", e);
         }
         return null;
-    }
-
-    public void updateAttributeModula(String itemCode, String companyName, boolean pruebas) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
-        sb.append(itemCode);
-        sb.append("'");
-        try {
-            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un actualizando el campo de usuario parta replicar en modula.");
-        }
     }
 
     public Object[] getStockItemMDLvsSAP(String itemCode, String companyName, boolean pruebas) {
@@ -410,5 +475,17 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando en SAP el stock actual del item [" + itemCode + "] en modula.", e);
         }
         return null;
+    }
+
+    public void updateFieldSyncModula(String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el UDF sync-modula para el item[" + itemCode + "]", e);
+        }
     }
 }

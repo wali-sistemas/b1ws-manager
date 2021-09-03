@@ -30,7 +30,7 @@ public class VendedorMostradorSAPFacade {
         sb.append((new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getDocumento());
         sb.append("','");
         sb.append((new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getDocumento());
-        sb.append("','");
+        sb.append("','C");
         sb.append(dto.getDocumento());
         sb.append("','");
         sb.append(dto.getNombres().toUpperCase());
@@ -114,5 +114,24 @@ public class VendedorMostradorSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los vendedores mosrador par ael cliente " + cardCode, e);
         }
         return new ArrayList<>();
+    }
+
+    public boolean validateVendMostrador(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select \"Code\" from \"@REDENCION_VENDMOSTR\" where \"U_Documento\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            int res = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult().hashCode();
+            if (res > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando si existe el vendedor mostrador [" + cardCode + "]");
+        }
+        return false;
     }
 }

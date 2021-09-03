@@ -101,9 +101,9 @@ public class SalesOrderSAPFacade {
     public Integer getDocNumOrderByNumAtCard(String numAtCard, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" = '");
+        sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" like '");
         sb.append(numAtCard);
-        sb.append("'");
+        sb.append("%' limit 1");
         try {
             return (Integer) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
@@ -179,6 +179,35 @@ public class SalesOrderSAPFacade {
             em.createNativeQuery(sb.toString()).executeUpdate();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando la transportadora en la orden " + docNum.toString(), e);
+        }
+    }
+
+    public List<Object[]> listOrdersApprovedForModula(String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"DocNum\" as varchar(20))as DocNun, cast(d.\"ItemCode\" as varchar(20))as ItemCode,cast(d.\"Quantity\" as int)as Qty ");
+        sb.append("from ORDR p ");
+        sb.append("inner join RDR1 d on p.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("where p.\"DocStatus\"='O' and d.\"WhsCode\"='30' and days_between(p.\"DocDate\",current_date)<45");
+        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\"<>'M'");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las ordenes aprobadas para enviar a wms-modula.", e);
+        }
+        return new ArrayList<>();
+    }
+
+    public void updateStatus(String docNum, Character status, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update ORDR set \"U_ESTADO_WMS\"='");
+        sb.append(status);
+        sb.append("' where \"DocNum\"=");
+        sb.append(docNum);
+        try {
+            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualiando el estado de la orden de venta docEntry=[" + docNum + "]", e);
         }
     }
 }

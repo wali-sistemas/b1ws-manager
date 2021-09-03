@@ -46,4 +46,18 @@ public class CitySAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public String getNameMunicipio(String code, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"Name\" as varchar(100))as Municipio from \"@BPCO_MU\" where \"Code\"='");
+        sb.append(code);
+        sb.append("'");
+        try {
+            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el municipio de codigo " + code, e);
+        }
+        return "";
+    }
 }

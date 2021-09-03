@@ -87,7 +87,7 @@ public class CalidososREST {
                 dto.setItemName((String) obj[1]);
                 dto.setDescription((String) obj[2]);
                 dto.setPrice((BigDecimal) obj[3]);
-                dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/calidosos/" + obj[4]);
+                dto.setUrlPhoto(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED_HTTPS) + "images/calidosos/" + obj[4]);
                 dto.setCondiction((String) obj[5]);
                 dto.setAliado((String) obj[6]);
                 products.add(dto);
@@ -301,6 +301,11 @@ public class CalidososREST {
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
 
+            //Validar que no se duplique un vendedor mostrador
+            if (!vendedorMostradorSAPFacade.validateVendMostrador(dto.getDocumento(), "IGB", false)) {
+                CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya exite en los calidosos", dto.getDocumento());
+                return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya exite en los calidosos.")).build();
+            }
             //TODO: Valida si el vendedor mostrador esta activo para una sucursal
 
             try {
