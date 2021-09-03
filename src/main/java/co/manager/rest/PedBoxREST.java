@@ -178,9 +178,16 @@ public class PedBoxREST {
     @Path("items/extranet/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getListItemsByFiltres(@PathParam("companyname") String companyname) {
+    public Response getListItemsByFiltres(@PathParam("companyname") String companyname,
+                                          @QueryParam("slpcode") String slpCode) {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
-        List<Object[]> objects = itemSAPFacade.getListItemsExtranet(companyname, false);
+        List<Object[]> objects = new ArrayList<>();
+
+        if (slpCode == null || companyname.equals("VARROC")) {
+            objects = itemSAPFacade.getListItemsExtranet(companyname, false);
+        } else {
+            objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
+        }
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando items actual para {0}", companyname);
