@@ -40,6 +40,12 @@ public class OrderImpModulaRestDTO implements Serializable {
             private String comment;
             @JsonProperty("ORD_TIPOOP")
             private String type;
+            @JsonProperty("ORD_SOSPESA")
+            private Integer ordSospesa;
+            @JsonProperty("ORD_ESEGUI_SYS")
+            private String ordEseguiSys;
+            @JsonProperty("ORD_GEST_BAN")
+            private Integer ordGestBan;
 
             public String getDocNum() {
                 return docNum;
@@ -63,6 +69,30 @@ public class OrderImpModulaRestDTO implements Serializable {
 
             public void setType(String type) {
                 this.type = type;
+            }
+
+            public Integer getOrdSospesa() {
+                return ordSospesa;
+            }
+
+            public void setOrdSospesa(Integer ordSospesa) {
+                this.ordSospesa = ordSospesa;
+            }
+
+            public String getOrdEseguiSys() {
+                return ordEseguiSys;
+            }
+
+            public void setOrdEseguiSys(String ordEseguiSys) {
+                this.ordEseguiSys = ordEseguiSys;
+            }
+
+            public Integer getOrdGestBan() {
+                return ordGestBan;
+            }
+
+            public void setOrdGestBan(Integer ordGestBan) {
+                this.ordGestBan = ordGestBan;
             }
         }
 
