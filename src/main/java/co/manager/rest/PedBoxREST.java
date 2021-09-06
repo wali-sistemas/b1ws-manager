@@ -774,11 +774,11 @@ public class PedBoxREST {
                                            @QueryParam("slpcode") String slpCode,
                                            @QueryParam("year") Integer year,
                                            @QueryParam("month") String month) {
-        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0} ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
         List<Object[]> objects = salesPersonSAPFacade.getSaleBudgetBySeller(slpCode, year, month.length() == 1 ? '0' + month : month, companyname, false);
 
         if (objects == null || objects.size() <= 0) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para la empresa {0} ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los presupuestos para " + companyname)).build();
         }
 
