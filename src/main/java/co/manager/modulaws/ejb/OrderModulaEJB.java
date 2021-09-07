@@ -39,7 +39,7 @@ public class OrderModulaEJB {
         headerDto.setComment(comment);
         headerDto.setType(dto.getType());//Inventario=I Reabastecer=V Picking=P
 
-        if (dto.getType().equals("V")) {
+        if (dto.getType().equals("V") || dto.getType().equals("I")) {
             headerDto.setOrdSospesa(1);
             headerDto.setOrdEseguiSys("E");
             headerDto.setOrdGestBan(0);
