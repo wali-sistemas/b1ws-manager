@@ -118,7 +118,7 @@ public class VendedorMostradorSAPFacade {
 
     public boolean validateVendMostrador(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select \"Code\" from \"@REDENCION_VENDMOSTR\" where \"U_Documento\"='");
+        sb.append("select cast(\"U_Documento\" as varchar(20))as Code from \"@REDENCION_VENDMOSTR\" where \"U_Documento\"='");
         sb.append(cardCode);
         sb.append("'");
         try {
@@ -129,6 +129,7 @@ public class VendedorMostradorSAPFacade {
                 return false;
             }
         } catch (NoResultException ex) {
+            return true;
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error validando si existe el vendedor mostrador [" + cardCode + "]");
         }

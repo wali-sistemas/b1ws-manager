@@ -82,10 +82,10 @@ public class ItemSAPFacade {
         sb.append("where inv.\"OnHand\" > 0 and it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <>'' and inv.\"WhsCode\" in (");
         if (companyName.contains("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01', '05', '26'");
+            sb.append("'01', '30', '05', '26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'01', '08', '26', '44'");
+            sb.append("'13', '26', '44'");
         }
         sb.append(")and pre.\"PriceList\" =");
         if (companyName.contains("IGB")) {
