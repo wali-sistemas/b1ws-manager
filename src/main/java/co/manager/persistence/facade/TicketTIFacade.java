@@ -23,7 +23,6 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class TicketTIFacade {
-
     private static final Logger CONSOLE = Logger.getLogger(TicketTI.class.getSimpleName());
     private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
 
@@ -39,19 +38,6 @@ public class TicketTIFacade {
 
     public TicketTI find(Integer idTicket, String companyName, boolean testing) {
         return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).find(TicketTI.class, idTicket);
-    }
-
-    public Long getIdTicket() {
-        EntityManager em = persistenceConf.chooseSchema("", false, DB_TYPE_WALI);
-        StringBuilder sb = new StringBuilder();
-        sb.append("selet max(idticket) from ticket_ti");
-        try {
-            return (Long) em.createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el ultimo ticket creado. ", e);
-        }
-        return 0l;
     }
 
     public TicketDTO getTicket(Integer idTicket, String companyName, boolean testing) {

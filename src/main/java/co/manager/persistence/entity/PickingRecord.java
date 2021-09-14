@@ -11,9 +11,6 @@ import java.util.Objects;
 @Entity
 @Table(name = "picking_record")
 public class PickingRecord implements Serializable {
-
-    public static final String STATUS_PENDING = "P";
-    public static final String STATUS_DONE = "D";
     private static final long serialVersionUID = 1L;
 
     @Id

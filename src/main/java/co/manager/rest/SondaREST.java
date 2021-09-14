@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 @Path("sonda")
 public class SondaREST {
     private static final Logger CONSOLE = Logger.getLogger(SondaREST.class.getSimpleName());
+
     @EJB
     private ItemEJB itemEJB;
     @EJB

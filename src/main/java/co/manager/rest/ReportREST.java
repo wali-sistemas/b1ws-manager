@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 @Path("report")
 public class ReportREST implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(ReportREST.class.getSimpleName());
+
     @Inject
     private ManagerApplicationBean appBean;
 
@@ -57,7 +58,7 @@ public class ReportREST implements Serializable {
                 break;
         }
 
-        //TODO: Se crea la coneccion con la base de datos
+        //Se crea la coneccion con la base de datos
         String cn = null;
         InitialContext initialContext = new InitialContext();
         if (dto.getOrigen().equals("S")) {
@@ -72,7 +73,7 @@ public class ReportREST implements Serializable {
         DataSource dataSource = (DataSource) initialContext.lookup(cn);
         Connection connection = dataSource.getConnection();
 
-        //TODO: Se mandan los parametros al Jasper
+        //Se mandan los parametros al Jasper
         Map<String, Object> mapa = new HashMap<>();
         if (dto.getId() != 0) {
             mapa.put("id", dto.getId());

@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 public class EventREST implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(EventREST.class.getSimpleName());
     private String emailTelemercader;
+
     @EJB
     private ClientFeriaSAPFacade clientFeriaSAPFacade;
     @EJB
