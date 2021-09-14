@@ -1,6 +1,5 @@
 package co.manager.dto;
 
-
 import java.math.BigDecimal;
 
 /**

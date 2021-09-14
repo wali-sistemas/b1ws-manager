@@ -2,8 +2,6 @@ package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.Date;
-
 /**
  * @author jguisao
  */

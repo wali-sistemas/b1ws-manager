@@ -1,11 +1,11 @@
 package co.manager.dto;
 
-/**
- * @author jguisao
- */
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author jguisao
+ */
 public class CreditNotesHistoryDTO {
     private String docType;
     private Integer docNum;

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DetailSalesOrderDTO {
-
     private Integer quantity;
     private String itemCode;
     private String whsCode;
