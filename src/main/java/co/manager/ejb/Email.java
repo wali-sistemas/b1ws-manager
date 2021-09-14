@@ -8,18 +8,18 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author jguisao
+ */
 public class Email {
     private static final Logger LOGGER = Logger.getAnonymousLogger();
-
     private static final String SERVIDOR_SMTP = "smtp.office365.com";
     private static final int PORTA_SERVIDOR_SMTP = 587;
     private static final String CONTA_PADRAO = "sistemas2@igbcolombia.com";
     private static final String SENHA_CONTA_PADRAO = "Mtz2020*";
-
     private final String from = "sistemas2@igbcolombia.com";
     private final String to = "soporte@igbcolombia.com";
     private final String cc = "soporte@igbcolombia.com";
-
     private final String subject = "Prueba";
     private final String messageContent = "Prueba 2 enviando mail desde Java usando office 365";
 

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class ItemEJB {
     private static final Logger CONSOLE = Logger.getLogger(ItemEJB.class.getSimpleName());
     private ItemsClient service;
+
     @Inject
     private ManagerApplicationBean appBean;
     @Inject

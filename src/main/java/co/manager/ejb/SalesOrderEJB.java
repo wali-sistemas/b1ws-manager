@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 public class SalesOrderEJB {
     private static final Logger CONSOLE = Logger.getLogger(SalesOrderEJB.class.getSimpleName());
     private OrderClient service;
+
     @Inject
     private ManagerApplicationBean appBean;
     @Inject

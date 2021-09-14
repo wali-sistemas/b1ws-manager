@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 @SessionScoped
 @Named("emailManager")
 public class EmailManager implements Serializable {
-
     private static final Logger CONSOLE = Logger.getLogger(EmailManager.class.getSimpleName());
     private String username;
     private String password;
