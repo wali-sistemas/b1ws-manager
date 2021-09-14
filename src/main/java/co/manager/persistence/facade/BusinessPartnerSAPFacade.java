@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 public class BusinessPartnerSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(ItemSAPFacade.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
+
     @EJB
     private PersistenceConf persistenceConf;
 
@@ -443,5 +444,21 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes sin responsabilidad fiscal de " + companyName);
         }
         return new ArrayList<>();
+    }
+
+    public String getSellerByCustomer(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"SlpCode\" as varchar(5))as slpCode ");
+        sb.append("from OCRD ");
+        sb.append("where \"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el asesor asociado al cliente " + cardCode, e);
+        }
+        return null;
     }
 }

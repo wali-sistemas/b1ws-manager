@@ -798,6 +798,15 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(0, presupuestos)).build();
     }
 
+    @GET
+    @Path("find-seller/{companyname}/{cardcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSellerByCustomer(@PathParam("companyname") String companyName,
+                                        @PathParam("cardcode") String cardCode) {
+        return Response.ok(businessPartnerSAPFacade.getSellerByCustomer(cardCode, companyName, false)).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
