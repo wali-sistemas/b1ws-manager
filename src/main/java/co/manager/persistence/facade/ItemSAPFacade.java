@@ -1,17 +1,11 @@
 package co.manager.persistence.facade;
 
-import co.manager.persistence.entity.ItemSAP;
-import co.manager.persistence.entity.ItemSAP_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +18,7 @@ import java.util.logging.Logger;
 public class ItemSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(ItemSAPFacade.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
+
     @EJB
     private PersistenceConf persistenceConf;
 

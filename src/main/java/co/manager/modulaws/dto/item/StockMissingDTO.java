@@ -2,6 +2,9 @@ package co.manager.modulaws.dto.item;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * @author jguisao
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StockMissingDTO implements Comparable<StockMissingDTO>{
     private String itemCode;

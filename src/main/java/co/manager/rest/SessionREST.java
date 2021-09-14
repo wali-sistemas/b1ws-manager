@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 @Path("session")
 public class SessionREST implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(SessionREST.class.getSimpleName());
+
     @Inject
     private ManagerApplicationBean appBean;
     @EJB

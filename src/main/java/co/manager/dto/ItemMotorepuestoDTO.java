@@ -9,7 +9,6 @@ import java.math.BigDecimal;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ItemMotorepuestoDTO {
-
     private String itemCode;
     private String nomWeb;
     private String presentation;

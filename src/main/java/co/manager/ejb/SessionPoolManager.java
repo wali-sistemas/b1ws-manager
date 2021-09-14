@@ -25,6 +25,7 @@ public class SessionPoolManager implements Serializable {
     private ConcurrentHashMap<String, B1WSSession> borrowedSessions = new ConcurrentHashMap<>();
     private int maxOpenSessions;
     private long sessionMaxAge;
+
     @EJB
     private SessionManager sessionManager;
     @Inject

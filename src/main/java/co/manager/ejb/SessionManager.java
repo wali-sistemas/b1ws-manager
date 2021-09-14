@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class SessionManager implements Serializable {
     private static final Logger CONSOLE = Logger.getLogger(SessionManager.class.getSimpleName());
     private LoginClient service;
+
     @Inject
     private ManagerApplicationBean appBean;
 

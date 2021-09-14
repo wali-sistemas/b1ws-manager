@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 public class SalesPersonSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(SalesPersonSAP.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
+
     @EJB
     private PersistenceConf persistenceConf;
 
@@ -95,7 +96,7 @@ public class SalesPersonSAPFacade {
             sb.append("' and f.\"SlpCode\"='");
             sb.append(slpCode);
         }
-        //TODO: Se discrimina en motozone ventas de productos solo impuesto
+        //Se discrimina en motozone ventas de productos solo impuesto
         if (companyName.contains("VARROC")) {
             sb.append("' and d.\"TaxOnly\"='N");
         }
@@ -124,7 +125,7 @@ public class SalesPersonSAPFacade {
             sb.append("' and n.\"SlpCode\"='");
             sb.append(slpCode);
         }
-        //TODO: Se discrimina en motozone notas de productos solo impuesto
+        //Se discrimina en motozone notas de productos solo impuesto
         if (companyName.contains("VARROC")) {
             sb.append("' and d.\"TaxOnly\"='N");
         }

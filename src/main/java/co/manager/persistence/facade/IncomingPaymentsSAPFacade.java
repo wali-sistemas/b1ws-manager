@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class IncomingPaymentsSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(IncomingPaymentsSAPFacade.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
+
     @EJB
     private PersistenceConf persistenceConf;
 

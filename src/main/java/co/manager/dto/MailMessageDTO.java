@@ -9,7 +9,6 @@ import java.util.Map;
  * @author jguisao
  */
 public class MailMessageDTO {
-
     private String templateName;
     private String subject;
     private String from;
