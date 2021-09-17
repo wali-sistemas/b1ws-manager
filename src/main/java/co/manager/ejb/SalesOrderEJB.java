@@ -6,6 +6,7 @@ import co.manager.dto.SalesOrderDTO;
 import co.manager.hanaws.client.order.OrderClient;
 import co.manager.hanaws.dto.order.OrderDTO;
 import co.manager.hanaws.dto.order.OrderRestDTO;
+import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
@@ -38,6 +39,8 @@ public class SalesOrderEJB {
     private SessionManager sessionManager;
     @EJB
     private SalesOrderSAPFacade salesOrderSAPFacade;
+    @EJB
+    private BusinessPartnerSAPFacade businessPartnerSAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -87,6 +90,8 @@ public class SalesOrderEJB {
                     order.setUfecini(date2);
                 } catch (Exception e) {
                 }
+                //TODO: consultando la cuenta de ingreso en ventas por cliente
+                Object[] incomeAccount = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
 
                 List<DetailSalesOrderDTO> lines = dto.getDetailSalesOrder();
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
@@ -99,6 +104,15 @@ public class SalesOrderEJB {
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());
                     orderLine.setBaseEntry(line.getBaseEntry());
+
+                    //TODO: items excluidos de IVA por la DIAN, porductos solo en motozone
+                    if (line.getItemCode().equals("RP708D88") || line.getItemCode().equals("RP708D89") || line.getItemCode().equals("RP708D99")) {
+                        orderLine.setTaxCode("IVAEXCLU");
+                        orderLine.setAccountCode("41350507");
+                    } else {
+                        orderLine.setTaxCode((String) incomeAccount[0]);
+                        orderLine.setAccountCode((String) incomeAccount[1]);
+                    }
 
                     listDet.add(orderLine);
                 }

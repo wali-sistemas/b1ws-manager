@@ -461,4 +461,24 @@ public class BusinessPartnerSAPFacade {
         }
         return null;
     }
+
+    public Object[] getIncomeAccountByCustomer(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(d.\"TaxCode\" as varchar(20))as taxCode, ");
+        sb.append(" case when d.\"TaxCode\"='IVAEXCLU' then '41350507' ");
+        sb.append("  when d.\"TaxCode\"='IVAG19' then '41350505' ");
+        sb.append("  when d.\"TaxCode\"='IVAVEXE' then '42559505' ");
+        sb.append(" else '' end as AcctCode ");
+        sb.append("from OCRD s ");
+        sb.append("inner join CRD1 d on s.\"CardCode\"=d.\"CardCode\" and s.\"ShipToDef\"=d.\"Address\" ");
+        sb.append("where \"AdresType\"='S' and s.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo la cuenta de ingreso en ventas para el cliente " + cardCode, e);
+        }
+        return new Object[]{};
+    }
 }
