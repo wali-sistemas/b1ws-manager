@@ -220,6 +220,10 @@ public class OrderDTO implements Serializable {
             protected Long baseEntry;
             @JsonProperty("BaseLine")
             protected Long baseLine;
+            @JsonProperty("TaxCode")
+            protected String taxCode;
+            @JsonProperty("AccountCode")
+            protected String accountCode;
 
             public String getItemCode() {
                 return itemCode;
@@ -275,6 +279,22 @@ public class OrderDTO implements Serializable {
 
             public void setBaseLine(Long baseLine) {
                 this.baseLine = baseLine;
+            }
+
+            public String getTaxCode() {
+                return taxCode;
+            }
+
+            public void setTaxCode(String taxCode) {
+                this.taxCode = taxCode;
+            }
+
+            public String getAccountCode() {
+                return accountCode;
+            }
+
+            public void setAccountCode(String accountCode) {
+                this.accountCode = accountCode;
             }
         }
     }
