@@ -190,7 +190,6 @@ public class SondaREST {
                 }
             }
         }
-
         return Response.ok(new ResponseDTO(0, "Finalizando sincronizacion de items a motorepuesto.")).build();
     }
 
