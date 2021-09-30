@@ -158,6 +158,81 @@ public class ItemSAPFacade {
         return new ArrayList<>();
     }
 
+    //TODO: solo aplica para IGB y MOTOREPUESTO
+    public Object[] listItemsShoppingCart(String slpCode, String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select r.* ");
+
+        if (companyName.equals("VELEZ")) {
+            sb.append(",cast(prMrto.\"Price\" as decimal(18,0))as Precio ");
+        }
+        sb.append("from (");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('01','30') ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='05' ");
+        sb.append(" inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"<>'96' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('05','26') ");
+        sb.append(" inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"='96' and ase.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(")as r ");
+
+        if (companyName.equals("VELEZ")) {
+            sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
+            sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
+        }
+        sb.append("where r.Stock>0 and r.Producto='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema("IGB", pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException e) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock de los items agregados en el carrito de compras de la extranet. ", e);
+        }
+        return null;
+    }
+
+    //TODO: solo aplica para IGB
     public List<Object[]> getListItemsExtranetBySeller(String slpCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
