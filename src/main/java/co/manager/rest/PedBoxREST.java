@@ -1115,7 +1115,7 @@ public class PedBoxREST {
     public Response validateStockShoppingCart(StockShoppingCartDTO dto) {
         CONSOLE.log(Level.INFO, "Validando carrito de compras del cliente ", dto.getCardCode());
         //consultar el asesor asignado
-        String slpCode = businessPartnerSAPFacade.getSellerByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+        String slpCode = businessPartnerSAPFacade.getSellerByCustomer(dto.getCardCode(), dto.getCompanyName().equals("VELEZ") ? "IGB" : dto.getCompanyName(), false);
 
         List<StockShoppingCartRestDTO> list = new ArrayList<>();
         if (slpCode != null) {
