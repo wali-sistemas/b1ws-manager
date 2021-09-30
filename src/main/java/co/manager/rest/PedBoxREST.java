@@ -1106,4 +1106,31 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
         }
     }
+
+    @POST
+    @Path("extranet/shopping-cart")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response validateStockShoppingCart(StockShoppingCartDTO dto) {
+        CONSOLE.log(Level.INFO, "Validando carrito de compras del cliente ", dto.getCardCode());
+        //consultar el asesor asignado
+        String slpCode = businessPartnerSAPFacade.getSellerByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+
+        List<StockShoppingCartRestDTO> list = new ArrayList<>();
+        if (slpCode != null) {
+            for (String item : dto.getItems()) {
+                StockShoppingCartRestDTO stockShoppingCartRestDTO = new StockShoppingCartRestDTO();
+                Object[] obj = itemSAPFacade.listItemsShoppingCart(slpCode, item, dto.getCompanyName(), false);
+
+                if (obj != null) {
+                    stockShoppingCartRestDTO.setItemCode((String) obj[0]);
+                    stockShoppingCartRestDTO.setStock((Integer) obj[1]);
+                    stockShoppingCartRestDTO.setPrice((BigDecimal) obj[2]);
+                    list.add(stockShoppingCartRestDTO);
+                }
+            }
+        }
+        return Response.ok(list).build();
+    }
 }

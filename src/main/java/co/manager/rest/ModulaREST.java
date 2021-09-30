@@ -89,7 +89,7 @@ public class ModulaREST {
 
         List<StockMissingDTO> removeItem = new ArrayList<>();
         for (StockMissingDTO dto : stockMissingDTO) {
-            if (dto.getQtySAP() == dto.getQtyMDL()) {
+            if (dto.getQtySAP().equals(dto.getQtyMDL())) {
                 removeItem.add(dto);
             }
         }
