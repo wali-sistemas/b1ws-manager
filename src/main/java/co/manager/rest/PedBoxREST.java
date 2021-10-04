@@ -862,8 +862,17 @@ public class PedBoxREST {
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
         CONSOLE.log(Level.INFO, dto.toString());
 
+        boolean orderTire = false;
+        for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
+            //TODO: validar si la orden es de llantas para no enviar a wms-modula. TY - PW - U
+            if (detail.getItemCode().substring(0, 2).equals("TY") || detail.getItemCode().substring(0, 2).equals("PW") || detail.getItemCode().substring(0, 1).equals("U")) {
+                orderTire = true;
+                break;
+            }
+        }
+
         ResponseDTO res = new ResponseDTO();
-        if (dto.getCompanyName().contains("VARROC") || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+        if (dto.getCompanyName().contains("VARROC") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
             res = salesOrderEJB.createSalesOrder(dto);
             return Response.ok(res).build();
         }
