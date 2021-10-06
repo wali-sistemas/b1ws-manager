@@ -44,7 +44,7 @@ public class SalesQuotationSAPFacade {
 
     public List<Object[]> listDetailSalesQuotations(long docEntry, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"ItemCode\" as varchar(20))as ItemCode,cast(\"Quantity\" as int)as Qty,cast(\"WhsCode\" as varchar(5))as WhsCode ");
+        sb.append("select cast(\"ItemCode\" as varchar(20))as ItemCode,cast(\"Quantity\" as int)as Qty,cast(\"WhsCode\" as varchar(5))as WhsCode,cast(\"LineNum\" as int)as lineNum ");
         sb.append("from QUT1 ");
         sb.append("where \"DocEntry\"=");
         sb.append(docEntry);

@@ -332,11 +332,13 @@ public class SondaREST {
 
             List<DetailSalesOrderDTO> items = new ArrayList<>();
             for (Object[] objDtll : details) {
+                Integer lineNum = (Integer) objDtll[3];
+
                 DetailSalesOrderDTO detail = new DetailSalesOrderDTO();
                 detail.setItemCode((String) objDtll[0]);
                 detail.setQuantity((Integer) objDtll[1]);
                 detail.setWhsCode((String) objDtll[2]);
-                detail.setBaseLine((long) items.size());
+                detail.setBaseLine((long) lineNum);
                 detail.setBaseEntry(docEntry.longValue());
                 detail.setBaseType(23l);
                 items.add(detail);

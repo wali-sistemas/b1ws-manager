@@ -517,7 +517,7 @@ public class ItemSAPFacade {
     public Object[] getStockItemMDLvsSAP(String itemCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select sum(\"StockMDL\")as StockMDL,sum(\"StockCDI\")as StockCDI from (");
-        sb.append(" select cast(sum(s.\"OnHand\") as int)as \"StockMDL\",0 as \"StockCDI\" ");
+        sb.append(" select cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int)as \"StockMDL\",0 as \"StockCDI\" ");
         sb.append(" from \"OITW\" s ");
         sb.append(" where s.\"OnHand\">0 and s.\"WhsCode\"='30' and s.\"ItemCode\"='");
         sb.append(itemCode);
