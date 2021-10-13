@@ -167,4 +167,15 @@ public class MotorepuestoREST {
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
+
+    @POST
+    @Path("purchase/create-invoice")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createPurchaseInvoice() {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de factura de proveedor ");
+
+        return Response.ok().build();
+    }
 }
