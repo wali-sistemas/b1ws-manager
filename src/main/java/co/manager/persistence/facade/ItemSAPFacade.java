@@ -458,7 +458,7 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(art.\"ItemCode\" as varchar(20))as itemCode, ");
         sb.append(" cast(art.\"ItemName\" as varchar(200))as itemName, ");
-        sb.append(" cast(sal.\"OnHand\" as int)as qty, ");
+        sb.append(" cast(sal.\"OnHand\"-sal.\"IsCommited\" as int)as qty, ");
         sb.append(" cast(sal.\"WhsCode\" as varchar(10))as whsCode, ");
         sb.append(" 'SAP' as binCode, ");
         sb.append(" cast(alm.\"WhsName\" as varchar(30))as whsName ");
