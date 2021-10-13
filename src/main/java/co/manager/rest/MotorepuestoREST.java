@@ -6,6 +6,8 @@ import co.manager.dto.ResponseDTO;
 import co.manager.ejb.BasicFunctions;
 import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.ManagerApplicationBean;
+import co.manager.ejb.PurchaseInvoicesEJB;
+import co.manager.hanaws.dto.purchaseInvoice.PurchaseInvoicesDTO;
 import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.util.Constants;
@@ -42,6 +44,8 @@ public class MotorepuestoREST {
     private BasicFunctions basicFunctions;
     @EJB
     private BusinessPartnerSAPFacade businessPartnerSAPFacade;
+    @EJB
+    private PurchaseInvoicesEJB purchaseInvoicesEJB;
 
     @GET
     @Path("items")
@@ -173,9 +177,11 @@ public class MotorepuestoREST {
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response createPurchaseInvoice() {
+    public Response createPurchaseInvoice(PurchaseInvoicesDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de factura de proveedor ");
 
-        return Response.ok().build();
+        ResponseDTO res = purchaseInvoicesEJB.createPurchaseInvoice(dto, "VELEZ");
+
+        return Response.ok(res).build();
     }
 }
