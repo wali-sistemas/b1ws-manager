@@ -872,7 +872,7 @@ public class PedBoxREST {
         }
 
         ResponseDTO res = new ResponseDTO();
-        if (dto.getCompanyName().contains("VARROC") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+        if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("VELEZ") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
             res = salesOrderEJB.createSalesOrder(dto);
             return Response.ok(res).build();
         }
