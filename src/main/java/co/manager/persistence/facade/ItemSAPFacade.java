@@ -479,7 +479,7 @@ public class ItemSAPFacade {
 
     public Integer listStockSAPModulaByItem(String itemCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(sal.\"OnHand\" as int)as qty ");
+        sb.append("select cast(sal.\"OnHand\"-sal.\"IsCommited\" as int)as qty ");
         sb.append("from OITM art ");
         sb.append("inner join OITW sal on sal.\"ItemCode\"=art.\"ItemCode\" ");
         sb.append("inner join OWHS alm on alm.\"WhsCode\"=sal.\"WhsCode\" ");
