@@ -410,11 +410,6 @@ public class SondaREST {
             if (resMDL == null || resMDL.isEmpty()) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula docNum [{0}]", docNum);
                 try {
-                    //actualizar estado de la orden=Modula
-                    salesOrderSAPFacade.updateStatus(docNum, 'M', companyName, false);
-                } catch (Exception e) {
-                }
-                try {
                     //actualizar estado de la orden=Error
                     salesOrderSAPFacade.updateStatus(docNum, 'E', companyName, false);
                 } catch (Exception e) {
