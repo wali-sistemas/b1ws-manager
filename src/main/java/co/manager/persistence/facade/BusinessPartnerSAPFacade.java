@@ -466,7 +466,7 @@ public class BusinessPartnerSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(d.\"TaxCode\" as varchar(20))as taxCode, ");
         sb.append(" case when d.\"TaxCode\"='IVAEXCLU' then '41350507' ");
-        sb.append("  when d.\"TaxCode\"='IVAG19' then '41350505' ");
+        sb.append("  when d.\"TaxCode\" IN ('IVAG19','IVAV01') then '41350505' ");
         sb.append("  when d.\"TaxCode\"='IVAVEXE' then '42559505' ");
         sb.append(" else '' end as AcctCode ");
         sb.append("from OCRD s ");
