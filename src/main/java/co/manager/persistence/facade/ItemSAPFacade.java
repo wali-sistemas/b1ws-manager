@@ -220,7 +220,7 @@ public class ItemSAPFacade {
             sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
             sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
         }
-        sb.append("where r.Stock>0 and r.Producto='");
+        sb.append("where /*r.Stock>0 and*/ r.Producto='");
         sb.append(itemCode);
         sb.append("'");
         try {
