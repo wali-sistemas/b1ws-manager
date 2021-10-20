@@ -3,7 +3,9 @@ package co.manager.ejb;
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.purchaseInvoices.PurchaseInvoicesClient;
 import co.manager.hanaws.dto.purchaseInvoice.PurchaseInvoicesDTO;
+import co.manager.hanaws.dto.purchaseInvoice.PurchaseInvoicesRestDTO;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -49,7 +51,26 @@ public class PurchaseInvoicesEJB {
         } catch (Exception ignored) {
         }
         //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                CONSOLE.log(Level.INFO, "Iniciando creacion de cotizacion para {0}", companyName);
+                Gson gson = new Gson();
+                String json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                PurchaseInvoicesRestDTO res = service.addInvoice(dto, sessionId);
+                docEntry = res.getDocEntry();
 
+                if (docEntry == 0) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");
+                    return new ResponseDTO(-1, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");
+                } else {
+                    CONSOLE.log(Level.INFO, "Se creo la cotizacion satisfactoriamente");
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la cotizacion ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
 
         //3. Logout
         if (sessionId != null) {
