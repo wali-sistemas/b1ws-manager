@@ -180,7 +180,7 @@ public class MotorepuestoREST {
     public Response createPurchaseInvoice(PurchaseInvoicesDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de factura de proveedor ");
 
-        ResponseDTO res = purchaseInvoicesEJB.createPurchaseInvoice(dto, "VELEZ");
+        ResponseDTO res = purchaseInvoicesEJB.createPurchaseInvoice(dto, "DBVELEZTH");
 
         return Response.ok(res).build();
     }

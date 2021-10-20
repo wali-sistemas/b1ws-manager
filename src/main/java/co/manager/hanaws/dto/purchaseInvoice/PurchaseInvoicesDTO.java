@@ -1,7 +1,6 @@
 package co.manager.hanaws.dto.purchaseInvoice;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,36 +11,22 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PurchaseInvoicesDTO implements Serializable {
-    @JsonProperty("CardCode")
-    protected String cardCode;
-    @JsonProperty("Comments")
-    protected String comments;
-    @JsonProperty("Series")
-    protected Long series;
-    @JsonProperty("DocDate")
-    protected String docDate;
-    @JsonProperty("DocDueDate")
-    protected String docDueDate;
-    @JsonProperty("ContactPersonCode")
-    protected Long contactPersonCode;
-    @JsonProperty("SalesPersonCode")
-    protected Long salesPersonCode;
-    @JsonProperty("BaseAmount")
-    protected BigDecimal baseAmount;
-    @JsonProperty("VatSum")
-    protected BigDecimal vatSum;
-    @JsonProperty("U_WUID")
-    protected String uWUID;
-    @JsonProperty("U_TOT_CAJ")
-    protected Double utotcaj;
-    @JsonProperty("U_NUNFAC")
-    protected String ununfac;
-    @JsonProperty("DocumentLines")
-    protected List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines;
-    /*@JsonProperty("DocumentAdditionalExpenses")
-    protected List<PurchaseInvoicesDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> documentAdditionalExpenses;
-    @JsonProperty("WithholdingTaxDataCollection")
-    protected List<PurchaseInvoicesDTO.WithholdingTaxDataCollection.WithholdingTaxData> withholdingTaxDataCollection;*/
+    private String cardCode;
+    private String comments;
+    private Long series;
+    private String docDate;
+    private String docDueDate;
+    private Long contactPersonCode;
+    private Long salesPersonCode;
+    private BigDecimal baseAmount;
+    private BigDecimal vatSum;
+    private String uWUID;
+    private Double utotcaj;
+    private String ununfac;
+    private List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines;
+
+    public PurchaseInvoicesDTO() {
+    }
 
     public String getCardCode() {
         return cardCode;
@@ -149,20 +134,16 @@ public class PurchaseInvoicesDTO implements Serializable {
 
     public static class DocumentLines {
         public static class DocumentLine {
-            @JsonProperty("LineNum")
-            protected Long lineNum;
-            @JsonProperty("ItemCode")
-            protected String itemCode;
-            @JsonProperty("Quantity")
-            protected Double quantity;
-            @JsonProperty("WarehouseCode")
-            protected String warehouseCode;
-            @JsonProperty("BaseType")
-            protected Long baseType;
-            @JsonProperty("BaseEntry")
-            protected Long baseEntry;
-            @JsonProperty("BaseLine")
-            protected Long baseLine;
+            private Long lineNum;
+            private String itemCode;
+            private Double quantity;
+            private String warehouseCode;
+            private Long baseType;
+            private Long baseEntry;
+            private Long baseLine;
+
+            public DocumentLine() {
+            }
 
             public Long getLineNum() {
                 return lineNum;
@@ -218,6 +199,19 @@ public class PurchaseInvoicesDTO implements Serializable {
 
             public void setBaseLine(Long baseLine) {
                 this.baseLine = baseLine;
+            }
+
+            @Override
+            public String toString() {
+                return "DocumentLine{" +
+                        "lineNum=" + lineNum +
+                        ", itemCode='" + itemCode + '\'' +
+                        ", quantity=" + quantity +
+                        ", warehouseCode='" + warehouseCode + '\'' +
+                        ", baseType=" + baseType +
+                        ", baseEntry=" + baseEntry +
+                        ", baseLine=" + baseLine +
+                        '}';
             }
         }
     }

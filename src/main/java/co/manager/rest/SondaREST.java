@@ -420,6 +420,7 @@ public class SondaREST {
                     //actualizar estado de la orden=Modula
                     salesOrderSAPFacade.updateStatus(docNum, 'M', companyName, false);
                 } catch (Exception e) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado[M] de la orden de venta docNum [{0}]", docNum);
                 }
             }
         }
