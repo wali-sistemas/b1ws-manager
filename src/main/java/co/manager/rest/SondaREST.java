@@ -408,12 +408,13 @@ public class SondaREST {
 
             String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
             if (resMDL == null || resMDL.isEmpty()) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula docNum [{0}]", docNum);
                 try {
                     //actualizar estado de la orden=Error
                     salesOrderSAPFacade.updateStatus(docNum, 'E', companyName, false);
                 } catch (Exception e) {
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula docNum [{0}]", docNum);
                 }
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta " + docNum + " en modula.")).build();
             } else {
                 try {
                     //actualizar estado de la orden=Modula
