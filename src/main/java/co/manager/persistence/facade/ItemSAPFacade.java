@@ -161,10 +161,12 @@ public class ItemSAPFacade {
     //TODO: solo aplica para IGB y MOTOREPUESTO
     public Object[] listItemsShoppingCart(String slpCode, String itemCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select r.* ");
+        sb.append("select r.Producto,sum(r.Stock)as Stock ");
 
         if (companyName.equals("VELEZ")) {
             sb.append(",cast(prMrto.\"Price\" as decimal(18,0))as Precio ");
+        } else {
+            sb.append(",r.Precio ");
         }
         sb.append("from (");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
@@ -222,12 +224,18 @@ public class ItemSAPFacade {
         }
         sb.append("where /*r.Stock>0 and*/ r.Producto='");
         sb.append(itemCode);
-        sb.append("'");
+        sb.append("' group by r.Producto ");
+
+        if (companyName.equals("VELEZ")) {
+            sb.append(",prMrto.\"Price\"");
+        } else {
+            sb.append(",r.Precio");
+        }
         try {
             return (Object[]) persistenceConf.chooseSchema("IGB", pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException e) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock de los items agregados en el carrito de compras de la extranet. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock del item [" + itemCode + "] agregado en el carrito de compras para " + companyName, e);
         }
         return null;
     }

@@ -413,6 +413,7 @@ public class SondaREST {
                     //actualizar estado de la orden=Error
                     salesOrderSAPFacade.updateStatus(docNum, 'E', companyName, false);
                 } catch (Exception e) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado[E] de la orden de venta docNum [" + docNum + "]", e);
                 }
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta " + docNum + " en modula.")).build();
             } else {
@@ -420,7 +421,7 @@ public class SondaREST {
                     //actualizar estado de la orden=Modula
                     salesOrderSAPFacade.updateStatus(docNum, 'M', companyName, false);
                 } catch (Exception e) {
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado[M] de la orden de venta docNum [{0}]", docNum);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el estado[M] de la orden de venta docNum [" + docNum + "]", e);
                 }
             }
         }

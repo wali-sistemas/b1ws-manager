@@ -854,6 +854,10 @@ public class PedBoxREST {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
+        } else if (dto.getCompanyName().contains("VARROC")) {
+            //TODO: Por instrucción del area de operaciones, todos las ordenes ingresan con estado REVISAR.
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
         }
         //Consultando id de la transportadora asignada al cliente
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
