@@ -235,7 +235,7 @@ public class ItemSAPFacade {
             return (Object[]) persistenceConf.chooseSchema("IGB", pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException e) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock de los items agregados en el carrito de compras de la extranet. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock del item [" + itemCode + "] agregado en el carrito de compras para " + companyName, e);
         }
         return null;
     }
