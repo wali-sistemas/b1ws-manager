@@ -1,6 +1,7 @@
 package co.manager.hanaws.dto.purchaseInvoice;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,22 +12,20 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PurchaseInvoicesDTO implements Serializable {
-    private String cardCode;
-    private String comments;
-    private Long series;
-    private String docDate;
-    private String docDueDate;
-    private Long contactPersonCode;
-    private Long salesPersonCode;
-    private BigDecimal baseAmount;
-    private BigDecimal vatSum;
-    private String uWUID;
-    private Double utotcaj;
-    private String ununfac;
-    private List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines;
-
-    public PurchaseInvoicesDTO() {
-    }
+    @JsonProperty("CardCode")
+    protected String cardCode;
+    @JsonProperty("Comments")
+    protected String comments;
+    @JsonProperty("Series")
+    protected Long series;
+    @JsonProperty("DocDate")
+    protected String docDate;
+    @JsonProperty("DocDueDate")
+    protected String docDueDate;
+    @JsonProperty("SalesPersonCode")
+    protected Long salesPersonCode;
+    @JsonProperty("DocumentLines")
+    protected List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines;
 
     public String getCardCode() {
         return cardCode;
@@ -68,60 +67,12 @@ public class PurchaseInvoicesDTO implements Serializable {
         this.docDueDate = docDueDate;
     }
 
-    public Long getContactPersonCode() {
-        return contactPersonCode;
-    }
-
-    public void setContactPersonCode(Long contactPersonCode) {
-        this.contactPersonCode = contactPersonCode;
-    }
-
     public Long getSalesPersonCode() {
         return salesPersonCode;
     }
 
     public void setSalesPersonCode(Long salesPersonCode) {
         this.salesPersonCode = salesPersonCode;
-    }
-
-    public BigDecimal getBaseAmount() {
-        return baseAmount;
-    }
-
-    public void setBaseAmount(BigDecimal baseAmount) {
-        this.baseAmount = baseAmount;
-    }
-
-    public BigDecimal getVatSum() {
-        return vatSum;
-    }
-
-    public void setVatSum(BigDecimal vatSum) {
-        this.vatSum = vatSum;
-    }
-
-    public String getuWUID() {
-        return uWUID;
-    }
-
-    public void setuWUID(String uWUID) {
-        this.uWUID = uWUID;
-    }
-
-    public Double getUtotcaj() {
-        return utotcaj;
-    }
-
-    public void setUtotcaj(Double utotcaj) {
-        this.utotcaj = utotcaj;
-    }
-
-    public String getUnunfac() {
-        return ununfac;
-    }
-
-    public void setUnunfac(String ununfac) {
-        this.ununfac = ununfac;
     }
 
     public List<DocumentLines.DocumentLine> getDocumentLines() {
@@ -132,18 +83,35 @@ public class PurchaseInvoicesDTO implements Serializable {
         this.documentLines = documentLines;
     }
 
-    public static class DocumentLines {
-        public static class DocumentLine {
-            private Long lineNum;
-            private String itemCode;
-            private Double quantity;
-            private String warehouseCode;
-            private Long baseType;
-            private Long baseEntry;
-            private Long baseLine;
+    @Override
+    public String toString() {
+        return "PurchaseInvoicesDTO{" +
+                "cardCode='" + cardCode + '\'' +
+                ", comments='" + comments + '\'' +
+                ", series=" + series +
+                ", docDate='" + docDate + '\'' +
+                ", docDueDate='" + docDueDate + '\'' +
+                ", salesPersonCode=" + salesPersonCode +
+                ", documentLines=" + documentLines +
+                '}';
+    }
 
-            public DocumentLine() {
-            }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class DocumentLines implements Serializable {
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class DocumentLine implements Serializable {
+            @JsonProperty("LineNum")
+            protected Long lineNum;
+            @JsonProperty("ItemCode")
+            protected String itemCode;
+            @JsonProperty("Quantity")
+            protected Double quantity;
+            @JsonProperty("WarehouseCode")
+            protected String warehouseCode;
+            @JsonProperty("Price")
+            protected BigDecimal price;
+            @JsonProperty("TaxCode")
+            protected String taxCode;
 
             public Long getLineNum() {
                 return lineNum;
@@ -177,28 +145,20 @@ public class PurchaseInvoicesDTO implements Serializable {
                 this.warehouseCode = warehouseCode;
             }
 
-            public Long getBaseType() {
-                return baseType;
+            public BigDecimal getPrice() {
+                return price;
             }
 
-            public void setBaseType(Long baseType) {
-                this.baseType = baseType;
+            public void setPrice(BigDecimal price) {
+                this.price = price;
             }
 
-            public Long getBaseEntry() {
-                return baseEntry;
+            public String getTaxCode() {
+                return taxCode;
             }
 
-            public void setBaseEntry(Long baseEntry) {
-                this.baseEntry = baseEntry;
-            }
-
-            public Long getBaseLine() {
-                return baseLine;
-            }
-
-            public void setBaseLine(Long baseLine) {
-                this.baseLine = baseLine;
+            public void setTaxCode(String taxCode) {
+                this.taxCode = taxCode;
             }
 
             @Override
@@ -208,30 +168,10 @@ public class PurchaseInvoicesDTO implements Serializable {
                         ", itemCode='" + itemCode + '\'' +
                         ", quantity=" + quantity +
                         ", warehouseCode='" + warehouseCode + '\'' +
-                        ", baseType=" + baseType +
-                        ", baseEntry=" + baseEntry +
-                        ", baseLine=" + baseLine +
+                        ", price=" + price +
+                        ", taxCode='" + taxCode + '\'' +
                         '}';
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return "PurchaseInvoicesDTO{" +
-                "cardCode='" + cardCode + '\'' +
-                ", comments='" + comments + '\'' +
-                ", series=" + series +
-                ", docDate='" + docDate + '\'' +
-                ", docDueDate='" + docDueDate + '\'' +
-                ", contactPersonCode=" + contactPersonCode +
-                ", salesPersonCode=" + salesPersonCode +
-                ", baseAmount=" + baseAmount +
-                ", vatSum=" + vatSum +
-                ", uWUID='" + uWUID + '\'' +
-                ", utotcaj=" + utotcaj +
-                ", ununfac='" + ununfac + '\'' +
-                ", documentLines=" + documentLines +
-                '}';
     }
 }

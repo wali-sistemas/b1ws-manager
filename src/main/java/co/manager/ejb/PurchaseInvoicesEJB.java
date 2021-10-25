@@ -37,7 +37,7 @@ public class PurchaseInvoicesEJB {
     }
 
     public ResponseDTO createPurchaseInvoice(PurchaseInvoicesDTO dto, String companyName) {
-        Long docEntry = 0l;
+        Long docNum = 0l;
         //1. Login
         String sessionId = null;
         try {
@@ -53,21 +53,21 @@ public class PurchaseInvoicesEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                CONSOLE.log(Level.INFO, "Iniciando creacion de cotizacion para {0}", companyName);
+                CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para {0}", companyName);
                 Gson gson = new Gson();
                 String json = gson.toJson(dto);
                 CONSOLE.log(Level.INFO, json);
                 PurchaseInvoicesRestDTO res = service.addInvoice(dto, sessionId);
-                docEntry = res.getDocEntry();
+                docNum = res.getDocNum();
 
-                if (docEntry == 0) {
-                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");
-                    return new ResponseDTO(-1, "Ocurrió un problema al crear la cotizacion. Resetear el sesión ID.");
+                if (docNum == 0) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la factura de compra. Resetear el sesión ID.");
+                    return new ResponseDTO(-1, "Ocurrió un problema al crear la factura de compra. Resetear el sesión ID.");
                 } else {
-                    CONSOLE.log(Level.INFO, "Se creo la cotizacion satisfactoriamente");
+                    CONSOLE.log(Level.INFO, "Se creo la factura de compra [{0}] satisfactoriamente", docNum);
                 }
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la cotizacion ", e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la factura de compra ", e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
@@ -81,6 +81,6 @@ public class PurchaseInvoicesEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        return new ResponseDTO(0, docEntry);
+        return new ResponseDTO(0, docNum);
     }
 }

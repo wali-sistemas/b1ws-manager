@@ -179,9 +179,6 @@ public class MotorepuestoREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createPurchaseInvoice(PurchaseInvoicesDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de factura de proveedor ");
-
-        ResponseDTO res = purchaseInvoicesEJB.createPurchaseInvoice(dto, "DBVELEZTH");
-
-        return Response.ok(res).build();
+        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(dto, "VELEZ")).build();
     }
 }
