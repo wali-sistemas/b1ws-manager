@@ -1,9 +1,11 @@
 package co.manager.rest;
 
 import co.manager.dto.DetailSalesOrderDTO;
+import co.manager.dto.MailMessageDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.dto.SalesOrderDTO;
 import co.manager.ejb.BusinessPartnerEJB;
+import co.manager.ejb.EmailManager;
 import co.manager.ejb.ItemEJB;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
@@ -19,6 +21,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,10 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +64,10 @@ public class SondaREST {
     private PedBoxREST pedBoxREST;
     @EJB
     private OrderModulaEJB orderModulaEJB;
+    @EJB
+    private PurchaseOrderFacade purchaseOrderFacade;
+    @Inject
+    private EmailManager emailManager;
 
     @GET
     @Path("picking-delete-temporary/{companyname}/{warehousecode}/{testing}")
@@ -426,6 +430,55 @@ public class SondaREST {
             }
         }
         return Response.ok(order).build();
+    }
+
+    @GET
+    @Path("comex/send-document-bl/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response sendDocumentBL(@PathParam("companyname") String companyName) {
+        List<Object[]> orders = purchaseOrderFacade.listOrdersWithDocumentBL(companyName, false);
+        if (orders.isEmpty()) {
+            CONSOLE.log(Level.WARNING, "No se encontraron ordenes de compra con documento BL");
+            return Response.ok(new ResponseDTO(-2, "No se encontraron ordenes de compra con documento BL.")).build();
+        }
+
+        for (Object[] obj : orders) {
+            try {
+                //TODO: Notificar vía mail el documento BL
+                Map<String, String> params = new HashMap<>();
+                params.put("docNum", (String) obj[0]);
+                params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(obj[1]));
+                params.put("docBL", (String) obj[2]);
+                params.put("slpName", (String) obj[3]);
+                params.put("comment", (String) obj[4]);
+                params.put("line", (String) obj[5]);
+
+                sendEmail("NotificationDocumentBL", "soporte@igbcolombia.com", "Orden con Documento BL", (String) obj[6],
+                        "auxcomercioexterior@igbcolombia.com", null, null, params);
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra #" + obj[0], e);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra # " + obj[0])).build();
+            }
+        }
+        return Response.ok().build();
+    }
+
+    private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
+        MailMessageDTO dtoMail = new MailMessageDTO();
+        dtoMail.setTemplateName(template);
+        dtoMail.setParams(params);
+        dtoMail.setAttachments(adjuntos);
+        dtoMail.setFrom(from);
+        dtoMail.setSubject(subject);
+        dtoMail.addToAddress(toAddress + ',' + ccAddress);
+        dtoMail.addBccAddress(bccAddress);
+        dtoMail.addBccAddress(ccAddress);
+        try {
+            emailManager.sendEmail(dtoMail);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion. ", e);
+        }
     }
 
     private boolean hasExpired(Date expires, Date now) {
