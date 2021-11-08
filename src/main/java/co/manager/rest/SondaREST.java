@@ -437,6 +437,8 @@ public class SondaREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response sendDocumentBL(@PathParam("companyname") String companyName) {
+        CONSOLE.log(Level.INFO, "Iniciando notificacion automatica de documento BL para comex");
+
         List<Object[]> orders = purchaseOrderFacade.listOrdersWithDocumentBL(companyName, false);
         if (orders.isEmpty()) {
             CONSOLE.log(Level.WARNING, "No se encontraron ordenes de compra con documento BL");
@@ -458,10 +460,12 @@ public class SondaREST {
                         "auxcomercioexterior@igbcolombia.com", null, null, params);
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra #" + obj[0], e);
+                purchaseOrderFacade.updateFieldDocumentBL((String) obj[0], 'E', companyName, false);
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra # " + obj[0])).build();
             }
+            purchaseOrderFacade.updateFieldDocumentBL((String) obj[0], 'C', companyName, false);
         }
-        return Response.ok().build();
+        return Response.ok(new ResponseDTO(0,"Notificacion documento BL envida con exito.")).build();
     }
 
     private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {

@@ -7,8 +7,8 @@ import co.manager.ejb.BasicFunctions;
 import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.ManagerApplicationBean;
 import co.manager.ejb.PurchaseInvoicesEJB;
-import co.manager.hanaws.dto.purchaseInvoice.PurchaseInvoicesDTO;
 import co.manager.persistence.facade.BusinessPartnerSAPFacade;
+import co.manager.persistence.facade.InvoiceSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.util.Constants;
 
@@ -46,6 +46,8 @@ public class MotorepuestoREST {
     private BusinessPartnerSAPFacade businessPartnerSAPFacade;
     @EJB
     private PurchaseInvoicesEJB purchaseInvoicesEJB;
+    @EJB
+    private InvoiceSAPFacade invoiceSAPFacade;
 
     @GET
     @Path("items")
@@ -172,13 +174,21 @@ public class MotorepuestoREST {
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
 
-    @POST
+    @GET
     @Path("purchase/create-invoice")
-    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response createPurchaseInvoice(PurchaseInvoicesDTO dto) {
-        CONSOLE.log(Level.INFO, "Iniciando creacion de factura de proveedor ");
-        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(dto, "VELEZ")).build();
+    public Response createPurchaseInvoice(@QueryParam("docnum") String docNum,
+                                          @HeaderParam("X-Company-Name") String companyName,
+                                          @HeaderParam("X-Employee") String userName,
+                                          @HeaderParam("X-Pruebas") boolean pruebas) {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para la venta # {0} realizada en [{1}]", new Object[]{docNum, companyName});
+
+        List<Object[]> details = invoiceSAPFacade.listDetailInvoice(docNum, companyName, pruebas);
+        if (details.isEmpty()) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", docNum);
+            return Response.ok(new ResponseDTO(-2, "No se encontraron datos de la FV [" + docNum + "] para crear la factura de compra.")).build();
+        }
+        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(details, "DBVELEZTH")).build();
     }
 }

@@ -11,6 +11,11 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +41,7 @@ public class PurchaseInvoicesEJB {
         }
     }
 
-    public ResponseDTO createPurchaseInvoice(PurchaseInvoicesDTO dto, String companyName) {
+    public ResponseDTO createPurchaseInvoice(List<Object[]> details, String companyName) {
         Long docNum = 0l;
         //1. Login
         String sessionId = null;
@@ -53,11 +58,39 @@ public class PurchaseInvoicesEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
+                PurchaseInvoicesDTO purchaseInvoice = new PurchaseInvoicesDTO();
+                List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines = new ArrayList<>();
+
+                purchaseInvoice.setCardCode("P811011909");
+                purchaseInvoice.setComments((String) details.get(0)[0]);
+                purchaseInvoice.setSeries(11l);
+                purchaseInvoice.setSalesPersonCode(5l);
+
+                try {
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    purchaseInvoice.setDocDate(date2);
+                    purchaseInvoice.setDocDueDate(date2);
+                } catch (Exception e) {
+                }
+
+                for (Object[] obj : details) {
+                    PurchaseInvoicesDTO.DocumentLines.DocumentLine documentLine = new PurchaseInvoicesDTO.DocumentLines.DocumentLine();
+                    documentLine.setLineNum((long) details.size());
+                    documentLine.setItemCode((String) obj[1]);
+                    documentLine.setQuantity(Double.valueOf((Integer) obj[2]));
+                    documentLine.setWarehouseCode("01");
+                    documentLine.setPrice((BigDecimal) obj[3]);
+                    documentLine.setTaxCode("IVAD01");
+
+                    documentLines.add(documentLine);
+                }
+                purchaseInvoice.setDocumentLines(documentLines);
+
                 CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para {0}", companyName);
                 Gson gson = new Gson();
-                String json = gson.toJson(dto);
+                String json = gson.toJson(purchaseInvoice);
                 CONSOLE.log(Level.INFO, json);
-                PurchaseInvoicesRestDTO res = service.addInvoice(dto, sessionId);
+                PurchaseInvoicesRestDTO res = service.addInvoice(purchaseInvoice, sessionId);
                 docNum = res.getDocNum();
 
                 if (docNum == 0) {

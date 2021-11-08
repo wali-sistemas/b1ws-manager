@@ -53,4 +53,21 @@ public class InvoiceSAPFacade {
         }
         return null;
     }
+
+    public List<Object[]> listDetailInvoice(String docNum, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(f.\"Comments\" as varchar(1000))as Comments,cast(d.\"ItemCode\" as varchar(20))as ItemCode, ");
+        sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(d.\"Price\" as numeric(18,2))as Price ");
+        sb.append("from OINV f ");
+        sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
+        sb.append("where f.\"DocNum\"=");
+        sb.append(docNum);
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el detalle para la factura de venta #" + docNum, e);
+        }
+        return new ArrayList<>();
+    }
 }

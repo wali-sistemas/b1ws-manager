@@ -28,7 +28,7 @@ public class PurchaseOrderFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as varchar(20))as DocNum,cast(o.\"DocDate\" as date)as DocDate, ");
         sb.append(" cast(o.\"U_DOC_TRANSP\" as varchar(50))as BL,cast(s.\"SlpName\" as varchar(100))as SlpName, ");
-        sb.append(" cast(o.\"Comments\" as varchar(100))as Coment,cast((select distinct substring(\"ItemCode\",0,2) from POR1 where \"DocEntry\"=o.\"DocEntry\")as varchar(3))as Linea, ");
+        sb.append(" cast(o.\"Comments\" as varchar(100))as Coment,'REPUESTOS' as Linea, ");
         sb.append(" cast(s.\"Email\" as varchar(100))as mail ");
         sb.append("from OPOR o ");
         sb.append("inner join OSLP s ON s.\"SlpCode\" = o.\"SlpCode\" ");
@@ -40,5 +40,19 @@ public class PurchaseOrderFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes de compra con documento BL. ", e);
         }
         return new ArrayList<>();
+    }
+
+    public void updateFieldDocumentBL(String docNum, char status, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OPOR set \"U_NotificationBL\"='");
+        sb.append(status);
+        sb.append("' where \"DocNum\"=");
+        sb.append(docNum);
+        try {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el campo de usuario en la factura de compra. Estado=[" + status + "]");
+        }
     }
 }
