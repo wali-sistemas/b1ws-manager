@@ -74,8 +74,9 @@ public class PurchaseInvoicesEJB {
                 }
 
                 for (Object[] obj : details) {
+                    long lineNum = (Integer) obj[4];
                     PurchaseInvoicesDTO.DocumentLines.DocumentLine documentLine = new PurchaseInvoicesDTO.DocumentLines.DocumentLine();
-                    documentLine.setLineNum((long) details.size());
+                    documentLine.setLineNum(lineNum);
                     documentLine.setItemCode((String) obj[1]);
                     documentLine.setQuantity(Double.valueOf((Integer) obj[2]));
                     documentLine.setWarehouseCode("01");
