@@ -24,6 +24,10 @@ public class PurchaseInvoicesDTO implements Serializable {
     protected String docDueDate;
     @JsonProperty("SalesPersonCode")
     protected Long salesPersonCode;
+    @JsonProperty("NumAtCard")
+    protected String numAtCard;
+    @JsonProperty("DiscountPercent")
+    protected BigDecimal discountPercent;
     @JsonProperty("DocumentLines")
     protected List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines;
 
@@ -75,6 +79,22 @@ public class PurchaseInvoicesDTO implements Serializable {
         this.salesPersonCode = salesPersonCode;
     }
 
+    public String getNumAtCard() {
+        return numAtCard;
+    }
+
+    public void setNumAtCard(String numAtCard) {
+        this.numAtCard = numAtCard;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
     public List<DocumentLines.DocumentLine> getDocumentLines() {
         return documentLines;
     }
@@ -92,6 +112,8 @@ public class PurchaseInvoicesDTO implements Serializable {
                 ", docDate='" + docDate + '\'' +
                 ", docDueDate='" + docDueDate + '\'' +
                 ", salesPersonCode=" + salesPersonCode +
+                ", numAtCard='" + numAtCard + '\'' +
+                ", discountPercent=" + discountPercent +
                 ", documentLines=" + documentLines +
                 '}';
     }

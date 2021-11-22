@@ -57,7 +57,7 @@ public class InvoiceSAPFacade {
     public List<Object[]> listDetailInvoice(String docNum, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(f.\"Comments\" as varchar(1000))as Comments,cast(d.\"ItemCode\" as varchar(20))as ItemCode, ");
-        sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(d.\"Price\" as numeric(18,2))as Price,cast(d.\"LineNum\" as int)as lineNum ");
+        sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(d.\"Price\" as numeric(18,2))as Price,cast(d.\"LineNum\" as int)as lineNum,cast(f.\"DiscPrcnt\" as numeric(18,2))as DiscPrcnt ");
         sb.append("from OINV f ");
         sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
         sb.append("where f.\"DocNum\"=");
