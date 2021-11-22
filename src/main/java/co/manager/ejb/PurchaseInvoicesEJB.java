@@ -41,7 +41,7 @@ public class PurchaseInvoicesEJB {
         }
     }
 
-    public ResponseDTO createPurchaseInvoice(List<Object[]> details, String companyName) {
+    public ResponseDTO createPurchaseInvoice(List<Object[]> details, String invoice, String companyName) {
         Long docNum = 0l;
         //1. Login
         String sessionId = null;
@@ -65,6 +65,8 @@ public class PurchaseInvoicesEJB {
                 purchaseInvoice.setComments((String) details.get(0)[0]);
                 purchaseInvoice.setSeries(11l);
                 purchaseInvoice.setSalesPersonCode(5l);
+                purchaseInvoice.setNumAtCard(invoice);
+                purchaseInvoice.setDiscountPercent((BigDecimal) details.get(0)[5]);
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
