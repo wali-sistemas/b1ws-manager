@@ -189,7 +189,7 @@ public class SalesOrderSAPFacade {
         sb.append("from ORDR p ");
         sb.append("inner join RDR1 d on p.\"DocEntry\"=d.\"DocEntry\" ");
         sb.append("where p.\"DocStatus\"='O' and d.\"WhsCode\"='30' and days_between(p.\"DocDate\",current_date)<45");
-        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\"<>'M'");
+        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\"='P' ");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
