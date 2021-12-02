@@ -34,7 +34,7 @@ public class BusinessPartnerSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(sn.\"CardCode\" as varchar(20)) as CardCode, cast(sn.\"LicTradNum\" as varchar(20)) as Nit, ");
-        sb.append("       cast(sn.\"CardName\" as varchar(50)) as Nombre, cast(sn.\"Address\" as varchar(100)) as AddressToDef, ");
+        sb.append("       cast(sn.\"CardName\" as varchar(50)) as Nombre, cast(sn.\"Street\" as varchar(100)) as AddressToDef, ");
         sb.append("       cast(sn.\"City\" as varchar(50)) as Localidad, cast(substring(sn.\"Phone1\",1,10) as varchar(10)) as Telefono, ");
         sb.append("       cast(substring(ifnull(sn.\"Cellular\",''),1,10) as varchar(10)) as Celular, cast(upper(sn.\"E_Mail\") as varchar(50)) as Email, ");
         sb.append("       cast(oc.\"PymntGroup\" as varchar(20)) as FormaPago, cast(((oc.\"ExtraMonth\" * 30) + oc.\"ExtraDays\") as int) as Plazo, ");
@@ -55,7 +55,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
         sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County ");
         sb.append("from   OCRD sn ");
-        sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
+        sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" and sn.\"ShipToDef\" = cr.\"Address\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
         sb.append("inner  join OCST cs on cs.\"Code\" = cr.\"State\" ");
         sb.append("where  sn.\"CardType\" = 'C' and sn.\"frozenFor\" = 'N' and cs.\"Country\" = 'CO' and sn.\"SlpCode\" <> -1 ");
