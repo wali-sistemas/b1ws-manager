@@ -55,7 +55,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
         sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County ");
         sb.append("from   OCRD sn ");
-        sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" and sn.\"ShipToDef\" = cr.\"Address\" ");
+        sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
         sb.append("inner  join OCST cs on cs.\"Code\" = cr.\"State\" ");
         sb.append("where  sn.\"CardType\" = 'C' and sn.\"frozenFor\" = 'N' and cs.\"Country\" = 'CO' and sn.\"SlpCode\" <> -1 ");
