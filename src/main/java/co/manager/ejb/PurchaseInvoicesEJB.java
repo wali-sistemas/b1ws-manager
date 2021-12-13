@@ -70,8 +70,9 @@ public class PurchaseInvoicesEJB {
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    String date3 = new SimpleDateFormat("yyyy-MM-dd").format(details.get(0)[6]);
                     purchaseInvoice.setDocDate(date2);
-                    purchaseInvoice.setDocDueDate(date2);
+                    purchaseInvoice.setDocDueDate(date3);
                 } catch (Exception e) {
                 }
 
