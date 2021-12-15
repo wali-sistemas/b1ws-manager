@@ -807,6 +807,36 @@ public class PedBoxREST {
         return Response.ok(businessPartnerSAPFacade.getSellerByCustomer(cardCode, companyName, false)).build();
     }
 
+    @GET
+    @Path("customer-certificate/purchase/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getCustomerPurchaseCertificate(@PathParam("companyname") String companyName,
+                                                   @QueryParam("cardcode") String cardCode,
+                                                   @QueryParam("year") String year,
+                                                   @QueryParam("type") Integer typeCert) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio para generar certificado de compras para el cliente [{0}] del ano [{1}]", new Object[]{cardCode, year});
+
+        Object[] obj = invoiceSAPFacade.getSumOfInvoicesByCustomer(cardCode, companyName, false);
+        if (obj == null) {
+            CONSOLE.log(Level.WARNING, "No se encontraron compras relacionadas para mostrarle al cliente {0}", cardCode);
+            return Response.ok(new ResponseDTO(-2, "No se encontraron compras relacionadas para mostrarle al cliente " + cardCode)).build();
+        }
+
+        CertifSumInvoicesDTO dto = new CertifSumInvoicesDTO();
+        dto.setYear(year);
+        dto.setNit((String) obj[0]);
+        dto.setCardName((String) obj[1]);
+        dto.setSumComp((BigDecimal) obj[2]);
+        dto.setSumIvaComp((BigDecimal) obj[3]);
+        dto.setSumDiscount((BigDecimal) obj[4]);
+        dto.setSumDev((BigDecimal) obj[5]);
+        dto.setSumIvaDev((BigDecimal) obj[6]);
+        dto.setSumTransp((BigDecimal) obj[7]);
+
+        return Response.ok(dto).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -915,17 +945,7 @@ public class PedBoxREST {
                     itemsMDL.add(detailDTO);
                 }
             } else {
-                // llenamos detalle para enviar a cedi
                 DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                detailDTO.setWhsCode("01");
-                detailDTO.setOcrCode(ocrCode);
-                detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
-                detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
-                detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
-                itemsSAP.add(detailDTO);
-
                 if ((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]) > 0) {
                     // Llenamos detalle para enviar a modula
                     detailDTO = new DetailSalesOrderDTO();
@@ -937,6 +957,16 @@ public class PedBoxREST {
                     detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
                     detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
                     itemsMDL.add(detailDTO);
+                } else {
+                    // llenamos detalle para enviar a cedi
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                    detailDTO.setWhsCode("01");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsSAP.add(detailDTO);
                 }
             }
         }

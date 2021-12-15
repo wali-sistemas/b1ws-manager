@@ -258,7 +258,17 @@ public class ItemSAPFacade {
         sb.append("   else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock, cast(it.\"PicturName\" as varchar)as PicturName,cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto ");
         sb.append("  from OITM it ");
         sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
-        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('01','30') ");
+        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='01' ");
+        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append(" union all ");
+        sb.append("  select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
+        sb.append("   cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
+        sb.append("   cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("   then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where ub.\"Attr4Val\"='N' and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock, cast(it.\"PicturName\" as varchar)as PicturName,cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto ");
+        sb.append("  from OITM it ");
+        sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='30' ");
         sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(" union all ");
         sb.append("  select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
