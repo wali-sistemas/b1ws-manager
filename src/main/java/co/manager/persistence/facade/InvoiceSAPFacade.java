@@ -71,4 +71,29 @@ public class InvoiceSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public Object[] getSumOfInvoicesByCustomer(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(c.\"LicTradNum\" as varchar(20))as nit,cast(f.\"CardName\" as varchar(100))as cliente, ");
+        sb.append(" cast(sum(f.\"DocTotal\")as numeric(18,2))as comp,cast(sum(f.\"VatSum\")as numeric(18,2))as ivaCom, ");
+        sb.append(" cast(sum(f.\"DiscSum\")as numeric(18,2))as descto, ");
+        sb.append(" (select cast(sum(n.\"DocTotal\")as numeric(18,2)) from ORIN n where n.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("')as dev,(select cast(sum(n.\"VatSum\")as numeric(18, 2)) from ORIN n where n.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("')as ivaDev,cast(ifnull(sum(g.\"LineTotal\"),0)as numeric(18, 2))as flete ");
+        sb.append("from OINV f ");
+        sb.append("inner join OCRD c on c.\"CardCode\"=f.\"CardCode\" ");
+        sb.append("left join INV3 g on g.\"DocEntry\"=f.\"DocEntry\" and g.\"ExpnsCode\"=1 ");
+        sb.append("where year (f.\"DocDate\")=year(current_date) and f.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("' group by year(f.\"DocDate\"),f.\"CardName\",c.\"LicTradNum\"");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las compras del cliente " + cardCode + " realizadas en " + companyName);
+        }
+        return null;
+    }
 }
