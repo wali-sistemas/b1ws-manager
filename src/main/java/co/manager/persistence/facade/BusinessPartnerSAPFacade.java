@@ -34,7 +34,7 @@ public class BusinessPartnerSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(sn.\"CardCode\" as varchar(20)) as CardCode, cast(sn.\"LicTradNum\" as varchar(20)) as Nit, ");
-        sb.append("       cast(sn.\"CardName\" as varchar(50)) as Nombre, cast(cr.\"Street\" as varchar(100)) as AddressToDef, ");
+        sb.append("       cast(sn.\"CardName\" as varchar(50)) as Nombre, cast(sn.\"Address\" as varchar(100)) as AddressToDef, ");
         sb.append("       cast(sn.\"City\" as varchar(50)) as Localidad, cast(substring(sn.\"Phone1\",1,10) as varchar(10)) as Telefono, ");
         sb.append("       cast(substring(ifnull(sn.\"Cellular\",''),1,10) as varchar(10)) as Celular, cast(upper(sn.\"E_Mail\") as varchar(50)) as Email, ");
         sb.append("       cast(oc.\"PymntGroup\" as varchar(20)) as FormaPago, cast(((oc.\"ExtraMonth\" * 30) + oc.\"ExtraDays\") as int) as Plazo, ");
