@@ -53,7 +53,8 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(((sn.\"CreditLine\" * 1.2) - sn.\"Balance\" - sn.\"OrdersBal\") as numeric(18,0)) as Cupo, ");
         sb.append("       cast(cr.\"Address\" as varchar(50)) as IdAddress, ");
         sb.append("       cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
-        sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County ");
+        sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County, ");
+        sb.append("       case when sn.\"ShipToDef\" = cr.\"Address\" then 1 else 2 end ShipDef ");
         sb.append("from   OCRD sn ");
         sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
@@ -61,7 +62,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("where  sn.\"CardType\" = 'C' and sn.\"frozenFor\" = 'N' and cs.\"Country\" = 'CO' and sn.\"SlpCode\" <> -1 ");
         sb.append("       and cr.\"AdresType\" = 'S' and sn.\"SlpCode\" =");
         sb.append(slpCode);
-        sb.append(" order by sn.\"CardCode\" asc, cr.\"LineNum\" DESC");
+        sb.append(" order by ShipDef");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
