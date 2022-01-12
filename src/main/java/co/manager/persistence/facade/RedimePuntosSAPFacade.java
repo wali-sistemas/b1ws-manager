@@ -117,7 +117,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" from \"@REDENCION_PUNTOS\" p ");
         sb.append(" left join OCRD c on p.\"U_CardCode\"=c.\"CardCode\" ");
         sb.append(" left join \"@REDENCION_VENDMOSTR\" v ON p.\"U_CardCode\"=v.\"U_Documento\" and v.\"U_Activo\"='S' ");
-        sb.append(" where year(p.\"U_DocDate\")=year(current_date) ");
+        sb.append(" where year(p.\"U_DocDate\") between year(ADD_YEARS(TO_DATE(current_date,'YYYY-MM-DD'),-1)) and year(current_date) ");
         sb.append(" group by p.\"U_CardCode\",c.\"CardCode\",c.\"U_PRO_FIDELIZACION\" ");
         sb.append(")as t ");
 
