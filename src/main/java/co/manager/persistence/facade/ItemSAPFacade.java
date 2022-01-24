@@ -345,8 +345,8 @@ public class ItemSAPFacade {
     public List<Object[]> getStockWarehouseCurrent(String itemCode, String whsCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select * from ( ");
-        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (select sum(de.\"OnHandQty\") ");
+        sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
+        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(case when it.\"WhsCode\"='30' then '01' else it.\"WhsCode\" end as varchar(20))as Bodega,cast(case when (select sum(de.\"OnHandQty\") ");
         sb.append(" from OBIN ub ");
         sb.append(" inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
         sb.append(" where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\") ");
@@ -375,6 +375,7 @@ public class ItemSAPFacade {
             sb.append("'");
         }
         sb.append(")as t where t.Stock>=0");
+        sb.append(" group by t.Producto,t.Bodega");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
