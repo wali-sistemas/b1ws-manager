@@ -370,9 +370,13 @@ public class ItemSAPFacade {
             sb.append("'");
         }
         if (!whsCode.equals("0")) {
-            sb.append(" and it.\"WhsCode\"='");
-            sb.append(whsCode);
-            sb.append("'");
+            sb.append(" and it.\"WhsCode\" in ('");
+            if (whsCode.equals("01")) {
+                sb.append("01','30");
+            } else {
+                sb.append(whsCode);
+            }
+            sb.append("')");
         }
         sb.append(")as t where t.Stock>=0");
         sb.append(" group by t.Producto,t.Bodega");
