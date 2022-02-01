@@ -7,6 +7,7 @@ import co.manager.hanaws.client.order.OrderClient;
 import co.manager.hanaws.dto.order.OrderDTO;
 import co.manager.hanaws.dto.order.OrderRestDTO;
 import co.manager.persistence.facade.BusinessPartnerSAPFacade;
+import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.persistence.facade.SalesOrderSAPFacade;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
@@ -41,6 +42,8 @@ public class SalesOrderEJB {
     private SalesOrderSAPFacade salesOrderSAPFacade;
     @EJB
     private BusinessPartnerSAPFacade businessPartnerSAPFacade;
+    @EJB
+    private ItemSAPFacade itemSAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -90,8 +93,12 @@ public class SalesOrderEJB {
                     order.setUfecini(date2);
                 } catch (Exception e) {
                 }
-                //TODO: consultando la cuenta de ingreso en ventas por cliente
-                Object[] incomeAccount = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+
+                Object[] incomeAccount = new Object[0];
+                if (!dto.getCompanyName().contains("VARROC")) {
+                    //TODO: consultando la cuenta de ingreso en ventas por cliente
+                    incomeAccount = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+                }
 
                 List<DetailSalesOrderDTO> lines = dto.getDetailSalesOrder();
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
@@ -105,10 +112,11 @@ public class SalesOrderEJB {
                     orderLine.setBaseType(line.getBaseType());
                     orderLine.setBaseEntry(line.getBaseEntry());
 
-                    //TODO: items excluidos de IVA por la DIAN, porductos solo en motozone
-                    if (line.getItemCode().equals("RP708D88") || line.getItemCode().equals("RP708D89") || line.getItemCode().equals("RP708D99")) {
-                        orderLine.setTaxCode("IVAEXCLU");
-                        orderLine.setAccountCode("41350507");
+                    if (dto.getCompanyName().contains("VARROC")) {
+                        //TODO: consultando la cuenta de ingreso en ventas por articulo solo para motozone
+                        Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(line.getItemCode(), dto.getCompanyName(), false);
+                        orderLine.setTaxCode((String) incomeAccountItem[0]);
+                        orderLine.setAccountCode((String) incomeAccountItem[1]);
                     } else {
                         orderLine.setTaxCode((String) incomeAccount[0]);
                         orderLine.setAccountCode((String) incomeAccount[1]);
