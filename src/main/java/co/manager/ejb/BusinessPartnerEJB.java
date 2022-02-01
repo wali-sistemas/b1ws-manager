@@ -183,7 +183,7 @@ public class BusinessPartnerEJB {
         detailLine.setObject("FE_RES_FIS_SN");
         detailLine.setLogInst(null);
         detailLine.setuCodeResFis("R-99-PN");
-        detailLine.setuDescResFis("No responsable");
+        detailLine.setuDescResFis("No aplica – Otros");
         detailLine.setuLineNum(1l);
 
         detail.add(detailLine);
