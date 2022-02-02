@@ -291,8 +291,11 @@ public class ItemSAPFacade {
         sb.append("  inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
         sb.append("  inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('05','26') ");
         sb.append("  inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
-        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"='96' and ase.\"SlpCode\"=");
-        sb.append(slpCode);
+        sb.append("  where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"='96' ");
+        if (!slpCode.equals("0")) {
+            sb.append(" and ase.\"SlpCode\"=");
+            sb.append(slpCode);
+        }
         sb.append("  )as r ");
         sb.append(" inner join OITM it on it.\"ItemCode\" = r.Producto ");
         sb.append(" left  join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
