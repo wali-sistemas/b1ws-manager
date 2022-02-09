@@ -13,17 +13,20 @@ public class PrintReportDTO {
     private String companyName;
     private String origen;
     private String filtro;
+    private String filtroSec;
     private boolean imprimir;
 
     public PrintReportDTO() {
     }
 
-    public PrintReportDTO(int id, int copias, String documento, String companyName, String origen, boolean imprimir) {
+    public PrintReportDTO(int id, int copias, String documento, String companyName, String origen, String filtro, String filtroSec, boolean imprimir) {
         this.id = id;
         this.copias = copias;
         this.documento = documento;
         this.companyName = companyName;
         this.origen = origen;
+        this.filtro = filtro;
+        this.filtroSec = filtroSec;
         this.imprimir = imprimir;
     }
 
@@ -83,6 +86,14 @@ public class PrintReportDTO {
         this.filtro = filtro;
     }
 
+    public String getFiltroSec() {
+        return filtroSec;
+    }
+
+    public void setFiltroSec(String filtroSec) {
+        this.filtroSec = filtroSec;
+    }
+
     @Override
     public String toString() {
         return "PrintReportDTO{" +
@@ -92,6 +103,7 @@ public class PrintReportDTO {
                 ", companyName='" + companyName + '\'' +
                 ", origen='" + origen + '\'' +
                 ", filtro='" + filtro + '\'' +
+                ", filtroSec='" + filtroSec + '\'' +
                 ", imprimir=" + imprimir +
                 '}';
     }

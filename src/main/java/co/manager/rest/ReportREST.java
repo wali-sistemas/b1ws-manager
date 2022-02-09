@@ -81,6 +81,7 @@ public class ReportREST implements Serializable {
         if (dto.getDocumento().equals("withholding")) {
             if (dto.getFiltro() != null) {
                 mapa.put("filtro", dto.getFiltro());
+                mapa.put("filtroSec", dto.getFiltroSec());
             }
         }
         generarInforme(report, rutaArchivo, dto, mapa, connection);
