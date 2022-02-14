@@ -906,7 +906,8 @@ public class PedBoxREST {
         }
 
         ResponseDTO res = new ResponseDTO();
-        if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("VELEZ") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+        //TODO: Crear orden directamente en cedi solo para MTZ, MOTOREPUESTOS, IGB(solo llantas y cliente C900998242), wms-Modula(apagada)
+        if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("VELEZ") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false") || dto.getCardCode().equals("C900998242")) {
             res = salesOrderEJB.createSalesOrder(dto);
             return Response.ok(res).build();
         }
