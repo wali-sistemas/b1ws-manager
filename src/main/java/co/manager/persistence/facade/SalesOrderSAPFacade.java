@@ -174,7 +174,7 @@ public class SalesOrderSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("update ORDR set \"U_TRANSP\"=");
         sb.append(trasnport);
-        sb.append("where \"DocNum\"=");
+        sb.append(" where \"DocNum\"=");
         sb.append(docNum);
         try {
             em.createNativeQuery(sb.toString()).executeUpdate();
