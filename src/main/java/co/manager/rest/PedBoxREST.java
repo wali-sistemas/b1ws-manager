@@ -183,7 +183,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
         List<Object[]> objects = new ArrayList<>();
 
-        if (slpCode == null || companyname.equals("VARROC")) {
+        if (slpCode.equals("0") || companyname.equals("VARROC")) {
             objects = itemSAPFacade.getListItemsExtranet(companyname, false);
         } else {
             objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
