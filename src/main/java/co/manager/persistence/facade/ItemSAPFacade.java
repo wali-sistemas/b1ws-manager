@@ -367,7 +367,7 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public List<Object[]> getStockWarehouseCurrent(String itemCode, String whsCode, String companyName, boolean pruebas) {
+    public List<Object[]> getStockWarehouseCurrent(String itemCode, String whsCode, String companyName, String statusModula, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
@@ -375,9 +375,12 @@ public class ItemSAPFacade {
         sb.append(" from OBIN ub ");
         sb.append(" inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
         sb.append(" where de.\"WhsCode\" in(");
-        if (companyName.contains("IGB")) {
+        if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','30','05','26'");
+        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
+            //Filtro bodegas de solo ventas para IGB
+            sb.append("'01','05','26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -385,9 +388,12 @@ public class ItemSAPFacade {
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\")");
         sb.append("  from OBIN ub ");
         sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
-        if (companyName.contains("IGB")) {
+        if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','30','05','26'");
+        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
+            //Filtro bodegas de solo ventas para IGB
+            sb.append("'01','05','26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -397,9 +403,12 @@ public class ItemSAPFacade {
         sb.append(" from OITM oi ");
         sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
         sb.append(" where it.\"WhsCode\" in (");
-        if (companyName.contains("IGB")) {
+        if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','30','05','26'");
+        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
+            //Filtro bodegas de solo ventas para IGB
+            sb.append("'01','05','26'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -412,7 +421,9 @@ public class ItemSAPFacade {
         }
         if (!whsCode.equals("0")) {
             sb.append(" and it.\"WhsCode\" in ('");
-            if (whsCode.equals("01")) {
+            if (whsCode.equals("01") && statusModula.equals("false")) {
+                sb.append("01");
+            } else if (whsCode.equals("01") && statusModula.equals("true")) {
                 sb.append("01','30");
             } else {
                 sb.append(whsCode);
