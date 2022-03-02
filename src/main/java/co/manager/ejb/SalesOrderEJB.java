@@ -55,7 +55,7 @@ public class SalesOrderEJB {
     }
 
     public ResponseDTO createSalesOrder(SalesOrderDTO dto) {
-        Long docEntry = 0l;
+        Long docNum = 0l;
         //1. Login
         String sessionId = null;
         try {
@@ -126,17 +126,19 @@ public class SalesOrderEJB {
                 }
                 order.setDocumentLines(listDet);
 
-                CONSOLE.log(Level.INFO, "Iniciando creacion de orden de la venta para {0}", dto.getCompanyName());
+                CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
                 String json = gson.toJson(order);
                 CONSOLE.log(Level.INFO, json);
+
                 OrderRestDTO res = service.addOrder(order, sessionId);
-                docEntry = res.getDocEntry();
-                if (docEntry == 0) {
-                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear la orden. Resetear el sesión ID.");
+                docNum = res.getDocNum();
+
+                if (docNum == 0) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un error al crear la orden. Resetear el sesión ID.");
                     return new ResponseDTO(-1, order);
                 } else {
-                    CONSOLE.log(Level.INFO, "Se creo la orden satisfactoriamente");
+                    CONSOLE.log(Level.INFO, "Se creo la orden satisfactoriamente. DocNum={0}", docNum);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden ", e);
@@ -152,7 +154,7 @@ public class SalesOrderEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        return new ResponseDTO(0, salesOrderSAPFacade.getDocNumOrder(docEntry, dto.getCompanyName(), false));
+        return new ResponseDTO(0, docNum);
     }
 
     private String getPropertyValue(String propertyName, String companyName) {

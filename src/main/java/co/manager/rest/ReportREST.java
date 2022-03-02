@@ -53,6 +53,13 @@ public class ReportREST implements Serializable {
                         dto.getDocumento() + File.separator + dto.getDocumento() + ".jrxml");
                 rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + dto.getFiltro() + File.separator + reportName;
                 break;
+            case "shopping":
+                rutaArchivo = appBean.obtenerValorPropiedad("url.archivo");
+                reportName = dto.getId() + ".pdf";
+                report = JasperCompileManager.compileReportToFile(appBean.obtenerValorPropiedad("url.jasper") + dto.getCompanyName() + File.separator +
+                        "customer" + File.separator + dto.getDocumento() + ".jrxml");
+                rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + "customer" + File.separator + dto.getDocumento() + File.separator + reportName;
+                break;
             default:
                 reportName = "";
                 break;
@@ -77,12 +84,8 @@ public class ReportREST implements Serializable {
         Map<String, Object> mapa = new HashMap<>();
         if (dto.getId() != 0) {
             mapa.put("id", dto.getId());
-        }
-        if (dto.getDocumento().equals("withholding")) {
-            if (dto.getFiltro() != null) {
-                mapa.put("filtro", dto.getFiltro());
-                mapa.put("filtroSec", dto.getFiltroSec());
-            }
+            mapa.put("filtro", dto.getFiltro());
+            mapa.put("filtroSec", dto.getFiltroSec());
         }
         generarInforme(report, rutaArchivo, dto, mapa, connection);
         connection.close();
