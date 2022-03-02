@@ -5,6 +5,8 @@ import co.manager.ejb.*;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.persistence.entity.DetallePagoPasarelaSAP;
+import co.manager.persistence.entity.OrderDetailPedbox;
+import co.manager.persistence.entity.OrderPedbox;
 import co.manager.persistence.entity.PagoPasarelaSAP;
 import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
@@ -65,6 +67,10 @@ public class PedBoxREST {
     private CitySAPFacade citySAPFacade;
     @EJB
     private OrderModulaEJB orderModulaEJB;
+    @EJB
+    private OrderPedboxFacade orderPedboxFacade;
+    @EJB
+    private OrderDetailPedboxFacade orderDetailPedboxFacade;
 
     @GET
     @Path("list-municipios/{companyname}")
@@ -845,62 +851,66 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
+        CONSOLE.log(Level.SEVERE, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
+        /**** 1.Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/
+        if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo numAtCard es obligatorio.")).build();
+        } else {
+            Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
+            if (docNum != 0) {
+                CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
+                return Response.ok(new ResponseDTO(0, docNum)).build();
+            }
+        }
+        /**** 2.Validar campos obligatorios para creación de orden de venta****/
         if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio.")).build();
         } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo cardCode es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo cardCode es obligatorio.")).build();
         } else if (dto.getDetailSalesOrder().size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo detailSalesOrder es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo detailSalesOrder es obligatorio.")).build();
         } else if (dto.getSlpCode() == null || dto.getSlpCode() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo slpCode es obligatorio.")).build();
-        } else if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo numAtCard es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo slpCode es obligatorio.")).build();
         } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo status es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo status es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo status es obligatorio.")).build();
         } else if (dto.getConfirmed() == null || dto.getConfirmed().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + " .Campo confirmed es obligatorio.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo confirmed es obligatorio.")).build();
         }
-        //Validar si ya existe la orden en SAP por idPedBox.
-        Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
-        if (docNum != 0) {
-            CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
-            return Response.ok(new ResponseDTO(0, docNum)).build();
-        }
-        //validar PayToCode= id direccion de factura
-        List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
-        if (idAddress.size() > 0) {
-            for (Object[] obj : idAddress) {
-                dto.setPayToCode((String) obj[1]);
-            }
-        }
-        //Validar descuento comercial.Marcar con estado revisar y no autorizar separacion.
+        /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
         if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
         } else if (dto.getCompanyName().contains("VARROC")) {
-            //TODO: Por instrucción del area de operaciones, todos las ordenes ingresan con estado REVISAR.
+            //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR.
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //Consultando id de la transportadora asignada al cliente
-        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
-        //Consultando el centro de costo
+        /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
+        /**** 5.Consultando código de transportadora asignada al cliente****/
+        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        /**** 6.Consultando por cliente el id de la dirección de factura****/
+        List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
+        if (idAddress.size() > 0) {
+            for (Object[] obj : idAddress) {
+                dto.setPayToCode((String) obj[1]);
+            }
+        }
         CONSOLE.log(Level.INFO, dto.toString());
 
         boolean orderTire = false;
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
-            //TODO: validar si la orden es de llantas para no enviar a wms-modula. TY - PW - U
+            //TODO: validar si la orden es de llantas para no enviar a wms-modula. TY - PW - U, sino a CEDI
             if (detail.getItemCode().substring(0, 2).equals("TY") || detail.getItemCode().substring(0, 2).equals("PW") || detail.getItemCode().substring(0, 1).equals("U")) {
                 orderTire = true;
                 break;
@@ -908,10 +918,16 @@ public class PedBoxREST {
         }
 
         ResponseDTO res = new ResponseDTO();
-        //TODO: Crear orden directamente en cedi solo para MTZ, MOTOREPUESTOS, IGB(solo llantas y cliente C900998242), wms-Modula(apagada)
+        /**** 7.Crear orden directamente en cedi solo para MTZ, MOTOREPUESTOS, IGB(solo llantas y cliente C900998242), wms-Modula(apagada)****/
         if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("VELEZ") || orderTire || managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false") || dto.getCardCode().equals("C900998242")) {
             res = salesOrderEJB.createSalesOrder(dto);
-            return Response.ok(res).build();
+
+            if (res.getCode() == 0) {
+                return Response.ok(res).build();
+            } else {
+                /**** 7.1.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                return Response.ok(createOrderTemporary(dto, 0)).build();
+            }
         }
 
         String numAtCard = dto.getNumAtCard();
@@ -921,8 +937,9 @@ public class PedBoxREST {
 
         //Separar pedido 30Modula - 01CEDI
         for (DetailSalesOrderDTO detailSalesOrderDTO : dto.getDetailSalesOrder()) {
+            /**** 8.Consultando stock actual por item en CEDI y MODULA****/
             Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(detailSalesOrderDTO.getItemCode(), dto.getCompanyName(), false);
-
+            /**** 9.Validar si la cantidad solicitada es mayor al porcentaje de consumo asignado en modula para decidir a donde se enviara la orden****/
             if (((Integer) stockCurrent[0] - detailSalesOrderDTO.getQuantity()) > (((Integer) stockCurrent[0] * warehouseSAPFacade.getConsumePorcModula(dto.getCompanyName(), false)) / 100)) {
                 if ((Integer) stockCurrent[0] >= detailSalesOrderDTO.getQuantity()) {
                     // Llenamos detalle para enviar a modula
@@ -979,11 +996,12 @@ public class PedBoxREST {
             dto.setDetailSalesOrder(itemsMDL);
             dto.setNumAtCard(numAtCard + "M");
             dto.setSerialMDL(serial);
-
+            /**** 10.Crear orden para el almacén 30-MODULA****/
             res = salesOrderEJB.createSalesOrder(dto);
+
             if (res.getCode() == 0) {
                 if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
-                    //TODO: Se envia solicitud a wms modula de tipo depostivo estado=P
+                    /**** 10.1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
                     OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
                     orderModulaDTO.setDocNum(res.getContent().toString());
                     orderModulaDTO.setType("P");
@@ -995,7 +1013,6 @@ public class PedBoxREST {
                         detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
                         details.add(detailModulaDTO);
                     }
-
                     orderModulaDTO.setDetail(details);
 
                     String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
@@ -1006,7 +1023,8 @@ public class PedBoxREST {
                 }
             } else {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
-                return Response.ok(res).build();
+                /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                return Response.ok(createOrderTemporary(dto, 0)).build();
             }
         }
 
@@ -1015,10 +1033,20 @@ public class PedBoxREST {
             dto.setDetailSalesOrder(itemsSAP);
             dto.setNumAtCard(numAtCard + "S");
             dto.setSerialMDL(serial);
-
+            /**** 11.Crear orden para el almacén 01-CEDI****/
             res = salesOrderEJB.createSalesOrder(dto);
+
+            if (res.getCode() == 0) {
+                /**** 11.1.Retornando el nro de documento creado****/
+                return Response.ok(res).build();
+            } else {
+                /**** 11.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                return Response.ok(createOrderTemporary(dto, 0)).build();
+            }
+        } else {
+            /**** 12.Retornando el nro de documento creado****/
+            return Response.ok(res).build();
         }
-        return Response.ok(res).build();
     }
 
     @POST
@@ -1178,5 +1206,42 @@ public class PedBoxREST {
             }
         }
         return Response.ok(list).build();
+    }
+
+    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, long docNum) {
+        /**** 7.3. Registrar pedido en tablas temporales****/
+        OrderPedbox order = new OrderPedbox();
+        OrderDetailPedbox detail = new OrderDetailPedbox();
+
+        order.setDocNum(docNum);
+        order.setDocDate(new Date());
+        order.setCardCode(dto.getCardCode());
+        order.setNumAtCard(dto.getNumAtCard());
+        order.setComments(dto.getComments());
+        order.setSlpCode(dto.getSlpCode().toString());
+        order.setStatus("F");
+        order.setCompanyName(dto.getCompanyName());
+        try {
+            orderPedboxFacade.create(order, dto.getCompanyName(), false);
+        } catch (Exception ex) {
+        }
+
+        for (DetailSalesOrderDTO dt : dto.getDetailSalesOrder()) {
+            /**** 7.4. Consultado stock actual en SAP para MODULA y CEDI****/
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(dt.getItemCode(), dto.getCompanyName(), false);
+
+            detail.setIdOrder(order);
+            detail.setItemCode(dt.getItemCode());
+            detail.setWhsCode(dt.getWhsCode());
+            detail.setQtyAPP(dt.getQuantity());
+            detail.setQtySAP((Integer) stockCurrent[1]);
+            detail.setQtyMDL((Integer) stockCurrent[0]);
+        }
+        try {
+            orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
+        } catch (Exception ex) {
+        }
+
+        return new ResponseDTO(0, order.getIdOrder());
     }
 }
