@@ -851,7 +851,7 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
-        CONSOLE.log(Level.SEVERE, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
+        CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
         /**** 1.Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/
         if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());

@@ -82,11 +82,10 @@ public class ReportREST implements Serializable {
 
         //Se mandan los parametros al Jasper
         Map<String, Object> mapa = new HashMap<>();
-        if (dto.getId() != 0) {
-            mapa.put("id", dto.getId());
-            mapa.put("filtro", dto.getFiltro());
-            mapa.put("filtroSec", dto.getFiltroSec());
-        }
+        mapa.put("id", dto.getId());
+        mapa.put("filtro", dto.getFiltro());
+        mapa.put("filtroSec", dto.getFiltroSec());
+
         generarInforme(report, rutaArchivo, dto, mapa, connection);
         connection.close();
         return new ResponseDTO(0, rutaArchivo);
