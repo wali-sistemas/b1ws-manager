@@ -7,7 +7,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PrintReportDTO {
-    private int id;
+    private String id;
     private int copias;
     private String documento;
     private String companyName;
@@ -19,7 +19,7 @@ public class PrintReportDTO {
     public PrintReportDTO() {
     }
 
-    public PrintReportDTO(int id, int copias, String documento, String companyName, String origen, String filtro, String filtroSec, boolean imprimir) {
+    public PrintReportDTO(String id, int copias, String documento, String companyName, String origen, String filtro, String filtroSec, boolean imprimir) {
         this.id = id;
         this.copias = copias;
         this.documento = documento;
@@ -30,11 +30,11 @@ public class PrintReportDTO {
         this.imprimir = imprimir;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
