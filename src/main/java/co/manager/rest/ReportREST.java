@@ -70,9 +70,9 @@ public class ReportREST implements Serializable {
         InitialContext initialContext = new InitialContext();
         if (dto.getOrigen().equals("S")) {
             if (dto.getCompanyName().equals("IGB")) {
-                cn = "java:/IGBDS";
+                cn = "java:/HANAIGBDS";
             } else {
-                cn = "java:/VARROCDS";
+                cn = "java:/HANAVARROCDS";
             }
         } else {
             cn = "java:/WMSDS";
