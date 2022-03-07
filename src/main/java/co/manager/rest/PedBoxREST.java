@@ -1231,6 +1231,7 @@ public class PedBoxREST {
             Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(dt.getItemCode(), dto.getCompanyName(), false);
 
             detail.setIdOrder(order);
+            detail.setIdOrderDetail(0);
             detail.setItemCode(dt.getItemCode());
             detail.setWhsCode(dt.getWhsCode());
             detail.setQtyAPP(dt.getQuantity());
