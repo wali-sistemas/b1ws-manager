@@ -1236,10 +1236,10 @@ public class PedBoxREST {
             detail.setQtyAPP(dt.getQuantity());
             detail.setQtySAP((Integer) stockCurrent[1]);
             detail.setQtyMDL((Integer) stockCurrent[0]);
-        }
-        try {
-            orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
-        } catch (Exception ex) {
+            try {
+                orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
+            } catch (Exception ex) {
+            }
         }
 
         return new ResponseDTO(0, order.getIdOrder());
