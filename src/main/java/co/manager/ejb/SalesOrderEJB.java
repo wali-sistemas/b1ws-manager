@@ -94,11 +94,10 @@ public class SalesOrderEJB {
                 } catch (Exception e) {
                 }
 
-                Object[] incomeAccount = new Object[0];
-                if (!dto.getCompanyName().contains("VARROC")) {
-                    //TODO: consultando la cuenta de ingreso en ventas por cliente
-                    incomeAccount = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
-                }
+                /*** Consultando la cuenta de ingreso en ventas por cliente***/
+                Object[] incomeAccountCustomer = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+                /*** Consultando la cuenta de ingreso en ventas del primer item de la orden***/
+                Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(dto.getDetailSalesOrder().get(0).getItemCode(), dto.getCompanyName(), false);
 
                 List<DetailSalesOrderDTO> lines = dto.getDetailSalesOrder();
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
@@ -111,15 +110,15 @@ public class SalesOrderEJB {
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());
                     orderLine.setBaseEntry(line.getBaseEntry());
-
-                    if (dto.getCompanyName().contains("VARROC")) {
-                        //TODO: consultando la cuenta de ingreso en ventas por articulo solo para motozone
-                        Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(line.getItemCode(), dto.getCompanyName(), false);
+                    /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante) en IGB y MTZ***/
+                    if (incomeAccountItem[2].equals("54")) {
+                        /***Corresponde a Lubricantes***/
                         orderLine.setTaxCode((String) incomeAccountItem[0]);
                         orderLine.setAccountCode((String) incomeAccountItem[1]);
                     } else {
-                        orderLine.setTaxCode((String) incomeAccount[0]);
-                        orderLine.setAccountCode((String) incomeAccount[1]);
+                        /***Corresponde a respuestos***/
+                        orderLine.setTaxCode((String) incomeAccountCustomer[0]);
+                        orderLine.setAccountCode((String) incomeAccountCustomer[1]);
                     }
 
                     listDet.add(orderLine);
