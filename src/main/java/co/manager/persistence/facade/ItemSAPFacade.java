@@ -640,7 +640,7 @@ public class ItemSAPFacade {
         sb.append(" case when o.\"TaxCodeAR\"='IVAEXCLU' then '41350507' ");
         sb.append("      when o.\"TaxCodeAR\" IN ('IVAG19','IVAV01') then '41350505' ");
         sb.append("      when o.\"TaxCodeAR\"='IVAVEXE' then '41350510' ");
-        sb.append(" else '' end as AcctCode ");
+        sb.append(" else '' end as AcctCode,cast(o.\"U_Marca\" as varchar(20))as marca ");
         sb.append("from OITM o ");
         sb.append("where o.\"ItemCode\"='");
         sb.append(itemCode);
