@@ -61,7 +61,7 @@ public class ClientFeriaSAPFacade {
         sb.append("','");
         sb.append(dto.getRegional().trim());
         sb.append("','");
-        sb.append(new SimpleDateFormat("yyyy-dd-MM HH:mm:ss").format(new Date()));
+        sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         sb.append("','");
         sb.append(dto.getCiudad());
         sb.append("');");
