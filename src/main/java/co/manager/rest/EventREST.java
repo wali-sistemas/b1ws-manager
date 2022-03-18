@@ -65,22 +65,26 @@ public class EventREST implements Serializable {
             params.put("correo", (dto.getCorreo() == null || dto.getCorreo().isEmpty()) ? "Ninguno" : dto.getCorreo());
             params.put("mensaje", dto.getInteres());
 
+            String template = "";
+
             switch (dto.getCompanyName()) {
                 case "VARROC":
-                    if (dto.getRegional().equals("PAISAS") || dto.getRegional().equals("CACHACOS")) {
-                        emailTelemercader = "telemercadeo@motozonecolombia.com";
-                    } else {
-                        emailTelemercader = "telemercadeo1@motozonecolombia.com";
-                    }
+                    emailTelemercader = "telemercadeo2@motozonecolombia.com";
+                    template = "MtzContactoEvento";
                     break;
                 case "IGB":
                     emailTelemercader = salesPersonSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
+                    template = "IgbContactoEvento";
+                    break;
+                case "REDPLAS":
+                    emailTelemercader = "comercial@redplas.co";
+                    template = "RedplasContactoEvento";
                     break;
                 default:
                     emailTelemercader = null;
             }
 
-            sendEmail(dto.getCompanyName().equals("IGB") ? "IgbContactoEvento" : "MtzContactoEvento", "Feria <f2r@feria2ruedas.com>", "Datos de cliente feria2ruedas", dto.getCorreo(),
+            sendEmail(template, "Feria <soporte@igbcolombia.com>", "Captura de cliente feria2ruedas", dto.getCorreo(),
                     emailTelemercader, "sistemas2@igbcolombia.com", null, params);
         }
         return Response.ok(new ResponseDTO(res ? 0 : -1, res ? "Datos capturados exitosamente." : "Ocurrio un error capturando los datos.")).build();
