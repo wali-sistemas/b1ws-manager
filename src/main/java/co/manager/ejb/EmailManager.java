@@ -68,7 +68,9 @@ public class EmailManager implements Serializable {
             message.setFrom(new InternetAddress(dto.getFrom()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(dto.getToList()));
             message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(dto.getCcList()));
-            message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(dto.getBccList()));
+            if (!dto.getTemplateName().equals("TicketNotification")) {
+                message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(dto.getBccList()));
+            }
             message.setSubject(dto.getSubject());
             message.setSentDate(new Date());
             try {
