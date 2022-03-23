@@ -457,7 +457,7 @@ public class SondaREST {
                 params.put("line", (String) obj[5]);
 
                 sendEmail("NotificationDocumentBL", "soporte@igbcolombia.com", "Orden con Documento BL", (String) obj[6],
-                        "auxcomercioexterior@igbcolombia.com", null, null, params);
+                        "auxcomercioexterior@igbcolombia.com", "comercioexterior@igbcolombia.com", null, params);
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra #" + obj[0], e);
                 purchaseOrderFacade.updateFieldDocumentBL((String) obj[0], 'E', companyName, false);
