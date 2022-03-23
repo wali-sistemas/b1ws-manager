@@ -589,7 +589,7 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public Object[] getStockItemMDLvsSAP(String itemCode, String companyName, boolean pruebas) {
+    public Object[] getStockItemMDLvsSAP(String itemCode, String wshCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select sum(\"StockMDL\")as StockMDL,sum(\"StockCDI\")as StockCDI from (");
         sb.append(" select cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int)as \"StockMDL\",0 as \"StockCDI\" ");
@@ -601,16 +601,21 @@ public class ItemSAPFacade {
         sb.append("  (select sum(de.\"OnHandQty\") ");
         sb.append("   from OBIN ub ");
         sb.append("   inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
-        sb.append("   where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='01' and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("   where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='");
+        sb.append(wshCode);
+        sb.append("' and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-");
         sb.append("   (select sum(de.\"OnHandQty\") ");
         sb.append("    from OBIN ub ");
         sb.append("    inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
-        sb.append("    where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='01' and de.\"ItemCode\"=it.\"ItemCode\") ");
+        sb.append("    where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='");
+        sb.append(wshCode);
+        sb.append("' and de.\"ItemCode\"=it.\"ItemCode\") ");
         sb.append("  )else (inv.\"OnHand\"-inv.\"IsCommited\")end as int)as \"StockCDI\" ");
         sb.append(" from OITM it");
-        sb.append(" inner join OITW inv on inv.\"ItemCode\"=it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='01' ");
-        sb.append(" where it.\"ItemCode\"='");
+        sb.append(" inner join OITW inv on inv.\"ItemCode\"=it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='");
+        sb.append(wshCode);
+        sb.append("' where it.\"ItemCode\"='");
         sb.append(itemCode);
         sb.append("')as t");
         try {

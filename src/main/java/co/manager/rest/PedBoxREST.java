@@ -938,7 +938,7 @@ public class PedBoxREST {
         //Separar pedido 30Modula - 01CEDI
         for (DetailSalesOrderDTO detailSalesOrderDTO : dto.getDetailSalesOrder()) {
             /**** 8.Consultando stock actual por item en CEDI y MODULA****/
-            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(detailSalesOrderDTO.getItemCode(), dto.getCompanyName(), false);
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(detailSalesOrderDTO.getItemCode(), detailSalesOrderDTO.getWhsCode(), dto.getCompanyName(), false);
             /**** 9.Validar si la cantidad solicitada es mayor al porcentaje de consumo asignado en modula para decidir a donde se enviara la orden****/
             if (((Integer) stockCurrent[0] - detailSalesOrderDTO.getQuantity()) > (((Integer) stockCurrent[0] * warehouseSAPFacade.getConsumePorcModula(dto.getCompanyName(), false)) / 100)) {
                 if ((Integer) stockCurrent[0] >= detailSalesOrderDTO.getQuantity()) {
@@ -1228,7 +1228,7 @@ public class PedBoxREST {
 
         for (DetailSalesOrderDTO dt : dto.getDetailSalesOrder()) {
             /**** 7.4. Consultado stock actual en SAP para MODULA y CEDI****/
-            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(dt.getItemCode(), dto.getCompanyName(), false);
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAP(dt.getItemCode(), dt.getWhsCode(), dto.getCompanyName(), false);
 
             detail.setIdOrder(order);
             detail.setIdOrderDetail(0);
