@@ -25,4 +25,8 @@ public class ItemModulaFacade {
     public ItemModula find(String itemCode, String companyName, boolean testing) {
         return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).find(ItemModula.class, itemCode);
     }
+
+    public void remove(String itemModula, String companyName, boolean testing) {
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(find(itemModula, companyName, testing));
+    }
 }

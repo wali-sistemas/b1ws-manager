@@ -41,6 +41,8 @@ public class ModulaREST {
     private ItemSAPFacade itemSAPFacade;
     @EJB
     private ItemModulaFacade itemModulaFacade;
+    @EJB
+    private SondaREST sondaREST;
 
     @GET
     @Path("stock-compare")
@@ -205,6 +207,42 @@ public class ModulaREST {
         }
         CONSOLE.log(Level.INFO, "Inventariando articulo en modula exitoso");
         return Response.ok(new ResponseDTO(0, "Inventariando articulo en modula exitoso.")).build();
+    }
+
+    @GET
+    @Path("replicate-item/{itemCode}/{minStock}/{maxStock}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response replicateItemModula(@PathParam("itemCode") String itemCode,
+                                        @PathParam("minStock") Integer minStock,
+                                        @PathParam("maxStock") Integer maxStock) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion de item en modula con actualizacion de stocks");
+        /***1. Actualizar stock mínimo y stock máximo para la bodega 30 en IGB***/
+        try {
+            itemSAPFacade.updateStocksItemByWarehouse(itemCode, minStock, maxStock, "30", "IGB", false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando los stocks para el item {0}", itemCode);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando los stocks.")).build();
+        }
+        /***2. Actualizar estado Y en la propiedad Replicar a Modula en el maestro de items***/
+        try {
+            itemSAPFacade.updateFieldSyncModula(itemCode, "Y", "IGB", false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el check [replicar a modula] para el item {0}", itemCode);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el check para replicar a modula.")).build();
+        }
+        /***3. Eliminar registro existente en la tabla temporal [itemModula] en WMS***/
+        try {
+            itemModulaFacade.remove(itemCode, "IGB", false);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error eliminando el registro temporal para el item {0}", itemCode);
+            return Response.ok(new ResponseDTO(-1,"Ocurrio un error eliminando el registro temporal.")).build();
+        }
+        /***4. Lanzar servicio de sincronización automatica***/
+        sondaREST.syncItemsModula("IGB", false);
+
+        CONSOLE.log(Level.INFO, "Finalizando sincronizacion de item en modula.");
+        return Response.ok(new ResponseDTO(0, "Sincronización exitosa.")).build();
     }
 
     private List<StockRestDTO.ItemDTO.DetailDTO> listStockModula() {

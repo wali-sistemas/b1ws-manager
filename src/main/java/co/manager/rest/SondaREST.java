@@ -270,7 +270,7 @@ public class SondaREST {
                     //TODO: crear registro local de creacion de items
                     itemModulaFacade.create(entity, companyName, testing);
                     //TODO: Actualizando el UDF sync-modula a estado="N"
-                    itemSAPFacade.updateFieldSyncModula(entity.getItemCode(), companyName, false);
+                    itemSAPFacade.updateFieldSyncModula(entity.getItemCode(), "N", companyName, false);
                 } catch (Exception e) {
                 }
             }
@@ -465,7 +465,7 @@ public class SondaREST {
             }
             purchaseOrderFacade.updateFieldDocumentBL((String) obj[0], 'C', companyName, false);
         }
-        return Response.ok(new ResponseDTO(0,"Notificacion documento BL envida con exito.")).build();
+        return Response.ok(new ResponseDTO(0, "Notificacion documento BL envida con exito.")).build();
     }
 
     private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
