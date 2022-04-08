@@ -627,9 +627,11 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public void updateFieldSyncModula(String itemCode, String companyName, boolean pruebas) {
+    public void updateFieldSyncModula(String itemCode, String status, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("update OITM set \"QryGroup3\"='N' where \"ItemCode\"='");
+        sb.append("update OITM set \"QryGroup3\"='");
+        sb.append(status);
+        sb.append("' where \"ItemCode\"='");
         sb.append(itemCode);
         sb.append("'");
         try {
@@ -656,5 +658,23 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo la cuenta de ingreso en ventas para el item " + itemCode, e);
         }
         return new Object[]{};
+    }
+
+    public void updateStocksItemByWarehouse(String itemCode, Integer minStock, Integer maxStock, String whsCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OITW set \"MinStock\"=");
+        sb.append(minStock);
+        sb.append(",\"MaxStock\"=");
+        sb.append(maxStock);
+        sb.append(" where \"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("' and \"WhsCode\"='");
+        sb.append(whsCode);
+        sb.append("'");
+        try {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando los stock min-max para el item {0} en la bodega {1}", new Object[]{itemCode, whsCode});
+        }
     }
 }
