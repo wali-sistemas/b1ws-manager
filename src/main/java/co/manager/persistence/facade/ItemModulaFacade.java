@@ -27,6 +27,9 @@ public class ItemModulaFacade {
     }
 
     public void remove(String itemModula, String companyName, boolean testing) {
-        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(find(itemModula, companyName, testing));
+        ItemModula entity = find(itemModula, companyName, testing);
+        if (entity != null) {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(entity);
+        }
     }
 }

@@ -592,12 +592,12 @@ public class ItemSAPFacade {
     public Object[] getStockItemMDLvsSAP(String itemCode, String wshCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select sum(\"StockMDL\")as StockMDL,sum(\"StockCDI\")as StockCDI from (");
-        sb.append(" select cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int)as \"StockMDL\",0 as \"StockCDI\" ");
+        sb.append(" select ifnull(cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int),0)as \"StockMDL\",0 as \"StockCDI\" ");
         sb.append(" from \"OITW\" s ");
         sb.append(" where s.\"OnHand\">0 and s.\"WhsCode\"='30' and s.\"ItemCode\"='");
         sb.append(itemCode);
         sb.append("' union all ");
-        sb.append(" select 0 as \"StockMDL\",cast(case when");
+        sb.append(" select 0 as \"StockMDL\",ifnull(cast(case when");
         sb.append("  (select sum(de.\"OnHandQty\") ");
         sb.append("   from OBIN ub ");
         sb.append("   inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
@@ -611,7 +611,7 @@ public class ItemSAPFacade {
         sb.append("    where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='");
         sb.append(wshCode.equals("30") ? "01" : wshCode);
         sb.append("' and de.\"ItemCode\"=it.\"ItemCode\") ");
-        sb.append("  )else (inv.\"OnHand\"-inv.\"IsCommited\")end as int)as \"StockCDI\" ");
+        sb.append("  )else (inv.\"OnHand\"-inv.\"IsCommited\")end as int),0)as \"StockCDI\" ");
         sb.append(" from OITM it");
         sb.append(" inner join OITW inv on inv.\"ItemCode\"=it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='");
         sb.append(wshCode.equals("30") ? "01" : wshCode);
