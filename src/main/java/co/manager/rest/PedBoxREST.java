@@ -890,9 +890,12 @@ public class PedBoxREST {
                 dto.setConfirmed("N");
             }
         } else if (dto.getCompanyName().contains("VARROC")) {
-            //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR.
+            //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR, menos las de motorepuestos.co
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
+        } else {
+            dto.setStatus("APROBADO");
+            dto.setConfirmed("Y");
         }
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
