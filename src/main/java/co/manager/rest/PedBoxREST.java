@@ -893,7 +893,7 @@ public class PedBoxREST {
             //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR, menos las de motorepuestos.co
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
-        } else {
+        } else if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         }
