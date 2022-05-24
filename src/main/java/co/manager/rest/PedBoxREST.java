@@ -143,6 +143,7 @@ public class PedBoxREST {
             WarehouseDTO dto = new WarehouseDTO();
             dto.setWhsCode((String) obj[0]);
             dto.setWhsName((String) obj[1]);
+            dto.setType((Integer) obj[2]);
             warehouses.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando listado de bodegas para la empresa [{0}]", companyname);

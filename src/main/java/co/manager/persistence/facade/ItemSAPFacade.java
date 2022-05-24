@@ -430,7 +430,25 @@ public class ItemSAPFacade {
             }
             sb.append("')");
         }
+        //Sanbartome 7
+        sb.append(" union all ");
+        sb.append("select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
+        sb.append("from OITM oi ");
+        sb.append("inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+        sb.append("where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+        sb.append("and it.\"OnHand\">0 ");
+        if (!itemCode.equals("0")) {
+            sb.append(" and oi.\"ItemCode\"='");
+            sb.append(itemCode);
+            sb.append("'");
+        }
+        sb.append(" group by oi.\"ItemCode\",it.\"WhsCode\" ");
         sb.append(")as t where t.Stock>=0");
+        if (!whsCode.equals("0")) {
+            sb.append(" and t.Bodega='");
+            sb.append(whsCode);
+            sb.append("'");
+        }
         sb.append(" group by t.Producto,t.Bodega");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
