@@ -1,0 +1,136 @@
+<style type="text/css">
+    body, html, .body {
+        font-family: "Century Gothic";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        color: #444;
+    }
+
+	th, td {
+		padding: 5px;
+	}
+</style>
+<container>
+    <spacer size="16"></spacer>
+    <row>
+        <columns large="8">
+            <table style="width: 100%; text-align: center">
+                <tr>
+                    <td>
+                        <table style="width: 40%; text-align: left">
+                            <tr>
+                                <td style="text-align: center; font-size: 14px;">
+                                    <p>
+                                        <b style="color: #cb132d; font-size: 24px">Orden de Compra # ${docNum}</b>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center; font-size: 14px;">
+                                    <p>
+                                        <b style="color: #333; font-size: 24px">Datos del conductor</b>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table style="width:100%; text-align:center; border-collapse:collapse;">
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Fecha Orden</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${docDate}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Arribo Cedi</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${arriboCedi}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Tipo Empaque</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${typeEmp}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Conductor</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${driver}
+                                                </br>
+                                                cc ${idDriver}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Placa #</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${placa}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Contenedor #</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${container}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Precinto</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                ${sealSecurity}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <b>Encargado.</b>
+                                            </td>
+                                            <td style="width: 50%; border:1px solid;">
+                                                <img src="https://wali.igbcolombia.com/api/shared/images/users/import/${photo}"
+                                                     alt="photo" width="60" height="60">
+                                                </br>
+                                                ${slpName}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <P style="color: #fff; background: #333; text-align: center;">
+                                        Este correo es solo informativo, por favor evite responderlo.
+                                    </P>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="https://wali.igbcolombia.com/api/shared/images/logo/email-igb.png"
+                                         alt="footer"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p><b>IGB S.A.S</b> | Calle 98 Sur Nro. 48 - 225 | La Estrella, Colombia<br/>Tel.:
+                                        (57) (604) 444 2025<br/></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </columns>
+    </row>
+</container>

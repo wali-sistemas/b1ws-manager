@@ -468,6 +468,47 @@ public class SondaREST {
         return Response.ok(new ResponseDTO(0, "Notificacion documento BL envida con exito.")).build();
     }
 
+    @GET
+    @Path("comex/send-data-driver/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response sendDataDriver(@PathParam("companyname") String companyName) {
+        CONSOLE.log(Level.INFO, "Iniciando notificacion automatica de datos del conductor");
+
+        List<Object[]> data = purchaseOrderFacade.listOrderWithDataDriver(companyName, false);
+        if (data.isEmpty()) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos del conductor para notificacion automatica");
+            return Response.ok(new ResponseDTO(-2, "No se encontraron datos del conductor para notificacion automatica.")).build();
+        }
+
+        for (Object[] obj : data) {
+            try {
+                //TODO: Notificar vía mail los datos del conductor
+                Map<String, String> params = new HashMap<>();
+                params.put("docNum", (String) obj[0]);
+                params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(obj[1]));
+                params.put("driver", (String) obj[2]);
+                params.put("idDriver", (String) obj[3]);
+                params.put("placa", (String) obj[4]);
+                params.put("container", (String) obj[5]);
+                params.put("sealSecurity", (String) obj[6]);
+                params.put("arriboCedi", new SimpleDateFormat("yyyy-MM-dd").format(obj[7]));
+                params.put("slpName", (String) obj[8]);
+                params.put("typeEmp", (String) obj[9]);
+                params.put("photo", obj[8] + ".jpg");
+
+                sendEmail("NotificationDataDriver", "soporte@igbcolombia.com", "Datos conductor Orden " + obj[0], (String) obj[10],
+                        "sistemas2@igbcolombia.com", "", null, params);
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando los datos automaticos del conductor para la orden de compra #" + obj[0], e);
+                purchaseOrderFacade.updateFieldDataDriver((String) obj[0], 'E', companyName, false);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error enviando la notificacion de documento BL para la orden de compra # " + obj[0])).build();
+            }
+            purchaseOrderFacade.updateFieldDataDriver((String) obj[0], 'C', companyName, false);
+        }
+        return Response.ok(new ResponseDTO(0, "Notificacion datos de conductor envido con exito.")).build();
+    }
+
     private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
         MailMessageDTO dtoMail = new MailMessageDTO();
         dtoMail.setTemplateName(template);
