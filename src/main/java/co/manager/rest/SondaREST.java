@@ -498,7 +498,7 @@ public class SondaREST {
                 params.put("photo", obj[8] + ".jpg");
 
                 sendEmail("NotificationDataDriver", "soporte@igbcolombia.com", "Datos conductor Orden " + obj[0], (String) obj[10],
-                        "sistemas2@igbcolombia.com", "", null, params);
+                        "conductores@igbcolombia.com", "", null, params);
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error enviando los datos automaticos del conductor para la orden de compra #" + obj[0], e);
                 purchaseOrderFacade.updateFieldDataDriver((String) obj[0], 'E', companyName, false);
