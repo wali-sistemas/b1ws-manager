@@ -26,18 +26,22 @@ public class WarehouseSAPFacade {
 
     public List<Object[]> getListWarehouse(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(o.\"WhsCode\" as varchar(20)) as Bodega, cast(o.\"WhsName\" as varchar(50)) as Descripcion ");
+        sb.append("select cast(o.\"WhsCode\" as varchar(20)) as Bodega, cast(o.\"WhsName\" as varchar(50)) as Descripcion, ");
+        sb.append(" case when o.\"WhsCode\"='28' then 1 else 0 end as type ");
         sb.append("from OWHS o ");
         sb.append("where o.\"WhsCode\" IN (");
 
         if (companyName.equals("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01', '05', '26'");
+            sb.append("'01', '05', '26', '32') ");
+            sb.append("union all ");
+            sb.append("select '00' as Bodega,'VENTAS PERDIDAS' as Descripcion,2 as type ");
+            sb.append("from dummy ");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13', '26'");
+            sb.append("'13', '26') ");
         }
-        sb.append(") order by o.\"WhsCode\" ASC");
+        sb.append("order by type asc");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

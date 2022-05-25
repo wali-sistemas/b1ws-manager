@@ -6,13 +6,15 @@ package co.manager.dto;
 public class WarehouseDTO {
     private String whsCode;
     private String whsName;
+    private Integer type;
 
     public WarehouseDTO() {
     }
 
-    public WarehouseDTO(String whsCode, String whsName) {
+    public WarehouseDTO(String whsCode, String whsName, Integer type) {
         this.whsCode = whsCode;
         this.whsName = whsName;
+        this.type = type;
     }
 
     public String getWhsCode() {
@@ -31,11 +33,20 @@ public class WarehouseDTO {
         this.whsName = whsName;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     @Override
     public String toString() {
         return "WarehouseDTO{" +
-                "bodega='" + whsCode + '\'' +
-                ", descripción='" + whsName + '\'' +
+                "whsCode='" + whsCode + '\'' +
+                ", whsName='" + whsName + '\'' +
+                ", type=" + type +
                 '}';
     }
 }
