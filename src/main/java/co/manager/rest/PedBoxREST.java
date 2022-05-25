@@ -916,7 +916,11 @@ public class PedBoxREST {
 
         boolean orderTire = false;
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
-            //TODO: validar si la orden es de llantas para no enviar a wms-modula. TY - PW - U, sino a CEDI
+            /**** 6.1.Registrar ventas perdidas, recorrer lista para identificar items reportados****/
+            if (detail.getWhsCode().equals("00")) {
+                return Response.ok(createOrderTemporary(dto, 0)).build();
+            }
+            /**** 6.2.Validar si la orden es de llantas para no enviar a wms-modula. TY - PW - U, sino a CEDI****/
             if (detail.getItemCode().substring(0, 2).equals("TY") || detail.getItemCode().substring(0, 2).equals("PW") || detail.getItemCode().substring(0, 1).equals("U")) {
                 orderTire = true;
                 break;
