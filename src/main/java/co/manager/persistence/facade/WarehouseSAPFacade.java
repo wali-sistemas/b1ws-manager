@@ -27,7 +27,7 @@ public class WarehouseSAPFacade {
     public List<Object[]> getListWarehouse(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"WhsCode\" as varchar(20)) as Bodega, cast(o.\"WhsName\" as varchar(50)) as Descripcion, ");
-        sb.append(" case when o.\"WhsCode\"='28' then 1 else 0 end as type ");
+        sb.append(" case when o.\"WhsCode\"='32' then 1 else 0 end as type ");
         sb.append("from OWHS o ");
         sb.append("where o.\"WhsCode\" IN (");
 
