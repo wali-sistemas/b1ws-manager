@@ -61,7 +61,12 @@ public class PurchaseInvoicesEJB {
                 PurchaseInvoicesDTO purchaseInvoice = new PurchaseInvoicesDTO();
                 List<PurchaseInvoicesDTO.DocumentLines.DocumentLine> documentLines = new ArrayList<>();
 
-                purchaseInvoice.setCardCode("P811011909");
+                if (companyName.contains("IGB")) {
+                    purchaseInvoice.setCardCode("P811011909");
+                } else {
+                    purchaseInvoice.setCardCode("P900255414");
+                }
+
                 purchaseInvoice.setComments((String) details.get(0)[0]);
                 purchaseInvoice.setSeries(11l);
                 purchaseInvoice.setSalesPersonCode(5l);
@@ -84,7 +89,12 @@ public class PurchaseInvoicesEJB {
                     documentLine.setQuantity(Double.valueOf((Integer) obj[2]));
                     documentLine.setWarehouseCode("01");
                     documentLine.setPrice((BigDecimal) obj[3]);
-                    documentLine.setTaxCode("IVAD01");
+
+                    if (companyName.contains("IGB")) {
+                        documentLine.setTaxCode("IVAD01");
+                    } else {
+                        documentLine.setTaxCode("IVADEXCL");
+                    }
 
                     documentLines.add(documentLine);
                 }
