@@ -189,6 +189,6 @@ public class MotorepuestoREST {
             CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", docNum);
             return Response.ok(new ResponseDTO(-2, "No se encontraron datos de la FV [" + docNum + "] para crear la factura de compra.")).build();
         }
-        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(details, docNum, "VELEZ")).build();
+        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(details, docNum, companyName)).build();
     }
 }
