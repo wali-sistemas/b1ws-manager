@@ -46,7 +46,7 @@ public class PurchaseInvoicesEJB {
         //1. Login
         String sessionId = null;
         try {
-            sessionId = sessionManager.login(companyName);
+            sessionId = sessionManager.login("VELEZ");
             if (sessionId != null) {
                 CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
             } else {
@@ -100,7 +100,7 @@ public class PurchaseInvoicesEJB {
                 }
                 purchaseInvoice.setDocumentLines(documentLines);
 
-                CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para {0}", companyName);
+                CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para motorepuestos.com");
                 Gson gson = new Gson();
                 String json = gson.toJson(purchaseInvoice);
                 CONSOLE.log(Level.INFO, json);
