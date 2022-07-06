@@ -890,11 +890,11 @@ public class PedBoxREST {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
-        } else if (dto.getCompanyName().contains("VARROC")) {
+        } /*else if (dto.getCompanyName().contains("VARROC")) {
             //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
-        }
+        }*/
         //TODO: Solo para motorepuestos.co y editores las ordenes pasan aprobadas
         if (dto.getCardCode().equals("C900998242") || dto.getCardCode().equals("C900640419")) {
             dto.setStatus("APROBADO");
