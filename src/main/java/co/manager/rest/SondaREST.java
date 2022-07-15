@@ -7,6 +7,7 @@ import co.manager.dto.SalesOrderDTO;
 import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.EmailManager;
 import co.manager.ejb.ItemEJB;
+import co.manager.ejb.PurchaseInvoicesEJB;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.modulaws.dto.item.ItemModulaDTO;
@@ -66,6 +67,10 @@ public class SondaREST {
     private OrderModulaEJB orderModulaEJB;
     @EJB
     private PurchaseOrderFacade purchaseOrderFacade;
+    @EJB
+    private InvoiceSAPFacade invoiceSAPFacade;
+    @EJB
+    private PurchaseInvoicesEJB purchaseInvoicesEJB;
     @Inject
     private EmailManager emailManager;
 
@@ -507,6 +512,31 @@ public class SondaREST {
             purchaseOrderFacade.updateFieldDataDriver((String) obj[0], 'C', companyName, false);
         }
         return Response.ok(new ResponseDTO(0, "Notificacion datos de conductor envido con exito.")).build();
+    }
+
+    @GET
+    @Path("sync-purchase-invoice/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncPurchaseInvoice(@PathParam("companyname") String companyName) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion automatica de facturas de compras pendientes por crear en {0}", companyName);
+
+        List<String> invoices = invoiceSAPFacade.listInvoicePurchase(companyName, false);
+        for (String invoice : invoices) {
+            CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para la venta # {0} realizada en [{1}]", new Object[]{invoice, companyName});
+
+            List<Object[]> details = invoiceSAPFacade.listDetailInvoice(invoice, companyName, false);
+            if (details.isEmpty()) {
+                CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", invoice);
+                return Response.ok(new ResponseDTO(-2, "No se encontraron datos de la FV [" + invoice + "] para crear la factura de compra.")).build();
+            }
+
+            ResponseDTO res = purchaseInvoicesEJB.createPurchaseInvoice(details, invoice, companyName);
+            CONSOLE.log(Level.WARNING, "Factura de provedor #{0} creada con exito", res.getContent());
+        }
+
+        CONSOLE.log(Level.INFO, "Finalizando sincronizacion automatica de facturas de compras.");
+        return Response.ok(new ResponseDTO(-1, "Finalizando sincronizacion automatica de facturas de compras.")).build();
     }
 
     private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
