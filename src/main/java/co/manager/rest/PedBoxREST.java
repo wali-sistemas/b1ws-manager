@@ -628,7 +628,7 @@ public class PedBoxREST {
     public Response listPaymentHitoryByCustomer(@PathParam("companyname") String companyname,
                                                 @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de facturas para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
-        //historial de facturas de los últimos 3 meses.
+        //historial de facturas de los últimos 6 meses.
         List<Object[]> objects = invoiceSAPFacade.listInvoicesHistoryByCustomer(cardCode, companyname, false);
 
         if (objects == null || objects.size() <= 0) {

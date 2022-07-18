@@ -29,7 +29,7 @@ public class InvoiceSAPFacade {
         sb.append("      cast(f.\"VatSum\" as numeric(18,2))as Iva, cast(f.\"DocTotal\" as numeric(18,2))as DocTotal, ");
         sb.append("      cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as UrlFacturem ");
         sb.append("from  OINV f ");
-        sb.append("where f.\"DocDate\" between ADD_MONTHS(TO_DATE(current_date,'YYYY-MM-DD'),-3) and current_date and f.\"DocType\"='I' and f.\"CardCode\"='");
+        sb.append("where f.\"DocDate\" between ADD_MONTHS(TO_DATE(current_date,'YYYY-MM-DD'),-6) and current_date and f.\"DocType\"='I' and f.\"CardCode\"='");
         sb.append(cardCode);
         sb.append("' order by f.\"DocDate\" DESC");
         try {
@@ -95,5 +95,27 @@ public class InvoiceSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las compras del cliente " + cardCode + " realizadas en " + companyName);
         }
         return null;
+    }
+
+    public List<String> listInvoicePurchase(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"DocNum\" as varchar(100))as fv ");
+        sb.append("from OINV ");
+        sb.append("where \"DocNum\" not in(1442) and \"DocStatus\"='O' and year(\"DocDate\")=2022 and \"CardCode\"='C900998242' and cast(\"DocNum\" as varchar(100)) not in(");
+        sb.append(" select cast(\"NumAtCard\" as varchar(100))as fv ");
+        sb.append(" from \"VELEZ\".OPCH ");
+        sb.append(" where year(\"DocDate\")=2022 and \"CardCode\"=");
+        if (companyName.contains("IGB")) {
+            sb.append("'P811011909'");
+        } else {
+            sb.append("'P900255414'");
+        }
+        sb.append(")");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las facturas de compra pendientes por crear en motorepuestos.com", e);
+        }
+        return new ArrayList<>();
     }
 }
