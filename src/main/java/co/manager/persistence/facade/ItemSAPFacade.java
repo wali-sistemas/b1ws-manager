@@ -106,7 +106,8 @@ public class ItemSAPFacade {
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
         sb.append("from ( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
-        sb.append("  cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio,cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
+        sb.append("  cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio, ");
+        sb.append("  case when it.\"TaxCodeAR\" in ('IVAVEXE','IVAEXCLU') then 0 else 19 end as PorcentajeIva,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
         sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
@@ -271,7 +272,7 @@ public class ItemSAPFacade {
         sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
         sb.append("from (");
-        sb.append(" select r.*,cast(19 as int)as PorcentajeIva,cast(tll.\"Name\" as varchar(20))as TipoLlanta,cast(anc.\"Name\" as varchar(20))as AnchoLlanta, ");
+        sb.append(" select r.*,case when it.\"TaxCodeAR\" in ('IVAVEXE','IVAEXCLU') then 0 else 19 end as PorcentajeIva,cast(tll.\"Name\" as varchar(20))as TipoLlanta,cast(anc.\"Name\" as varchar(20))as AnchoLlanta, ");
         sb.append("  cast(pe.\"Name\" as varchar(20))as PerfilLlanta,cast(rin.\"Name\" as varchar(20))as RinLlanta,cast(ta.\"Name\" as varchar(20))as Talla, ");
         sb.append("  cast(c.\"Name\" as varchar(100))as Categoria,cast(gru.\"Name\" as varchar(20))as Grupo,cast(sub.\"Name\" as varchar(20))as Subgrupo, ");
         sb.append("  cast(mar.\"Name\" as varchar(20))as Marca,cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base");
