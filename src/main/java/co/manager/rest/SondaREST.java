@@ -250,6 +250,7 @@ public class SondaREST {
             dto.setArtDIMY((Integer) obj[6]);//Largo
             dto.setArtDIMZ((Integer) obj[7]);//Alto
             dto.setArtPMU((Integer) obj[8]);//Peso
+            dto.setArtAREEABI((Integer) obj[9]);//Area
             items.add(dto);
         }
         itemModulaDTO.setImpArticuli(items);
@@ -272,6 +273,7 @@ public class SondaREST {
                     entity.setLargo(item.getArtDIMY());
                     entity.setAlto(item.getArtDIMZ());
                     entity.setPeso(item.getArtPMU());
+                    entity.setArea(item.getArtAREEABI());
                     //TODO: crear registro local de creacion de items
                     itemModulaFacade.create(entity, companyName, testing);
                     //TODO: Actualizando el UDF sync-modula a estado="N"
