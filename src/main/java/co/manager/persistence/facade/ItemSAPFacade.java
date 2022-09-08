@@ -594,11 +594,12 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select distinct cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");
         sb.append(" cast(s.\"MinStock\" as int)as StockMin,cast(s.\"MaxStock\" as int)as StockMax, ");
-        sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(a.\"SWidth1\" as int)as Ancho, ");
-        sb.append(" cast(a.\"SLength1\" as int)as Largo,cast(a.\"SHeight1\" as int)as Alto,cast(a.\"SWeight1\" as int)as Peso ");
+        sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(ifnull(a.\"SWidth1\",0) as int)as Ancho, ");
+        sb.append(" cast(ifnull(a.\"SLength1\",0) as int)as Largo,cast(ifnull(a.\"SHeight1\",0) as int)as Alto,cast(ifnull(a.\"SWeight1\",0) as int)as Peso, ");
+        sb.append(" case when a.\"QryGroup3\"='Y' then 1 when a.\"QryGroup5\"='Y' then 2 else 0 end Area ");
         sb.append("from OITM a ");
         sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
-        sb.append("where s.\"WhsCode\"='30' and a.\"QryGroup3\"='Y' order by 1");
+        sb.append("where s.\"WhsCode\"='30' and (a.\"QryGroup3\"='Y' or a.\"QryGroup5\"='Y') order by 1");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -649,6 +650,8 @@ public class ItemSAPFacade {
     public void updateFieldSyncModula(String itemCode, String status, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("update OITM set \"QryGroup3\"='");
+        sb.append(status);
+        sb.append("',\"QryGroup5\"='");
         sb.append(status);
         sb.append("' where \"ItemCode\"='");
         sb.append(itemCode);

@@ -37,11 +37,14 @@ public class ItemModula {
     @Basic(optional = false)
     @Column(name = "peso")
     private Integer peso;
+    @Basic(optional = false)
+    @Column(name = "area")
+    private Integer area;
 
     public ItemModula() {
     }
 
-    public ItemModula(String itemCode, String itemName, Integer stockMin, Integer stockMax, String active, Integer ancho, Integer alto, Integer largo, Integer peso) {
+    public ItemModula(String itemCode, String itemName, Integer stockMin, Integer stockMax, String active, Integer ancho, Integer alto, Integer largo, Integer peso, Integer area) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.stockMin = stockMin;
@@ -51,6 +54,7 @@ public class ItemModula {
         this.alto = alto;
         this.largo = largo;
         this.peso = peso;
+        this.area = area;
     }
 
     public String getItemCode() {
@@ -125,6 +129,14 @@ public class ItemModula {
         this.peso = peso;
     }
 
+    public Integer getArea() {
+        return area;
+    }
+
+    public void setArea(Integer area) {
+        this.area = area;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -162,6 +174,7 @@ public class ItemModula {
                 ", alto=" + alto +
                 ", largo=" + largo +
                 ", peso=" + peso +
+                ", area=" + area +
                 '}';
     }
 }

@@ -43,6 +43,8 @@ public class ItemModulaDTO implements Serializable {
         private Integer artDIMZ;
         @JsonProperty("ART_PMU")
         private Integer artPMU;
+        @JsonProperty("ART_AREEABI")
+        private Integer artAREEABI;
 
         public String getArtOperacione() {
             return artOperacione;
@@ -122,6 +124,14 @@ public class ItemModulaDTO implements Serializable {
 
         public void setArtPMU(Integer artPMU) {
             this.artPMU = artPMU;
+        }
+
+        public Integer getArtAREEABI() {
+            return artAREEABI;
+        }
+
+        public void setArtAREEABI(Integer artAREEABI) {
+            this.artAREEABI = artAREEABI;
         }
     }
 }
