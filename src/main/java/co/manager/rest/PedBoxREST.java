@@ -1138,7 +1138,7 @@ public class PedBoxREST {
         CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para la empresa {0}", dto.getCompanyName());
         CONSOLE.log(Level.INFO, dto.toString());
 
-        if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), true)) {
+        if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), false)) {
             CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Lo sentimos. Ya existe un registro con ese id de pago en " + dto.getCompanyName())).build();
         }
