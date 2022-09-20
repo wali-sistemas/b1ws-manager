@@ -6,6 +6,7 @@ import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.incomingPayments.PaymentsClient;
 import co.manager.hanaws.dto.payment.PaymentDTO;
 import co.manager.hanaws.dto.payment.PaymentRestDTO;
+import co.manager.persistence.facade.PagoPasarelaSAPFacade;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
 
@@ -32,6 +33,8 @@ public class IncomingPaymentEJB {
     private ManagerApplicationBean appBean;
     @EJB
     private SessionManager sessionManager;
+    @EJB
+    private PagoPasarelaSAPFacade pagoPasarelaSAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -101,6 +104,8 @@ public class IncomingPaymentEJB {
                     return new ResponseDTO(-1, "Ocurrio un problema al crear el pago recibido.");
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el pago recibido #{0} satisfactoriamente", res.getDocNum());
+                    //actualizar el nro de documento en el encabezado de pago pasarela
+                    pagoPasarelaSAPFacade.updateNroPago(res.getDocNum(), dto.getCompanyName(), false);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago recibido. ", e);

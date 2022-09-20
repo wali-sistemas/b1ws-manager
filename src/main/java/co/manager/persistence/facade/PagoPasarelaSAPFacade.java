@@ -21,12 +21,12 @@ public class PagoPasarelaSAPFacade {
     @EJB
     private PersistenceConf persistenceConf;
 
-    public boolean comfirmPayment(Integer idPago, String companyNane, boolean pruebas) {
+    public boolean comfirmPayment(Integer idPago, String companyNane, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(count(\"U_idPago\") as int)as idPago from \"@PAGO_PASARELA_ENC\" where \"U_idPago\" =");
         sb.append(idPago);
         try {
-            Integer res = (Integer) persistenceConf.chooseSchema(companyNane, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+            Integer res = (Integer) persistenceConf.chooseSchema(companyNane, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
             if (res > 0) {
                 return true;
             }
@@ -63,6 +63,19 @@ public class PagoPasarelaSAPFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el pago para " + companyName, e);
+        }
+    }
+
+    public void updateNroPago(Long docNum, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update \"@PAGO_PASARELA_ENC\" ");
+        sb.append("set \"U_DocNum\"='");
+        sb.append(docNum);
+        sb.append("'");
+        try {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+        } catch (NoResultException e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el nro de pago para " + companyName, e);
         }
     }
 }
