@@ -234,8 +234,8 @@ public class SondaREST {
 
         List<Object[]> objects = itemSAPFacade.listItemsToSyncModula(companyName, testing);
         if (objects == null || objects.isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items a sincronizar en modula para ", companyName);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los items a sincronizar en modula para " + companyName)).build();
+            CONSOLE.log(Level.WARNING, "No se encontraron items para sincronizar en modula para ", companyName);
+            return Response.ok(new ResponseDTO(-1, "No se encontraron items para sincronizar en modula para " + companyName)).build();
         }
 
         for (Object[] obj : objects) {
