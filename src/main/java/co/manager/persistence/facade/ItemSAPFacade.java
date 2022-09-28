@@ -372,81 +372,105 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
-        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(case when it.\"WhsCode\"='30' then '01' else it.\"WhsCode\" end as varchar(20))as Bodega,cast(case when (select sum(de.\"OnHandQty\") ");
-        sb.append(" from OBIN ub ");
-        sb.append(" inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
-        sb.append(" where de.\"WhsCode\" in(");
-        if (companyName.contains("IGB") && statusModula.equals("true")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
-        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
+        if (companyName.contains("VARROC")) {
+            //LINK MTZ
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append("  select sum(de.\"OnHandQty\") ");
+            sb.append("  from OBIN ub ");
+            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+            sb.append("  where de.\"WhsCode\"='13' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+            sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='13' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='13' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
         } else {
-            //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
+            if (statusModula.equals("true")) {
+                //MDL IGB
+                //TODO: se fija bodega 01 para modula, debido a que en pedbox unificamos la bodega 30 en la 01
+                sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('01' as varchar(20))as Bodega,cast(case when (");
+                sb.append("  select sum(de.\"OnHandQty\") ");
+                sb.append("  from OBIN ub ");
+                sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+                sb.append("  where de.\"WhsCode\"='30' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+                sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='30' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+                sb.append(" from OITM oi ");
+                sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+                sb.append(" where it.\"WhsCode\"='30' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+                if (!itemCode.equals("0")) {
+                    sb.append("and oi.\"ItemCode\"='");
+                    sb.append(itemCode);
+                    sb.append("'");
+                }
+            }
+            //CARTAGENA IGB
+            sb.append("union all");
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append("  select sum(de.\"OnHandQty\") ");
+            sb.append("  from OBIN ub ");
+            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+            sb.append("  where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+            sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='05' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
+            //SANBARTOLOME IGB
+            sb.append("union all");
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' and it.\"OnHand\">0 ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
+            sb.append(" group by oi.\"ItemCode\",it.\"WhsCode\" ");
         }
-        sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\")");
+        //CALI IGB - MTZ
+        sb.append("union all");
+        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+        sb.append("  select sum(de.\"OnHandQty\") ");
         sb.append("  from OBIN ub ");
-        sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
-        if (companyName.contains("IGB") && statusModula.equals("true")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
-        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
-        } else {
-            //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
-        }
-        sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\"))");
-        sb.append(" else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+        sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+        sb.append("  where de.\"WhsCode\"='26' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+        sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='26' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
         sb.append(" from OITM oi ");
         sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
-        sb.append(" where it.\"WhsCode\" in (");
-        if (companyName.contains("IGB") && statusModula.equals("true")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
-        } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
-        } else {
-            //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
-        }
-        sb.append(") and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+        sb.append(" where it.\"WhsCode\"='26' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
         if (!itemCode.equals("0")) {
-            sb.append(" and oi.\"ItemCode\"='");
+            sb.append("and oi.\"ItemCode\"='");
             sb.append(itemCode);
             sb.append("'");
         }
-        if (!whsCode.equals("0")) {
-            sb.append(" and it.\"WhsCode\" in ('");
-            if (whsCode.equals("01") && statusModula.equals("false")) {
-                sb.append("01");
-            } else if (whsCode.equals("01") && statusModula.equals("true")) {
-                sb.append("01','30");
-            } else {
-                sb.append(whsCode);
-            }
-            sb.append("')");
-        }
-        //Sanbartome 7
-        sb.append(" union all ");
-        sb.append("select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
-        sb.append("from OITM oi ");
-        sb.append("inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
-        sb.append("where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
-        sb.append("and it.\"OnHand\">0 ");
+        //CEDI IGB - MTZ
+        sb.append("union all");
+        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+        sb.append("  select sum(de.\"OnHandQty\") ");
+        sb.append("  from OBIN ub ");
+        sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+        sb.append("  where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+        sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+        sb.append(" from OITM oi ");
+        sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+        sb.append(" where it.\"WhsCode\"='01' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
         if (!itemCode.equals("0")) {
-            sb.append(" and oi.\"ItemCode\"='");
+            sb.append("and oi.\"ItemCode\"='");
             sb.append(itemCode);
             sb.append("'");
         }
-        sb.append(" group by oi.\"ItemCode\",it.\"WhsCode\" ");
-        sb.append(")as t where t.Stock>=0");
+        sb.append(")as t where t.Stock>=0 ");
         if (!whsCode.equals("0")) {
-            sb.append(" and t.Bodega='");
+            sb.append("and t.Bodega='");
             sb.append(whsCode);
             sb.append("'");
         }
@@ -596,7 +620,7 @@ public class ItemSAPFacade {
         sb.append(" cast(s.\"MinStock\" as int)as StockMin,cast(s.\"MaxStock\" as int)as StockMax, ");
         sb.append(" cast(a.\"validFor\" as varchar(1))as Active,cast(ifnull(a.\"SWidth1\",0) as int)as Ancho, ");
         sb.append(" cast(ifnull(a.\"SLength1\",0) as int)as Largo,cast(ifnull(a.\"SHeight1\",0) as int)as Alto,cast(ifnull(a.\"SWeight1\",0) as int)as Peso, ");
-        sb.append(" case when a.\"QryGroup3\"='Y' then 1 when a.\"QryGroup5\"='Y' then 2 else 0 end Area ");
+        sb.append(" case when a.\"QryGroup6\"='Y' then 1 when a.\"QryGroup7\"='Y' then 2 else 0 end Area ");
         sb.append("from OITM a ");
         sb.append("inner join OITW s on s.\"ItemCode\"=a.\"ItemCode\" ");
         sb.append("where s.\"WhsCode\"='30' and (a.\"QryGroup3\"='Y' or a.\"QryGroup5\"='Y') order by 1");
