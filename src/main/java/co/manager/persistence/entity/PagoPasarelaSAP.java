@@ -43,6 +43,9 @@ public class PagoPasarelaSAP implements Serializable {
     @Basic(optional = false)
     @Column(name = "U_createDate")
     private Date uCreateDate;
+    @Basic(optional = false)
+    @Column(name = "U_docNum")
+    private String uDocNum;
 
     public PagoPasarelaSAP() {
     }
@@ -123,6 +126,14 @@ public class PagoPasarelaSAP implements Serializable {
         this.uCreateDate = uCreateDate;
     }
 
+    public String getuDocNum() {
+        return uDocNum;
+    }
+
+    public void setuDocNum(String uDocNum) {
+        this.uDocNum = uDocNum;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -145,13 +156,14 @@ public class PagoPasarelaSAP implements Serializable {
         return "PagoPasarelaSAP{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
-                ", uIdPago='" + uIdPago + '\'' +
+                ", uIdPago=" + uIdPago +
                 ", uCardCode='" + uCardCode + '\'' +
                 ", uTransferReference='" + uTransferReference + '\'' +
                 ", uCashSum=" + uCashSum +
                 ", uStatus='" + uStatus + '\'' +
                 ", uPasarela='" + uPasarela + '\'' +
                 ", uCreateDate=" + uCreateDate +
+                ", uDocNum='" + uDocNum + '\'' +
                 '}';
     }
 }
