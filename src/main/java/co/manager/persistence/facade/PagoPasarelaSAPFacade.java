@@ -57,6 +57,8 @@ public class PagoPasarelaSAPFacade {
         sb.append(pagoPasarelaSAP.getuPasarela());
         sb.append("','");
         sb.append(new SimpleDateFormat("yyyy-MM-dd").format(pagoPasarelaSAP.getuCreateDate()));
+        sb.append("','");
+        sb.append(pagoPasarelaSAP.getuDocNum());
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();

@@ -16,7 +16,7 @@ public class IncomingPaymentDTO {
     private Long docNum;
     private Long series;
     private Date docDate;
-    private Date transferDate;
+    private String transferDate;
     private Date taxDate;
     private String docType;
     private String cardCode;
@@ -33,7 +33,7 @@ public class IncomingPaymentDTO {
     public IncomingPaymentDTO() {
     }
 
-    public IncomingPaymentDTO(Integer idPayment, Long docEntry, Long docNum, Long series, Date docDate, Date transferDate, Date taxDate, String docType, String cardCode, String docCurrency, String transferAccount, String transferReference, String journalRemarks, String companyName, BigDecimal cashSum, BigDecimal transferSum, String status, List<IncomingPaymentInvoiceDTO> incomingPaymentInvoices) {
+    public IncomingPaymentDTO(Integer idPayment, Long docEntry, Long docNum, Long series, Date docDate, String transferDate, Date taxDate, String docType, String cardCode, String docCurrency, String transferAccount, String transferReference, String journalRemarks, String companyName, BigDecimal cashSum, BigDecimal transferSum, String status, List<IncomingPaymentInvoiceDTO> incomingPaymentInvoices) {
         this.idPayment = idPayment;
         this.docEntry = docEntry;
         this.docNum = docNum;
@@ -94,11 +94,11 @@ public class IncomingPaymentDTO {
         this.docDate = docDate;
     }
 
-    public Date getTransferDate() {
+    public String getTransferDate() {
         return transferDate;
     }
 
-    public void setTransferDate(Date transferDate) {
+    public void setTransferDate(String transferDate) {
         this.transferDate = transferDate;
     }
 
