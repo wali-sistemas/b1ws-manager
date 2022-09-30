@@ -81,7 +81,7 @@ public class IncomingPaymentEJB {
                 }
 
                 try {
-                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(dto.getTransferDate());
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(dto.getTransferDate() == null ? new Date() : dto.getTransferDate());
                     payment.setTransferDate(date2);
                 } catch (Exception exception) {
                 }
