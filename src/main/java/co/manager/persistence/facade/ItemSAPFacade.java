@@ -388,6 +388,7 @@ public class ItemSAPFacade {
                 sb.append(itemCode);
                 sb.append("'");
             }
+            sb.append(" union all ");
         } else {
             if (statusModula.equals("true")) {
                 //MDL IGB
@@ -406,9 +407,9 @@ public class ItemSAPFacade {
                     sb.append(itemCode);
                     sb.append("'");
                 }
+                sb.append(" union all ");
             }
             //CARTAGENA IGB
-            sb.append("union all");
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
             sb.append("  select sum(de.\"OnHandQty\") ");
             sb.append("  from OBIN ub ");
@@ -424,7 +425,7 @@ public class ItemSAPFacade {
                 sb.append("'");
             }
             //SANBARTOLOME IGB
-            sb.append("union all");
+            sb.append(" union all ");
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
             sb.append(" from OITM oi ");
             sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
@@ -435,9 +436,9 @@ public class ItemSAPFacade {
                 sb.append("'");
             }
             sb.append(" group by oi.\"ItemCode\",it.\"WhsCode\" ");
+            sb.append(" union all ");
         }
         //CALI IGB - MTZ
-        sb.append("union all");
         sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
         sb.append("  select sum(de.\"OnHandQty\") ");
         sb.append("  from OBIN ub ");
@@ -453,7 +454,7 @@ public class ItemSAPFacade {
             sb.append("'");
         }
         //CEDI IGB - MTZ
-        sb.append("union all");
+        sb.append(" union all ");
         sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
         sb.append("  select sum(de.\"OnHandQty\") ");
         sb.append("  from OBIN ub ");
