@@ -77,11 +77,6 @@ public class IncomingPaymentEJB {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     payment.setDocDate(date2);
                     payment.setTaxDate(date2);
-                } catch (Exception exception) {
-                }
-
-                try {
-                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(dto.getTransferDate() == null ? new Date() : dto.getTransferDate());
                     payment.setTransferDate(date2);
                 } catch (Exception exception) {
                 }
@@ -110,7 +105,7 @@ public class IncomingPaymentEJB {
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el pago recibido #{0} satisfactoriamente", res.getDocNum());
                     //actualizar el nro de documento en el encabezado de pago pasarela
-                    pagoPasarelaSAPFacade.updateNroPago(res.getDocNum(), dto.getCompanyName(), false);
+                    pagoPasarelaSAPFacade.updateNroPago(dto.getIdPayment(), res.getDocNum(), dto.getCompanyName(), false);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago recibido. ", e);

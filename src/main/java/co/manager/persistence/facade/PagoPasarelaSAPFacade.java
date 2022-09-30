@@ -68,12 +68,13 @@ public class PagoPasarelaSAPFacade {
         }
     }
 
-    public void updateNroPago(Long docNum, String companyName, boolean testing) {
+    public void updateNroPago(Integer idPago, Long docNum, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("update \"@PAGO_PASARELA_ENC\" ");
         sb.append("set \"U_docNum\"='");
         sb.append(docNum);
-        sb.append("'");
+        sb.append("' where \"U_idPago\"=");
+        sb.append(idPago);
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (NoResultException e) {
