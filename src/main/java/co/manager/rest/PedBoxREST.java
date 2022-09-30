@@ -1155,6 +1155,7 @@ public class PedBoxREST {
         entityEnc.setuStatus(dto.getStatus());
         entityEnc.setuPasarela("PlaceToPay");
         entityEnc.setuCreateDate(new Date());
+        entityEnc.setuDocNum(null);
 
         try {
             pagoPasarelaSAPFacade.addPago(entityEnc, dto.getCompanyName(), false);

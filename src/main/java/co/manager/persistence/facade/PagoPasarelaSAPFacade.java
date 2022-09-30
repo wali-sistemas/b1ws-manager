@@ -69,7 +69,7 @@ public class PagoPasarelaSAPFacade {
     public void updateNroPago(Long docNum, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("update \"@PAGO_PASARELA_ENC\" ");
-        sb.append("set \"U_DocNum\"='");
+        sb.append("set \"U_docNum\"='");
         sb.append(docNum);
         sb.append("'");
         try {
