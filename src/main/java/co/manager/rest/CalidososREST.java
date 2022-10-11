@@ -302,7 +302,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, json);
 
             //Validar que no se duplique un vendedor mostrador
-            if (!vendedorMostradorSAPFacade.validateVendMostrador("C" + dto.getDocumento(), "IGB", false)) {
+            if (vendedorMostradorSAPFacade.validateVendMostrador("C" + dto.getDocumento(), "IGB", false)) {
                 CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya exite en los calidosos", dto.getDocumento());
                 return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya exite en los calidosos.")).build();
             }
