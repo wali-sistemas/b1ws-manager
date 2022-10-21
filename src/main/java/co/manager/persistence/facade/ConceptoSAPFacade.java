@@ -45,15 +45,18 @@ public class ConceptoSAPFacade {
 
     public List<Object[]> countNumberRegister(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(R.\"Name\" as varchar(100))as Programa,cast(count(c.\"CardCode\")as int)as Nro ");
-        sb.append("from OCRD c ");
-        sb.append("inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
-        sb.append("where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y' ");
-        sb.append("group by r.\"Name\" ");
-        sb.append("union all ");
-        sb.append("select 'Vendedor Mostrador' as Programa,cast(count(v.\"U_Documento\")as int)as Nro ");
-        sb.append("from \"@REDENCION_VENDMOSTR\" v ");
-        sb.append("where v.\"U_Activo\"='S'");
+        sb.append("select cast(t.\"Name\" as varchar(100))as Programa,cast(count(t.\"doc\")as int)as Nro ");
+        sb.append("from ( ");
+        sb.append(" select R.\"Name\",c.\"CardCode\" as \"doc\" ");
+        sb.append(" from OCRD c ");
+        sb.append(" inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
+        sb.append(" where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y' ");
+        sb.append(" union all ");
+        sb.append(" select 'Vendedor de Mostrador' as \"Name\",v.\"U_Documento\" as \"doc\" ");
+        sb.append(" from \"@REDENCION_VENDMOSTR\" v ");
+        sb.append(" where v.\"U_Activo\"='S' ");
+        sb.append(")as t ");
+        sb.append("group by t.\"Name\"");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
