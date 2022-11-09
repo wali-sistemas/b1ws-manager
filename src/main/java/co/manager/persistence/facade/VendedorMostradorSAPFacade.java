@@ -58,6 +58,8 @@ public class VendedorMostradorSAPFacade {
         sb.append("S");
         sb.append("','");
         sb.append(dto.getDireccion().toUpperCase());
+        sb.append("','");
+        sb.append(dto.getCodConcepto());
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
@@ -69,7 +71,7 @@ public class VendedorMostradorSAPFacade {
 
     public List<Object[]> listDataLoginCalidoso(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,'Vendedor Mostrador' as Programa,cast(v.\"U_Correo\" as varchar(100))as mail, ");
+        sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,case when v.\"U_Concepto\"='01' then 'Vendedor de Mostrador' else 'Mecánico' end as Programa,cast(v.\"U_Correo\" as varchar(100))as mail, ");
         sb.append(" cast(v.\"U_Celular\" as varchar(50))as celular,cast(v.\"U_Nombres\" ||' '|| v.\"U_Apellidos\" as varchar(100))as Nombres ");
         sb.append("from \"@REDENCION_VENDMOSTR\" v ");
         sb.append("where \"U_Activo\"='S' ");
@@ -98,14 +100,38 @@ public class VendedorMostradorSAPFacade {
         sb.append(" cast(v.\"U_Ciudad\" as varchar(100))as Ciudad,cast(v.\"U_Departamento\" as varchar(100))as Departamento ");
         sb.append("from \"@REDENCION_VENDMOSTR\" v ");
         sb.append("inner join OCRD c on v.\"U_CardCode\"=c.\"CardCode\" ");
-        sb.append("where v.\"U_Activo\"='S' and c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
-
+        sb.append("where v.\"U_Activo\"='S' and c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' and v.\"U_Concepto\"='01' ");
         if (!cardCode.equals("0")) {
             sb.append("and v.\"U_CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
+        sb.append("order by 1,3");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los vendedores mosrador par ael cliente " + cardCode, e);
+        }
+        return new ArrayList<>();
+    }
 
+    public List<Object[]> listMechanicsByClient(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(v.\"U_CardCode\" as varchar(20))as cliente, ");
+        sb.append(" cast(row_number() over(partition by v.\"U_CardCode\" order by v.\"U_Documento\")as int)as row, ");
+        sb.append(" cast(v.\"U_Documento\" as varchar(20))as Mecanico, ");
+        sb.append(" cast(v.\"U_Nombres\" as varchar(100))as Nombres,cast(v.\"U_Apellidos\" as varchar(100))as Apellidos, ");
+        sb.append(" cast(v.\"U_Correo\" as varchar(100))as Correo,cast(v.\"U_Celular\" as varchar(50))as Celular, ");
+        sb.append(" cast(v.\"U_Ciudad\" as varchar(100))as Ciudad,cast(v.\"U_Departamento\" as varchar(100))as Departamento ");
+        sb.append("from \"@REDENCION_VENDMOSTR\" v ");
+        sb.append("inner join OCRD c on v.\"U_CardCode\"=c.\"CardCode\" ");
+        sb.append("where v.\"U_Activo\"='S' and c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' and v.\"U_Concepto\"='05' ");
+        if (!cardCode.equals("0")) {
+            sb.append("and v.\"U_CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
         sb.append("order by 1,3");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
@@ -129,7 +155,7 @@ public class VendedorMostradorSAPFacade {
                 return false;
             }
         } catch (NoResultException ex) {
-            return true;
+            return false;
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error validando si existe el vendedor mostrador [" + cardCode + "]");
         }
