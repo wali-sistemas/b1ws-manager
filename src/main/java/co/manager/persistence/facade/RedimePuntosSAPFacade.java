@@ -91,7 +91,7 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S'");
-        sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' and c.\"U_Activo\"='Y'");
+        sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y'");
         sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",v.\"U_Documento\",c.\"Name\",e.\"CardCode\" ");
         sb.append("union all ");
@@ -107,39 +107,38 @@ public class RedimePuntosSAPFacade {
         sb.append(" inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append(" inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append(" inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S' ");
-        sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' and c.\"U_Activo\"='Y'");
+        sb.append(" inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y'");
         sb.append(" where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
         sb.append(" group by m.\"U_Puntos\",c.\"U_PorcPuntos\",v.\"U_Documento\",c.\"Name\", e.\"CardCode\" ");
         sb.append("union all ");
-        sb.append(" select distinct cast(p.\"U_CardCode\" as varchar(50)) as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\", ");
-        sb.append("  case when p.\"U_CardCode\"=c.\"CardCode\" then (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"=c.\"U_PRO_FIDELIZACION\" and \"U_Activo\"='Y') ");
-        sb.append("  else (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='01' and \"U_Activo\"='Y')end \"Programa\" ");
+        sb.append(" select cast(p.\"U_CardCode\" as varchar(50))as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\",(select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"=c.\"U_PRO_FIDELIZACION\" and \"U_Activo\"='Y')as \"Programa\" ");
         sb.append(" from \"@REDENCION_PUNTOS\" p ");
-        sb.append(" left join OCRD c on p.\"U_CardCode\"=c.\"CardCode\" ");
-        sb.append(" left join \"@REDENCION_VENDMOSTR\" v ON p.\"U_CardCode\"=v.\"U_Documento\" and v.\"U_Activo\"='S' ");
-        sb.append(" where year(p.\"U_DocDate\") between year(ADD_YEARS(TO_DATE(current_date,'YYYY-MM-DD'),-1)) and year(current_date) ");
+        sb.append(" inner join OCRD c on p.\"U_CardCode\"=c.\"CardCode\" ");
+        sb.append(" where c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
         sb.append(" group by p.\"U_CardCode\",c.\"CardCode\",c.\"U_PRO_FIDELIZACION\" ");
+        sb.append("union all ");
+        sb.append(" select cast(p.\"U_CardCode\" as varchar(50))as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\", ");
+        sb.append("  case when v.\"U_Concepto\"='01' then (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='01' and \"U_Activo\"='Y') else (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='05' and \"U_Activo\"='Y')end as \"Programa\" ");
+        sb.append(" from \"@REDENCION_PUNTOS\" p ");
+        sb.append(" inner join \"@REDENCION_VENDMOSTR\" v on p.\"U_CardCode\"=v.\"U_Documento\" and v.\"U_Activo\"='S' ");
+        sb.append(" group by p.\"U_CardCode\",v.\"U_Concepto\" ");
+        sb.append(" order by 3");
         sb.append(")as t ");
-
         if (!cardCode.equals("0")) {
             sb.append("where t.\"CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("group by t.\"CardCode\",t.\"Programa\" ");
-
         sb.append(") as y ");
         sb.append("union all ");
         sb.append("select cast(\"U_CardCode\" as varchar(20))as \"CardCode\",cast(\"U_Programa\" as varchar(50))as \"Programa\",cast(SUM(\"U_Puntos\") as int)as \"PtsDisp\" ");
         sb.append("from \"@REDENCION_HISTPUNTO\" ");
-
         if (!cardCode.equals("0")) {
             sb.append("where \"U_CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("group by \"U_CardCode\",\"U_Programa\" ");
         sb.append(") as r ");
         sb.append("group by r.\"CardCode\",r.\"Programa\"");

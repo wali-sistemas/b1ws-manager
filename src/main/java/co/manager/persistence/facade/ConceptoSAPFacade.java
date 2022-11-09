@@ -52,7 +52,7 @@ public class ConceptoSAPFacade {
         sb.append(" inner join \"@REDENCION_CONCEPTOS\" r on c.\"U_PRO_FIDELIZACION\"=r.\"Code\" ");
         sb.append(" where c.\"QryGroup15\"='Y' and c.\"validFor\"='Y' ");
         sb.append(" union all ");
-        sb.append(" select 'Vendedor de Mostrador' as \"Name\",v.\"U_Documento\" as \"doc\" ");
+        sb.append(" select case when v.\"U_Concepto\" = '01' then 'Vendedor de Mostrador' else 'Mecánico' end as \"Name\",v.\"U_Documento\" as \"doc\" ");
         sb.append(" from \"@REDENCION_VENDMOSTR\" v ");
         sb.append(" where v.\"U_Activo\"='S' ");
         sb.append(")as t ");

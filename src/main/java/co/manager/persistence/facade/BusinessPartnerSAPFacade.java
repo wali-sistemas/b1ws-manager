@@ -155,7 +155,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(20))as cardName, 'Factura'as tipoDoc, ");
         sb.append("             cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("             cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento, ");
-        sb.append("             DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, (select max(cast(\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp, ");
+        sb.append("             DAYS_BETWEEN(f.\"DocDueDate\",current_date)as diasVencidos, (select max(cast(\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp, ");
         sb.append("             cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,f.\"SlpCode\", cast(f.\"VatSum\" as numeric(18,2))as iva, ");
         sb.append("             cast((((((f.\"DocTotal\"+f.\"DiscSum\")-f.\"VatSum\")-f.\"TotalExpns\")+f.\"WTSum\")-f.\"RoundDif\")as numeric(18,2))as subtotal, cast(f.\"DiscSum\" as numeric(18,2))as descuento ");
         sb.append("      from   OINV f ");
@@ -163,7 +163,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(20))as cardName, 'Nota Crédito'as tipoDoc, ");
         sb.append("             cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("             cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento, ");
-        sb.append("             DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, null as fechaUltComp, ");
+        sb.append("             DAYS_BETWEEN(n.\"DocDueDate\",current_date)as diasVencidos, null as fechaUltComp, ");
         sb.append("             cast(n.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,n.\"SlpCode\", cast(n.\"VatSum\" as numeric(18,2))as iva, ");
         sb.append("             cast((((((n.\"DocTotal\"+n.\"DiscSum\")-n.\"VatSum\")-n.\"TotalExpns\")+n.\"WTSum\")-n.\"RoundDif\")as numeric(18,2))as subtotal, cast(n.\"DiscSum\" as numeric(18,2))as descuento ");
         sb.append("      from   ORIN n ");
@@ -363,7 +363,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S' ");
-        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' and c.\"U_Activo\"='Y' ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y' ");
         sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {
@@ -387,7 +387,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join OITM a ON a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append("  inner join \"@MARCAS\" m ON m.\"Code\"=a.\"U_Marca\" ");
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S' ");
-        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"='01' and c.\"U_Activo\"='Y' ");
+        sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y' ");
         sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
 
         if (!cardCode.equals("0")) {

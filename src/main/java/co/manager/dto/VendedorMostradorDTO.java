@@ -15,6 +15,7 @@ public class VendedorMostradorDTO {
     private String departamento;
     private String ciudad;
     private String direccion;
+    private String codConcepto;
     private Date fechaNacimiento;
     private char aceptoTermino;
     private char aceptoTratamientoDatos;
@@ -118,6 +119,14 @@ public class VendedorMostradorDTO {
         this.direccion = direccion;
     }
 
+    public String getCodConcepto() {
+        return codConcepto;
+    }
+
+    public void setCodConcepto(String codConcepto) {
+        this.codConcepto = codConcepto;
+    }
+
     @Override
     public String toString() {
         return "VendedorMostradorDTO{" +
@@ -130,6 +139,7 @@ public class VendedorMostradorDTO {
                 ", departamento='" + departamento + '\'' +
                 ", ciudad='" + ciudad + '\'' +
                 ", direccion='" + direccion + '\'' +
+                ", codConcepto='" + codConcepto + '\'' +
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", aceptoTermino=" + aceptoTermino +
                 ", aceptoTratamientoDatos=" + aceptoTratamientoDatos +

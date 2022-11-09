@@ -256,6 +256,54 @@ public class CalidososREST {
         }
     }
 
+    @GET
+    @Path("cliente/mecanicos")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listMechanicsByClient(@QueryParam("cardCode") String cardCode,
+                                          @HeaderParam("X-TOKEN") String token) {
+        CONSOLE.log(Level.INFO, "Iniciando listando de mecanicos por cliente en los calidosos");
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            List<Object[]> objects = vendedorMostradorSAPFacade.listMechanicsByClient(cardCode, "IGB", false);
+            List<ClientMechanicDTO> clientMechanicDTO = new ArrayList<>();
+
+            HashMap<String, String> client = new HashMap<>();
+            for (Object[] obj : objects) {
+                client.put((String) obj[0], "id");
+            }
+
+            for (String sn : client.keySet()) {
+                List<ClientMechanicDTO.MechanicDTO> mechanic = new ArrayList<>();
+                ClientMechanicDTO dto = new ClientMechanicDTO();
+                dto.setClient(sn);
+
+                for (Object[] obj : objects) {
+                    if (dto.getClient().equals(obj[0])) {
+                        //Clientes
+                        dto.setClient((String) obj[0]);
+                        //Mechanic
+                        ClientMechanicDTO.MechanicDTO dto2 = new ClientMechanicDTO.MechanicDTO();
+                        dto2.setNro((Integer) obj[1]);
+                        dto2.setMechanic((String) obj[2]);
+                        dto2.setNombre(obj[3] + " " + obj[4]);
+                        dto2.setCorreo((String) obj[5]);
+                        dto2.setCelular((String) obj[6]);
+                        dto2.setCiudad((String) obj[7]);
+                        dto2.setDepartamento((String) obj[8]);
+                        mechanic.add(dto2);
+                    }
+                }
+                dto.setMechanics(mechanic);
+                clientMechanicDTO.add(dto);
+            }
+            CONSOLE.log(Level.INFO, "Retornando el listado de mecanicos para el cliente {0}", cardCode);
+            return Response.ok(clientMechanicDTO).build();
+        } else {
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
+    }
+
     @POST
     @Path("add-vendedor-mostrador")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -263,6 +311,7 @@ public class CalidososREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addVendedorMostrador(@HeaderParam("X-TOKEN") String token,
                                          VendedorMostradorDTO dto) {
+        dto.setCodConcepto("01");
         CONSOLE.log(Level.INFO, "Iniciando un nuevo registro de vendedor mostrador en los calidosos");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             if (dto.getDocumento() == null || dto.getDocumento().isEmpty()) {
@@ -295,6 +344,9 @@ public class CalidososREST {
             } else if (dto.getDireccion() == null || dto.getDireccion().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Direccion] es obligatorio para participar en los calidosos");
                 return Response.ok(new ResponseDTO(-2, "Campo [Direccion] es obligatorio para participar en los calidosos.")).build();
+            } else if (dto.getCodConcepto() == null || dto.getCodConcepto().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Concepto] es obligatorio para participar en los calidosos");
+                return Response.ok(new ResponseDTO(-2, "Campo [Concepto] es obligatorio para participar en los calidosos.")).build();
             }
 
             Gson gson = new Gson();
