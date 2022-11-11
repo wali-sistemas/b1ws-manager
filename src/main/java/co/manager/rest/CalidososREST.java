@@ -311,7 +311,6 @@ public class CalidososREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response addVendedorMostrador(@HeaderParam("X-TOKEN") String token,
                                          VendedorMostradorDTO dto) {
-        dto.setCodConcepto("01");
         CONSOLE.log(Level.INFO, "Iniciando un nuevo registro de vendedor mostrador en los calidosos");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             if (dto.getDocumento() == null || dto.getDocumento().isEmpty()) {
