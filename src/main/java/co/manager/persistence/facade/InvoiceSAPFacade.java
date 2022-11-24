@@ -121,7 +121,7 @@ public class InvoiceSAPFacade {
 
     public Integer validateExistInvoicePurchaseInMRTO(String docNum, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select count(\"DocNum\") ");
+        sb.append("select cast(count(\"DocNum\") as int)as c ");
         sb.append("from \"VELEZ\".OPCH ");
         sb.append("where \"NumAtCard\"='");
         sb.append(docNum);
