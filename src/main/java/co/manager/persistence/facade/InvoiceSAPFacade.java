@@ -118,4 +118,19 @@ public class InvoiceSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public Integer validateExistInvoicePurchaseInMRTO(String docNum, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select count(\"DocNum\") ");
+        sb.append("from \"VELEZ\".OPCH ");
+        sb.append("where \"NumAtCard\"='");
+        sb.append(docNum);
+        sb.append("'");
+        try {
+            return (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando la existencia de la factura de compra en " + companyName, e);
+        }
+        return null;
+    }
 }

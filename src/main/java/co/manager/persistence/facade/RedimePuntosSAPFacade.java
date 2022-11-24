@@ -114,13 +114,13 @@ public class RedimePuntosSAPFacade {
         sb.append(" select cast(p.\"U_CardCode\" as varchar(50))as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\",(select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"=c.\"U_PRO_FIDELIZACION\" and \"U_Activo\"='Y')as \"Programa\" ");
         sb.append(" from \"@REDENCION_PUNTOS\" p ");
         sb.append(" inner join OCRD c on p.\"U_CardCode\"=c.\"CardCode\" ");
-        sb.append(" where c.\"validFor\"='Y' and c.\"QryGroup15\"='Y' ");
+        sb.append(" where c.\"QryGroup15\"='Y' ");
         sb.append(" group by p.\"U_CardCode\",c.\"CardCode\",c.\"U_PRO_FIDELIZACION\" ");
         sb.append("union all ");
         sb.append(" select cast(p.\"U_CardCode\" as varchar(50))as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\", ");
         sb.append("  case when v.\"U_Concepto\"='01' then (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='01' and \"U_Activo\"='Y') else (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='05' and \"U_Activo\"='Y')end as \"Programa\" ");
         sb.append(" from \"@REDENCION_PUNTOS\" p ");
-        sb.append(" inner join \"@REDENCION_VENDMOSTR\" v on p.\"U_CardCode\"=v.\"U_Documento\" and v.\"U_Activo\"='S' ");
+        sb.append(" inner join \"@REDENCION_VENDMOSTR\" v on p.\"U_CardCode\"=v.\"U_Documento\" ");
         sb.append(" group by p.\"U_CardCode\",v.\"U_Concepto\" ");
         sb.append(" order by 3");
         sb.append(")as t ");

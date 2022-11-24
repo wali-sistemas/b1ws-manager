@@ -527,6 +527,12 @@ public class SondaREST {
         for (String invoice : invoices) {
             CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para la venta # {0} realizada en [{1}]", new Object[]{invoice, companyName});
 
+            //TODO: validar que la factura de compra no exista en motorepuestos.com para no generar duplicidad
+            if (invoiceSAPFacade.validateExistInvoicePurchaseInMRTO(invoice, "VELEZ", false) > 0) {
+                CONSOLE.log(Level.WARNING, "No se puede crear la factura de compra porque ya existe en SAP");
+                return Response.ok(new ResponseDTO(-2, "No se puede crear la factura de compra porque ya existe en SAP.")).build();
+            }
+
             List<Object[]> details = invoiceSAPFacade.listDetailInvoice(invoice, companyName, false);
             if (details.isEmpty()) {
                 CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", invoice);
