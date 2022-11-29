@@ -32,11 +32,14 @@ public class OrderDetailPedbox {
     @Basic(optional = false)
     @Column(name = "qtyMDL")
     private Integer qtyMDL;
+    @Basic(optional = false)
+    @Column(name = "qtySBT")
+    private Integer qtySBT;
 
     public OrderDetailPedbox() {
     }
 
-    public OrderDetailPedbox(long idOrderDetail, OrderPedbox idOrder, String itemCode, String whsCode, Integer qtyAPP, Integer qtySAP, Integer qtyMDL) {
+    public OrderDetailPedbox(long idOrderDetail, OrderPedbox idOrder, String itemCode, String whsCode, Integer qtyAPP, Integer qtySAP, Integer qtyMDL, Integer qtySBT) {
         this.idOrderDetail = idOrderDetail;
         this.idOrder = idOrder;
         this.itemCode = itemCode;
@@ -44,6 +47,7 @@ public class OrderDetailPedbox {
         this.qtyAPP = qtyAPP;
         this.qtySAP = qtySAP;
         this.qtyMDL = qtyMDL;
+        this.qtySBT = qtySBT;
     }
 
     public long getIdOrderDetail() {
@@ -102,6 +106,14 @@ public class OrderDetailPedbox {
         this.qtyMDL = qtyMDL;
     }
 
+    public Integer getQtySBT() {
+        return qtySBT;
+    }
+
+    public void setQtySBT(Integer qtySBT) {
+        this.qtySBT = qtySBT;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
@@ -137,6 +149,7 @@ public class OrderDetailPedbox {
                 ", qtyAPP=" + qtyAPP +
                 ", qtySAP=" + qtySAP +
                 ", qtyMDL=" + qtyMDL +
+                ", qtySBT=" + qtySBT +
                 '}';
     }
 }

@@ -111,10 +111,10 @@ public class ItemSAPFacade {
         sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
+            sb.append("'01','30','05','26','32'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
+            sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -123,10 +123,10 @@ public class ItemSAPFacade {
         sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
+            sb.append("'01','30','05','26','32'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
+            sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -150,10 +150,10 @@ public class ItemSAPFacade {
 
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26'");
+            sb.append("'01','30','05','26','32'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26'");
+            sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26'");
@@ -426,7 +426,7 @@ public class ItemSAPFacade {
             }
             //SANBARTOLOME IGB
             sb.append(" union all ");
-            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('01' as varchar(20))as Bodega,cast(sum(it.\"OnHand\")as int)as Stock ");
             sb.append(" from OITM oi ");
             sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
             sb.append(" where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' and it.\"OnHand\">0 ");
@@ -634,10 +634,15 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public Object[] getStockItemMDLvsSAP(String itemCode, String wshCode, String companyName, boolean pruebas) {
+    public Object[] getStockItemMDLvsSAPvsSBT(String itemCode, String wshCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select sum(\"StockMDL\")as StockMDL,sum(\"StockCDI\")as StockCDI from (");
-        sb.append(" select ifnull(cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int),0)as \"StockMDL\",0 as \"StockCDI\" ");
+        sb.append("select sum(\"StockMDL\")as StockMDL,sum(\"StockCDI\")as StockCDI,sum(\"StockSBT\")as StockSBT from (");
+        sb.append(" select 0 as \"StockMDL\",0 as \"StockCDI\",ifnull(cast(sum(s.\"OnHand\") as int),0) as \"StockSBT\" ");
+        sb.append(" from \"OITW\" s ");
+        sb.append(" where s.\"OnHand\">0 and s.\"WhsCode\"='32' and s.\"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("' union all ");
+        sb.append(" select ifnull(cast(sum(s.\"OnHand\"-s.\"IsCommited\") as int),0)as \"StockMDL\",0 as \"StockCDI\",0 as \"StockSBT\" ");
         sb.append(" from \"OITW\" s ");
         sb.append(" where s.\"OnHand\">0 and s.\"WhsCode\"='30' and s.\"ItemCode\"='");
         sb.append(itemCode);
@@ -656,7 +661,7 @@ public class ItemSAPFacade {
         sb.append("    where (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"WhsCode\"='");
         sb.append(wshCode.equals("30") ? "01" : wshCode);
         sb.append("' and de.\"ItemCode\"=it.\"ItemCode\") ");
-        sb.append("  )else (inv.\"OnHand\"-inv.\"IsCommited\")end as int),0)as \"StockCDI\" ");
+        sb.append("  )else (inv.\"OnHand\"-inv.\"IsCommited\")end as int),0)as \"StockCDI\",0 as \"StockSBT\" ");
         sb.append(" from OITM it");
         sb.append(" inner join OITW inv on inv.\"ItemCode\"=it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='");
         sb.append(wshCode.equals("30") ? "01" : wshCode);
