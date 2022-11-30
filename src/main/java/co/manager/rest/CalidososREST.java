@@ -387,7 +387,7 @@ public class CalidososREST {
                 return Response.ok(new ResponseDTO(-2, "Campo [Documento] es obligatorio para redimir puntos.")).build();
             } else if (dto.getPuntos() <= 0) {
                 CONSOLE.log(Level.WARNING, "Campo [Puntos] es obligatorio para redimir puntos");
-                return Response.ok(new ResponseDTO(-2, "campo [Puntos] es obligatorio para redimir puntos.")).build();
+                return Response.ok(new ResponseDTO(-2, "Campo [Puntos] es obligatorio para redimir puntos.")).build();
             } else if (dto.getConcepto() == null || dto.getConcepto().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Concepto] es obligatorio para redimir puntos");
                 return Response.ok().build();
@@ -395,19 +395,26 @@ public class CalidososREST {
                 CONSOLE.log(Level.WARNING, "Campo [Comprobante] es obligatorio para redimir puntos");
                 return Response.ok(new ResponseDTO(-2, "Campo [Comprobante] es obligatorio para redimir puntos")).build();
             }
-
-            //Validar que el comprobante de redención no exista
+            /*** 1.Validar que el comprobante de redención no exista***/
             String idRedeem = redimePuntosSAPFacade.getIdRedeemPoint(dto.getComprobante(), "IGB", false);
             if (idRedeem != null) {
                 CONSOLE.log(Level.WARNING, "Ya existe un comprobante de redencion");
-                return Response.ok(new ResponseDTO(0, "Ya existe un comprobante de redencion.")).build();
+                return Response.ok(new ResponseDTO(-2, "Ya existe un comprobante de redencion.")).build();
+            }
+            /*** 2.Validar disponibilidad de puntos a redimir***/
+            List<Object[]> objs = redimePuntosSAPFacade.listAvailablePoints(dto.getDocumento(), "IGB", false);
+            for (Object[] obj : objs) {
+                if (dto.getPuntos() > (Integer) obj[2]) {
+                    CONSOLE.log(Level.WARNING, "Lo sentimos no tiene puntos disponibles para redimir. Documento=" + dto.getDocumento());
+                    return Response.ok(new ResponseDTO(-2, "Lo sentimos no tiene puntos disponibles para redimir.")).build();
+                }
             }
 
             Gson gson = new Gson();
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
             try {
-                //TODO: Validar si es un abono a redimir, se crea en SAP un pago a cuenta
+                /*** 3.Validar si es un abono a redimir?, se crea en SAP un pago a cuenta, sino se crea un registro en redención***/
                 if (dto.getConcepto().equals("ABONO")) {
                     IncomingPaymentDTO incomingPaymentDTO = new IncomingPaymentDTO();
                     incomingPaymentDTO.setCardCode(dto.getDocumento());
