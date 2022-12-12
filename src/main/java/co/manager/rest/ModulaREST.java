@@ -82,7 +82,7 @@ public class ModulaREST {
         for (StockMissingDTO stock : stockMissingDTO) {
             for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
                 if (stock.getItemCode().equals(modula.getItemCode())) {
-                    stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(",000", "")));
+                    stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(".000", "")));
                     break;
                 }
             }
