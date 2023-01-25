@@ -1,7 +1,9 @@
 package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,20 +11,34 @@ import java.util.List;
  * @author jguisao
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SalesOrderDTO {
+public class SalesOrderDTO implements Serializable {
+    @JsonProperty("cardCode")
     private String cardCode;
+    @JsonProperty("comments")
     private String comments;
+    @JsonProperty("companyName")
     private String companyName;
+    @JsonProperty("numAtCard")
     private String numAtCard;
+    @JsonProperty("idTransport")
     private String idTransport;
+    @JsonProperty("status")
     private String status;
+    @JsonProperty("confirmed")
     private String confirmed;
+    @JsonProperty("startDatePack")
     private String startDatePack;
+    @JsonProperty("shipToCode")
     private String shipToCode;
+    @JsonProperty("payToCode")
     private String payToCode;
+    @JsonProperty("serialMDL")
     private String serialMDL;
+    @JsonProperty("slpCode")
     private Long slpCode;
+    @JsonProperty("discountPercent")
     private Double discountPercent;
+    @JsonProperty("detailSalesOrder")
     private List<DetailSalesOrderDTO> detailSalesOrder;
 
     public SalesOrderDTO() {
