@@ -10,6 +10,7 @@ import co.manager.persistence.entity.OrderPedbox;
 import co.manager.persistence.entity.PagoPasarelaSAP;
 import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -912,7 +913,10 @@ public class PedBoxREST {
                 dto.setPayToCode((String) obj[1]);
             }
         }
-        CONSOLE.log(Level.INFO, dto.toString());
+
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
 
         boolean orderTire = false;
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {

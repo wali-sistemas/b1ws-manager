@@ -1,18 +1,28 @@
 package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 
 /**
  * @author jguisao
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DetailSalesOrderDTO {
+public class DetailSalesOrderDTO implements Serializable {
+    @JsonProperty("quantity")
     private Integer quantity;
+    @JsonProperty("itemCode")
     private String itemCode;
+    @JsonProperty("whsCode")
     private String whsCode;
+    @JsonProperty("ocrCode")
     private String ocrCode;
+    @JsonProperty("baseType")
     private Long baseType = -1l;
+    @JsonProperty("baseEntry")
     private Long baseEntry;
+    @JsonProperty("baseLine")
     private Long baseLine;
 
     public DetailSalesOrderDTO() {
