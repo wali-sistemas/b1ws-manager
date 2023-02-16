@@ -43,7 +43,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       cast(sn.\"ListNum\" as int) as listaPrecio, '' as Notas, ");
         sb.append("       cast(ifnull(sn.\"Discount\",0) as numeric(18,2)) as DescuentComercial, ");
         sb.append("       'N' as Condicion, case when cr.\"TaxCode\" = 'IVAG19' then 'N' else 'S' end as Excento, ");
-        sb.append("       cast(((sn.\"CreditLine\" * 1.2) - sn.\"Balance\" - sn.\"OrdersBal\") as numeric(18,0)) as Cupo, ");
+        sb.append("       cast(((sn.\"CreditLine\") - sn.\"Balance\" - sn.\"OrdersBal\") as numeric(18,0)) as Cupo, ");
         sb.append("       cast(cr.\"Address\" as varchar(50)) as IdAddress, ");
         sb.append("       cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
         sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County, ");
