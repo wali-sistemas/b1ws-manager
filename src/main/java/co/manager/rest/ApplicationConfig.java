@@ -33,5 +33,6 @@ public class ApplicationConfig extends Application {
         resources.add(MotorepuestoREST.class);
         resources.add(CalidososREST.class);
         resources.add(ModulaREST.class);
+        resources.add(AppREST.class);
     }
 }
