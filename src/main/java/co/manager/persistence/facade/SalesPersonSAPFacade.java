@@ -151,4 +151,21 @@ public class SalesPersonSAPFacade {
         }
         return null;
     }
+
+    public List<Object[]> validateLoginApp(String user, String pass, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"SlpCode\" as varchar(3))as slpCode,cast(\"SlpName\" as varchar(100))as slpName,cast(\"U_CEDULA\" as varchar(100))as passWord ");
+        sb.append("from OSLP ");
+        sb.append("where \"Locked\"='N' and \"Fax\"='Y' and \"SlpCode\"='");
+        sb.append(user);
+        sb.append("' and \"U_CEDULA\"='");
+        sb.append(pass);
+        sb.append("'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los logins para " + companyName);
+        }
+        return null;
+    }
 }
