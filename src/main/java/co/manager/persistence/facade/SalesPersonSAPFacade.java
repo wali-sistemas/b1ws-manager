@@ -160,7 +160,7 @@ public class SalesPersonSAPFacade {
         sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente ");
         sb.append("from  \"@PRES_ZONA_VEND\" p ");
         sb.append("inner join OSLP a on p.\"U_VEND_PRES\"=a.\"SlpName\" ");
-        sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(f.\"DocTotal\"-f.\"VatSum\"-f.\"TotalExpns\"+f.\"WTSum\")as numeric(18,2))as Ventas,0 as Devoluciones ");
+        sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100))as numeric(18,2))as Ventas,0 as Devoluciones ");
         sb.append("from  OINV f ");
         sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
         sb.append("inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
@@ -174,8 +174,10 @@ public class SalesPersonSAPFacade {
         }
         sb.append("' group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
         sb.append("union all ");
-        sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(n.\"DocTotal\"-n.\"VatSum\"-n.\"TotalExpns\"+n.\"WTSum\")as numeric(18,2))as Devoluciones ");
+        sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100)) as numeric(18,2))as Devoluciones ");
         sb.append("  from  ORIN n ");
+        sb.append("  inner join RIN1 d on d.\"DocEntry\" = n.\"DocEntry\" ");
+        sb.append("  inner join OITM a on a.\"ItemCode\" = d.\"ItemCode\" ");
         sb.append("  where n.\"DocType\"='I' and year(n.\"DocDate\")='");
         sb.append(year);
         sb.append("' and month(n.\"DocDate\")='");
