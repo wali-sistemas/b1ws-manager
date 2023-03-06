@@ -63,7 +63,15 @@ public class PurchaseOrderFacade {
         sb.append(" ifnull(cast(p.\"U_PLACA\" as varchar(15)),'')as placa,ifnull(cast(p.\"U_CONTENEDOR\" as varchar(254)),'')as container,ifnull(cast(p.\"U_PRECINTO\" as varchar(50)),'')as precinto, ");
         sb.append(" ifnull(cast(p.\"U_Fecha_Arribo_CEDI\" as date),current_date)as fecArribo,cast(v.\"SlpName\" as varchar(50))as encargado, ");
         sb.append(" cast(case when p.\"U_TIPO_EMPAQUE\"=01 then 'NO APLICA' when p.\"U_TIPO_EMPAQUE\"=04 then 'CONTENEDOR 40' when p.\"U_TIPO_EMPAQUE\"=05 then 'CONTENEDOR 40 HC' ");
-        sb.append("  when p.\"U_TIPO_EMPAQUE\"=02 then 'CARGA SUELTA' when p.\"U_TIPO_EMPAQUE\"=03 then 'CONTENEDOR 20' else '' end as varchar)as tipoEmpaque,cast(v.\"Email\" as varchar(100))as mail ");
+        sb.append("  when p.\"U_TIPO_EMPAQUE\"=02 then 'CARGA SUELTA' when p.\"U_TIPO_EMPAQUE\"=03 then 'CONTENEDOR 20' else '' end as varchar)as tipoEmpaque,cast(v.\"Email\" as varchar(100))as mail, ");
+        sb.append(" (select STRING_AGG(\"Marca\", ', ')as marcas ");
+        sb.append("  from ( ");
+        sb.append("   select distinct m.\"Name\" as \"Marca\" ");
+        sb.append("   from POR1 d ");
+        sb.append("   inner join OITM i on i.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("   inner join \"@MARCAS\" m on m.\"Code\"=i.\"U_Marca\" ");
+        sb.append("   where d.\"DocEntry\"=p.\"DocEntry\" ");
+        sb.append(" ))as marcas ");
         sb.append("from OPOR p ");
         sb.append("inner join OSLP v on p.\"SlpCode\"=v.\"SlpCode\" ");
         sb.append("where p.\"U_ENVIAR_DATOS_CON\"='Y' ");
