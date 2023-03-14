@@ -38,6 +38,8 @@ public class SalesOrderDTO implements Serializable {
     private Long slpCode;
     @JsonProperty("discountPercent")
     private Double discountPercent;
+    @JsonProperty("DocTotal")
+    private Double docTotal;
     @JsonProperty("detailSalesOrder")
     private List<DetailSalesOrderDTO> detailSalesOrder;
 
@@ -157,6 +159,14 @@ public class SalesOrderDTO implements Serializable {
         this.serialMDL = serialMDL;
     }
 
+    public Double getDocTotal() {
+        return docTotal;
+    }
+
+    public void setDocTotal(Double docTotal) {
+        this.docTotal = docTotal;
+    }
+
     @Override
     public String toString() {
         return "SalesOrderDTO{" +
@@ -173,6 +183,7 @@ public class SalesOrderDTO implements Serializable {
                 ", serialMDL='" + serialMDL + '\'' +
                 ", slpCode=" + slpCode +
                 ", discountPercent=" + discountPercent +
+                ", docTotal=" + docTotal +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';
     }

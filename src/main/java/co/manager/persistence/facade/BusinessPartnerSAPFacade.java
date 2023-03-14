@@ -475,4 +475,59 @@ public class BusinessPartnerSAPFacade {
         }
         return new Object[]{};
     }
+
+    public double getAvailableCreditByCustomer(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select t.\"Disponible\" ");
+        sb.append("from ( ");
+        sb.append(" select distinct c.\"CardCode\",c.\"CreditLine\"-c.\"Balance\"-ifnull((select sum(\"DocTotal\") from ORDR where \"DocStatus\"='O' and \"CardCode\"=c.\"CardCode\"),0)+ifnull((select sum(\"DocTotal\") from ODLN where \"DocStatus\"='O' and \"CardCode\"=c.\"CardCode\"),0)as \"Disponible\",cast( ");
+        sb.append(" (select sum(rc2.\"Vlrec\"*DAYS_BETWEEN(rc2.\"Fecha_FA\",rc2.\"Fecha_RC\"))/sum(rc2.\"Vlrec\") ");
+        sb.append("  from ( ");
+        sb.append("   select rc1.\"Fecha_RC\" as \"Fecha_RC\",rc1.\"Vlrec\" as \"Vlrec\",rc1.\"Fecha_FA\" as \"Fecha_FA\" ");
+        sb.append("   from ( ");
+        sb.append("    select dc3.\"CardCode\" as \"CardCode\",dc3.\"Tipo_Doc\" as \"Tipo_Doc\",dc3.\"NroDoc\" as \"NroDoc\",dc3.\"Fecha_RC\" as \"Fecha_RC\",dc3.\"NroRec\" as \"NroRec\",dc3.\"Vlrec\" as \"Vlrec\",f.\"DocDate\" as \"Fecha_FA\" ");
+        sb.append("    from ( ");
+        sb.append("     select dc1.\"CardCode\" as \"CardCode\",dc1.\"Tipo_Doc\" as \"Tipo_Doc\",dc1.\"NroDoc\" as \"NroDoc\",dc1.\"Fecha_RC\" as \"Fecha_RC\",dc2.\"NroRec\" as \"NroRec\",dc2.\"Vlrec\" as \"Vlrec\" ");
+        sb.append("     from ( ");
+        sb.append("      select o.\"CardCode\" as \"CardCode\",o.\"ObjType\" as \"Tipo_Doc\",o.\"DocNum\" as \"NroDoc\",o.\"TaxDate\" as \"Fecha_RC\" ");
+        sb.append("      from ORCT o ");
+        sb.append("      inner join OCRD c on c.\"CardCode\"=o.\"CardCode\" ");
+        sb.append("      inner join \"@PARAMETROS\" p on p.\"Code\"='02' ");
+        sb.append("      where o.\"CardCode\"=c.\"CardCode\" and o.\"DocDate\">=ADD_MONTHS(current_date,-10) and o.\"DocDate\"<=current_date and o.\"Canceled\"='N' ");
+        sb.append("     )as dc1 ");
+        sb.append("    inner join (");
+        sb.append("     select dc1.\"Tipo_Doc\" as \"Tipo_Doc\",dc1.\"NroDoc\" as \"NroDoc\",dc1.\"Fecha_RC\" as \"Fecha_RC\",o.\"ReconNum\" as \"NroRec\",i.\"ReconSum\" as \"Vlrec\" ");
+        sb.append("     from ( ");
+        sb.append("      select o.\"CardCode\" as \"CardCode\",o.\"ObjType\" as \"Tipo_Doc\",o.\"DocEntry\" as \"DocEntry_Doc\",o.\"DocNum\" as \"NroDoc\",o.\"TaxDate\" as \"Fecha_RC\",0 as \"NroRec\", 0 as \"Vlrec\" ");
+        sb.append("      from ORCT o");
+        sb.append("      inner join OCRD c on c.\"CardCode\"=o.\"CardCode\" ");
+        sb.append("      inner join \"@PARAMETROS\" p on p.\"Code\"='02' ");
+        sb.append("      where o.\"CardCode\"=c.\"CardCode\" and o.\"DocDate\">=ADD_MONTHS(current_date,-10) and o.\"DocDate\"<=current_date and o.\"Canceled\"='N' ");
+        sb.append("     )as dc1 ");
+        sb.append("     left join ITR1 i on i.\"SrcObjTyp\"=dc1.\"Tipo_Doc\" and i.\"SrcObjAbs\"=dc1.\"DocEntry_Doc\" ");
+        sb.append("     left join ITR1 i on i.\"SrcObjTyp\"=dc1.\"Tipo_Doc\" and i.\"SrcObjAbs\"=dc1.\"DocEntry_Doc\" ");
+        sb.append("     left join OITR o on o.\"ReconNum\"=i.\"ReconNum\" ");
+        sb.append("     where o.\"Canceled\"='N' and o.\"ReconType\"<>7 and o.\"ReconType\"<>5 ");
+        sb.append("    )as dc2 on (dc1.\"CardCode\"=dc2.\"CardCode\" and dc1.\"Tipo_Doc\"=dc2.\"Tipo_Doc\" and dc1.\"NroDoc\"=dc2.\"NroDoc\") ");
+        sb.append("   )as dc3 ");
+        sb.append("   inner join OITR o on o.\"ReconNum\"=dc3.\"NroRec\" ");
+        sb.append("   inner join ITR1 i on i.\"ReconNum\"=o.\"ReconNum\" and i.\"SrcObjTyp\"='13' ");
+        sb.append("   inner join OINV f on f.\"DocEntry\"=i.\"SrcObjAbs\" ");
+        sb.append("   where dc3.\"Tipo_Doc\"='24' and f.\"DocSubType\"<>'DN' ");
+        sb.append("  )as rc1 ");
+        sb.append("  group by rc1.\"CardCode\",rc1.\"Tipo_Doc\",rc1.\"NroDoc\",rc1.\"Fecha_RC\",rc1.\"NroRec\",rc1.\"Vlrec\",rc1.\"Fecha_FA\" ");
+        sb.append(" )as rc2)as int)as \"PromDay\", ");
+        sb.append(" (select max(cast(\"DocDueDate\" as date)) from OINV where \"DocStatus\"='O' and days_between(\"DocDueDate\",ADD_MONTHS(ADD_DAYS(ADD_MONTHS(ADD_DAYS(CURRENT_DATE,-EXTRACT(DAY FROM CURRENT_DATE)+1),1),-1),-1))>3 and \"CardCode\"=c.\"CardCode\")as \"SinFacVenc\", ");
+        sb.append(" ifnull((select distinct 'SI' from OINV where MONths_between(\"DocDate\",ADD_MONTHS(ADD_DAYS(ADD_MONTHS(ADD_DAYS(CURRENT_DATE,-EXTRACT(DAY FROM CURRENT_DATE)+1),1),-1),-1))<10 and \"CardCode\"=c.\"CardCode\"),'NO')as \"CompReciente\" ");
+        sb.append(" from OCRD c ");
+        sb.append(" where c.\"validFor\"='Y' and c.\"CardType\"='C' and c.\"GroupNum\"<>'-1' and c.\"Discount\"='0' ");
+        sb.append(")as t ");
+        sb.append("where t.\"PromDay\"<55 and t.\"CompReciente\"='SI' and \"SinFacVenc\" is null and \"Disponible\">0 and t.\"CardCode\"='C1052314370' ");
+        try {
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el credito disponible para el cliente " + cardCode, e);
+        }
+        return 0;
+    }
 }
