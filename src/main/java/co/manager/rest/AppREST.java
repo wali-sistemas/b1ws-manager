@@ -338,11 +338,20 @@ public class AppREST {
         } else if (dto.getSlpCode() == null || dto.getSlpCode() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo slpCode es obligatorio.")).build();
+        } else if (dto.getDocTotal() == null || dto.getDocTotal() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
 
         /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
         if (dto.getCompanyName().contains("IGB")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
+                dto.setStatus("REVISAR");
+                dto.setConfirmed("N");
+            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false)) {
+                dto.setStatus("TEST-APROBADO");
+                dto.setConfirmed("Y");
+            } else {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
