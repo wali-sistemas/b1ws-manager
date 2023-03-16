@@ -83,7 +83,7 @@ public class BusinessPartnerSAPFacade {
     public CupoDTO getCustomerPortfolio(String cardCode, String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(((s.\"CreditLine\"*1.2)-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo, ");
+        sb.append("select cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo, ");
         sb.append("       cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
         sb.append("      (select max(cast(v.\"DocDate\" as date)) from OINV v where v.\"CardCode\" = s.\"CardCode\")as fechaUltComp ");
         sb.append("from  OCRD s ");
