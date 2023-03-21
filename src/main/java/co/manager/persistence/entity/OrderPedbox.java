@@ -39,11 +39,14 @@ public class OrderPedbox {
     @Basic(optional = false)
     @Column(name = "companyName")
     private String companyName;
+    @Basic(optional = false)
+    @Column(name = "docTotal")
+    private Double docTotal;
 
     public OrderPedbox() {
     }
 
-    public OrderPedbox(long idOrder, long docNum, Date docDate, String cardCode, String numAtCard, String comments, String slpCode, String status, String companyName) {
+    public OrderPedbox(long idOrder, long docNum, Date docDate, String cardCode, String numAtCard, String comments, String slpCode, String status, String companyName, Double docTotal) {
         this.idOrder = idOrder;
         this.docNum = docNum;
         this.docDate = docDate;
@@ -53,6 +56,7 @@ public class OrderPedbox {
         this.slpCode = slpCode;
         this.status = status;
         this.companyName = companyName;
+        this.docTotal = docTotal;
     }
 
     public long getIdOrder() {
@@ -125,6 +129,14 @@ public class OrderPedbox {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Double getDocTotal() {
+        return docTotal;
+    }
+
+    public void setDocTotal(Double docTotal) {
+        this.docTotal = docTotal;
     }
 
     @Override

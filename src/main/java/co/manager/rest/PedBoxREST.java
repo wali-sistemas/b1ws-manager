@@ -884,6 +884,9 @@ public class PedBoxREST {
         } else if (dto.getConfirmed() == null || dto.getConfirmed().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo confirmed es obligatorio.")).build();
+        } else if (dto.getDocTotal() == null || dto.getDocTotal() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
         /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
         if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
@@ -1236,6 +1239,7 @@ public class PedBoxREST {
         order.setSlpCode(dto.getSlpCode().toString());
         order.setStatus("F");
         order.setCompanyName(dto.getCompanyName());
+        order.setDocTotal(dto.getDocTotal());
         try {
             orderPedboxFacade.create(order, dto.getCompanyName(), false);
         } catch (Exception ex) {

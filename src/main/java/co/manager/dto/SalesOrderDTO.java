@@ -38,7 +38,7 @@ public class SalesOrderDTO implements Serializable {
     private Long slpCode;
     @JsonProperty("discountPercent")
     private Double discountPercent;
-    @JsonProperty("DocTotal")
+    @JsonProperty("docTotal")
     private Double docTotal;
     @JsonProperty("detailSalesOrder")
     private List<DetailSalesOrderDTO> detailSalesOrder;
