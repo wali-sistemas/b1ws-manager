@@ -321,6 +321,7 @@ public class SondaREST {
             Integer slpCode = (Integer) obj[5];
             BigDecimal discPrcnt = (BigDecimal) obj[6];
             Integer docEntry = (Integer) obj[7];
+            BigDecimal docTotal = (BigDecimal) obj[9];
 
             SalesOrderDTO dto = new SalesOrderDTO();
             dto.setCardCode((String) obj[0]);
@@ -334,6 +335,7 @@ public class SondaREST {
             dto.setPayToCode((String) obj[4]);
             dto.setSlpCode(slpCode.longValue());
             dto.setDiscountPercent(discPrcnt.doubleValue());
+            dto.setDocTotal(docTotal.doubleValue());
 
             List<Object[]> details = salesQuotationSAPFacade.listDetailSalesQuotations(docEntry, companyName, false);
             if (details.isEmpty()) {
