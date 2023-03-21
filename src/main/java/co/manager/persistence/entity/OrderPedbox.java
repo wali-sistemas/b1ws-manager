@@ -176,6 +176,7 @@ public class OrderPedbox {
                 ", slpCode='" + slpCode + '\'' +
                 ", status='" + status + '\'' +
                 ", companyName='" + companyName + '\'' +
+                ", docTotal=" + docTotal +
                 '}';
     }
 }

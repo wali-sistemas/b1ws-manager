@@ -30,7 +30,8 @@ public class SalesQuotationSAPFacade {
         sb.append(" cast(\"Comments\" as varchar(1000))as Comments,cast(\"U_TRANSP\" as varchar(5))as Transp, ");
         sb.append(" cast(\"ShipToCode\" as varchar(100))as ShipToCode,cast(\"PayToCode\" as varchar(100))as PayToCode, ");
         sb.append(" cast(\"SlpCode\" as int)as SlpCode,cast(\"DiscPrcnt\" as numeric(18,0))as DiscPrcnt, ");
-        sb.append(" cast(\"DocEntry\" as int)as DocEntry,cast(\"DocNum\" as int)as DocNum ");
+        sb.append(" cast(\"DocEntry\" as int)as DocEntry,cast(\"DocNum\" as int)as DocNum, ");
+        sb.append(" cast(\"DocTotal\" as numeric(18,0))as DocTotal ");
         sb.append("from OQUT ");
         sb.append("where year(\"DocDate\")=year(current_date) and MONTH(\"DocDate\") between MONTH(current_date)-1 and MONTH(current_date) and \"DocStatus\"='O' and \"U_ESTADO_WMS\"='C'");
         try {
