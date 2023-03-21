@@ -865,6 +865,10 @@ public class PedBoxREST {
                 return Response.ok(new ResponseDTO(0, docNum)).build();
             }
         }
+        //TODO: Campo DocTotal para la creación de pedidos de motorepuestos.com no lo estan llenando falta en la integración con el AWS
+        if (dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("VELEZ")) {
+            dto.setDocTotal(1.0);
+        }
         /**** 2.Validar campos obligatorios para creación de orden de venta****/
         if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
