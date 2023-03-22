@@ -496,7 +496,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("      where o.\"CardCode\"=c.\"CardCode\" and o.\"DocDate\">=ADD_MONTHS(current_date,-10) and o.\"DocDate\"<=current_date and o.\"Canceled\"='N' ");
         sb.append("     )as dc1 ");
         sb.append("    inner join (");
-        sb.append("     select dc1.\"Tipo_Doc\" as \"Tipo_Doc\",dc1.\"NroDoc\" as \"NroDoc\",dc1.\"Fecha_RC\" as \"Fecha_RC\",o.\"ReconNum\" as \"NroRec\",i.\"ReconSum\" as \"Vlrec\" ");
+        sb.append("     select dc1.\"Tipo_Doc\" as \"Tipo_Doc\",dc1.\"NroDoc\" as \"NroDoc\",dc1.\"Fecha_RC\" as \"Fecha_RC\",o.\"ReconNum\" as \"NroRec\",i.\"ReconSum\" as \"Vlrec\",dc1.\"CardCode\" ");
         sb.append("     from ( ");
         sb.append("      select o.\"CardCode\" as \"CardCode\",o.\"ObjType\" as \"Tipo_Doc\",o.\"DocEntry\" as \"DocEntry_Doc\",o.\"DocNum\" as \"NroDoc\",o.\"TaxDate\" as \"Fecha_RC\",0 as \"NroRec\", 0 as \"Vlrec\" ");
         sb.append("      from ORCT o");
@@ -504,7 +504,6 @@ public class BusinessPartnerSAPFacade {
         sb.append("      inner join \"@PARAMETROS\" p on p.\"Code\"='02' ");
         sb.append("      where o.\"CardCode\"=c.\"CardCode\" and o.\"DocDate\">=ADD_MONTHS(current_date,-10) and o.\"DocDate\"<=current_date and o.\"Canceled\"='N' ");
         sb.append("     )as dc1 ");
-        sb.append("     left join ITR1 i on i.\"SrcObjTyp\"=dc1.\"Tipo_Doc\" and i.\"SrcObjAbs\"=dc1.\"DocEntry_Doc\" ");
         sb.append("     left join ITR1 i on i.\"SrcObjTyp\"=dc1.\"Tipo_Doc\" and i.\"SrcObjAbs\"=dc1.\"DocEntry_Doc\" ");
         sb.append("     left join OITR o on o.\"ReconNum\"=i.\"ReconNum\" ");
         sb.append("     where o.\"Canceled\"='N' and o.\"ReconType\"<>7 and o.\"ReconType\"<>5 ");
@@ -522,9 +521,12 @@ public class BusinessPartnerSAPFacade {
         sb.append(" from OCRD c ");
         sb.append(" where c.\"validFor\"='Y' and c.\"CardType\"='C' and c.\"GroupNum\"<>'-1' and c.\"Discount\"='0' ");
         sb.append(")as t ");
-        sb.append("where t.\"PromDay\"<55 and t.\"CompReciente\"='SI' and \"SinFacVenc\" is null and \"Disponible\">0 and t.\"CardCode\"='C1052314370' ");
+        sb.append("where t.\"PromDay\"<55 and t.\"CompReciente\"='SI' and \"SinFacVenc\" is null and \"Disponible\">0 and t.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex){
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el credito disponible para el cliente " + cardCode, e);
         }
