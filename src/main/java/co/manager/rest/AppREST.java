@@ -722,6 +722,7 @@ public class AppREST {
         order.setSlpCode(dto.getSlpCode().toString());
         order.setStatus("F");
         order.setCompanyName(dto.getCompanyName());
+        order.setDocTotal(dto.getDocTotal());
         try {
             orderPedboxFacade.create(order, dto.getCompanyName(), false);
         } catch (Exception ex) {
