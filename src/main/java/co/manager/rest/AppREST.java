@@ -305,6 +305,38 @@ public class AppREST {
         return Response.ok(new ResponseDTO(0, warehouses)).build();
     }
 
+    @GET
+    @Path("budget-sales/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSalesBudgetBySeller(@PathParam("companyname") String companyname,
+                                           @QueryParam("slpcode") String slpCode,
+                                           @QueryParam("year") Integer year,
+                                           @QueryParam("month") String month) {
+        CONSOLE.log(Level.INFO, "Iniciando consulta de presupuesto de ventas para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+        List<Object[]> objects = salesPersonSAPFacade.getSaleBudgetBySeller(slpCode, year, month.length() == 1 ? '0' + month : month, companyname, false);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los presupuestos para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando los presupuestos para " + companyname)).build();
+        }
+
+        List<SalesBudgetDTO> presupuestos = new ArrayList<>();
+        for (Object[] obj : objects) {
+            SalesBudgetDTO dto = new SalesBudgetDTO();
+            dto.setCompanyName(companyname);
+            dto.setSlpCode((String) obj[0]);
+            dto.setYear((Integer) obj[1]);
+            dto.setMonth((String) obj[2]);
+            dto.setVentas((BigDecimal) obj[3]);
+            dto.setPresupuesto((BigDecimal) obj[4]);
+            dto.setPendiente((BigDecimal) obj[5]);
+
+            presupuestos.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, presupuestos)).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
