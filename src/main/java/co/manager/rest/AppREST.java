@@ -420,10 +420,15 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_PW = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_U = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
+
         List<DetailSalesOrderDTO> detailSalesOrder_TY_desc = new ArrayList<>();
+
         List<DetailSalesOrderDTO> detailSalesOrder_PW_desc = new ArrayList<>();
+
         List<DetailSalesOrderDTO> detailSalesOrder_U_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_REP_Desc = new ArrayList<>();
+
+        List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
+
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
 
@@ -444,107 +449,36 @@ public class AppREST {
                 if (detail.getWhsCode().equals("00")) {
                     return Response.ok(createOrderTemporary(dto, 0)).build();
                 } else if (detail.getItemCode().substring(0, 2).equals("TY")) {
-                    /**** 8.3. Separar con ítems solo Llantas TY (Timsun) ****/
+                    /**** 8.3. Separar con ítems solo Llantas TY (Timsun) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_TY_desc.add(detailDTO);
+                        detailSalesOrder_TY_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
                         /**** 8.3.1. Separar con ítems solo Llantas TY (Timsun) sin (**) ****/
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_TY.add(detailDTO);
+                        detailSalesOrder_TY.add(setDetailOrder(detail, ocrCode));
                     }
                 } else if (detail.getItemCode().substring(0, 2).equals("PW")) {
-                    /**** 8.4. Separar con ítems solo Llantas PW (PowerMax) ****/
+                    /**** 8.4. Separar con ítems solo Llantas PW (PowerMax) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_PW_desc.add(detailDTO);
+                        detailSalesOrder_PW_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
                         /**** 8.4.1. Separar con ítems solo Llantas PW (PowerMax) sin (**) ****/
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_PW.add(detailDTO);
+                        detailSalesOrder_PW.add(setDetailOrder(detail, ocrCode));
                     }
                 } else if (detail.getItemCode().substring(0, 1).equals("U")) {
-                    /**** 8.5. Separar con ítems solo Llantas U (Donin) ****/
+                    /**** 8.5. Separar con ítems solo Llantas U (Donin) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_U_desc.add(detailDTO);
+                        detailSalesOrder_U_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
                         /**** 8.5.1. Separar con ítems solo Llantas U (Donin) sin (**) ****/
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_U.add(detailDTO);
+                        detailSalesOrder_U.add(setDetailOrder(detail, ocrCode));
                     }
-                    /**** 8.6. Separar con ítems solo Repuestos sin (**) ****/
                 } else {
+                    /**** 8.6. Separar con ítems solo Repuestos con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_REP_Desc.add(detailDTO);
+                        detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        detailDTO.setItemCode(detail.getItemCode());
-                        detailDTO.setQuantity(detail.getQuantity());
-                        detailDTO.setWhsCode(detail.getWhsCode());
-                        detailDTO.setOcrCode(ocrCode);
-                        detailDTO.setBaseLine(detail.getBaseLine());
-                        detailDTO.setBaseEntry(detail.getBaseEntry());
-                        detailDTO.setBaseType(detail.getBaseType());
-
-                        detailSalesOrder_REP.add(detailDTO);
+                        /**** 8.6. Separar con ítems solo Repuestos sin (**) ****/
+                        detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
                     }
                 }
             }
@@ -740,6 +674,19 @@ public class AppREST {
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
         return Response.ok(res).build();
     }
+
+    private DetailSalesOrderDTO setDetailOrder(DetailSalesOrderDTO detail, String ocrCode) {
+        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+        detailDTO.setItemCode(detail.getItemCode());
+        detailDTO.setQuantity(detail.getQuantity());
+        detailDTO.setWhsCode(detail.getWhsCode());
+        detailDTO.setOcrCode(ocrCode);
+        detailDTO.setBaseLine(detail.getBaseLine());
+        detailDTO.setBaseEntry(detail.getBaseEntry());
+        detailDTO.setBaseType(detail.getBaseType());
+        return detail;
+    }
+
 
     private ResponseDTO createOrderTemporary(SalesOrderDTO dto, long docNum) {
         /****Registrar pedido en tablas temporales****/
