@@ -93,11 +93,8 @@ public class SalesOrderEJB {
                     order.setUfecini(date2);
                 } catch (Exception e) {
                 }
-
                 /*** Consultando la cuenta de ingreso en ventas por cliente***/
                 Object[] incomeAccountCustomer = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
-                /*** Consultando la cuenta de ingreso en ventas del primer item de la orden***/
-                Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(dto.getDetailSalesOrder().get(0).getItemCode(), dto.getCompanyName(), false);
 
                 List<DetailSalesOrderDTO> lines = dto.getDetailSalesOrder();
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
@@ -110,6 +107,8 @@ public class SalesOrderEJB {
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());
                     orderLine.setBaseEntry(line.getBaseEntry());
+                    /*** Consultando la cuenta de ingreso en ventas del primer item de la orden***/
+                    Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(line.getItemCode(), dto.getCompanyName(), false);
                     /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante) en IGB y MTZ***/
                     if (incomeAccountItem[2].equals("54")) {
                         /***Corresponde a Lubricantes***/
