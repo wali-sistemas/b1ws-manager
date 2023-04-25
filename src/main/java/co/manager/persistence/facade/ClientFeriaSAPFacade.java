@@ -64,6 +64,8 @@ public class ClientFeriaSAPFacade {
         sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         sb.append("','");
         sb.append(dto.getCiudad());
+        sb.append("','");
+        sb.append(dto.getAsesor());
         sb.append("');");
         try {
             persistenceConf.chooseSchema(dto.getCompanyName(), testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
