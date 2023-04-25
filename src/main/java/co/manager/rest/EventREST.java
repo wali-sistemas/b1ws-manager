@@ -69,7 +69,7 @@ public class EventREST implements Serializable {
 
             switch (dto.getCompanyName()) {
                 case "VARROC":
-                    emailTelemercader = "telemercadeo2@motozonecolombia.com";
+                    emailTelemercader = salesPersonSAPFacade.getMailRegional(dto.getRegional().trim(), dto.getCompanyName(), false);
                     template = "MtzContactoEvento";
                     break;
                 case "IGB":
