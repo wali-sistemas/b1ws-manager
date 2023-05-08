@@ -71,7 +71,7 @@ public class PurchaseOrderFacade {
         sb.append("   inner join OITM i on i.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append("   inner join \"@MARCAS\" m on m.\"Code\"=i.\"U_Marca\" ");
         sb.append("   where d.\"DocEntry\"=p.\"DocEntry\" ");
-        sb.append(" ))as varchar)as marcas ");
+        sb.append(" ))as varchar)as marcas,cast(p.\"CardCode\" as varchar(20))as cardCode,cast(p.\"CardName\" as varchar(100))as cardName ");
         sb.append("from OPOR p ");
         sb.append("inner join OSLP v on p.\"SlpCode\"=v.\"SlpCode\" ");
         sb.append("where p.\"U_ENVIAR_DATOS_CON\"='Y' ");

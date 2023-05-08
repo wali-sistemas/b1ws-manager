@@ -506,6 +506,8 @@ public class SondaREST {
                 params.put("typeEmp", (String) obj[9]);
                 params.put("photo", obj[8] + ".jpg");
                 params.put("brands", (String) obj[11]);
+                params.put("cardCode", (String) obj[12]);
+                params.put("cardName", (String) obj[13]);
 
                 sendEmail("NotificationDataDriver", "soporte@igbcolombia.com", "Datos conductor Orden " + obj[0], (String) obj[10],
                         "conductores@igbcolombia.com", "", null, params);
