@@ -16,17 +16,24 @@ public class SalesBudgetDTO {
     private BigDecimal ventas;
     private BigDecimal presupuesto;
     private BigDecimal pendiente;
+    private String slpName;
+    private String mail;
+    private String urlSlpPicture;
 
     public SalesBudgetDTO() {
     }
 
-    public SalesBudgetDTO(String slpCode, String companyName, Integer year, String month, BigDecimal ventas, BigDecimal presupuesto) {
+    public SalesBudgetDTO(Integer year, String slpCode, String companyName, String month, BigDecimal ventas, BigDecimal presupuesto, BigDecimal pendiente, String slpName, String mail, String urlSlpPicture) {
+        this.year = year;
         this.slpCode = slpCode;
         this.companyName = companyName;
-        this.year = year;
         this.month = month;
         this.ventas = ventas;
         this.presupuesto = presupuesto;
+        this.pendiente = pendiente;
+        this.slpName = slpName;
+        this.mail = mail;
+        this.urlSlpPicture = urlSlpPicture;
     }
 
     public String getSlpCode() {
@@ -85,6 +92,30 @@ public class SalesBudgetDTO {
         this.pendiente = pendiente;
     }
 
+    public String getSlpName() {
+        return slpName;
+    }
+
+    public void setSlpName(String slpName) {
+        this.slpName = slpName;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getUrlSlpPicture() {
+        return urlSlpPicture;
+    }
+
+    public void setUrlSlpPicture(String urlSlpPicture) {
+        this.urlSlpPicture = urlSlpPicture;
+    }
+
     @Override
     public String toString() {
         return "SalesBudgetDTO{" +
@@ -95,6 +126,9 @@ public class SalesBudgetDTO {
                 ", ventas=" + ventas +
                 ", presupuesto=" + presupuesto +
                 ", pendiente=" + pendiente +
+                ", slpName='" + slpName + '\'' +
+                ", mail='" + mail + '\'' +
+                ", urlSlpPicture='" + urlSlpPicture + '\'' +
                 '}';
     }
 }

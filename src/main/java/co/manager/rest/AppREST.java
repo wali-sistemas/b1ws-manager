@@ -261,6 +261,7 @@ public class AppREST {
         }
 
         for (String item : items.keySet()) {
+            Integer stockFull = 0;
             List<StockCurrentDTO.StockCurrentWarehouseDTO> stockCurrentWarehouse = new ArrayList<>();
             StockCurrentDTO dto1 = new StockCurrentDTO();
             dto1.setItemCode(item);
@@ -270,10 +271,12 @@ public class AppREST {
                     StockCurrentDTO.StockCurrentWarehouseDTO dto2 = new StockCurrentDTO.StockCurrentWarehouseDTO();
                     dto2.setWhsCode((String) obj[1]);
                     dto2.setQuantity((Integer) obj[2]);
+                    stockFull += dto2.getQuantity();
                     stockCurrentWarehouse.add(dto2);
                 }
             }
             dto1.setStockWarehouses(stockCurrentWarehouse);
+            dto1.setStockFull(stockFull);
             stockCurrentDTO.add(dto1);
         }
         CONSOLE.log(Level.INFO, "Retornando listado de stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
@@ -331,10 +334,60 @@ public class AppREST {
             dto.setVentas((BigDecimal) obj[3]);
             dto.setPresupuesto((BigDecimal) obj[4]);
             dto.setPendiente((BigDecimal) obj[5]);
+            dto.setSlpName((String) obj[6]);
+            dto.setMail((String) obj[7]);
+            dto.setUrlSlpPicture("http://wali.igbcolombia.com:8080/shared/images/users/seller/" + obj[8] + ".jpg");
 
             presupuestos.add(dto);
         }
         return Response.ok(new ResponseDTO(0, presupuestos)).build();
+    }
+
+    @GET
+    @Path("list-order/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrder(@PathParam("companyname") String companyname,
+                              @QueryParam("slpcode") long slpCode,
+                              @QueryParam("year") long year,
+                              @QueryParam("month") long month,
+                              @QueryParam("day") long day) {
+        CONSOLE.log(Level.INFO, "Listando pedidos para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+
+        List<Object[]> objsSAP = salesOrderSAPFacade.listOrdersByDateAndSale(slpCode, year, month, day, companyname, false);
+        if (objsSAP.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "No se encontraron ordenes en SAP para mostrar");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes para mostrar.")).build();
+        }
+
+        List<OrdersAppDTO> ordersAppDTO = new ArrayList<>();
+        for (Object[] obj : objsSAP) {
+            OrdersAppDTO dto = new OrdersAppDTO();
+            dto.setCardCode((String) obj[0]);
+            dto.setDocDate((Date) obj[1]);
+            dto.setDocTotal((BigDecimal) obj[2]);
+            dto.setComments((String) obj[3]);
+            dto.setDocEntry((Integer) obj[4]);
+            dto.setDocNum((Integer) obj[5]);
+
+            ordersAppDTO.add(dto);
+        }
+
+        List<Object[]> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
+        if (!objsTEM.isEmpty()) {
+            for (Object[] obj : objsTEM) {
+                OrdersAppDTO dto = new OrdersAppDTO();
+                dto.setCardCode((String) obj[0]);
+                dto.setDocDate((Date) obj[1]);
+                dto.setDocTotal((BigDecimal) obj[2]);
+                dto.setComments((String) obj[3]);
+                dto.setDocEntry((Integer) obj[4]);
+                dto.setDocNum((Integer) obj[5]);
+
+                ordersAppDTO.add(dto);
+            }
+        }
+        return Response.ok(new ResponseDTO(0, ordersAppDTO)).build();
     }
 
     @POST

@@ -189,7 +189,7 @@ public class SalesOrderSAPFacade {
         sb.append("from ORDR p ");
         sb.append("inner join RDR1 d on p.\"DocEntry\"=d.\"DocEntry\" ");
         sb.append("where p.\"DocStatus\"='O' and d.\"WhsCode\"='30' and days_between(p.\"DocDate\",current_date)<45");
-        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\"='P' ");
+        sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\" in ('P','C') ");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -210,5 +210,28 @@ public class SalesOrderSAPFacade {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualiando el estado de la orden de venta docEntry=[" + docNum + "]", e);
         }
+    }
+
+    public List<Object[]> listOrdersByDateAndSale(long slpCode, long year, long month, long day, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"CardCode\" as varchar(20))as cardCode,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
+        sb.append(" cast(\"Comments\" as varchar(500))as comments,cast(\"DocEntry\" as int)as docEntry,cast(\"DocNum\" as int)as docNum ");
+        sb.append("from ORDR ");
+        sb.append("where \"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(" and year(\"DocDate\")=");
+        sb.append(year);
+        sb.append(" and month(\"DocDate\")=");
+        sb.append(month);
+        sb.append(" and DAYOFMONTH(\"DocDate\")=");
+        sb.append(day);
+        sb.append(" order by \"DocDate\" asc,\"DocNum\" desc");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes de venta para el asesor [" + slpCode + "] en " + companyName, e);
+        }
+        return new ArrayList<>();
     }
 }

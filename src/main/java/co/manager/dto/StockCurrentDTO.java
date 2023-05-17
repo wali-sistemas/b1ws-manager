@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class StockCurrentDTO {
     private String itemCode;
+    private Integer stockFull;
     private List<StockCurrentWarehouseDTO> stockWarehouses;
 
     public StockCurrentDTO() {
@@ -25,6 +26,14 @@ public class StockCurrentDTO {
         this.itemCode = itemCode;
     }
 
+    public Integer getStockFull() {
+        return stockFull;
+    }
+
+    public void setStockFull(Integer stockFull) {
+        this.stockFull = stockFull;
+    }
+
     public List<StockCurrentWarehouseDTO> getStockWarehouses() {
         return stockWarehouses;
     }
@@ -37,6 +46,7 @@ public class StockCurrentDTO {
     public String toString() {
         return "StockCurrentDTO{" +
                 "itemCode='" + itemCode + '\'' +
+                ", stockFull=" + stockFull +
                 ", stockWarehouses=" + stockWarehouses +
                 '}';
     }
