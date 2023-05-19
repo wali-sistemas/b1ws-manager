@@ -32,8 +32,8 @@ public class OrderPedboxFacade {
 
     public List<Object[]> listOrderPendingBySales(long slpCode, long year, long month, long day, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast (cardCode as varchar (20))as cardCode,cast(docDate as date) as docDate,cast(docTotal as numeric(18, 2)) as docTotal, ");
-        sb.append(" cast(comments as varchar(500)) as comments,cast(idOrder as int)as docEntry, cast(docNum as int)as docNum ");
+        sb.append("select cast(cardCode as varchar(50))as cardCode,cast(docDate as date)as docDate,cast(docTotal as numeric(18,0))as docTotal, ");
+        sb.append(" cast(comments as varchar(250))as comments,cast(idOrder as int)as docEntry,cast(docNum as int)as docNum ");
         sb.append("from order_pedbox ");
         sb.append("where slpCode=");
         sb.append(slpCode);
