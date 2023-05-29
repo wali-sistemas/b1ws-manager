@@ -158,7 +158,7 @@ public class SalesPersonSAPFacade {
         sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones),0)as VentasNetas, ");
         sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
         sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente, ");
-        sb.append(" cast(a.\"SlpName\" as varchar(50))as NomAsesor,cast(a.\"Email\" as varchar(50))as correo,cast(a.\"U_CEDULA\" as varchar(20))as cedula ");
+        sb.append(" cast(a.\"SlpName\" as varchar(50))as NomAsesor,cast(a.\"Email\" as varchar(50))as correo,cast(a.\"U_CEDULA\" as varchar(20))as cedula,cast(a.\"Telephone\" as varchar(3))as whsDefTire ");
         sb.append("from  \"@PRES_ZONA_VEND\" p ");
         sb.append("inner join OSLP a on p.\"U_VEND_PRES\"=a.\"SlpName\" ");
         sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100))as numeric(18,2))as Ventas,0 as Devoluciones ");
@@ -196,7 +196,7 @@ public class SalesPersonSAPFacade {
             sb.append("' and a.\"SlpCode\"='");
             sb.append(slpCode);
         }
-        sb.append("' group by p.\"U_VALOR_PRES\",a.\"SlpCode\",t.Asesor,p.\"U_ANO_PRES\",p.\"U_MES_PRES\",a.\"SlpName\",a.\"Email\",a.\"U_CEDULA\" ");
+        sb.append("' group by p.\"U_VALOR_PRES\",a.\"SlpCode\",t.Asesor,p.\"U_ANO_PRES\",p.\"U_MES_PRES\",a.\"SlpName\",a.\"Email\",a.\"U_CEDULA\",a.\"Telephone\" ");
         sb.append("order by a.\"SlpCode\"");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();

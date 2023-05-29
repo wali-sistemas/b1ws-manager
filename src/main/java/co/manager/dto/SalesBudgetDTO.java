@@ -19,11 +19,12 @@ public class SalesBudgetDTO {
     private String slpName;
     private String mail;
     private String urlSlpPicture;
+    private String whsDefTire;
 
     public SalesBudgetDTO() {
     }
 
-    public SalesBudgetDTO(Integer year, String slpCode, String companyName, String month, BigDecimal ventas, BigDecimal presupuesto, BigDecimal pendiente, String slpName, String mail, String urlSlpPicture) {
+    public SalesBudgetDTO(Integer year, String slpCode, String companyName, String month, BigDecimal ventas, BigDecimal presupuesto, BigDecimal pendiente, String slpName, String mail, String urlSlpPicture, String whsDefTire) {
         this.year = year;
         this.slpCode = slpCode;
         this.companyName = companyName;
@@ -34,6 +35,7 @@ public class SalesBudgetDTO {
         this.slpName = slpName;
         this.mail = mail;
         this.urlSlpPicture = urlSlpPicture;
+        this.whsDefTire = whsDefTire;
     }
 
     public String getSlpCode() {
@@ -116,6 +118,14 @@ public class SalesBudgetDTO {
         this.urlSlpPicture = urlSlpPicture;
     }
 
+    public String getWhsDefTire() {
+        return whsDefTire;
+    }
+
+    public void setWhsDefTire(String whsDefTire) {
+        this.whsDefTire = whsDefTire;
+    }
+
     @Override
     public String toString() {
         return "SalesBudgetDTO{" +
@@ -129,6 +139,7 @@ public class SalesBudgetDTO {
                 ", slpName='" + slpName + '\'' +
                 ", mail='" + mail + '\'' +
                 ", urlSlpPicture='" + urlSlpPicture + '\'' +
+                ", whsDefTire='" + whsDefTire + '\'' +
                 '}';
     }
 }
