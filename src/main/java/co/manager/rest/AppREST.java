@@ -337,6 +337,7 @@ public class AppREST {
             dto.setSlpName((String) obj[6]);
             dto.setMail((String) obj[7]);
             dto.setUrlSlpPicture("http://wali.igbcolombia.com:8080/shared/images/users/seller/" + obj[8] + ".jpg");
+            dto.setWhsDefTire((String) obj[9]);
 
             presupuestos.add(dto);
         }

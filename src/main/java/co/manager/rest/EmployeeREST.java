@@ -1,7 +1,9 @@
 package co.manager.rest;
 
 import co.manager.dto.EmployeeCustodyDTO;
+import co.manager.dto.EmployeeDTO;
 import co.manager.dto.ResponseDTO;
+import co.manager.persistence.entity.Employee;
 import co.manager.persistence.facade.EmployeeFacade;
 
 import javax.ejb.EJB;
@@ -71,5 +73,81 @@ public class EmployeeREST {
             employeeCustodyDTO.add(dto);
         }
         return Response.ok(employeeCustodyDTO).build();
+    }
+
+
+    @GET
+    @Path("find-employee/{cardcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findEmployee(@PathParam("cardcode") String cardCode,
+                                 @HeaderParam("X-Company-Name") String companyName,
+                                 @HeaderParam("X-Pruebas") boolean pruebas) {
+        Object[] obj = employeeFacade.findEmployee(cardCode, companyName, pruebas);
+
+        if (obj != null) {
+            EmployeeDTO dto = new EmployeeDTO();
+            dto.setCardCode((String) obj[0]);
+            dto.setCardName((String) obj[1]);
+            dto.setDepartment((String) obj[2]);
+            dto.setCompanyName((String) obj[3]);
+            dto.setCcosto((Integer) obj[4]);
+            dto.setStatus((String) obj[5]);
+
+            return Response.ok(new ResponseDTO(0, dto)).build();
+        }
+        return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
+    }
+
+    @POST
+    @Path("add-refresh-employee")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addOrRefreshEmployee(EmployeeDTO dto,
+                                         @QueryParam("bottonAction") String bottonAction,
+                                         @HeaderParam("X-Company-Name") String companyName,
+                                         @HeaderParam("X-Pruebas") boolean pruebas) {
+        CONSOLE.log(Level.INFO, "Inciando creacion o actualizacion de empleado para el modulo de custodia");
+
+        if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Cedula es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Cédula es obligatorio")).build();
+        } else if (dto.getCardName() == null || dto.getCardName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Nombre es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Nombre es obligatorio")).build();
+        } else if (dto.getDepartment() == null || dto.getDepartment().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Departamento es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Departamento es obligatorio")).build();
+        } else if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Empresa es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Empresa es obligatorio")).build();
+        } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Estado es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Estado es obligatorio")).build();
+        } else if (dto.getCcosto() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el empleado. Campo Centro de costo es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el empleado. Campo Centro de costo es obligatorio")).build();
+        }
+
+        Employee entity = new Employee();
+        entity.setCardCode(dto.getCardCode());
+        entity.setCardName(dto.getCardName());
+        entity.setDepartment(dto.getDepartment());
+        entity.setCompany(dto.getCompanyName());
+        entity.setCcosto(dto.getCcosto());
+        entity.setStatus(dto.getStatus());
+
+        try {
+            if (bottonAction.equals("CREAR")) {
+                employeeFacade.create(entity, companyName, pruebas);
+            } else {
+                employeeFacade.updateEmployee(entity, companyName, pruebas);
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando o actulizando el empleado ", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando o actulizando el empleado.")).build();
+        }
+        return Response.ok(new ResponseDTO(0, "Empleado creado o modificado con éxito.")).build();
     }
 }

@@ -1,10 +1,16 @@
 package co.manager.persistence.facade;
 
+import co.manager.persistence.entity.Employee;
+import co.manager.persistence.entity.Employee_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,6 +26,14 @@ public class EmployeeFacade {
 
     @EJB
     private PersistenceConf persistenceConf;
+
+    public void create(Employee employee, String companyName, boolean testing) {
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).persist(employee);
+    }
+
+    public void remove(Employee employee, String companyName, boolean testing) {
+        persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(employee);
+    }
 
     public List<Object[]> listCustodyByEmplee(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
@@ -43,5 +57,44 @@ public class EmployeeFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las custodias asignadas el empleado " + cardCode + " en " + companyName, e);
         }
         return new ArrayList<>();
+    }
+
+    public Object[] findEmployee(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(cardCode as varchar(20))as cardCode,cast(cardName as varchar(100))as cardName,cast(department as varchar(100))as deparment, ");
+        sb.append(" cast(company as varchar(20))as company,cast(ccosto as int)as ccentro,cast(status as varchar(1))as status ");
+        sb.append("from employee ");
+        sb.append("where cardCode='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del empleado en " + companyName, e);
+        }
+        return null;
+    }
+
+    public boolean updateEmployee(Employee entity, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaUpdate<Employee> cu = cb.createCriteriaUpdate(Employee.class);
+        Root<Employee> root = cu.from(Employee.class);
+        cu.set(root.get(Employee_.cardName), entity.getCardName());
+        cu.set(root.get(Employee_.department), entity.getDepartment());
+        cu.set(root.get(Employee_.company), entity.getCompany());
+        cu.set(root.get(Employee_.ccosto), entity.getCcosto());
+        cu.set(root.get(Employee_.status), entity.getStatus());
+        cu.where(cb.equal(root.get(Employee_.cardCode), entity.getCardCode()));
+        try {
+            int rows = em.createQuery(cu).executeUpdate();
+            if (rows == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar los datos del empleado " + entity.getCardCode(), e);
+        }
+        return false;
     }
 }
