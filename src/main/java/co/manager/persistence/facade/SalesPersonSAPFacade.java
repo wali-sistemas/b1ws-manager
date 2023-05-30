@@ -223,4 +223,20 @@ public class SalesPersonSAPFacade {
         }
         return null;
     }
+
+    public Object[] getWhsCodeDefaultBySeller(String slpCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(ifnull(\"Telephone\",'01') as varchar(3))as whsCodeDefTire,'01' as WhsCodeDefPart ");
+        sb.append("from OSLP ");
+        sb.append("where \"SlpCode\"='");
+        sb.append(slpCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas por defecto asignadas al asesor " + slpCode + " en " + companyName);
+        }
+        return null;
+    }
 }
