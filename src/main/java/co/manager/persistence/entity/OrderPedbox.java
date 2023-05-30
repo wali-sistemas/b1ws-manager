@@ -20,6 +20,7 @@ public class OrderPedbox {
     private long docNum;
     @Basic(optional = false)
     @Column(name = "docDate")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date docDate;
     @Basic(optional = false)
     @Column(name = "cardCode")
