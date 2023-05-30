@@ -387,16 +387,16 @@ public class AppREST {
             ordersAppDTO.add(dto);
         }
 
-        List<Object[]> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
+        List<OrderPedbox> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
         if (!objsTEM.isEmpty()) {
-            for (Object[] obj : objsTEM) {
+            for (OrderPedbox obj : objsTEM) {
                 OrdersAppDTO dto = new OrdersAppDTO();
-                dto.setCardCode((String) obj[0]);
-                dto.setDocDate((Date) obj[1]);
-                dto.setDocTotal((BigDecimal) obj[2]);
-                dto.setComments((String) obj[3]);
-                dto.setDocEntry((Integer) obj[4]);
-                dto.setDocNum((Integer) obj[5]);
+                dto.setCardCode(obj.getCardCode());
+                dto.setDocDate(obj.getDocDate());
+                dto.setDocTotal(new BigDecimal(obj.getDocTotal()));
+                dto.setComments(obj.getComments());
+                dto.setDocEntry((int) obj.getIdOrder());
+                dto.setDocNum((int) obj.getDocNum());
 
                 ordersAppDTO.add(dto);
             }

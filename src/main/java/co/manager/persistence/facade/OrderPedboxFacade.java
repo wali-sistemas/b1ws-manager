@@ -33,7 +33,7 @@ public class OrderPedboxFacade {
         return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).find(OrderPedbox.class, idOrder);
     }
 
-    public List<OrderPedbox> listOrderPendingBySales2(long slpCode, long year, long month, long day, String companyName, boolean testing) {
+    public List<OrderPedbox> listOrderPendingBySales(long slpCode, long year, long month, long day, String companyName, boolean testing) {
         EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<OrderPedbox> cq = cb.createQuery(OrderPedbox.class);
@@ -43,29 +43,6 @@ public class OrderPedboxFacade {
         cq.where(cb.and(predSlpCode, predStatus));
         try {
             return em.createQuery(cq).getResultList();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes de venta para el asesor [" + slpCode + "] en " + companyName, e);
-        }
-        return new ArrayList<>();
-    }
-
-    public List<Object[]> listOrderPendingBySales(long slpCode, long year, long month, long day, String companyName, boolean testing) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(cardCode as varchar(50))as cardCode,cast(docDate as date)as docDate,cast(docTotal as numeric(18,0))as docTotal, ");
-        sb.append(" cast(comments as varchar(250))as comments,cast(idOrder as int)as docEntry,cast(docNum as int)as docNum ");
-        sb.append("from order_pedbox ");
-        sb.append("where slpCode=");
-        sb.append(slpCode);
-        sb.append(" and year(docDate)=");
-        sb.append(year);
-        sb.append(" and month(docDate)=");
-        sb.append(month);
-        sb.append(" and day(docDate)=");
-        sb.append(day);
-        sb.append(" and status='F' order by docDate asc,docNum desc");
-        try {
-            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes de venta para el asesor [" + slpCode + "] en " + companyName, e);
