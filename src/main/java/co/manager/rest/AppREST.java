@@ -243,13 +243,26 @@ public class AppREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getStockCurrent(@PathParam("companyname") String companyname,
                                     @QueryParam("itemcode") String itemCode,
-                                    @QueryParam("whscode") String whsCode) {
+                                    @QueryParam("whscode") String whsCode,
+                                    @QueryParam("slpcode") String slpCode) {
         CONSOLE.log(Level.INFO, "Listando stock actual para el item [{0}] en la empresa [{1}]", new Object[]{itemCode, companyname});
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
+        List<Object[]> objects;
         //seteando sucursal se maneja como integer.
         String sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
 
-        List<Object[]> objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+        if (slpCode.equals("0") || slpCode.isEmpty()) {
+            objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+        } else {
+            //Consultar las bodegas por defecto asignadas al asesor
+            Object[] whsCodeDefault = salesPersonSAPFacade.getWhsCodeDefaultBySeller(slpCode, companyname, false);
+            if (whsCodeDefault != null) {
+                objects = itemSAPFacade.getStockWarehouseCurrentBySeller(itemCode.trim(), whsCodeDefault[0].toString() + "," + whsCodeDefault[1].toString(), companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            } else {
+                objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            }
+        }
+
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para el item [" + itemCode + "] en " + companyname)).build();
