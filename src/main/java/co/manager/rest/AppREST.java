@@ -447,8 +447,8 @@ public class AppREST {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
-            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false)) {
-                dto.setStatus("TEST-APROBADO");
+            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
+                dto.setStatus("APROBADO");
                 dto.setConfirmed("Y");
             } else {
                 dto.setStatus("REVISAR");

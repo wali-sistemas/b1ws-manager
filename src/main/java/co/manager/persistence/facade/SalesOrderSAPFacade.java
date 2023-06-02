@@ -217,7 +217,7 @@ public class SalesOrderSAPFacade {
         sb.append("select cast(\"CardCode\" as varchar(20))as cardCode,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
         sb.append(" cast(\"Comments\" as varchar(500))as comments,cast(\"DocEntry\" as int)as docEntry,cast(\"DocNum\" as int)as docNum ");
         sb.append("from ORDR ");
-        sb.append("where \"SlpCode\"=");
+        sb.append("where \"CANCELED\"='N' and \"SlpCode\"=");
         sb.append(slpCode);
         sb.append(" and year(\"DocDate\")=");
         sb.append(year);
