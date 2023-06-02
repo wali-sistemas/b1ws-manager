@@ -1230,7 +1230,7 @@ public class PedBoxREST {
         return Response.ok(list).build();
     }
 
-    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, long docNum) {
+    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum) {
         /**** 7.3. Registrar pedido en tablas temporales****/
         OrderPedbox order = new OrderPedbox();
         OrderDetailPedbox detail = new OrderDetailPedbox();

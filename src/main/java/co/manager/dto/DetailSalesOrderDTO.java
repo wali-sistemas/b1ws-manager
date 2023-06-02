@@ -16,6 +16,8 @@ public class DetailSalesOrderDTO implements Serializable {
     private String itemCode;
     @JsonProperty("itemName")
     private String itemName;
+    @JsonProperty("group")
+    private String group;
     @JsonProperty("whsCode")
     private String whsCode;
     @JsonProperty("ocrCode")
@@ -44,6 +46,14 @@ public class DetailSalesOrderDTO implements Serializable {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public Integer getQuantity() {
@@ -100,6 +110,7 @@ public class DetailSalesOrderDTO implements Serializable {
                 "quantity=" + quantity +
                 ", itemCode='" + itemCode + '\'' +
                 ", itemName='" + itemName + '\'' +
+                ", group='" + group + '\'' +
                 ", whsCode='" + whsCode + '\'' +
                 ", ocrCode='" + ocrCode + '\'' +
                 ", baseType=" + baseType +

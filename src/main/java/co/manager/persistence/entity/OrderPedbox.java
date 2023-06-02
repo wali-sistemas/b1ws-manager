@@ -14,11 +14,10 @@ public class OrderPedbox {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "idOrder")
-    private long idOrder;
+    private Integer idOrder;
     @Basic(optional = true)
     @Column(name = "docNum")
-    private long docNum;
-    @Basic(optional = false)
+    private Integer docNum;
     @Column(name = "docDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date docDate;
@@ -47,7 +46,7 @@ public class OrderPedbox {
     public OrderPedbox() {
     }
 
-    public OrderPedbox(long idOrder, long docNum, Date docDate, String cardCode, String numAtCard, String comments, String slpCode, String status, String companyName, Double docTotal) {
+    public OrderPedbox(Integer idOrder, Integer docNum, Date docDate, String cardCode, String numAtCard, String comments, String slpCode, String status, String companyName, Double docTotal) {
         this.idOrder = idOrder;
         this.docNum = docNum;
         this.docDate = docDate;
@@ -64,7 +63,7 @@ public class OrderPedbox {
         return idOrder;
     }
 
-    public void setIdOrder(long idOrder) {
+    public void setIdOrder(Integer idOrder) {
         this.idOrder = idOrder;
     }
 
@@ -72,7 +71,7 @@ public class OrderPedbox {
         return docNum;
     }
 
-    public void setDocNum(long docNum) {
+    public void setDocNum(Integer docNum) {
         this.docNum = docNum;
     }
 

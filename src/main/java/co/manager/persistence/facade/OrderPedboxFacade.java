@@ -33,14 +33,20 @@ public class OrderPedboxFacade {
         return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).find(OrderPedbox.class, idOrder);
     }
 
-    public List<OrderPedbox> listOrderPendingBySales(long slpCode, long year, long month, long day, String companyName, boolean testing) {
+    public List<Object[]> listOrderPendingBySales(long slpCode, long year, long month, long day, String companyName, boolean testing) {
         EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<OrderPedbox> cq = cb.createQuery(OrderPedbox.class);
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
         Root<OrderPedbox> root = cq.from(OrderPedbox.class);
+        Selection<Object[]> selection = cb.array(root.get(OrderPedbox_.idOrder), root.get(OrderPedbox_.docNum), root.get(OrderPedbox_.cardCode),
+                root.get(OrderPedbox_.docDate), root.get(OrderPedbox_.docTotal), root.get(OrderPedbox_.comments));
+        cq.select(selection);
         Predicate predSlpCode = cb.equal(root.get(OrderPedbox_.slpCode), slpCode);
         Predicate predStatus = cb.equal(root.get(OrderPedbox_.status), "F");
-        cq.where(cb.and(predSlpCode, predStatus));
+        Predicate predYear = cb.equal(cb.function("YEAR", Integer.class, root.get(OrderPedbox_.docDate)), year);
+        Predicate predMonth = cb.equal(cb.function("MONTH", Integer.class, root.get(OrderPedbox_.docDate)), month);
+        Predicate predDay = cb.equal(cb.function("DAY", Integer.class, root.get(OrderPedbox_.docDate)), day);
+        cq.where(cb.and(predSlpCode, predStatus, predYear, predMonth, predDay));
         try {
             return em.createQuery(cq).getResultList();
         } catch (NoResultException ex) {

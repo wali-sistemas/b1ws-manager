@@ -9,7 +9,7 @@ import java.util.Date;
 public class OrdersAppDTO {
     private Integer docEntry;
     private Integer docNum;
-    private Date docDate;
+    private String docDate;
     private String cardCode;
     private String comments;
     private BigDecimal docTotal;
@@ -17,7 +17,7 @@ public class OrdersAppDTO {
     public OrdersAppDTO() {
     }
 
-    public OrdersAppDTO(String cardCode, Date docDate, BigDecimal docTotal, String comments, Integer docEntry, Integer docNum) {
+    public OrdersAppDTO(String cardCode, String docDate, BigDecimal docTotal, String comments, Integer docEntry, Integer docNum) {
         this.cardCode = cardCode;
         this.docDate = docDate;
         this.docTotal = docTotal;
@@ -34,11 +34,11 @@ public class OrdersAppDTO {
         this.cardCode = cardCode;
     }
 
-    public Date getDocDate() {
+    public String getDocDate() {
         return docDate;
     }
 
-    public void setDocDate(Date docDate) {
+    public void setDocDate(String docDate) {
         this.docDate = docDate;
     }
 

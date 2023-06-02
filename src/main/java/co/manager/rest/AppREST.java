@@ -378,7 +378,7 @@ public class AppREST {
         for (Object[] obj : objsSAP) {
             OrdersAppDTO dto = new OrdersAppDTO();
             dto.setCardCode((String) obj[0]);
-            dto.setDocDate((Date) obj[1]);
+            dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[1]));
             dto.setDocTotal((BigDecimal) obj[2]);
             dto.setComments((String) obj[3]);
             dto.setDocEntry((Integer) obj[4]);
@@ -387,16 +387,16 @@ public class AppREST {
             ordersAppDTO.add(dto);
         }
 
-        List<OrderPedbox> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
+        List<Object[]> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
         if (!objsTEM.isEmpty()) {
-            for (OrderPedbox obj : objsTEM) {
+            for (Object[] obj : objsTEM) {
                 OrdersAppDTO dto = new OrdersAppDTO();
-                dto.setCardCode(obj.getCardCode());
-                dto.setDocDate(obj.getDocDate());
-                dto.setDocTotal(new BigDecimal(obj.getDocTotal()));
-                dto.setComments(obj.getComments());
-                dto.setDocEntry((int) obj.getIdOrder());
-                dto.setDocNum((int) obj.getDocNum());
+                dto.setDocEntry((Integer) obj[0]);
+                dto.setDocNum((Integer) obj[1]);
+                dto.setCardCode((String) obj[2]);
+                dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
+                dto.setDocTotal(new BigDecimal((Double) obj[4]));
+                dto.setComments((String) obj[5]);
 
                 ordersAppDTO.add(dto);
             }
@@ -755,7 +755,7 @@ public class AppREST {
     }
 
 
-    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, long docNum) {
+    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum) {
         /****Registrar pedido en tablas temporales****/
         OrderPedbox order = new OrderPedbox();
         OrderDetailPedbox detail = new OrderDetailPedbox();
