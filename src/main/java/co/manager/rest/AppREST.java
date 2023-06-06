@@ -161,13 +161,15 @@ public class AppREST {
                     dto.setDiscountCommercial((BigDecimal) obj[16]);
                     dto.setCondition((String) obj[17]);
                     dto.setExcent((String) obj[18]);
-                    dto.setCupo((BigDecimal) obj[19]);
+                    dto.setBalance((BigDecimal) obj[25]);
+                    dto.setCupo((BigDecimal) obj[26]);
                     //Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((String) obj[20]);
                     dto2.setAddress((String) obj[21]);
                     dto2.setCity((String) obj[22]);
                     dto2.setCountry((String) obj[23]);
+
                     customerAddresses.add(dto2);
                 }
             }
@@ -383,6 +385,7 @@ public class AppREST {
             dto.setComments((String) obj[3]);
             dto.setDocEntry((Integer) obj[4]);
             dto.setDocNum((Integer) obj[5]);
+            dto.setCardName((String) obj[6]);
 
             ordersAppDTO.add(dto);
         }
@@ -397,6 +400,7 @@ public class AppREST {
                 dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
                 dto.setDocTotal(new BigDecimal((Double) obj[4]));
                 dto.setComments((String) obj[5]);
+                dto.setCardName(businessPartnerSAPFacade.getCustomerName(dto.getCardCode(), companyname, false));
 
                 ordersAppDTO.add(dto);
             }
@@ -460,7 +464,7 @@ public class AppREST {
             dto.setConfirmed("N");
         }
         //TODO: Solo para motorepuestos.co y editores las ordenes pasan aprobadas
-        if (dto.getCardCode().equals("C900998242") || dto.getCardCode().equals("C900640419")) {
+        if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         }

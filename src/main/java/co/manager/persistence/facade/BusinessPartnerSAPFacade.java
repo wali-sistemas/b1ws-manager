@@ -34,20 +34,20 @@ public class BusinessPartnerSAPFacade {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(sn.\"CardCode\" as varchar(20)) as CardCode, cast(sn.\"LicTradNum\" as varchar(20)) as Nit, ");
-        sb.append("       cast(sn.\"CardName\" as varchar(50)) as Nombre, cast(sn.\"Address\" as varchar(100)) as AddressToDef, ");
-        sb.append("       cast(sn.\"City\" as varchar(50)) as Localidad, cast(substring(sn.\"Phone1\",1,10) as varchar(10)) as Telefono, ");
-        sb.append("       cast(substring(ifnull(sn.\"Cellular\",''),1,10) as varchar(10)) as Celular, cast(upper(sn.\"E_Mail\") as varchar(50)) as Email, ");
-        sb.append("       cast(oc.\"PymntGroup\" as varchar(20)) as FormaPago, cast(((oc.\"ExtraMonth\" * 30) + oc.\"ExtraDays\") as int) as Plazo, ");
-        sb.append("       cast(sn.\"CntctPrsn\" as varchar(100)) as Contacto, cast(sn.\"SlpCode\" as varchar(15)) as Vendedor, ");
-        sb.append("       cast(sn.\"U_LONGITUD\" as varchar(20)) as Longitud, cast(sn.\"U_LATITUD\" as varchar(20)) as Latitud, ");
-        sb.append("       cast(sn.\"ListNum\" as int) as listaPrecio, '' as Notas, ");
-        sb.append("       cast(ifnull(sn.\"Discount\",0) as numeric(18,2)) as DescuentComercial, ");
-        sb.append("       'N' as Condicion, case when cr.\"TaxCode\" = 'IVAG19' then 'N' else 'S' end as Excento, ");
-        sb.append("       cast(((sn.\"CreditLine\") - sn.\"Balance\" - sn.\"OrdersBal\") as numeric(18,0)) as Cupo, ");
-        sb.append("       cast(cr.\"Address\" as varchar(50)) as IdAddress, ");
-        sb.append("       cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
-        sb.append("       cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County, ");
-        sb.append("       case when sn.\"ShipToDef\" = cr.\"Address\" then 1 else 2 end ShipDef ");
+        sb.append(" cast(sn.\"CardName\" as varchar(100)) as Nombre, cast(sn.\"Address\" as varchar(100)) as AddressToDef, ");
+        sb.append(" cast(sn.\"City\" as varchar(50)) as Localidad, cast(substring(sn.\"Phone1\",1,10) as varchar(10)) as Telefono, ");
+        sb.append(" cast(substring(ifnull(sn.\"Cellular\",''),1,10) as varchar(10)) as Celular, cast(upper(sn.\"E_Mail\") as varchar(50)) as Email, ");
+        sb.append(" cast(oc.\"PymntGroup\" as varchar(20)) as FormaPago, cast(((oc.\"ExtraMonth\" * 30) + oc.\"ExtraDays\") as int) as Plazo, ");
+        sb.append(" cast(sn.\"CntctPrsn\" as varchar(100)) as Contacto, cast(sn.\"SlpCode\" as varchar(15)) as Vendedor, ");
+        sb.append(" cast(sn.\"U_LONGITUD\" as varchar(20)) as Longitud, cast(sn.\"U_LATITUD\" as varchar(20)) as Latitud, ");
+        sb.append(" cast(sn.\"ListNum\" as int) as listaPrecio, '' as Notas, ");
+        sb.append(" cast(ifnull(sn.\"Discount\",0) as numeric(18,2)) as DescuentComercial, ");
+        sb.append(" 'N' as Condicion, case when cr.\"TaxCode\" = 'IVAG19' then 'N' else 'S' end as Excento, ");
+        sb.append(" cast(((sn.\"CreditLine\") - sn.\"Balance\" - sn.\"OrdersBal\") as numeric(18,0)) as SaldoCurrent, ");
+        sb.append(" cast(cr.\"Address\" as varchar(50)) as IdAddress, ");
+        sb.append(" cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
+        sb.append(" cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County,case when sn.\"ShipToDef\" = cr.\"Address\" then 1 else 2 end ShipDef, ");
+        sb.append(" cast(sn.\"Balance\" as numeric(18,2))as saldo,cast(sn.\"CreditLine\" as numeric(18,2))as cupo ");
         sb.append("from   OCRD sn ");
         sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
@@ -108,7 +108,7 @@ public class BusinessPartnerSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos, ");
         sb.append("     cast(a.\"SlpName\" as varchar(50))as vendedor,cast(c.\"PymntGroup\" as varchar(20))as condicionPago,t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture ");
-        sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(20))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
+        sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("            'Factura'as tipoDoc,cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("            cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, ");
         sb.append("            cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
@@ -116,7 +116,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("      from  OINV f ");
         sb.append("      inner join OCRD s ON f.\"CardCode\" = s.\"CardCode\" ");
         sb.append("      where (f.\"DocTotal\"-f.\"PaidToDate\") > 1999 and f.\"DocStatus\" = 'O' union all ");
-        sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(20))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
+        sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("            'Nota Crédito'as tipoDoc,cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("            cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, ");
         sb.append("            cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
@@ -145,7 +145,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("select t.cardCode,t.cardName,cast(s.\"LicTradNum\" as varchar(20))as nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos, ");
         sb.append("       cast(a.\"SlpName\" as varchar(50))as vendedor,cast(c.\"PymntGroup\" as varchar(20))as condicionPago,cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo, ");
         sb.append("       cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago,t.fechaUltComp,t.urlFacture, t.Iva, t.Subtotal, t.Descuento ");
-        sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(20))as cardName, 'Factura'as tipoDoc, ");
+        sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(100))as cardName, 'Factura'as tipoDoc, ");
         sb.append("             cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("             cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento, ");
         sb.append("             DAYS_BETWEEN(f.\"DocDueDate\",current_date)as diasVencidos, (select max(cast(\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp, ");
@@ -153,7 +153,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("             cast((((((f.\"DocTotal\"+f.\"DiscSum\")-f.\"VatSum\")-f.\"TotalExpns\")+f.\"WTSum\")-f.\"RoundDif\")as numeric(18,2))as subtotal, cast(f.\"DiscSum\" as numeric(18,2))as descuento ");
         sb.append("      from   OINV f ");
         sb.append("      where (f.\"DocTotal\"-f.\"PaidToDate\") > 1999 and f.\"DocStatus\" = 'O' union all ");
-        sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(20))as cardName, 'Nota Crédito'as tipoDoc, ");
+        sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(100))as cardName, 'Nota Crédito'as tipoDoc, ");
         sb.append("             cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("             cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento, ");
         sb.append("             DAYS_BETWEEN(n.\"DocDueDate\",current_date)as diasVencidos, null as fechaUltComp, ");
@@ -269,7 +269,7 @@ public class BusinessPartnerSAPFacade {
 
     public List<ClientCalidosoDTO> listClientCalidosos(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"CardCode\" as varchar(20))as CardCode,cast(\"CardName\" as varchar(20))as CardName,cast(\"LicTradNum\" as varchar(20))as LicTradNum ");
+        sb.append("select cast(\"CardCode\" as varchar(20))as CardCode,cast(\"CardName\" as varchar(100))as CardName,cast(\"LicTradNum\" as varchar(20))as LicTradNum ");
         sb.append("from OCRD ");
         sb.append("where \"CardType\"='C' and \"validFor\"='Y' and \"QryGroup15\"='Y' and \"SlpCode\" not in ('22','81','15','19') ");
         sb.append("order by \"CardName\" asc");
@@ -427,7 +427,7 @@ public class BusinessPartnerSAPFacade {
 
     public List<Object[]> listClientsWithOutResFis(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(s.\"CardCode\" as varchar(20)),cast(s.\"CardName\" as varchar(20)) ");
+        sb.append("select cast(s.\"CardCode\" as varchar(20)),cast(s.\"CardName\" as varchar(100)) ");
         sb.append("from OCRD s ");
         sb.append("left join \"@OK1_FE_RES_FIS_SN\" e on e.\"U_CardCode\" = s.\"CardCode\" ");
         sb.append("left join \"@OK1_FE_RES_FIS_SN_L\" d on d.\"DocEntry\" = e.\"DocEntry\" ");
@@ -526,10 +526,25 @@ public class BusinessPartnerSAPFacade {
         sb.append("'");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex){
+        } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el credito disponible para el cliente " + cardCode, e);
         }
         return 0;
+    }
+
+    public String getCustomerName(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"CardName\" as varchar(100))as cardName ");
+        sb.append("from OCRD ");
+        sb.append("where \"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult().toString();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el nombre del cliente para el cardCode=" + cardCode + " en " + companyName, e);
+        }
+        return "";
     }
 }
