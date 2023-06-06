@@ -476,7 +476,7 @@ public class BusinessPartnerSAPFacade {
         return new Object[]{};
     }
 
-    public double getAvailableCreditByCustomer(String cardCode, String companyName, boolean testing) {
+    public BigDecimal getAvailableCreditByCustomer(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select t.\"Disponible\" ");
         sb.append("from ( ");
@@ -525,12 +525,12 @@ public class BusinessPartnerSAPFacade {
         sb.append(cardCode);
         sb.append("'");
         try {
-            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
+            return (BigDecimal) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex){
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el credito disponible para el cliente " + cardCode, e);
         }
-        return 0;
+        return new BigDecimal(0);
     }
 
     public String getCustomerName(String cardCode, String companyName, boolean testing) {
