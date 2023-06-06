@@ -11,19 +11,21 @@ public class OrdersAppDTO {
     private Integer docNum;
     private String docDate;
     private String cardCode;
+    private String cardName;
     private String comments;
     private BigDecimal docTotal;
 
     public OrdersAppDTO() {
     }
 
-    public OrdersAppDTO(String cardCode, String docDate, BigDecimal docTotal, String comments, Integer docEntry, Integer docNum) {
-        this.cardCode = cardCode;
-        this.docDate = docDate;
-        this.docTotal = docTotal;
-        this.comments = comments;
+    public OrdersAppDTO(Integer docEntry, Integer docNum, String docDate, String cardCode, String cardName, String comments, BigDecimal docTotal) {
         this.docEntry = docEntry;
         this.docNum = docNum;
+        this.docDate = docDate;
+        this.cardCode = cardCode;
+        this.cardName = cardName;
+        this.comments = comments;
+        this.docTotal = docTotal;
     }
 
     public String getCardCode() {
@@ -32,6 +34,14 @@ public class OrdersAppDTO {
 
     public void setCardCode(String cardCode) {
         this.cardCode = cardCode;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
     }
 
     public String getDocDate() {
@@ -77,12 +87,13 @@ public class OrdersAppDTO {
     @Override
     public String toString() {
         return "OrdersAppDTO{" +
-                "cardCode='" + cardCode + '\'' +
-                ", docDate=" + docDate +
-                ", docTotal=" + docTotal +
-                ", comments='" + comments + '\'' +
-                ", docEntry=" + docEntry +
+                "docEntry=" + docEntry +
                 ", docNum=" + docNum +
+                ", docDate='" + docDate + '\'' +
+                ", cardCode='" + cardCode + '\'' +
+                ", cardName='" + cardName + '\'' +
+                ", comments='" + comments + '\'' +
+                ", docTotal=" + docTotal +
                 '}';
     }
 }

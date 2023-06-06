@@ -904,7 +904,7 @@ public class PedBoxREST {
             dto.setConfirmed("N");
         }
         //TODO: Solo para motorepuestos.co y editores las ordenes pasan aprobadas
-        if (dto.getCardCode().equals("C900998242") || dto.getCardCode().equals("C900640419")) {
+        if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         }

@@ -27,12 +27,13 @@ public class CustomerDTO {
     private String condition;
     private String excent;
     private BigDecimal cupo;
+    private BigDecimal balance;
     private List<CustomerAddressesDTO> addresses;
 
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, String length, String latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, List<CustomerAddressesDTO> addresses) {
+    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, String length, String latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, BigDecimal balance, List<CustomerAddressesDTO> addresses) {
         this.cardCode = cardCode;
         this.nit = nit;
         this.cardName = cardName;
@@ -53,6 +54,7 @@ public class CustomerDTO {
         this.condition = condition;
         this.excent = excent;
         this.cupo = cupo;
+        this.balance = balance;
         this.addresses = addresses;
     }
 
@@ -216,6 +218,14 @@ public class CustomerDTO {
         this.cupo = cupo;
     }
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     public List<CustomerAddressesDTO> getAddresses() {
         return addresses;
     }
@@ -239,14 +249,15 @@ public class CustomerDTO {
                 ", plazo=" + plazo +
                 ", contact='" + contact + '\'' +
                 ", seller='" + seller + '\'' +
-                ", length=" + length +
-                ", latitude=" + latitude +
+                ", length='" + length + '\'' +
+                ", latitude='" + latitude + '\'' +
                 ", priceList=" + priceList +
                 ", notes='" + notes + '\'' +
                 ", discountCommercial=" + discountCommercial +
                 ", condition='" + condition + '\'' +
                 ", excent='" + excent + '\'' +
                 ", cupo=" + cupo +
+                ", balance=" + balance +
                 ", addresses=" + addresses +
                 '}';
     }
@@ -302,7 +313,7 @@ public class CustomerDTO {
         @Override
         public String toString() {
             return "CustomerAddressesDTO{" +
-                    "lineNum=" + lineNum +
+                    "lineNum='" + lineNum + '\'' +
                     ", address='" + address + '\'' +
                     ", city='" + city + '\'' +
                     ", country='" + country + '\'' +
