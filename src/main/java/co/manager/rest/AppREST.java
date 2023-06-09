@@ -360,6 +360,34 @@ public class AppREST {
     }
 
     @GET
+    @Path("effectiveness-sales/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSalesEffectivenessBySeller(@PathParam("companyname") String companyname,
+                                                  @QueryParam("slpcode") String slpCode,
+                                                  @QueryParam("year") Integer year,
+                                                  @QueryParam("month") Integer month) {
+        CONSOLE.log(Level.INFO, "Iniciando consulta de efectividad de ventas para el asesor [{3}] en [{0}]. ano[{1}]-mes[{2}]", new Object[]{companyname, year, month, slpCode});
+        Object[] obj = salesPersonSAPFacade.getSalesEffectivenessBySeller(slpCode, year, month, companyname, false);
+
+        if (obj == null) {
+            CONSOLE.log(Level.SEVERE, "No se encontraron datos para graficar la efectividad");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos para graficar la efectividad.")).build();
+        }
+
+        SalesEffectivenessDTO dto = new SalesEffectivenessDTO();
+        dto.setSlpCode((String) obj[0]);
+        dto.setSlpName((String) obj[1]);
+        dto.setBase((Integer) obj[2]);
+        dto.setImpact((Integer) obj[3]);
+        dto.setEffectiveness((BigDecimal) obj[4]);
+        dto.setYear(year);
+        dto.setMonth(month);
+
+        return Response.ok(new ResponseDTO(0, dto)).build();
+    }
+
+    @GET
     @Path("list-order/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -491,13 +519,9 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_PW = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_U = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
-
         List<DetailSalesOrderDTO> detailSalesOrder_TY_desc = new ArrayList<>();
-
         List<DetailSalesOrderDTO> detailSalesOrder_PW_desc = new ArrayList<>();
-
         List<DetailSalesOrderDTO> detailSalesOrder_U_desc = new ArrayList<>();
-
         List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
@@ -516,46 +540,44 @@ public class AppREST {
             //TODO: Pendiente por separar las llantas y repuestos de MTZ
         } else {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
-                /**** 8.2. Registrar ventas perdidas, recorrer lista para identificar items reportados****/
-                if (detail.getWhsCode().equals("00")) {
-                    return Response.ok(createOrderTemporary(dto, 0)).build();
-                } else if (detail.getItemCode().substring(0, 2).equals("TY")) {
-                    /**** 8.3. Separar con ítems solo Llantas TY (Timsun) con (**) ****/
+                if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
+                    /**** 8.3. Separar ítems solo Llantas TY (Timsun) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
                         detailSalesOrder_TY_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.3.1. Separar con ítems solo Llantas TY (Timsun) sin (**) ****/
+                        /**** 8.3.1. Separar ítems solo Llantas TY (Timsun) sin (**) ****/
                         detailSalesOrder_TY.add(setDetailOrder(detail, ocrCode));
                     }
-                } else if (detail.getItemCode().substring(0, 2).equals("PW")) {
-                    /**** 8.4. Separar con ítems solo Llantas PW (PowerMax) con (**) ****/
+                } else if (detail.getItemCode().substring(0, 2).equals("PW") && detail.getGroup().equals("LLANTAS")) {
+                    /**** 8.4. Separar ítems solo Llantas PW (PowerMax) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
                         detailSalesOrder_PW_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.4.1. Separar con ítems solo Llantas PW (PowerMax) sin (**) ****/
+                        /**** 8.4.1. Separar ítems solo Llantas PW (PowerMax) sin (**) ****/
                         detailSalesOrder_PW.add(setDetailOrder(detail, ocrCode));
                     }
-                } else if (detail.getItemCode().substring(0, 1).equals("U")) {
-                    /**** 8.5. Separar con ítems solo Llantas U (Donin) con (**) ****/
+                } else if (detail.getItemCode().substring(0, 1).equals("U") && detail.getGroup().equals("LLANTAS")) {
+                    /**** 8.5. Separar ítems solo Llantas U (Donin) con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
                         detailSalesOrder_U_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.5.1. Separar con ítems solo Llantas U (Donin) sin (**) ****/
+                        /**** 8.5.1. Separar ítems solo Llantas U (Donin) sin (**) ****/
                         detailSalesOrder_U.add(setDetailOrder(detail, ocrCode));
                     }
-                } else {
-                    /**** 8.6. Separar con ítems solo Repuestos con (**) ****/
+                } else if (!detail.getGroup().equals("LLANTAS")) {
+                    /**** 8.6. Separar ítems solo Repuestos con (**) ****/
                     if (detail.getItemName().substring(0, 4).equals("(**)")) {
                         detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.6. Separar con ítems solo Repuestos sin (**) ****/
+                        /**** 8.6. Separar ítems solo Repuestos sin (**) ****/
                         detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
                     }
                 }
             }
         }
 
-        /**** 9.Crear ordenes sepradas por regla de negocio ****/
+        /**** 9.Crear ordenes separadas por regla de negocio ****/
+        /**** 9.1. Llantas solo TY (Timsun) ****/
         if (detailSalesOrder_TY.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_TY);
@@ -572,6 +594,24 @@ public class AppREST {
                 res = response;
             }
         }
+        /**** 9.2. Llantas solo TY (Timsun) con (**) ****/
+        if (detailSalesOrder_TY_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_TY_desc);
+            dto.setNumAtCard(numAtCard + "TYD");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items TY con (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.3. Llantas solo PW (PowerMax) ****/
         if (detailSalesOrder_PW.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_PW);
@@ -588,6 +628,24 @@ public class AppREST {
                 res = response;
             }
         }
+        /**** 9.4. Llantas solo PW (PowerMax) con (**) ****/
+        if (detailSalesOrder_PW_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_PW_desc);
+            dto.setNumAtCard(numAtCard + "PWD");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW con (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.5. Llantas solo U (Donin) ****/
         if (detailSalesOrder_U.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_U);
@@ -604,6 +662,45 @@ public class AppREST {
                 res = response;
             }
         }
+        /**** 9.6. Llantas solo U (Donin) con (**) ****/
+        if (detailSalesOrder_U_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_U_desc);
+            dto.setNumAtCard(numAtCard + "UD");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+
+        if (detailSalesOrder_REP_desc.size() > 0) {
+            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP);
+                dto.setNumAtCard(numAtCard + "RD");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            } else {
+                sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+            }
+        }
+
         if (detailSalesOrder_REP.size() > 0) {
             /**** 9.1.Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
             if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
@@ -622,128 +719,134 @@ public class AppREST {
                     res = response;
                 }
             } else {
-                String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
-                List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
-                List<DetailSalesOrderDTO> itemsSAP = new ArrayList<>();
+                sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+            }
+        }
 
-                /**** 9.1.1.Separar pedido 30Modula - 01CEDI ****/
-                for (DetailSalesOrderDTO detailSalesOrderDTO : dto.getDetailSalesOrder()) {
-                    /**** 9.1.2.Consultando stock actual por item en CEDI y MODULA****/
-                    Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(detailSalesOrderDTO.getItemCode(), detailSalesOrderDTO.getWhsCode(), dto.getCompanyName(), false);
-                    /**** 9.1.3.Validar si la cantidad solicitada es mayor al porcentaje de consumo asignado en modula para decidir a donde se enviara la orden****/
-                    if (((Integer) stockCurrent[0] - detailSalesOrderDTO.getQuantity()) > (((Integer) stockCurrent[0] * warehouseSAPFacade.getConsumePorcModula(dto.getCompanyName(), false)) / 100)) {
-                        if ((Integer) stockCurrent[0] >= detailSalesOrderDTO.getQuantity()) {
-                            // Llenamos detalle para enviar a modula
-                            DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                            detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                            detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                            detailDTO.setWhsCode("30");
-                            detailDTO.setOcrCode(ocrCode);
-                            detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
-                            detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
-                            detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
-                            itemsMDL.add(detailDTO);
-                        } else {
-                            // Llenamos detalle para enviar a modula
-                            DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                            detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                            detailDTO.setQuantity((Integer) stockCurrent[0]);
-                            detailDTO.setWhsCode("30");
-                            detailDTO.setOcrCode(ocrCode);
-                            detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
-                            detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
-                            detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
-                            itemsMDL.add(detailDTO);
-                        }
-                    } else {
-                        DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
-                        if ((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]) > 0) {
-                            // Llenamos detalle para enviar a modula
-                            detailDTO = new DetailSalesOrderDTO();
-                            detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                            detailDTO.setQuantity((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]));
-                            detailDTO.setWhsCode("30");
-                            detailDTO.setOcrCode(ocrCode);
-                            detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
-                            detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
-                            detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
-                            itemsMDL.add(detailDTO);
-                        } else {
-                            // llenamos detalle para enviar a cedi
-                            detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                            detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                            detailDTO.setWhsCode("01");
-                            detailDTO.setOcrCode(ocrCode);
-                            detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
-                            detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
-                            detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
-                            itemsSAP.add(detailDTO);
-                        }
-                    }
-                }
+        CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
+        return Response.ok(res).build();
+    }
 
-                /**** 10.Iniciar creación de pedido 30Modula****/
-                if (itemsMDL.size() > 0) {
-                    dto.setDetailSalesOrder(new ArrayList<>());
-                    dto.setDetailSalesOrder(itemsMDL);
-                    dto.setNumAtCard(numAtCard + "M");
-                    dto.setSerialMDL(serial);
-                    /**** 10.1.Crear orden para el almacén 30-MODULA****/
-                    res = salesOrderEJB.createSalesOrder(dto);
+    private Response sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode, String numAtCard) {
+        ResponseDTO res = new ResponseDTO();
+        String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
+        List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
+        List<DetailSalesOrderDTO> itemsSAP = new ArrayList<>();
 
-                    if (res.getCode() == 0) {
-                        if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
-                            /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
-                            OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
-                            orderModulaDTO.setDocNum(res.getContent().toString());
-                            orderModulaDTO.setType("P");
-
-                            List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
-                            for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
-                                OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
-                                detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                                detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                                details.add(detailModulaDTO);
-                            }
-                            orderModulaDTO.setDetail(details);
-
-                            String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
-                            if (resMDL == null || resMDL.isEmpty()) {
-                                CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
-                                return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
-                            }
-                        }
-                    } else {
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
-                        /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                        return Response.ok(createOrderTemporary(dto, 0)).build();
-                    }
-                }
-
-                /**** 11.Iniciar creación de pedido 01CEDI ****/
-                if (itemsSAP.size() > 0) {
-                    dto.setDetailSalesOrder(new ArrayList<>());
-                    dto.setDetailSalesOrder(itemsSAP);
-                    dto.setNumAtCard(numAtCard + "S");
-                    dto.setSerialMDL(serial);
-                    /**** 11.1.Crear orden para el almacén 01-CEDI****/
-                    res = salesOrderEJB.createSalesOrder(dto);
-
-                    if (res.getCode() == 0) {
-                        /**** 11.1.1.Retornando el nro de documento creado****/
-                        return Response.ok(res).build();
-                    } else {
-                        /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                        return Response.ok(createOrderTemporary(dto, 0)).build();
-                    }
+        /**** 9.1.1.Separar pedido 30Modula - 01CEDI ****/
+        for (DetailSalesOrderDTO detailSalesOrderDTO : dto.getDetailSalesOrder()) {
+            /**** 9.1.2.Consultando stock actual por item en CEDI y MODULA****/
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(detailSalesOrderDTO.getItemCode(), detailSalesOrderDTO.getWhsCode(), dto.getCompanyName(), false);
+            /**** 9.1.3.Validar si la cantidad solicitada es mayor al porcentaje de consumo asignado en modula para decidir a donde se enviara la orden****/
+            if (((Integer) stockCurrent[0] - detailSalesOrderDTO.getQuantity()) > (((Integer) stockCurrent[0] * warehouseSAPFacade.getConsumePorcModula(dto.getCompanyName(), false)) / 100)) {
+                if ((Integer) stockCurrent[0] >= detailSalesOrderDTO.getQuantity()) {
+                    // Llenamos detalle para enviar a modula
+                    DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
                 } else {
-                    /**** 11.2.Retornando el nro de documento creado****/
-                    return Response.ok(res).build();
+                    // Llenamos detalle para enviar a modula
+                    DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity((Integer) stockCurrent[0]);
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
+                }
+            } else {
+                DetailSalesOrderDTO detailDTO = new DetailSalesOrderDTO();
+                if ((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]) > 0) {
+                    // Llenamos detalle para enviar a modula
+                    detailDTO = new DetailSalesOrderDTO();
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity((detailSalesOrderDTO.getQuantity() - (Integer) stockCurrent[1]));
+                    detailDTO.setWhsCode("30");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsMDL.add(detailDTO);
+                } else {
+                    // llenamos detalle para enviar a cedi
+                    detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                    detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                    detailDTO.setWhsCode("01");
+                    detailDTO.setOcrCode(ocrCode);
+                    detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                    detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                    detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                    itemsSAP.add(detailDTO);
                 }
             }
         }
-        CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
-        return Response.ok(res).build();
+
+        /**** 10.Iniciar creación de pedido 30Modula****/
+        if (itemsMDL.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(itemsMDL);
+            dto.setNumAtCard(numAtCard + "M");
+            dto.setSerialMDL(serial);
+            /**** 10.1.Crear orden para el almacén 30-MODULA****/
+            res = salesOrderEJB.createSalesOrder(dto);
+
+            if (res.getCode() == 0) {
+                if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
+                    /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
+                    OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
+                    orderModulaDTO.setDocNum(res.getContent().toString());
+                    orderModulaDTO.setType("P");
+
+                    List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
+                    for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
+                        OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
+                        detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                        detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                        details.add(detailModulaDTO);
+                    }
+                    orderModulaDTO.setDetail(details);
+
+                    String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
+                    if (resMDL == null || resMDL.isEmpty()) {
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
+                        return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
+                    }
+                }
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
+                /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                return Response.ok(createOrderTemporary(dto, 0)).build();
+            }
+        }
+
+        /**** 11.Iniciar creación de pedido 01CEDI ****/
+        if (itemsSAP.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(itemsSAP);
+            dto.setNumAtCard(numAtCard + "S");
+            dto.setSerialMDL(serial);
+            /**** 11.1.Crear orden para el almacén 01-CEDI****/
+            res = salesOrderEJB.createSalesOrder(dto);
+
+            if (res.getCode() == 0) {
+                /**** 11.1.1.Retornando el nro de documento creado****/
+                return Response.ok(res).build();
+            } else {
+                /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                return Response.ok(createOrderTemporary(dto, 0)).build();
+            }
+        } else {
+            /**** 11.2.Retornando el nro de documento creado****/
+            return Response.ok(res).build();
+        }
     }
 
     private DetailSalesOrderDTO setDetailOrder(DetailSalesOrderDTO detail, String ocrCode) {
@@ -757,7 +860,6 @@ public class AppREST {
         detailDTO.setBaseType(detail.getBaseType());
         return detail;
     }
-
 
     private ResponseDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum) {
         /****Registrar pedido en tablas temporales****/
