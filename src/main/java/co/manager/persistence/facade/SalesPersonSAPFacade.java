@@ -207,6 +207,49 @@ public class SalesPersonSAPFacade {
         return null;
     }
 
+    public Object[] getSalesEffectivenessBySeller(String slpCode, Integer year, Integer month, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(t.\"SlpCode\" as varchar(2))as slpCode,cast(t.\"SlpName\" as varchar(100))as slpName, ");
+        sb.append(" cast(t.\"U_COBERTURA\" as int)as clBase,cast(t.\"clImpac\" as int)as clImpac,cast(((t.\"clImpac\"/t.\"U_COBERTURA\")*100)as numeric(18,2))as cobertura ");
+        sb.append("from ");
+        sb.append(" (select a.\"SlpName\", a.\"SlpCode\",p.\"U_COBERTURA\", ");
+        sb.append("   (select count(a.\"CardCode\") ");
+        sb.append("    from ");
+        sb.append("     (select distinct f.\"CardCode\" ");
+        sb.append("      from OINV f ");
+        sb.append("      inner join OCRD c on f.\"CardCode\"=c.\"CardCode\" ");
+        sb.append("      inner join OSLP v on f.\"SlpCode\"=v.\"SlpCode\" ");
+        sb.append("      where month(f.\"DocDate\")=");
+        sb.append(month);
+        sb.append("       and year(f.\"DocDate\")=");
+        sb.append(year);
+        sb.append("       and v.\"SlpName\"=p.\"U_VENDEDOR\" and (select sum(o.\"DocTotal\"-o.\"VatSum\"-o.\"TotalExpns\"+o.\"WTSum\") from OINV o where month(o.\"DocDate\")=");
+        sb.append(month);
+        sb.append("       and year(o.\"DocDate\")=");
+        sb.append(year);
+        sb.append("       and f.\"CardCode\"=o.\"CardCode\")>499999 ");
+        sb.append("   )as a ");
+        sb.append("  )as \"clImpac\" ");
+        sb.append(" from \"@PRES_COBERTURA\" p ");
+        sb.append(" inner join OSLP a on p.\"U_VENDEDOR\"=a.\"SlpName\" ");
+        sb.append(" where a.\"Fax\"='Y' and p.\"U_YEAR\"=");
+        sb.append(year);
+        sb.append("  and p.\"U_MONTH\"=");
+        sb.append(month);
+        sb.append("  and a.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(" group by a.\"SlpName\",p.\"U_VENDEDOR\",p.\"U_COBERTURA\",a.\"SlpCode\" ");
+        sb.append(" order by 1,2 ");
+        sb.append(")as t");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la efectividad de ventas para el asesor " + slpCode + " en " + companyName);
+        }
+        return null;
+    }
+
     public List<Object[]> validateLoginApp(String user, String pass, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"SlpCode\" as varchar(3))as slpCode,cast(\"SlpName\" as varchar(100))as slpName,cast(\"U_CEDULA\" as varchar(100))as passWord ");
