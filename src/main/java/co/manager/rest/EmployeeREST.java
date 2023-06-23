@@ -75,7 +75,6 @@ public class EmployeeREST {
         return Response.ok(employeeCustodyDTO).build();
     }
 
-
     @GET
     @Path("find-employee/{cardcode}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -97,6 +96,15 @@ public class EmployeeREST {
             return Response.ok(new ResponseDTO(0, dto)).build();
         }
         return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
+    }
+
+    @GET
+    @Path("list-actives-employee")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listEmployeeActive(@HeaderParam("X-Company-Name") String companyName,
+                                       @HeaderParam("X-Pruebas") boolean pruebas) {
+        return Response.ok(employeeFacade.listEmployeeActives(companyName, pruebas)).build();
     }
 
     @POST
