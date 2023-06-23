@@ -423,7 +423,7 @@ public class AppREST {
             for (Object[] obj : objsTEM) {
                 OrdersAppDTO dto = new OrdersAppDTO();
                 dto.setDocEntry((Integer) obj[0]);
-                dto.setDocNum((Integer) obj[1]);
+                dto.setDocNum((Integer) obj[1] == 0 ? dto.getDocEntry() : (Integer) obj[1]);
                 dto.setCardCode((String) obj[2]);
                 dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
                 dto.setDocTotal(new BigDecimal((Double) obj[4]));

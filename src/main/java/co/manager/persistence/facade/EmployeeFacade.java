@@ -8,9 +8,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -74,6 +72,20 @@ public class EmployeeFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del empleado en " + companyName, e);
         }
         return null;
+    }
+
+    public List<Employee> listEmployeeActives(String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
+        Root<Employee> root = cq.from(Employee.class);
+        cq.where(cb.equal(root.get(Employee_.status), "Y"));
+        try {
+            return em.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los empleados activos en " + companyName);
+        }
+        return new ArrayList<>();
     }
 
     public boolean updateEmployee(Employee entity, String companyName, boolean testing) {
