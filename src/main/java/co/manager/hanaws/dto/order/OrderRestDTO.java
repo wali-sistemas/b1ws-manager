@@ -730,6 +730,56 @@ public class OrderRestDTO implements Serializable {
     protected Double utotalImpoCo;
     @JsonProperty("U_SERIAL")
     protected String uSerialMDL;
+    @JsonProperty("U_TIPO_CARGA_PRO")
+    protected String uTipoCargaPro;
+    @JsonProperty("U_CANT_CARGA")
+    protected Double uCantCarga;
+    @JsonProperty("U_BodegaDestino")
+    protected String uBodegaDestino;
+    @JsonProperty("U_Traslado")
+    protected String uTraslado;
+    @JsonProperty("U_PrjctT")
+    protected String uPrjctT;
+    @JsonProperty("U_Dim1T")
+    protected String uDim1T;
+    @JsonProperty("U_Dim2T")
+    protected String uDim2T;
+    @JsonProperty("U_Dim3T")
+    protected String uDim3T;
+    @JsonProperty("U_Dim4T")
+    protected String uDim4T;
+    @JsonProperty("U_Dim5T")
+    protected String uDim5T;
+    @JsonProperty("U_SEMANA_CARGA")
+    protected String uSemanaCarga;
+    @JsonProperty("U_MES_CARGA")
+    protected String uMesCarga;
+    @JsonProperty("U_F_ENT_CARGA")
+    protected String uFEntCarga;
+    @JsonProperty("U_F_LIQUIDACION")
+    protected String uFLiquidacion;
+    @JsonProperty("U_F_LIB_BL")
+    protected String uFLibBL;
+    @JsonProperty("U_F_ENTREGA_PROV")
+    protected String uFEntregaProv;
+    @JsonProperty("U_CONDUCTOR")
+    protected String uConductor;
+    @JsonProperty("U_CEDULA_CON")
+    protected String uCedulaCon;
+    @JsonProperty("U_PLACA")
+    protected String uPlaca;
+    @JsonProperty("U_CONTENEDOR")
+    protected String uContenedor;
+    @JsonProperty("U_PRECINTO")
+    protected String uPrecinto;
+    @JsonProperty("U_ENVIAR_DATOS_CON")
+    protected String uEnviarDatosCon;
+    @JsonProperty("U_formaGeneracion")
+    protected String uFormaGeneracion;
+    @JsonProperty("U_conceptoCorreccionNC")
+    protected String uConceptoCorreccionNC;
+    @JsonProperty("U_Saneamiento")
+    protected String uSaneamiento;
     protected OrderRestDTO.DocumentApprovalRequests documentApprovalRequests;
     protected List<DocumentLines.DocumentLine> documentLines;
     protected OrderRestDTO.ElectronicProtocols electronicProtocols;
@@ -3602,6 +3652,206 @@ public class OrderRestDTO implements Serializable {
 
     public void setUtotalImpoCo(Double utotalImpoCo) {
         this.utotalImpoCo = utotalImpoCo;
+    }
+
+    public String getuTipoCargaPro() {
+        return uTipoCargaPro;
+    }
+
+    public void setuTipoCargaPro(String uTipoCargaPro) {
+        this.uTipoCargaPro = uTipoCargaPro;
+    }
+
+    public Double getuCantCarga() {
+        return uCantCarga;
+    }
+
+    public void setuCantCarga(Double uCantCarga) {
+        this.uCantCarga = uCantCarga;
+    }
+
+    public String getuBodegaDestino() {
+        return uBodegaDestino;
+    }
+
+    public void setuBodegaDestino(String uBodegaDestino) {
+        this.uBodegaDestino = uBodegaDestino;
+    }
+
+    public String getuTraslado() {
+        return uTraslado;
+    }
+
+    public void setuTraslado(String uTraslado) {
+        this.uTraslado = uTraslado;
+    }
+
+    public String getuPrjctT() {
+        return uPrjctT;
+    }
+
+    public void setuPrjctT(String uPrjctT) {
+        this.uPrjctT = uPrjctT;
+    }
+
+    public String getuDim1T() {
+        return uDim1T;
+    }
+
+    public void setuDim1T(String uDim1T) {
+        this.uDim1T = uDim1T;
+    }
+
+    public String getuDim2T() {
+        return uDim2T;
+    }
+
+    public void setuDim2T(String uDim2T) {
+        this.uDim2T = uDim2T;
+    }
+
+    public String getuDim3T() {
+        return uDim3T;
+    }
+
+    public void setuDim3T(String uDim3T) {
+        this.uDim3T = uDim3T;
+    }
+
+    public String getuDim4T() {
+        return uDim4T;
+    }
+
+    public void setuDim4T(String uDim4T) {
+        this.uDim4T = uDim4T;
+    }
+
+    public String getuDim5T() {
+        return uDim5T;
+    }
+
+    public void setuDim5T(String uDim5T) {
+        this.uDim5T = uDim5T;
+    }
+
+    public String getuSemanaCarga() {
+        return uSemanaCarga;
+    }
+
+    public void setuSemanaCarga(String uSemanaCarga) {
+        this.uSemanaCarga = uSemanaCarga;
+    }
+
+    public String getuMesCarga() {
+        return uMesCarga;
+    }
+
+    public void setuMesCarga(String uMesCarga) {
+        this.uMesCarga = uMesCarga;
+    }
+
+    public String getuFEntCarga() {
+        return uFEntCarga;
+    }
+
+    public void setuFEntCarga(String uFEntCarga) {
+        this.uFEntCarga = uFEntCarga;
+    }
+
+    public String getuFLiquidacion() {
+        return uFLiquidacion;
+    }
+
+    public void setuFLiquidacion(String uFLiquidacion) {
+        this.uFLiquidacion = uFLiquidacion;
+    }
+
+    public String getuFLibBL() {
+        return uFLibBL;
+    }
+
+    public void setuFLibBL(String uFLibBL) {
+        this.uFLibBL = uFLibBL;
+    }
+
+    public String getuFEntregaProv() {
+        return uFEntregaProv;
+    }
+
+    public void setuFEntregaProv(String uFEntregaProv) {
+        this.uFEntregaProv = uFEntregaProv;
+    }
+
+    public String getuConductor() {
+        return uConductor;
+    }
+
+    public void setuConductor(String uConductor) {
+        this.uConductor = uConductor;
+    }
+
+    public String getuCedulaCon() {
+        return uCedulaCon;
+    }
+
+    public void setuCedulaCon(String uCedulaCon) {
+        this.uCedulaCon = uCedulaCon;
+    }
+
+    public String getuPlaca() {
+        return uPlaca;
+    }
+
+    public void setuPlaca(String uPlaca) {
+        this.uPlaca = uPlaca;
+    }
+
+    public String getuContenedor() {
+        return uContenedor;
+    }
+
+    public void setuContenedor(String uContenedor) {
+        this.uContenedor = uContenedor;
+    }
+
+    public String getuPrecinto() {
+        return uPrecinto;
+    }
+
+    public void setuPrecinto(String uPrecinto) {
+        this.uPrecinto = uPrecinto;
+    }
+
+    public String getuEnviarDatosCon() {
+        return uEnviarDatosCon;
+    }
+
+    public void setuEnviarDatosCon(String uEnviarDatosCon) {
+        this.uEnviarDatosCon = uEnviarDatosCon;
+    }
+
+    public String getuFormaGeneracion() {
+        return uFormaGeneracion;
+    }
+
+    public void setuFormaGeneracion(String uFormaGeneracion) {
+        this.uFormaGeneracion = uFormaGeneracion;
+    }
+
+    public String getuConceptoCorreccionNC() {
+        return uConceptoCorreccionNC;
+    }
+
+    public void setuConceptoCorreccionNC(String uConceptoCorreccionNC) {
+        this.uConceptoCorreccionNC = uConceptoCorreccionNC;
+    }
+
+    public String getuSaneamiento() {
+        return uSaneamiento;
+    }
+
+    public void setuSaneamiento(String uSaneamiento) {
+        this.uSaneamiento = uSaneamiento;
     }
 
     public DocumentApprovalRequests getDocumentApprovalRequests() {

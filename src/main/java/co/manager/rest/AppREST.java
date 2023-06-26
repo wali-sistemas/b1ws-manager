@@ -680,12 +680,13 @@ public class AppREST {
             }
         }
 
+        /**** 9.7. Repuestos solo con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
+            dto.setNumAtCard(numAtCard + "RD");
+            /**** 9.7.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
             if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_REP);
-                dto.setNumAtCard(numAtCard + "RD");
-
                 res = salesOrderEJB.createSalesOrder(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
@@ -697,17 +698,17 @@ public class AppREST {
                     res = response;
                 }
             } else {
-                sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+                res = sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
             }
         }
 
+        /**** 9.8. Repuestos solo ****/
         if (detailSalesOrder_REP.size() > 0) {
-            /**** 9.1.Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_REP);
+            dto.setNumAtCard(numAtCard + "R");
+            /**** 9.8.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
             if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_REP);
-                dto.setNumAtCard(numAtCard + "R");
-
                 res = salesOrderEJB.createSalesOrder(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
@@ -719,7 +720,7 @@ public class AppREST {
                     res = response;
                 }
             } else {
-                sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+                res = sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
             }
         }
 
@@ -727,7 +728,7 @@ public class AppREST {
         return Response.ok(res).build();
     }
 
-    private Response sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode, String numAtCard) {
+    private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode, String numAtCard) {
         ResponseDTO res = new ResponseDTO();
         String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
@@ -817,13 +818,13 @@ public class AppREST {
                     String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
                     if (resMDL == null || resMDL.isEmpty()) {
                         CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
-                        return Response.ok(new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.")).build();
+                        return new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.");
                     }
                 }
             } else {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
                 /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                return Response.ok(createOrderTemporary(dto, 0)).build();
+                return createOrderTemporary(dto, 0);
             }
         }
 
@@ -838,14 +839,14 @@ public class AppREST {
 
             if (res.getCode() == 0) {
                 /**** 11.1.1.Retornando el nro de documento creado****/
-                return Response.ok(res).build();
+                return res;
             } else {
                 /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                return Response.ok(createOrderTemporary(dto, 0)).build();
+                return createOrderTemporary(dto, 0);
             }
         } else {
             /**** 11.2.Retornando el nro de documento creado****/
-            return Response.ok(res).build();
+            return res;
         }
     }
 
