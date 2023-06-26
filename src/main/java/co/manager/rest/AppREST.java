@@ -698,7 +698,7 @@ public class AppREST {
                     res = response;
                 }
             } else {
-                res = sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+                res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
 
@@ -720,7 +720,7 @@ public class AppREST {
                     res = response;
                 }
             } else {
-                res = sortOutItemsOnlyParts(dto, ocrCode, numAtCard);
+                res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
 
@@ -728,7 +728,7 @@ public class AppREST {
         return Response.ok(res).build();
     }
 
-    private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode, String numAtCard) {
+    private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode) {
         ResponseDTO res = new ResponseDTO();
         String serial = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
         List<DetailSalesOrderDTO> itemsMDL = new ArrayList<>();
@@ -794,7 +794,7 @@ public class AppREST {
         if (itemsMDL.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(itemsMDL);
-            dto.setNumAtCard(numAtCard + "M");
+            dto.setNumAtCard(dto.getNumAtCard() + "M");
             dto.setSerialMDL(serial);
             /**** 10.1.Crear orden para el almacén 30-MODULA****/
             res = salesOrderEJB.createSalesOrder(dto);
@@ -832,7 +832,7 @@ public class AppREST {
         if (itemsSAP.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(itemsSAP);
-            dto.setNumAtCard(numAtCard + "S");
+            dto.setNumAtCard(dto.getNumAtCard() + "S");
             dto.setSerialMDL(serial);
             /**** 11.1.Crear orden para el almacén 01-CEDI****/
             res = salesOrderEJB.createSalesOrder(dto);
