@@ -1,8 +1,11 @@
 package co.manager.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author jguisao
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PointRedeemCalidosoDTO {
     private String documento;
     private String fecha;
@@ -10,6 +13,7 @@ public class PointRedeemCalidosoDTO {
     private String concepto;
     private String comprobante;
     private String descripcion;
+    private String empresa;
 
     public PointRedeemCalidosoDTO() {
     }
@@ -62,15 +66,24 @@ public class PointRedeemCalidosoDTO {
         this.descripcion = descripcion;
     }
 
+    public String getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
     @Override
     public String toString() {
         return "PointRedeemCalidosoDTO{" +
                 "documento='" + documento + '\'' +
-                ", fecha=" + fecha +
+                ", fecha='" + fecha + '\'' +
                 ", puntos=" + puntos +
                 ", concepto='" + concepto + '\'' +
                 ", comprobante='" + comprobante + '\'' +
                 ", descripcion='" + descripcion + '\'' +
+                ", empresa='" + empresa + '\'' +
                 '}';
     }
 }
