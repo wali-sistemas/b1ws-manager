@@ -1,10 +1,13 @@
 package co.manager.dto;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.Date;
 
 /**
  * @author jguisao
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VendedorMostradorDTO {
     private String documento;
     private String nombres;
@@ -19,6 +22,7 @@ public class VendedorMostradorDTO {
     private Date fechaNacimiento;
     private char aceptoTermino;
     private char aceptoTratamientoDatos;
+    private String empresa;
 
     public VendedorMostradorDTO() {
     }
@@ -127,6 +131,14 @@ public class VendedorMostradorDTO {
         this.codConcepto = codConcepto;
     }
 
+    public String getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
     @Override
     public String toString() {
         return "VendedorMostradorDTO{" +
@@ -143,6 +155,7 @@ public class VendedorMostradorDTO {
                 ", fechaNacimiento=" + fechaNacimiento +
                 ", aceptoTermino=" + aceptoTermino +
                 ", aceptoTratamientoDatos=" + aceptoTratamientoDatos +
+                ", empresa='" + empresa + '\'' +
                 '}';
     }
 }

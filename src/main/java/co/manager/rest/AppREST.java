@@ -207,7 +207,7 @@ public class AppREST {
             ItemExtranetDTO dto = new ItemExtranetDTO();
             dto.setItemCode((String) obj[0]);
             dto.setItemName((String) obj[1]);
-            //Modificar hasta que compras termine el proyecto de unidad de empaque.
+            //TODO: Modificar hasta que compras termine el proyecto de unidad de empaque.
             dto.setPresentation((String) obj[2]);
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
@@ -491,7 +491,7 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Solo para motorepuestos.co y editores las ordenes pasan aprobadas
+        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
@@ -513,72 +513,127 @@ public class AppREST {
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        /**** 7. Separación de items para crear ordenes independientes - Llantas - (**) - Repuestos****/
+        /**** 7. Separación de items para crear ordenes independientes - Llantas - (**) - Repuestos ****/
         List<DetailSalesOrderDTO> detailSalesOrderWS = dto.getDetailSalesOrder();
-        List<DetailSalesOrderDTO> detailSalesOrder_TY = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_PW = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_U = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_TY_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_PW_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_U_desc = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_desc = new ArrayList<>();
+        /*List<DetailSalesOrderDTO> detailSalesOrder_TY = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_TY_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_PW = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_PW_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_U = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_U_desc = new ArrayList<>();*/
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
 
-        /**** 8. Crear orden directamente en cedi solo para MOTOREPUESTOS - IGB(cliente C900998242)****/
+        /**** 8. Crear orden directamente en cedi solo para motorepuestos.co ****/
         if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242")) {
             res = salesOrderEJB.createSalesOrder(dto);
             if (res.getCode() == 0) {
                 return Response.ok(res).build();
             } else {
-                /**** 8.1. Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app****/
+                /**** 8.1. Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app ****/
                 return Response.ok(createOrderTemporary(dto, 0)).build();
             }
         } else if (dto.getCompanyName().contains("VARROC")) {
             //TODO: Pendiente por separar las llantas y repuestos de MTZ
         } else {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
-                if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
-                    /**** 8.3. Separar ítems solo Llantas TY (Timsun) con (**) ****/
-                    if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        detailSalesOrder_TY_desc.add(setDetailOrder(detail, ocrCode));
+                if (detail.getGroup().equals("LLANTAS")) {
+                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                        detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.3.1. Separar ítems solo Llantas TY (Timsun) sin (**) ****/
-                        detailSalesOrder_TY.add(setDetailOrder(detail, ocrCode));
-                    }
-                } else if (detail.getItemCode().substring(0, 2).equals("PW") && detail.getGroup().equals("LLANTAS")) {
-                    /**** 8.4. Separar ítems solo Llantas PW (PowerMax) con (**) ****/
-                    if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        detailSalesOrder_PW_desc.add(setDetailOrder(detail, ocrCode));
-                    } else {
-                        /**** 8.4.1. Separar ítems solo Llantas PW (PowerMax) sin (**) ****/
-                        detailSalesOrder_PW.add(setDetailOrder(detail, ocrCode));
-                    }
-                } else if (detail.getItemCode().substring(0, 1).equals("U") && detail.getGroup().equals("LLANTAS")) {
-                    /**** 8.5. Separar ítems solo Llantas U (Donin) con (**) ****/
-                    if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                        detailSalesOrder_U_desc.add(setDetailOrder(detail, ocrCode));
-                    } else {
-                        /**** 8.5.1. Separar ítems solo Llantas U (Donin) sin (**) ****/
-                        detailSalesOrder_U.add(setDetailOrder(detail, ocrCode));
+                        /****Separar ítems solo Llantas sin (**) ****/
+                        detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
                     }
                 } else if (!detail.getGroup().equals("LLANTAS")) {
-                    /**** 8.6. Separar ítems solo Repuestos con (**) ****/
-                    if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                    /****Separar ítems solo Repuestos con (**) ****/
+                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                         detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                     } else {
-                        /**** 8.6. Separar ítems solo Repuestos sin (**) ****/
+                        /****Separar ítems solo Repuestos sin (**) ****/
                         detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
                     }
                 }
             }
+            //for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
+            //    if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
+            //        /**** 8.3. Separar ítems solo Llantas TY (Timsun) con (**) ****/
+            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
+            //            detailSalesOrder_TY_desc.add(setDetailOrder(detail, ocrCode));
+            //        } else {
+            //            /**** 8.3.1. Separar ítems solo Llantas TY (Timsun) sin (**) ****/
+            //            detailSalesOrder_TY.add(setDetailOrder(detail, ocrCode));
+            //        }
+            //    } else if (detail.getItemCode().substring(0, 2).equals("PW") && detail.getGroup().equals("LLANTAS")) {
+            //        /**** 8.4. Separar ítems solo Llantas PW (PowerMax) con (**) ****/
+            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
+            //            detailSalesOrder_PW_desc.add(setDetailOrder(detail, ocrCode));
+            //        } else {
+            //            /**** 8.4.1. Separar ítems solo Llantas PW (PowerMax) sin (**) ****/
+            //            detailSalesOrder_PW.add(setDetailOrder(detail, ocrCode));
+            //        }
+            //    } else if (detail.getItemCode().substring(0, 1).equals("U") && detail.getGroup().equals("LLANTAS")) {
+            //        /**** 8.5. Separar ítems solo Llantas U (Donin) con (**) ****/
+            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
+            //            detailSalesOrder_U_desc.add(setDetailOrder(detail, ocrCode));
+            //        } else {
+            //            /**** 8.5.1. Separar ítems solo Llantas U (Donin) sin (**) ****/
+            //            detailSalesOrder_U.add(setDetailOrder(detail, ocrCode));
+            //        }
+            //    } else if (!detail.getGroup().equals("LLANTAS")) {
+            //        /**** 8.6. Separar ítems solo Repuestos con (**) ****/
+            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
+            //            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
+            //        } else {
+            //            /**** 8.6. Separar ítems solo Repuestos sin (**) ****/
+            //            detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
+            //        }
+            //    }
+            //}
         }
 
         /**** 9.Crear ordenes separadas por regla de negocio ****/
+        /**** 9.1. Solo llantas ****/
+        if (detailSalesOrder_LL.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL);
+            dto.setNumAtCard(numAtCard + "LL");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.1. Solo llantas con (**) ****/
+        if (detailSalesOrder_LL_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL_desc);
+            dto.setNumAtCard(numAtCard + "LLD");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+
         /**** 9.1. Llantas solo TY (Timsun) ****/
-        if (detailSalesOrder_TY.size() > 0) {
+        /*if (detailSalesOrder_TY.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_TY);
             dto.setNumAtCard(numAtCard + "TY");
@@ -593,9 +648,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items TY sin (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
         /**** 9.2. Llantas solo TY (Timsun) con (**) ****/
-        if (detailSalesOrder_TY_desc.size() > 0) {
+        /*if (detailSalesOrder_TY_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_TY_desc);
             dto.setNumAtCard(numAtCard + "TYD");
@@ -610,9 +665,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items TY con (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
         /**** 9.3. Llantas solo PW (PowerMax) ****/
-        if (detailSalesOrder_PW.size() > 0) {
+        /*if (detailSalesOrder_PW.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_PW);
             dto.setNumAtCard(numAtCard + "PW");
@@ -627,9 +682,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
         /**** 9.4. Llantas solo PW (PowerMax) con (**) ****/
-        if (detailSalesOrder_PW_desc.size() > 0) {
+        /*if (detailSalesOrder_PW_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_PW_desc);
             dto.setNumAtCard(numAtCard + "PWD");
@@ -644,9 +699,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW con (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
         /**** 9.5. Llantas solo U (Donin) ****/
-        if (detailSalesOrder_U.size() > 0) {
+        /*if (detailSalesOrder_U.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_U);
             dto.setNumAtCard(numAtCard + "U");
@@ -661,9 +716,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
         /**** 9.6. Llantas solo U (Donin) con (**) ****/
-        if (detailSalesOrder_U_desc.size() > 0) {
+        /*if (detailSalesOrder_U_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_U_desc);
             dto.setNumAtCard(numAtCard + "UD");
@@ -678,9 +733,9 @@ public class AppREST {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
-        }
+        }*/
 
-        /**** 9.7. Repuestos solo con (**) ****/
+        /**** 9.7. Solo repuestos con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
@@ -702,7 +757,7 @@ public class AppREST {
             }
         }
 
-        /**** 9.8. Repuestos solo ****/
+        /**** 9.8. Solo repuestos ****/
         if (detailSalesOrder_REP.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP);
@@ -723,7 +778,6 @@ public class AppREST {
                 res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
-
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
         return Response.ok(res).build();
     }
