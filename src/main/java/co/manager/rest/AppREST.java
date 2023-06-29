@@ -519,6 +519,8 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LU = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LU_desc = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
@@ -548,6 +550,13 @@ public class AppREST {
                     } else {
                         /****Separar ítems solo Repuestos sin (**) ****/
                         detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
+                    }
+                } else if (detail.getGroup().equals("LUBRICANTES") && dto.getCompanyName().contains("VARROC")) {
+                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                        detailSalesOrder_LU_desc.add(setDetailOrder(detail, ocrCode));
+                    } else {
+                        /****Separar ítems solo Lubricantes sin (**) ****/
+                        detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
                     }
                 }
             }
@@ -588,7 +597,6 @@ public class AppREST {
                 res = response;
             }
         }
-
         /**** 9.7. Solo repuestos con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
@@ -610,7 +618,6 @@ public class AppREST {
                 res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
-
         /**** 9.8. Solo repuestos ****/
         if (detailSalesOrder_REP.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
@@ -630,6 +637,43 @@ public class AppREST {
                 }
             } else {
                 res = sortOutItemsOnlyParts(dto, ocrCode);
+            }
+        }
+        //TODO: crear ordenes separadas para lubricantes solo para MotoZone
+        if (dto.getCompanyName().contains("VARROC")) {
+            /**** 9.1. Solo lubricantes con (**) ****/
+            if (detailSalesOrder_LU_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
+                dto.setNumAtCard(numAtCard + "LUD");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
+            /**** 9.1. Solo lubricantes ****/
+            if (detailSalesOrder_LU.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LU);
+                dto.setNumAtCard(numAtCard + "LU");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
             }
         }
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
