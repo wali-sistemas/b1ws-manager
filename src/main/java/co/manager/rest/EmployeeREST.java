@@ -1,9 +1,11 @@
 package co.manager.rest;
 
+import co.manager.dto.AssetDTO;
 import co.manager.dto.EmployeeCustodyDTO;
 import co.manager.dto.EmployeeDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.persistence.entity.Employee;
+import co.manager.persistence.facade.AssetMasterDataFacade;
 import co.manager.persistence.facade.EmployeeFacade;
 
 import javax.ejb.EJB;
@@ -29,6 +31,8 @@ public class EmployeeREST {
 
     @EJB
     private EmployeeFacade employeeFacade;
+    @EJB
+    private AssetMasterDataFacade assetMasterDataFacade;
 
     @GET
     @Path("list-custody/{cardcode}")
@@ -147,7 +151,7 @@ public class EmployeeREST {
         entity.setStatus(dto.getStatus());
 
         try {
-            if (bottonAction.equals("CREAR")) {
+            if (bottonAction.equals("Crear")) {
                 employeeFacade.create(entity, companyName, pruebas);
             } else {
                 employeeFacade.updateEmployee(entity, companyName, pruebas);
@@ -157,5 +161,38 @@ public class EmployeeREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando o actulizando el empleado.")).build();
         }
         return Response.ok(new ResponseDTO(0, "Empleado creado o modificado con éxito.")).build();
+    }
+
+    @GET
+    @Path("find-asset/{id}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findAsset(@PathParam("id") String idAsset,
+                              @HeaderParam("X-Company-Name") String companyName,
+                              @HeaderParam("X-Pruebas") boolean pruebas) {
+        Object[] obj = assetMasterDataFacade.findAsset(idAsset, companyName, pruebas);
+        if (obj != null) {
+            AssetDTO assetDTO = new AssetDTO();
+            assetDTO.setIdAsset((String) obj[0]);
+            assetDTO.setType((String) obj[1]);
+            assetDTO.setBrand((String) obj[2]);
+            assetDTO.setReference((String) obj[3]);
+            assetDTO.setSerial((String) obj[4]);
+            assetDTO.setCompany((String) obj[5]);
+            assetDTO.setDatePurchase((Date) obj[6]);
+            assetDTO.setCcosto((Integer) obj[7]);
+            assetDTO.setStatus((String) obj[8]);
+            assetDTO.setComment((String) obj[9]);
+            assetDTO.setPictureAssetUrl((String) obj[10]);
+
+            EmployeeDTO employeeDTO = new EmployeeDTO();
+            employeeDTO.setCardCode((String) obj[11]);
+            employeeDTO.setCardName((String) obj[12]);
+
+            assetDTO.setEmployeeDTO(employeeDTO);
+
+            return Response.ok(new ResponseDTO(0, assetDTO)).build();
+        }
+        return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
     }
 }
