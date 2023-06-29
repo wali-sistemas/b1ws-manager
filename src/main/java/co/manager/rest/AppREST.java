@@ -519,12 +519,6 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_desc = new ArrayList<>();
-        /*List<DetailSalesOrderDTO> detailSalesOrder_TY = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_TY_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_PW = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_PW_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_U = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_U_desc = new ArrayList<>();*/
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
@@ -538,8 +532,6 @@ public class AppREST {
                 /**** 8.1. Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app ****/
                 return Response.ok(createOrderTemporary(dto, 0)).build();
             }
-        } else if (dto.getCompanyName().contains("VARROC")) {
-            //TODO: Pendiente por separar las llantas y repuestos de MTZ
         } else {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
                 if (detail.getGroup().equals("LLANTAS")) {
@@ -559,41 +551,6 @@ public class AppREST {
                     }
                 }
             }
-            //for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
-            //    if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
-            //        /**** 8.3. Separar ítems solo Llantas TY (Timsun) con (**) ****/
-            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
-            //            detailSalesOrder_TY_desc.add(setDetailOrder(detail, ocrCode));
-            //        } else {
-            //            /**** 8.3.1. Separar ítems solo Llantas TY (Timsun) sin (**) ****/
-            //            detailSalesOrder_TY.add(setDetailOrder(detail, ocrCode));
-            //        }
-            //    } else if (detail.getItemCode().substring(0, 2).equals("PW") && detail.getGroup().equals("LLANTAS")) {
-            //        /**** 8.4. Separar ítems solo Llantas PW (PowerMax) con (**) ****/
-            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
-            //            detailSalesOrder_PW_desc.add(setDetailOrder(detail, ocrCode));
-            //        } else {
-            //            /**** 8.4.1. Separar ítems solo Llantas PW (PowerMax) sin (**) ****/
-            //            detailSalesOrder_PW.add(setDetailOrder(detail, ocrCode));
-            //        }
-            //    } else if (detail.getItemCode().substring(0, 1).equals("U") && detail.getGroup().equals("LLANTAS")) {
-            //        /**** 8.5. Separar ítems solo Llantas U (Donin) con (**) ****/
-            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
-            //            detailSalesOrder_U_desc.add(setDetailOrder(detail, ocrCode));
-            //        } else {
-            //            /**** 8.5.1. Separar ítems solo Llantas U (Donin) sin (**) ****/
-            //            detailSalesOrder_U.add(setDetailOrder(detail, ocrCode));
-            //        }
-            //    } else if (!detail.getGroup().equals("LLANTAS")) {
-            //        /**** 8.6. Separar ítems solo Repuestos con (**) ****/
-            //        if (detail.getItemName().substring(0, 4).equals("(**)")) {
-            //            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
-            //        } else {
-            //            /**** 8.6. Separar ítems solo Repuestos sin (**) ****/
-            //            detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
-            //        }
-            //    }
-            //}
         }
 
         /**** 9.Crear ordenes separadas por regla de negocio ****/
@@ -631,109 +588,6 @@ public class AppREST {
                 res = response;
             }
         }
-
-        /**** 9.1. Llantas solo TY (Timsun) ****/
-        /*if (detailSalesOrder_TY.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_TY);
-            dto.setNumAtCard(numAtCard + "TY");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items TY sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
-        /**** 9.2. Llantas solo TY (Timsun) con (**) ****/
-        /*if (detailSalesOrder_TY_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_TY_desc);
-            dto.setNumAtCard(numAtCard + "TYD");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items TY con (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
-        /**** 9.3. Llantas solo PW (PowerMax) ****/
-        /*if (detailSalesOrder_PW.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_PW);
-            dto.setNumAtCard(numAtCard + "PW");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
-        /**** 9.4. Llantas solo PW (PowerMax) con (**) ****/
-        /*if (detailSalesOrder_PW_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_PW_desc);
-            dto.setNumAtCard(numAtCard + "PWD");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW con (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
-        /**** 9.5. Llantas solo U (Donin) ****/
-        /*if (detailSalesOrder_U.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_U);
-            dto.setNumAtCard(numAtCard + "U");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
-        /**** 9.6. Llantas solo U (Donin) con (**) ****/
-        /*if (detailSalesOrder_U_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_U_desc);
-            dto.setNumAtCard(numAtCard + "UD");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items PW sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }*/
 
         /**** 9.7. Solo repuestos con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
