@@ -491,7 +491,7 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas
+        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
@@ -536,32 +536,43 @@ public class AppREST {
             }
         } else {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
-                if (detail.getGroup().equals("LLANTAS")) {
-                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                        detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
-                    } else {
-                        /****Separar ítems solo Llantas sin (**) ****/
-                        detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
+                if (dto.getCompanyName().contains("IGB")) {
+                    if (detail.getGroup().equals("LLANTAS")) {
+                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
+                        }
+                    } else if (detail.getGroup().equals("REPUESTOS") || detail.getGroup().equals("NEUMATICOS") || detail.getGroup().equals("LUBRICANTES")) {
+                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
+                        }
                     }
-                } else if (!detail.getGroup().equals("LLANTAS")) {
-                    /****Separar ítems solo Repuestos con (**) ****/
-                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                        detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
-                    } else {
-                        /****Separar ítems solo Repuestos sin (**) ****/
-                        detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
-                    }
-                } else if (detail.getGroup().equals("LUBRICANTES") && dto.getCompanyName().contains("VARROC")) {
-                    if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                        detailSalesOrder_LU_desc.add(setDetailOrder(detail, ocrCode));
-                    } else {
-                        /****Separar ítems solo Lubricantes sin (**) ****/
-                        detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
+                } else {
+                    if (detail.getGroup().equals("LLANTAS")) {
+                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
+                        }
+                    } else if (detail.getGroup().equals("LUBRICANTES")) {
+                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_LU_desc.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
+                        }
+                    } else if (detail.getGroup().equals("REPUESTOS")) {
+                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
+                        }
                     }
                 }
             }
         }
-
         /**** 9.Crear ordenes separadas por regla de negocio ****/
         /**** 9.1. Solo llantas ****/
         if (detailSalesOrder_LL.size() > 0) {
@@ -597,13 +608,15 @@ public class AppREST {
                 res = response;
             }
         }
-        /**** 9.7. Solo repuestos con (**) ****/
+        /**** 9.2. Solo repuestos con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
             dto.setNumAtCard(numAtCard + "RD");
-            /**** 9.7.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+            /**** 9.2.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                res = sortOutItemsOnlyParts(dto, ocrCode);
+            } else {
                 res = salesOrderEJB.createSalesOrder(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
@@ -614,17 +627,17 @@ public class AppREST {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
                     res = response;
                 }
-            } else {
-                res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
-        /**** 9.8. Solo repuestos ****/
+        /**** 9.3. Solo repuestos ****/
         if (detailSalesOrder_REP.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP);
             dto.setNumAtCard(numAtCard + "R");
-            /**** 9.8.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("false")) {
+            /**** 9.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                res = sortOutItemsOnlyParts(dto, ocrCode);
+            } else {
                 res = salesOrderEJB.createSalesOrder(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
@@ -635,13 +648,11 @@ public class AppREST {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
                     res = response;
                 }
-            } else {
-                res = sortOutItemsOnlyParts(dto, ocrCode);
             }
         }
         //TODO: crear ordenes separadas para lubricantes solo para MotoZone
         if (dto.getCompanyName().contains("VARROC")) {
-            /**** 9.1. Solo lubricantes con (**) ****/
+            /**** 9.4. Solo lubricantes con (**) ****/
             if (detailSalesOrder_LU_desc.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
@@ -658,7 +669,7 @@ public class AppREST {
                     res = response;
                 }
             }
-            /**** 9.1. Solo lubricantes ****/
+            /**** 9.5. Solo lubricantes ****/
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LU);
