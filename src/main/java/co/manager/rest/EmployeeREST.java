@@ -4,6 +4,7 @@ import co.manager.dto.AssetDTO;
 import co.manager.dto.EmployeeCustodyDTO;
 import co.manager.dto.EmployeeDTO;
 import co.manager.dto.ResponseDTO;
+import co.manager.persistence.entity.AssetMasterData;
 import co.manager.persistence.entity.Employee;
 import co.manager.persistence.facade.AssetMasterDataFacade;
 import co.manager.persistence.facade.EmployeeFacade;
@@ -194,5 +195,77 @@ public class EmployeeREST {
             return Response.ok(new ResponseDTO(0, assetDTO)).build();
         }
         return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
+    }
+
+    @POST
+    @Path("add-refresh-asset")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addOrRefreshAsset(AssetDTO dto,
+                                      @QueryParam("bottonAction") String bottonAction,
+                                      @HeaderParam("X-Company-Name") String companyName,
+                                      @HeaderParam("X-Pruebas") boolean pruebas) {
+        CONSOLE.log(Level.INFO, "Inciando creacion o actualizacion del activo fijo para el modulo de custodia");
+
+        if (dto.getIdAsset() == null || dto.getIdAsset().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo id es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo id es obligatorio")).build();
+        } else if (dto.getType() == null || dto.getType().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo tipo es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo tipo es obligatorio")).build();
+        } else if (dto.getBrand() == null || dto.getBrand().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo marca es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo marca es obligatorio")).build();
+        } else if (dto.getReference() == null || dto.getReference().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo referencia es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo referencia es obligatorio")).build();
+        } else if (dto.getSerial() == null || dto.getSerial().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo serial es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo serial es obligatorio")).build();
+        } else if (dto.getCompany() == null || dto.getCompany().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo empresa es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo empresa es obligatorio")).build();
+        } else if (dto.getDatePurchase() == null) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo fecha de compra es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo fecha de compra es obligatorio")).build();
+        } else if (dto.getCcosto() == null || dto.getCcosto() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo centro de costo es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo centro de costo es obligatorio")).build();
+        } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo estado es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo estado es obligatorio")).build();
+        } else if (dto.getComment() == null || dto.getComment().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo comentario es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo comentario es obligatorio")).build();
+        } else if (dto.getPictureAssetUrl() == null || dto.getPictureAssetUrl().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo evidencia es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo evidencia es obligatorio")).build();
+        }
+
+        AssetMasterData entity = new AssetMasterData();
+        entity.setIdAsset(dto.getIdAsset());
+        entity.setType(dto.getType());
+        entity.setBrand(dto.getBrand());
+        entity.setReference(dto.getReference());
+        entity.setSerial(dto.getSerial());
+        entity.setCompany(dto.getCompany());
+        entity.setDatePurchase(dto.getDatePurchase());
+        entity.setCcosto(dto.getCcosto());
+        entity.setStatus(dto.getStatus());
+        entity.setComment(dto.getComment());
+        entity.setPictureAssetUrl(dto.getPictureAssetUrl());
+
+        try {
+            if (bottonAction.equals("Crear")) {
+                assetMasterDataFacade.create(entity, companyName, pruebas);
+            } else {
+                //employeeFacade.updateEmployee(entity, companyName, pruebas);
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando o actulizando el activo fijo ", e);
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando o actulizando el activo fijo.")).build();
+        }
+        return Response.ok(new ResponseDTO(0, "Activo fijo creado o modificado con éxito.")).build();
     }
 }

@@ -157,7 +157,15 @@ public class SalesPersonSAPFacade {
         sb.append("select cast(a.\"SlpCode\" as varchar(10))as Asesor,cast(year(p.\"U_ANO_PRES\")as int)as Ano,cast(p.\"U_MES_PRES\" as varchar(2))as Mes, ");
         sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones),0)as VentasNetas, ");
         sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
-        sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")=p.\"U_ANO_PRES\" and \"SlpCode\"=t.Asesor and month(\"DocDate\")=p.\"U_MES_PRES\"),0)as Pendiente, ");
+        sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")='");
+        sb.append(year);
+        sb.append("' and month(\"DocDate\")='");
+        sb.append(month);
+        if (!slpCode.equals("0")) {
+            sb.append("' and \"SlpCode\"='");
+            sb.append(slpCode);
+        }
+        sb.append("'),0)as Pendiente,");
         sb.append(" cast(a.\"SlpName\" as varchar(50))as NomAsesor,cast(a.\"Email\" as varchar(50))as correo,cast(a.\"U_CEDULA\" as varchar(20))as cedula,cast(a.\"Telephone\" as varchar(3))as whsDefTire ");
         sb.append("from  \"@PRES_ZONA_VEND\" p ");
         sb.append("inner join OSLP a on p.\"U_VEND_PRES\"=a.\"SlpName\" ");

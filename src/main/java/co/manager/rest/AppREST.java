@@ -543,7 +543,7 @@ public class AppREST {
                         } else {
                             detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
                         }
-                    } else if (detail.getGroup().equals("REPUESTOS") || detail.getGroup().equals("NEUMATICOS") || detail.getGroup().equals("LUBRICANTES")) {
+                    } else {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                             detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                         } else {
@@ -563,7 +563,7 @@ public class AppREST {
                         } else {
                             detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
                         }
-                    } else if (detail.getGroup().equals("REPUESTOS")) {
+                    } else {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                             detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                         } else {
@@ -686,6 +686,12 @@ public class AppREST {
                     res = response;
                 }
             }
+        }
+        //TODO: crear orden temporal, si no clasifico bien los articulos
+        if (res.getContent() == null) {
+            ResponseDTO response = createOrderTemporary(dto, 0);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items. Orden Temp={0}", response.getContent());
+            res = response;
         }
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
         return Response.ok(res).build();
