@@ -464,6 +464,13 @@ public class SondaREST {
                 params.put("slpName", (String) obj[3]);
                 params.put("comment", (String) obj[4]);
                 params.put("line", (String) obj[5]);
+                if (companyName.contains("VARROC")) {
+                    params.put("footer", "email-mtz.png");
+                    params.put("companyName", "MOTOZONE S.A.S");
+                } else {
+                    params.put("footer", "email-igb.png");
+                    params.put("companyName", "IGB S.A.S");
+                }
 
                 sendEmail("NotificationDocumentBL", "soporte@igbcolombia.com", "Orden con Documento BL", (String) obj[6],
                         "auxcomercioexterior@igbcolombia.com", "comercioexterior@igbcolombia.com", null, params);
@@ -508,6 +515,13 @@ public class SondaREST {
                 params.put("brands", (String) obj[11]);
                 params.put("cardCode", (String) obj[12]);
                 params.put("cardName", (String) obj[13]);
+                if (companyName.contains("VARROC")) {
+                    params.put("footer", "email-mtz.png");
+                    params.put("companyName", "MOTOZONE S.A.S");
+                } else {
+                    params.put("footer", "email-igb.png");
+                    params.put("companyName", "IGB S.A.S");
+                }
 
                 sendEmail("NotificationDataDriver", "soporte@igbcolombia.com", "Datos conductor Orden " + obj[0], (String) obj[10],
                         "conductores@igbcolombia.com", "", null, params);

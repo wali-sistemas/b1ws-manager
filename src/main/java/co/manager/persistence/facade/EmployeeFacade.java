@@ -33,21 +33,23 @@ public class EmployeeFacade {
         persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(employee);
     }
 
-    public List<Object[]> listCustodyByEmplee(String cardCode, String companyName, boolean testing) {
+    public List<Object[]> listCustodyByEmpleeOrAsset(String cardCode, String idAsset, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(e.cardCode as varchar)as cardCode,cast(e.cardName as varchar)as cardName,cast(e.department as varchar)as depart, ");
-        sb.append(" cast(e.company as varchar)as company,cast(e.ccosto as int)as ccEmpl, cast(e.status as varchar)as statusEmp,cast(c.idAsset as varchar)as id, ");
+        sb.append("select cast(isnull(e.cardCode,'811011909') as varchar)as cardCode,cast(isnull(e.cardName, 'Sin Asignar') as varchar)as cardName,cast(isnull(e.department,'SISTEMAS') as varchar)as depart, ");
+        sb.append(" cast(isnull(e.company,'IGB') as varchar)as company,cast(e.ccosto as int)as ccEmpl, cast(e.status as varchar)as statusEmp,cast(a.idAsset as varchar)as id, ");
         sb.append(" cast(c.dateAssign as date)as dateAssign,cast(c.dateFinish as date)as dateFinish,cast(c.status as varchar)as statusDet, ");
         sb.append(" cast(c.userAssign as varchar)as userAssign,cast(c.userFinish as varchar)as userFinish,cast(a.type as varchar)as type, ");
         sb.append(" cast(a.brand as varchar)as brand,cast(a.reference as varchar)as referencia,cast(a.serial as varchar)as serial, ");
         sb.append(" cast(a.company as varchar)as companyPurchase,cast(a.datePurchase as date)as datePurchase,cast(a.ccosto as int)as ccAsset, ");
         sb.append(" cast(a.status as varchar)as statusAsset,cast(a.comment as varchar)as comment,cast(a.pictureAssetUrl as varchar(max))as pictAsset ");
-        sb.append("from employee e ");
-        sb.append("inner join custody_detail c on c.cardCode=e.cardCode ");
-        sb.append("inner join asset_master_data a on a.idAsset=c.idAsset ");
-        sb.append("where e.cardCode='");
+        sb.append("from asset_master_data a ");
+        sb.append("left join custody_detail c on c.idAsset=a.idAsset ");
+        sb.append("left join employee e on e.cardCode=c.cardCode ");
+        sb.append("where (c.cardCode='");
         sb.append(cardCode);
-        sb.append("' and e.status='Y'");
+        sb.append("' or a.idAsset='");
+        sb.append(idAsset);
+        sb.append("')");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
