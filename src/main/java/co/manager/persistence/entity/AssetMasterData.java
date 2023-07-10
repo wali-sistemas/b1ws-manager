@@ -46,6 +46,10 @@ public class AssetMasterData implements Serializable {
     public AssetMasterData() {
     }
 
+    public AssetMasterData(String idAsset) {
+        this.idAsset = idAsset;
+    }
+
     public AssetMasterData(String idAsset, String type, String brand, String reference, String serial, String company, Date datePurchase, Integer ccosto, String status, String comment, String pictureAssetUrl) {
         this.idAsset = idAsset;
         this.type = type;

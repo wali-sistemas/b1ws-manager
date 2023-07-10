@@ -33,6 +33,10 @@ public class Employee implements Serializable {
     public Employee() {
     }
 
+    public Employee(String cardCode) {
+        this.cardCode = cardCode;
+    }
+
     public Employee(String cardCode, String cardName, String department, String company, Integer ccosto, String status) {
         this.cardCode = cardCode;
         this.cardName = cardName;

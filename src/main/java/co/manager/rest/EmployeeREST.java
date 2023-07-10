@@ -5,8 +5,10 @@ import co.manager.dto.EmployeeCustodyDTO;
 import co.manager.dto.EmployeeDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.persistence.entity.AssetMasterData;
+import co.manager.persistence.entity.CustodyDetail;
 import co.manager.persistence.entity.Employee;
 import co.manager.persistence.facade.AssetMasterDataFacade;
+import co.manager.persistence.facade.CustodyDetailFacade;
 import co.manager.persistence.facade.EmployeeFacade;
 
 import javax.ejb.EJB;
@@ -34,15 +36,27 @@ public class EmployeeREST {
     private EmployeeFacade employeeFacade;
     @EJB
     private AssetMasterDataFacade assetMasterDataFacade;
+    @EJB
+    private CustodyDetailFacade custodyDetailFacade;
 
     @GET
-    @Path("list-custody/{cardcode}")
+    @Path("list-custody")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getCustodyByEmployee(@PathParam("cardcode") String cardCode,
-                                         @HeaderParam("X-Company-Name") String companyName,
-                                         @HeaderParam("X-Pruebas") boolean pruebas) {
-        List<Object[]> objs = employeeFacade.listCustodyByEmplee(cardCode, companyName, pruebas);
+    public Response getCustodyByEmployeeOrAsset(@QueryParam("filtre") String filtre,
+                                                @HeaderParam("X-Company-Name") String companyName,
+                                                @HeaderParam("X-Pruebas") boolean pruebas) {
+        CONSOLE.log(Level.INFO, "Listando custodias por empleado o por activo en {0}", new Object[]{companyName});
+
+        String cardCode = "";
+        String idAsset = "";
+        if (Character.isDigit(filtre.charAt(0))) {
+            cardCode = filtre;
+        } else {
+            idAsset = filtre;
+        }
+
+        List<Object[]> objs = employeeFacade.listCustodyByEmpleeOrAsset(cardCode, idAsset, companyName, pruebas);
         if (objs.isEmpty()) {
             CONSOLE.log(Level.WARNING, "No se encontraron custodias para mostrar");
             return Response.ok(new ResponseDTO(-1, "No se encontraron custodias para mostrar")).build();
@@ -205,6 +219,7 @@ public class EmployeeREST {
     public Response addOrRefreshAsset(AssetDTO dto,
                                       @QueryParam("bottonAction") String bottonAction,
                                       @HeaderParam("X-Company-Name") String companyName,
+                                      @HeaderParam("X-Employee") String employee,
                                       @HeaderParam("X-Pruebas") boolean pruebas) {
         CONSOLE.log(Level.INFO, "Inciando creacion o actualizacion del activo fijo para el modulo de custodia");
 
@@ -259,8 +274,26 @@ public class EmployeeREST {
         try {
             if (bottonAction.equals("Crear")) {
                 assetMasterDataFacade.create(entity, companyName, pruebas);
+                if (dto.getEmployeeDTO().getCardCode() != null || !dto.getEmployeeDTO().getCardCode().isEmpty()) {
+                    CustodyDetail entityCustody = new CustodyDetail();
+                    entityCustody.setIdAsset(new AssetMasterData(dto.getIdAsset()));
+                    entityCustody.setCardCode(new Employee(dto.getEmployeeDTO().getCardCode()));
+                    entityCustody.setDateAssign(new Date());
+                    entityCustody.setStatus("Y");
+                    entityCustody.setUserAssign(employee);
+                    custodyDetailFacade.create(entityCustody, companyName, pruebas);
+                }
             } else {
-                //employeeFacade.updateEmployee(entity, companyName, pruebas);
+                assetMasterDataFacade.updateAsset(entity, companyName, pruebas);
+                if (dto.getEmployeeDTO().getCardCode() != null || !dto.getEmployeeDTO().getCardCode().isEmpty()) {
+                    CustodyDetail entityCustody = new CustodyDetail();
+                    entityCustody.setIdAsset(new AssetMasterData(dto.getIdAsset()));
+                    entityCustody.setCardCode(new Employee(dto.getEmployeeDTO().getCardCode()));
+                    entityCustody.setDateAssign(new Date());
+                    entityCustody.setStatus("Y");
+                    entityCustody.setUserAssign(employee);
+                    custodyDetailFacade.create(entityCustody, companyName, pruebas);
+                }
             }
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando o actulizando el activo fijo ", e);
