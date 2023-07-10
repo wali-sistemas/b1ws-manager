@@ -1,11 +1,16 @@
 package co.manager.persistence.facade;
 
 import co.manager.persistence.entity.AssetMasterData;
+import co.manager.persistence.entity.AssetMasterData_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +51,33 @@ public class AssetMasterDataFacade {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del activo fijo - " + idAsset, e);
         }
-        return new Object[]{};
+        return null;
+    }
+
+    public boolean updateAsset(AssetMasterData entity, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaUpdate<AssetMasterData> cu = cb.createCriteriaUpdate(AssetMasterData.class);
+        Root<AssetMasterData> root = cu.from(AssetMasterData.class);
+        cu.set(root.get(AssetMasterData_.type), entity.getType());
+        cu.set(root.get(AssetMasterData_.brand), entity.getBrand());
+        cu.set(root.get(AssetMasterData_.reference), entity.getReference());
+        cu.set(root.get(AssetMasterData_.serial), entity.getSerial());
+        cu.set(root.get(AssetMasterData_.company), entity.getCompany());
+        cu.set(root.get(AssetMasterData_.datePurchase), entity.getDatePurchase());
+        cu.set(root.get(AssetMasterData_.ccosto), entity.getCcosto());
+        cu.set(root.get(AssetMasterData_.status), entity.getStatus());
+        cu.set(root.get(AssetMasterData_.comment), entity.getComment());
+        cu.set(root.get(AssetMasterData_.pictureAssetUrl), entity.getPictureAssetUrl());
+        cu.where(cb.equal(root.get(AssetMasterData_.idAsset), entity.getIdAsset()));
+        try {
+            int rows = em.createQuery(cu).executeUpdate();
+            if (rows == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar los datos del activo fijo " + entity.getIdAsset(), e);
+        }
+        return false;
     }
 }
