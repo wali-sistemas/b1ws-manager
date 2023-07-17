@@ -241,18 +241,9 @@ public class EmployeeREST {
         } else if (dto.getCompany() == null || dto.getCompany().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo empresa es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo empresa es obligatorio")).build();
-        } else if (dto.getDatePurchase() == null) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo fecha de compra es obligatorio");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo fecha de compra es obligatorio")).build();
-        } else if (dto.getCcosto() == null || dto.getCcosto() <= 0) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo centro de costo es obligatorio");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo centro de costo es obligatorio")).build();
         } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo estado es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo estado es obligatorio")).build();
-        } else if (dto.getComment() == null || dto.getComment().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo comentario es obligatorio");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo comentario es obligatorio")).build();
         } else if (dto.getPictureAssetUrl() == null || dto.getPictureAssetUrl().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al agregar el activo. Campo evidencia es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al agregar el activo. Campo evidencia es obligatorio")).build();
