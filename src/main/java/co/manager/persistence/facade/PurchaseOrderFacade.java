@@ -32,7 +32,12 @@ public class PurchaseOrderFacade {
         sb.append(" cast(s.\"Email\" as varchar(100))as mail ");
         sb.append("from OPOR o ");
         sb.append("inner join OSLP s ON s.\"SlpCode\" = o.\"SlpCode\" ");
-        sb.append("where o.\"Series\"='48' and o.\"DocStatus\"='O' and o.\"U_DOC_TRANSP\" is not null and o.\"U_NotificationBL\"='Y' ");
+        if (companyName.contains("IGB")) {
+            sb.append("where o.\"Series\"='48'");
+        } else {
+            sb.append("where o.\"Series\"='16'");
+        }
+        sb.append(" and o.\"DocStatus\"='O' and o.\"U_DOC_TRANSP\" is not null and o.\"U_NotificationBL\"='Y'");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
