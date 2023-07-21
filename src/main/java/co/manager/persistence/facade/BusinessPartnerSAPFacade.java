@@ -516,8 +516,8 @@ public class BusinessPartnerSAPFacade {
         sb.append("  )as rc1 ");
         sb.append("  group by rc1.\"CardCode\",rc1.\"Tipo_Doc\",rc1.\"NroDoc\",rc1.\"Fecha_RC\",rc1.\"NroRec\",rc1.\"Vlrec\",rc1.\"Fecha_FA\" ");
         sb.append(" )as rc2)as int)as \"PromDay\", ");
-        sb.append(" (select max(cast(\"DocDueDate\" as date)) from OINV where \"DocStatus\"='O' and days_between(\"DocDueDate\",ADD_MONTHS(ADD_DAYS(ADD_MONTHS(ADD_DAYS(CURRENT_DATE,-EXTRACT(DAY FROM CURRENT_DATE)+1),1),-1),-1))>3 and \"CardCode\"=c.\"CardCode\")as \"SinFacVenc\", ");
-        sb.append(" ifnull((select distinct 'SI' from OINV where MONths_between(\"DocDate\",ADD_MONTHS(ADD_DAYS(ADD_MONTHS(ADD_DAYS(CURRENT_DATE,-EXTRACT(DAY FROM CURRENT_DATE)+1),1),-1),-1))<10 and \"CardCode\"=c.\"CardCode\"),'NO')as \"CompReciente\" ");
+        sb.append(" (select max(days_between(\"DocDueDate\",current_date)) from OINV where \"DocStatus\"='O' and days_between(\"DocDueDate\",current_date)>10 and \"CardCode\"=c.\"CardCode\")as \"SinFacVenc\", ");
+        sb.append(" ifnull((select distinct 'SI' from OINV where MONTHS_between(\"DocDate\",ADD_MONTHS(ADD_DAYS(ADD_MONTHS(ADD_DAYS(CURRENT_DATE,-EXTRACT(DAY FROM CURRENT_DATE)+1),1),-1),-1))<10 and \"CardCode\"=c.\"CardCode\"),'NO')as \"CompReciente\" ");
         sb.append(" from OCRD c ");
         sb.append(" where c.\"validFor\"='Y' and c.\"CardType\"='C' and c.\"GroupNum\"<>'-1' and c.\"Discount\"='0' ");
         sb.append(")as t ");

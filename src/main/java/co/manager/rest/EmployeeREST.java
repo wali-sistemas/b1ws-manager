@@ -48,15 +48,18 @@ public class EmployeeREST {
                                                 @HeaderParam("X-Pruebas") boolean pruebas) {
         CONSOLE.log(Level.INFO, "Listando custodias por empleado o por activo en {0}", new Object[]{companyName});
 
-        String cardCode = "";
-        String idAsset = "";
+        String cardCode = null;
+        String idAsset = null;
+        String cardName = null;
         if (Character.isDigit(filtre.charAt(0))) {
             cardCode = filtre;
+        } else if (filtre.toUpperCase().contains("SIN ASIGNAR")) {
+            cardName = filtre;
         } else {
-            idAsset = filtre;
+            idAsset = filtre.toLowerCase();
         }
 
-        List<Object[]> objs = employeeFacade.listCustodyByEmpleeOrAsset(cardCode, idAsset, companyName, pruebas);
+        List<Object[]> objs = employeeFacade.listCustodyByEmpleeOrAsset(cardCode, idAsset, cardName, companyName, pruebas);
         if (objs.isEmpty()) {
             CONSOLE.log(Level.WARNING, "No se encontraron custodias para mostrar");
             return Response.ok(new ResponseDTO(-1, "No se encontraron custodias para mostrar")).build();
