@@ -33,8 +33,9 @@ public class EmployeeFacade {
         persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).remove(employee);
     }
 
-    public List<Object[]> listCustodyByEmpleeOrAsset(String cardCode, String idAsset, String companyName, boolean testing) {
+    public List<Object[]> listCustodyByEmpleeOrAsset(String cardCode, String idAsset, String cardName, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
+        sb.append("select * from (");
         sb.append("select cast(isnull(e.cardCode,'811011909') as varchar)as cardCode,cast(isnull(e.cardName, 'Sin Asignar') as varchar)as cardName,cast(isnull(e.department,'SISTEMAS') as varchar)as depart, ");
         sb.append(" cast(isnull(e.company,'IGB') as varchar)as company,cast(e.ccosto as int)as ccEmpl, cast(e.status as varchar)as statusEmp,cast(a.idAsset as varchar)as id, ");
         sb.append(" cast(c.dateAssign as date)as dateAssign,cast(c.dateFinish as date)as dateFinish,cast(c.status as varchar)as statusDet, ");
@@ -45,11 +46,17 @@ public class EmployeeFacade {
         sb.append("from asset_master_data a ");
         sb.append("left join custody_detail c on c.idAsset=a.idAsset ");
         sb.append("left join employee e on e.cardCode=c.cardCode ");
-        sb.append("where (c.cardCode='");
-        sb.append(cardCode);
-        sb.append("' or a.idAsset='");
-        sb.append(idAsset);
-        sb.append("')");
+        if (cardCode != null || idAsset != null) {
+            sb.append("where c.status='Y' and (c.cardCode='");
+            sb.append(cardCode);
+            sb.append("' or a.idAsset='");
+            sb.append(idAsset);
+            sb.append("'))as t");
+        } else {
+            sb.append(")as t where t.statusDet='Y' and t.cardName='");
+            sb.append(cardName);
+            sb.append("'");
+        }
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
