@@ -280,6 +280,14 @@ public class EmployeeREST {
             } else {
                 assetMasterDataFacade.updateAsset(entity, companyName, pruebas);
                 if (dto.getEmployeeDTO().getCardCode() != null || !dto.getEmployeeDTO().getCardCode().isEmpty()) {
+
+                    List<String> ids = custodyDetailFacade.listCustodyDetailByAsset(dto.getIdAsset(), companyName, pruebas);
+                    if (!ids.isEmpty()) {
+                        for (String id : ids) {
+                            custodyDetailFacade.updateCustodyDetailByAsset(id, "N", companyName, pruebas);
+                        }
+                    }
+
                     CustodyDetail entityCustody = new CustodyDetail();
                     entityCustody.setIdAsset(new AssetMasterData(dto.getIdAsset()));
                     entityCustody.setCardCode(new Employee(dto.getEmployeeDTO().getCardCode()));

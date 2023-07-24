@@ -14,8 +14,8 @@ public class CustodyDetail implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "idCustodia", nullable = false)
-    private long idCustodia;
+    @Column(name = "idCustody", nullable = false)
+    private long idCustody;
     @JoinColumn(name = "idAsset", referencedColumnName = "idAsset")
     @ManyToOne(optional = false)
     private AssetMasterData idAsset;
@@ -36,8 +36,8 @@ public class CustodyDetail implements Serializable {
     public CustodyDetail() {
     }
 
-    public CustodyDetail(long idCustodia, AssetMasterData idAsset, Employee cardCode, Date dateAssign, Date dateFinish, String status, String userAssign, String userFinish) {
-        this.idCustodia = idCustodia;
+    public CustodyDetail(long idCustody, AssetMasterData idAsset, Employee cardCode, Date dateAssign, Date dateFinish, String status, String userAssign, String userFinish) {
+        this.idCustody = idCustody;
         this.idAsset = idAsset;
         this.cardCode = cardCode;
         this.dateAssign = dateAssign;
@@ -47,12 +47,12 @@ public class CustodyDetail implements Serializable {
         this.userFinish = userFinish;
     }
 
-    public long getIdCustodia() {
-        return idCustodia;
+    public long getIdCustody() {
+        return idCustody;
     }
 
-    public void setIdCustodia(long idCustodia) {
-        this.idCustodia = idCustodia;
+    public void setIdCustody(long idCustodia) {
+        this.idCustody = idCustody;
     }
 
     public AssetMasterData getIdAsset() {
@@ -114,7 +114,7 @@ public class CustodyDetail implements Serializable {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + Objects.hashCode(this.idCustodia);
+        hash = 97 * hash + Objects.hashCode(this.idCustody);
         return hash;
     }
 
@@ -130,7 +130,7 @@ public class CustodyDetail implements Serializable {
             return false;
         }
         final CustodyDetail other = (CustodyDetail) obj;
-        if (!Objects.equals(this.idCustodia, other.idCustodia)) {
+        if (!Objects.equals(this.idCustody, other.idCustody)) {
             return false;
         }
         return true;
@@ -139,7 +139,7 @@ public class CustodyDetail implements Serializable {
     @Override
     public String toString() {
         return "CustodyDetail{" +
-                "idCustodia=" + idCustodia +
+                "idCustody=" + idCustody +
                 ", idAsset=" + idAsset +
                 ", cardCode=" + cardCode +
                 ", dateAssign=" + dateAssign +

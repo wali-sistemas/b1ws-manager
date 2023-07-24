@@ -89,6 +89,7 @@ public class EmployeeFacade {
         CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
         cq.where(cb.equal(root.get(Employee_.status), "Y"));
+        cq.orderBy(cb.asc(root.get(Employee_.cardName)));
         try {
             return em.createQuery(cq).getResultList();
         } catch (Exception e) {
