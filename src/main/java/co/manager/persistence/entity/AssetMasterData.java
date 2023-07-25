@@ -31,7 +31,7 @@ public class AssetMasterData implements Serializable {
     @Column(name = "company")
     private String company;
     @Column(name = "datePurchase")
-    private Date datePurchase;
+    private String datePurchase;
     @Column(name = "ccosto")
     private Integer ccosto;
     @Basic(optional = false)
@@ -50,7 +50,7 @@ public class AssetMasterData implements Serializable {
         this.idAsset = idAsset;
     }
 
-    public AssetMasterData(String idAsset, String type, String brand, String reference, String serial, String company, Date datePurchase, Integer ccosto, String status, String comment, String pictureAssetUrl) {
+    public AssetMasterData(String idAsset, String type, String brand, String reference, String serial, String company, String datePurchase, Integer ccosto, String status, String comment, String pictureAssetUrl) {
         this.idAsset = idAsset;
         this.type = type;
         this.brand = brand;
@@ -112,11 +112,11 @@ public class AssetMasterData implements Serializable {
         this.company = company;
     }
 
-    public Date getDatePurchase() {
+    public String getDatePurchase() {
         return datePurchase;
     }
 
-    public void setDatePurchase(Date datePurchase) {
+    public void setDatePurchase(String datePurchase) {
         this.datePurchase = datePurchase;
     }
 

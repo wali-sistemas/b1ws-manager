@@ -18,6 +18,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,8 +76,8 @@ public class EmployeeREST {
             dto.setCcEmpl((Integer) obj[4]);
             dto.setStatusEmp((String) obj[5]);
             dto.setIdAsset((String) obj[6]);
-            dto.setDateAssign((Date) obj[7]);
-            dto.setDateFinish((Date) obj[8]);
+            dto.setDateAssign((String) obj[7]);
+            dto.setDateFinish((String) obj[8]);
             dto.setStatusDet((String) obj[9]);
             dto.setUserAssign((String) obj[10]);
             dto.setUserFinish((String) obj[11]);
@@ -85,7 +86,7 @@ public class EmployeeREST {
             dto.setReferencia((String) obj[14]);
             dto.setSerial((String) obj[15]);
             dto.setCompanyPurchase((String) obj[16]);
-            dto.setDatePurchase((Date) obj[17]);
+            dto.setDatePurchase((String) obj[17]);
             dto.setCcAsset((Integer) obj[18]);
             dto.setStatusAsset((String) obj[19]);
             dto.setComment((String) obj[20]);
@@ -197,7 +198,7 @@ public class EmployeeREST {
             assetDTO.setReference((String) obj[3]);
             assetDTO.setSerial((String) obj[4]);
             assetDTO.setCompany((String) obj[5]);
-            assetDTO.setDatePurchase((Date) obj[6]);
+            assetDTO.setDatePurchase(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[6]));
             assetDTO.setCcosto((Integer) obj[7]);
             assetDTO.setStatus((String) obj[8]);
             assetDTO.setComment((String) obj[9]);
