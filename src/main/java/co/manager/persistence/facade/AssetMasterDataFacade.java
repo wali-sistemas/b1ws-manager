@@ -42,7 +42,7 @@ public class AssetMasterDataFacade {
         sb.append("from asset_master_data a ");
         sb.append("left join custody_detail c on c.idAsset=a.idAsset ");
         sb.append("left join employee e on e.cardCode=c.cardCode ");
-        sb.append("where c.status='Y' and a.idAsset='");
+        sb.append("where a.idAsset='");
         sb.append(idAsset);
         sb.append("'");
         try {
