@@ -47,7 +47,7 @@ public class EmployeeFacade {
         sb.append("left join custody_detail c on c.idAsset=a.idAsset ");
         sb.append("left join employee e on e.cardCode=c.cardCode ");
         if (cardCode != null || idAsset != null) {
-            sb.append("where c.status='Y' and (c.cardCode='");
+            sb.append("where (c.status='Y' or c.status is null) and (c.cardCode='");
             sb.append(cardCode);
             sb.append("' or a.idAsset='");
             sb.append(idAsset);
