@@ -1,7 +1,5 @@
 package co.manager.dto;
 
-import java.util.Date;
-
 /**
  * @author jguisao
  */
@@ -13,8 +11,8 @@ public class EmployeeCustodyDTO {
     private Integer ccEmpl;
     private String statusEmp;
     private String idAsset;
-    private Date dateAssign;
-    private Date dateFinish;
+    private String dateAssign;
+    private String dateFinish;
     private String statusDet;
     private String userAssign;
     private String userFinish;
@@ -23,7 +21,7 @@ public class EmployeeCustodyDTO {
     private String referencia;
     private String serial;
     private String companyPurchase;
-    private Date datePurchase;
+    private String datePurchase;
     private Integer ccAsset;
     private String statusAsset;
     private String comment;
@@ -33,7 +31,7 @@ public class EmployeeCustodyDTO {
     public EmployeeCustodyDTO() {
     }
 
-    public EmployeeCustodyDTO(String cardCode, String cardName, String depart, String company, Integer ccEmpl, String statusEmp, String idAsset, Date dateAssign, Date dateFinish, String statusDet, String userAssign, String userFinish, String type, String brand, String referencia, String serial, String companyPurchase, Date datePurchase, Integer ccAsset, String statusAsset, String comment, String pictAsset, String icon) {
+    public EmployeeCustodyDTO(String cardCode, String cardName, String depart, String company, Integer ccEmpl, String statusEmp, String idAsset, String dateAssign, String dateFinish, String statusDet, String userAssign, String userFinish, String type, String brand, String referencia, String serial, String companyPurchase, String datePurchase, Integer ccAsset, String statusAsset, String comment, String pictAsset, String icon) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.depart = depart;
@@ -115,19 +113,19 @@ public class EmployeeCustodyDTO {
         this.idAsset = idAsset;
     }
 
-    public Date getDateAssign() {
+    public String getDateAssign() {
         return dateAssign;
     }
 
-    public void setDateAssign(Date dateAssign) {
+    public void setDateAssign(String dateAssign) {
         this.dateAssign = dateAssign;
     }
 
-    public Date getDateFinish() {
+    public String getDateFinish() {
         return dateFinish;
     }
 
-    public void setDateFinish(Date dateFinish) {
+    public void setDateFinish(String dateFinish) {
         this.dateFinish = dateFinish;
     }
 
@@ -195,11 +193,11 @@ public class EmployeeCustodyDTO {
         this.companyPurchase = companyPurchase;
     }
 
-    public Date getDatePurchase() {
+    public String getDatePurchase() {
         return datePurchase;
     }
 
-    public void setDatePurchase(Date datePurchase) {
+    public void setDatePurchase(String datePurchase) {
         this.datePurchase = datePurchase;
     }
 
