@@ -37,7 +37,7 @@ public class AssetMasterDataFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(a.idAsset as varchar(50))as idAsset,cast(a.type as varchar(max))as type,cast(a.brand as varchar(max))as brand, ");
         sb.append(" cast(a.reference as varchar(max))as reference,cast(a.serial as varchar(max))as serial,cast(a.company as varchar(20))as company, ");
-        sb.append(" cast(a.datePurchase as date)as datePurchase,cast(a.ccosto as int)as ccosto,cast(a.status as varchar(1))as status,cast(a.comment as text)as comment, ");
+        sb.append(" cast(a.datePurchase as varchar)as datePurchase,cast(a.ccosto as int)as ccosto,cast(a.status as varchar(1))as status,cast(a.comment as text)as comment, ");
         sb.append(" cast(a.pictureAssetUrl as varchar(max))as pictureAssetUrl,cast(e.cardCode as varchar(20))as cardCode,cast(e.cardName as varchar(100))as cardName ");
         sb.append("from asset_master_data a ");
         sb.append("left join custody_detail c on c.idAsset=a.idAsset ");

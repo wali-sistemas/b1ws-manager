@@ -198,7 +198,7 @@ public class EmployeeREST {
             assetDTO.setReference((String) obj[3]);
             assetDTO.setSerial((String) obj[4]);
             assetDTO.setCompany((String) obj[5]);
-            assetDTO.setDatePurchase(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[6]));
+            assetDTO.setDatePurchase((String) obj[6]);
             assetDTO.setCcosto((Integer) obj[7]);
             assetDTO.setStatus((String) obj[8]);
             assetDTO.setComment((String) obj[9]);
