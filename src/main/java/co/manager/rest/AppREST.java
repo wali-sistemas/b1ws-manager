@@ -5,6 +5,8 @@ import co.manager.ejb.ManagerApplicationBean;
 import co.manager.ejb.SalesOrderEJB;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
+import co.manager.persistence.entity.OrderAPP;
+import co.manager.persistence.entity.OrderDetailAPP;
 import co.manager.persistence.entity.OrderDetailPedbox;
 import co.manager.persistence.entity.OrderPedbox;
 import co.manager.persistence.facade.*;
@@ -56,6 +58,10 @@ public class AppREST {
     private OrderModulaEJB orderModulaEJB;
     @EJB
     private SalesOrderSAPFacade salesOrderSAPFacade;
+    @EJB
+    private OrderAPPFacade orderAPPFacade;
+    @EJB
+    private OrderDetailAPPFacade orderDetailAPPFacade;
 
     @GET
     @Path("active-companies")
@@ -396,7 +402,7 @@ public class AppREST {
                               @QueryParam("year") long year,
                               @QueryParam("month") long month,
                               @QueryParam("day") long day) {
-        CONSOLE.log(Level.INFO, "Listando pedidos para la empresa {0}. ano[{1}]-mes[{2}]-asesor[{3}]", new Object[]{companyname, year, month, slpCode});
+        CONSOLE.log(Level.INFO, "Listando pedidos para la empresa {0}. ano[{1}]-mes[{2}]-dia[{3}]-asesor[{4}]", new Object[]{companyname, year, month, day, slpCode});
 
         List<Object[]> objsSAP = salesOrderSAPFacade.listOrdersByDateAndSale(slpCode, year, month, day, companyname, false);
         if (objsSAP.isEmpty()) {
@@ -434,6 +440,72 @@ public class AppREST {
             }
         }
         return Response.ok(new ResponseDTO(0, ordersAppDTO)).build();
+    }
+
+    @GET
+    @Path("list-order-saves/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listOrderSaves(@PathParam("companyname") String companyname,
+                                   @QueryParam("slpcode") long slpCode,
+                                   @QueryParam("year") long year,
+                                   @QueryParam("month") long month,
+                                   @QueryParam("day") long day) {
+        CONSOLE.log(Level.INFO, "Listando pedidos guardados para la empresa {0}. ano[{1}]-mes[{2}]-dia[{3}]-asesor[{4}]", new Object[]{companyname, year, month, day, slpCode});
+        List<SalesOrderSaveDTO> salesOrderSaveDTO = new ArrayList<>();
+
+        List<Object[]> objects = orderAPPFacade.listOrderSaves(slpCode, year, month, day, companyname, false);
+        if (objects.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "No se encontraron ordenes guardadas para mostrar");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes guardadas para mostrar.")).build();
+        }
+
+        HashMap<Integer, String> orderSaves = new HashMap<>();
+        for (Object[] obj : objects) {
+            orderSaves.put((Integer) obj[0], "id");
+        }
+
+        for (Integer order : orderSaves.keySet()) {
+            List<DetailSalesOrderSaveDTO> detail = new ArrayList<>();
+            SalesOrderSaveDTO dto = new SalesOrderSaveDTO();
+            dto.setId(order);
+
+            for (Object[] obj : objects) {
+                if (dto.getId().equals(obj[0])) {
+                    //Encabezado del order guardada
+                    dto.setDocDate((Date) obj[2]);
+                    dto.setCardCode((String) obj[3]);
+                    dto.setCardName((String) obj[4]);
+                    dto.setNumAtCard((String) obj[5]);
+                    dto.setShipToCode((String) obj[6]);
+                    dto.setPayToCode((String) obj[7]);
+                    dto.setComments((String) obj[8]);
+                    dto.setSlpCode((String) obj[9]);
+                    dto.setStatus((String) obj[10]);
+                    dto.setCompanyName((String) obj[11]);
+                    dto.setDiscountPercent((BigDecimal) obj[12]);
+                    dto.setDocTotal((BigDecimal) obj[13]);
+                    dto.setAssignedShipToCode((String) obj[14]);
+                    //Detalle de orden guardada
+                    DetailSalesOrderSaveDTO dto2 = new DetailSalesOrderSaveDTO();
+                    dto2.setItemCode((String) obj[17]);
+                    dto2.setItemName((String) obj[18]);
+                    dto2.setGroup((String) obj[19]);
+                    dto2.setPresentation((String) obj[20]);
+                    dto2.setWhsCode((String) obj[21]);
+                    dto2.setPrice((BigDecimal) obj[22]);
+                    dto2.setDiscountItem((BigDecimal) obj[23]);
+                    dto2.setDiscountPorc((BigDecimal) obj[24]);
+                    dto2.setIva((BigDecimal) obj[25]);
+                    dto2.setQuantity((Integer) obj[26]);
+
+                    detail.add(dto2);
+                }
+            }
+            dto.setDetailSalesOrderSave(detail);
+            salesOrderSaveDTO.add(dto);
+        }
+        return Response.ok(salesOrderSaveDTO).build();
     }
 
     @POST
@@ -695,6 +767,64 @@ public class AppREST {
         }
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
         return Response.ok(res).build();
+    }
+
+    @POST
+    @Path("save-order")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response saveOrderSale(SalesOrderSaveDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando guardado de orden de venta para " + dto.getCompanyName());
+
+        /****Registrar pedido en tablas temporales****/
+        OrderAPP order = new OrderAPP();
+        OrderDetailAPP detail = new OrderDetailAPP();
+
+        order.setDocNum(null);
+        order.setDocDate(new Date());
+        order.setCardCode(dto.getCardCode());
+        order.setCardName(dto.getCardName());
+        order.setNumAtCard(dto.getNumAtCard());
+        order.setComments(dto.getComments());
+        order.setSlpCode(dto.getSlpCode());
+        order.setStatus("G");
+        order.setCompanyName(dto.getCompanyName());
+        order.setDocTotal(dto.getDocTotal().doubleValue());
+        order.setShipToCode(dto.getShipToCode());
+        order.setPayToCode(dto.getPayToCode());
+        order.setDiscountPercent(dto.getDiscountPercent().doubleValue());
+        order.setLineNum(dto.getAssignedShipToCode());
+        try {
+            orderAPPFacade.create(order, dto.getCompanyName(), false);
+        } catch (Exception ex) {
+        }
+
+        for (DetailSalesOrderSaveDTO dt : dto.getDetailSalesOrderSave()) {
+            /****Consultado stock actual en SAP - MODULA - SBT y CEDI****/
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(dt.getItemCode(), dt.getWhsCode(), dto.getCompanyName(), false);
+
+            detail.setIdOrder(order);
+            detail.setIdOrderDetail(0);
+            detail.setItemCode(dt.getItemCode());
+            detail.setItemName(dt.getItemName());
+            detail.setGroup(dt.getGroup());
+            detail.setPresentation(dt.getPresentation());
+            detail.setWhsCode(dt.getWhsCode());
+            detail.setPrice(dt.getPrice().doubleValue());
+            detail.setDiscountItem(dt.getDiscountItem().doubleValue());
+            detail.setDiscountPorc(dt.getDiscountPorc().doubleValue());
+            detail.setIva(dt.getIva().doubleValue());
+            detail.setQtyAPP(dt.getQuantity());
+            detail.setQtyMDL((Integer) stockCurrent[0]);
+            detail.setQtySAP((Integer) stockCurrent[1]);
+            detail.setQtySBT((Integer) stockCurrent[2]);
+            try {
+                orderDetailAPPFacade.create(detail, dto.getCompanyName(), false);
+            } catch (Exception ex) {
+            }
+        }
+        return Response.ok(new ResponseDTO(0, order.getIdOrder())).build();
     }
 
     private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode) {
