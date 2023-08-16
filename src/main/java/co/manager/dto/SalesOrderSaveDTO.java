@@ -32,7 +32,7 @@ public class SalesOrderSaveDTO implements Serializable {
     @JsonProperty("payToCode")
     private String payToCode;
     @JsonProperty("docDate")
-    private Date docDate;
+    private String docDate;
     @JsonProperty("slpCode")
     private String slpCode;
     @JsonProperty("discountPercent")
@@ -119,11 +119,11 @@ public class SalesOrderSaveDTO implements Serializable {
         this.payToCode = payToCode;
     }
 
-    public Date getDocDate() {
+    public String getDocDate() {
         return docDate;
     }
 
-    public void setDocDate(Date docDate) {
+    public void setDocDate(String docDate) {
         this.docDate = docDate;
     }
 
