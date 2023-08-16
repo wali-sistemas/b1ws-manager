@@ -473,7 +473,7 @@ public class AppREST {
             for (Object[] obj : objects) {
                 if (dto.getId().equals(obj[0])) {
                     //Encabezado del order guardada
-                    dto.setDocDate((Date) obj[2]);
+                    dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[2]));
                     dto.setCardCode((String) obj[3]);
                     dto.setCardName((String) obj[4]);
                     dto.setNumAtCard((String) obj[5]);
