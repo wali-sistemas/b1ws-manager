@@ -32,12 +32,12 @@ public class OrderAPPFacade {
 
     public List<Object[]> listOrderSaves(long slpCode, long year, long month, long day, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(e.idOrder as int)as id,cast(e.docNum as int)as docNum,cast(e.docDate as date)as docDate,cast(e.cardCode as varchar(50))as cardCode, ");
+        sb.append("select cast(e.idOrder as int)as id,cast(e.docNum as int)as docNum,cast(e.docDate as datetime)as docDate,cast(e.cardCode as varchar(50))as cardCode, ");
         sb.append(" cast(e.cardName as varchar(100))as cardName,cast(e.numAtCard as varchar(50))as numAtCard,cast(e.shipToCode as varchar(100))as shipToCode, ");
         sb.append(" cast(e.payToCode as varchar(100))as payToCode,cast(e.comments as varchar(250))as comments,cast(e.slpCode as varchar(4))as slpCode,cast(e.status as varchar(2))as status, ");
         sb.append(" cast(e.companyName as varchar(50))as companyName,cast(e.discountPercent as numeric(18,0))as discountPercent,cast(e.docTotal as numeric(18,0))as docTotal, ");
         sb.append(" cast(e.lineNum as varchar(100))as lineNum,cast(d.idOrder as int)as idDet,cast(d.idOrderDetail as int)as idDetail,cast(d.itemCode as varchar(20))as itemCode, ");
-        sb.append(" cast(d.itemName as varchar(20))as itemName,cast(d.[group] as varchar(100))as groupItem,cast(d.presentation as varchar(100))as presentation,cast(d.whsCode as varchar(10))as whsCode, ");
+        sb.append(" cast(d.itemName as varchar(100))as itemName,cast(d.[group] as varchar(100))as groupItem,cast(d.presentation as varchar(100))as presentation,cast(d.whsCode as varchar(10))as whsCode, ");
         sb.append(" cast(d.price as numeric(18,0))as price,cast(d.discountItem as numeric(18,0))as discountItem,cast(d.discountPorc as numeric(18,0))as discountPorc, ");
         sb.append(" cast(d.iva as numeric(18,0))as iva,cast(d.qtyAPP as int)as qtyAPP,cast(d.qtyMDL as int)as qtyMDL,cast(d.qtySAP as int)as qtySAP,cast(d.qtySBT as int)as qtySBT ");
         sb.append("from order_app e ");
