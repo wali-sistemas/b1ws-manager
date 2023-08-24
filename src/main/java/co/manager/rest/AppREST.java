@@ -777,6 +777,10 @@ public class AppREST {
     public Response saveOrderSale(SalesOrderSaveDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando guardado de orden de venta para " + dto.getCompanyName());
 
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
         /****Registrar pedido en tablas temporales****/
         OrderAPP order = new OrderAPP();
         OrderDetailAPP detail = new OrderDetailAPP();
