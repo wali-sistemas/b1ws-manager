@@ -713,25 +713,6 @@ public class ItemSAPFacade {
         return new ArrayList<>();
     }
 
-    public Integer listStockSAPModulaByItem(String itemCode, String companyName, boolean pruebas) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(sal.\"OnHand\" as int)as qty ");
-        sb.append("from OITM art ");
-        sb.append("inner join OITW sal on sal.\"ItemCode\"=art.\"ItemCode\" ");
-        sb.append("inner join OWHS alm on alm.\"WhsCode\"=sal.\"WhsCode\" ");
-        sb.append("where sal.\"OnHand\">0 and sal.\"WhsCode\"='30' and art.\"validFor\"='Y' and art.\"ItemType\"='I' and art.\"SellItem\"='Y' and art.\"ItemCode\"='");
-        sb.append(itemCode);
-        sb.append("' order by art.\"ItemCode\"");
-        try {
-            return (Integer) persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual de modula en SAP. ", e);
-            return null;
-        }
-        return 0;
-    }
-
     public List<Object[]> listItemsToSyncModula(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select distinct cast(a.\"ItemCode\" as varchar(20))as itemCode,cast(a.\"ItemName\" as varchar(200))as itemName, ");

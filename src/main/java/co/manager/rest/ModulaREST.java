@@ -50,61 +50,30 @@ public class ModulaREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getStockModula(@HeaderParam("X-Company-Name") String companyName) {
         CONSOLE.log(Level.INFO, "Iniciando comparacion de stock entre modula vs SAP");
-        TreeSet<StockMissingDTO> stockMissingDTO = new TreeSet<>();
-
+        TreeSet<StockMissingDTO> listStockMissingDTO = new TreeSet<>();
         //obtener stock del api
-        List<StockRestDTO.ItemDTO.DetailDTO> stockModula = listStockModula();
-        for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
-            StockMissingDTO dto = new StockMissingDTO();
-            dto.setItemCode(modula.getItemCode());
-            dto.setItemName(modula.getItemName());
-            dto.setQtySAP(0);
-            dto.setQtyMDL(0);
-            dto.setBinCode("MODULA");
-            dto.setWhsCode("30");
-            dto.setWhsName("MODULA");
-            stockMissingDTO.add(dto);
-        }
+        List<StockRestDTO.ItemDTO.DetailDTO> listStockModula = listStockModula();
         //obtener stock de SAP almacen 30-modula
-        List<Object[]> stockModulaSAP = itemSAPFacade.listStockSAPModula(companyName, false);
-        for (Object[] sap : stockModulaSAP) {
-            StockMissingDTO dto = new StockMissingDTO();
-            dto.setItemCode((String) sap[0]);
-            dto.setItemName((String) sap[1]);
-            dto.setQtySAP(0);
-            dto.setQtyMDL(0);
-            dto.setWhsCode((String) sap[3]);
-            dto.setBinCode((String) sap[4]);
-            dto.setWhsName((String) sap[5]);
-            stockMissingDTO.add(dto);
-        }
+        List<Object[]> listStockModulaSAP = itemSAPFacade.listStockSAPModula(companyName, false);
 
-        for (StockMissingDTO stock : stockMissingDTO) {
-            for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
-                if (stock.getItemCode().equals(modula.getItemCode())) {
-                    try {
-                        stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(".000", "")));
-                    } catch (Exception e) {
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error convirtiendo el stock [" + modula.getStock() + "] del item " + modula.getItemCode(), e);
-                    }
-                    break;
+        for (StockRestDTO.ItemDTO.DetailDTO modula : listStockModula) {
+            for (Object[] sap : listStockModulaSAP) {
+                if (modula.getItemCode().equals(sap[0]) && modula.getStock().replace(".000", "") != sap[2]) {
+                    StockMissingDTO dto = new StockMissingDTO();
+                    dto.setItemCode((String) sap[0]);
+                    dto.setItemName((String) sap[1]);
+                    dto.setQtySAP((Integer) sap[2]);
+                    dto.setQtyMDL(Integer.parseInt(modula.getStock().replace(".000", "")));
+                    dto.setWhsCode((String) sap[3]);
+                    dto.setBinCode((String) sap[4]);
+                    dto.setWhsName((String) sap[5]);
+
+                    listStockMissingDTO.add(dto);
                 }
             }
-            stock.setQtySAP(itemSAPFacade.listStockSAPModulaByItem(stock.getItemCode(), companyName, false));
         }
 
-        List<StockMissingDTO> removeItem = new ArrayList<>();
-        for (StockMissingDTO dto : stockMissingDTO) {
-            if (dto.getQtySAP().equals(dto.getQtyMDL())) {
-                removeItem.add(dto);
-            }
-        }
-
-        for (StockMissingDTO dto : removeItem) {
-            stockMissingDTO.remove(dto);
-        }
-
-        return Response.ok(stockMissingDTO).build();
+        return Response.ok(listStockMissingDTO).build();
     }
 
     @GET
