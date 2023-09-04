@@ -82,7 +82,11 @@ public class ModulaREST {
         for (StockMissingDTO stock : stockMissingDTO) {
             for (StockRestDTO.ItemDTO.DetailDTO modula : stockModula) {
                 if (stock.getItemCode().equals(modula.getItemCode())) {
-                    stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(".000", "")));
+                    try {
+                        stock.setQtyMDL(Integer.parseInt(modula.getStock().replace(".000", "")));
+                    } catch (Exception e) {
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error convirtiendo el stock [" + modula.getStock() + "] del item " + modula.getItemCode(), e);
+                    }
                     break;
                 }
             }
@@ -236,7 +240,7 @@ public class ModulaREST {
             itemModulaFacade.remove(itemCode, "IGB", false);
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error eliminando el registro temporal para el item {0}", itemCode);
-            return Response.ok(new ResponseDTO(-1,"Ocurrio un error eliminando el registro temporal.")).build();
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error eliminando el registro temporal.")).build();
         }
         /***4. Lanzar servicio de sincronización automatica***/
         sondaREST.syncItemsModula("IGB", false);
