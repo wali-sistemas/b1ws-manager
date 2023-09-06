@@ -14,7 +14,8 @@ public class Constants {
     public static final String DATABASE_TYPE_WALI = "WMS";
     public static final String DATABASE_TYPE_HANA = "HANA";
     public static final String URL_SHARED = "url.shared";
-    public static final String URL_SHARED_HTTPS = "url.shared.https";
+    public static final String URL_SHARED_HTTPS_IGB = "url.shared.https.igb";
+    public static final String URL_SHARED_HTTPS_MTZ = "url.shared.https.mtz";
     public static final String HANAWS_SL_URL = "https://slhana.igbcolombia.com:50000/b1s/";
     public static final String MODULAWS_URL = "http://192.168.10.102:3001/api/";
     public static final String TOKEN_CALIDOSOS = "token.calidosos";
