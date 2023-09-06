@@ -908,6 +908,11 @@ public class PedBoxREST {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         }
+        //TODO: Pedidos de extranet deben entrar con status=REVISAR
+        if (dto.getNumAtCard().substring(0, 1).equals("E")) {
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
+        }
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
