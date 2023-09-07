@@ -636,6 +636,7 @@ public class AppREST {
                             detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
                         }
                     } else {
+                        detail.setWhsCode("32");
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                             detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
                         } else {
