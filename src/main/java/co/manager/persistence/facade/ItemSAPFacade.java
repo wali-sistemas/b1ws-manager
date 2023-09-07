@@ -501,7 +501,7 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public List<Object[]> getStockWarehouseCurrentBySeller(String itemCode, String whsCodeDefTire, String companyName, String statusModula, boolean pruebas) {
+    public List<Object[]> getStockWarehouseCurrentBySeller(String itemCode, String whsCodeDefaultSale, String companyName, String statusModula, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
@@ -516,6 +516,22 @@ public class ItemSAPFacade {
             sb.append(" from OITM oi ");
             sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
             sb.append(" where it.\"WhsCode\"='13' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
+            sb.append(" union all ");
+            //SANBARTOLOME MTZ
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append("  select sum(de.\"OnHandQty\") ");
+            sb.append("  from OBIN ub ");
+            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+            sb.append("  where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+            sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
             if (!itemCode.equals("0")) {
                 sb.append("and oi.\"ItemCode\"='");
                 sb.append(itemCode);
@@ -603,9 +619,9 @@ public class ItemSAPFacade {
             sb.append("'");
         }
         sb.append(")as t where t.Stock>=0 ");
-        if (!whsCodeDefTire.equals("0")) {
+        if (!whsCodeDefaultSale.equals("0")) {
             sb.append("and t.Bodega in(");
-            sb.append(whsCodeDefTire);
+            sb.append(whsCodeDefaultSale);
             sb.append(")");
         }
         sb.append(" group by t.Producto,t.Bodega");
