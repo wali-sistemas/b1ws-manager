@@ -373,7 +373,7 @@ public class ItemSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
         if (companyName.contains("VARROC")) {
-            //LINK MTZ
+            //LINK MTZ - SOLO LUBRICANTES Y LLANTAS
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
             sb.append("  select sum(de.\"OnHandQty\") ");
             sb.append("  from OBIN ub ");
@@ -383,6 +383,22 @@ public class ItemSAPFacade {
             sb.append(" from OITM oi ");
             sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
             sb.append(" where it.\"WhsCode\"='13' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
+            sb.append(" union all ");
+            //SANBARTOLOME MTZ - SOLO REPUESTOS
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append("  select sum(de.\"OnHandQty\") ");
+            sb.append("  from OBIN ub ");
+            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+            sb.append("  where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+            sb.append("   (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='32' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
             if (!itemCode.equals("0")) {
                 sb.append("and oi.\"ItemCode\"='");
                 sb.append(itemCode);
