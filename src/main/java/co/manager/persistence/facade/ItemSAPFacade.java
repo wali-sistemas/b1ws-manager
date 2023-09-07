@@ -117,7 +117,7 @@ public class ItemSAPFacade {
             sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
+            sb.append("'13','26','32'");
         }
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
@@ -129,7 +129,7 @@ public class ItemSAPFacade {
             sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
+            sb.append("'13','26','32'");
         }
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock,cast(it.\"PicturName\" as varchar)as PicturName, ");
@@ -156,7 +156,7 @@ public class ItemSAPFacade {
             sb.append("'01','05','26','32'");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26'");
+            sb.append("'13','26','32'");
         }
 
         sb.append(") left join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
