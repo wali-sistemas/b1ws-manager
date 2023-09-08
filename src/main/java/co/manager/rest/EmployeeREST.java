@@ -285,7 +285,7 @@ public class EmployeeREST {
                     List<String> ids = custodyDetailFacade.listCustodyDetailByAsset(dto.getIdAsset(), companyName, pruebas);
                     if (!ids.isEmpty()) {
                         for (String id : ids) {
-                            custodyDetailFacade.updateCustodyDetailByAsset(id, "N", companyName, pruebas);
+                            custodyDetailFacade.updateCustodyDetailByAsset(id, "N", employee, companyName, pruebas);
                         }
                     }
 
@@ -293,8 +293,10 @@ public class EmployeeREST {
                     entityCustody.setIdAsset(new AssetMasterData(dto.getIdAsset()));
                     entityCustody.setCardCode(new Employee(dto.getEmployeeDTO().getCardCode()));
                     entityCustody.setDateAssign(new Date());
+                    entityCustody.setDateFinish(null);
                     entityCustody.setStatus("Y");
                     entityCustody.setUserAssign(employee);
+                    entityCustody.setUserFinish(null);
                     custodyDetailFacade.create(entityCustody, companyName, pruebas);
                 }
             }

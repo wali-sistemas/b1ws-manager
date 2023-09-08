@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,12 +56,14 @@ public class CustodyDetailFacade {
         return new ArrayList<>();
     }
 
-    public boolean updateCustodyDetailByAsset(String idCustody, String status, String companyName, boolean testing) {
+    public boolean updateCustodyDetailByAsset(String idCustody, String status, String employee, String companyName, boolean testing) {
         EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaUpdate<CustodyDetail> cu = cb.createCriteriaUpdate(CustodyDetail.class);
         Root<CustodyDetail> root = cu.from(CustodyDetail.class);
         cu.set(root.get(CustodyDetail_.status), status);
+        cu.set(root.get(CustodyDetail_.dateFinish), new Date());
+        cu.set(root.get(CustodyDetail_.userFinish), employee);
         cu.where(cb.equal(root.get(CustodyDetail_.idCustody), idCustody));
         try {
             int rows = em.createQuery(cu).executeUpdate();
@@ -68,7 +71,7 @@ public class CustodyDetailFacade {
                 return true;
             }
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar los datos del detalle de las custodias " , e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar los datos del detalle de las custodias ", e);
         }
         return false;
     }
