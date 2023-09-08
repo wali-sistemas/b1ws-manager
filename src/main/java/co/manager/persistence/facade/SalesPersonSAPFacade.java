@@ -254,6 +254,7 @@ public class SalesPersonSAPFacade {
         sb.append("       and year(f.\"DocDate\")=");
         sb.append(year);
         sb.append("       and v.\"SlpName\"=p.\"U_VENDEDOR\" and (");
+        sb.append("     select sum(\"Total\") from( ");
         sb.append("      select sum(o.\"DocTotal\"-o.\"VatSum\"-o.\"TotalExpns\"+o.\"WTSum\")as \"Total\"");
         sb.append("      from OINV o ");
         sb.append("      where month(o.\"DocDate\")=");
@@ -269,7 +270,7 @@ public class SalesPersonSAPFacade {
         sb.append("       and year(n.\"DocDate\")=");
         sb.append(year);
         sb.append("       and n.\"CardCode\"=o.\"CardCode\"");
-        sb.append("    )>499999 ");
+        sb.append("    ))>499999 ");
         sb.append("   )as a ");
         sb.append("  )as \"clImpac\" ");
         sb.append(" from \"@PRES_COBERTURA\" p ");
