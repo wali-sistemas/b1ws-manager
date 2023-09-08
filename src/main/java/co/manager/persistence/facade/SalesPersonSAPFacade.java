@@ -268,7 +268,7 @@ public class SalesPersonSAPFacade {
         sb.append(month);
         sb.append("       and year(n.\"DocDate\")=");
         sb.append(year);
-        sb.append("       and f.\"CardCode\"=o.\"CardCode\"");
+        sb.append("       and n.\"CardCode\"=o.\"CardCode\"");
         sb.append("    )>499999 ");
         sb.append("   )as a ");
         sb.append("  )as \"clImpac\" ");
