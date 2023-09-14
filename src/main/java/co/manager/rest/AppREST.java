@@ -547,7 +547,7 @@ public class AppREST {
         }
 
         /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if (dto.getCompanyName().contains("IGB")) {
+        /*if (dto.getCompanyName().contains("IGB")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
@@ -567,7 +567,9 @@ public class AppREST {
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
-        }
+        }*/
+        dto.setStatus("REVISAR");
+        dto.setConfirmed("N");
         /**** 4. Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
