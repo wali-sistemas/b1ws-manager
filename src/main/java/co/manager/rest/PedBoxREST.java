@@ -893,6 +893,13 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
         /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
+        if (dto.getCardCode().equals("C900998242")) {
+            dto.setStatus("APROBADO");
+            dto.setConfirmed("Y");
+        } else {
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
+        }
         /*if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
@@ -913,8 +920,6 @@ public class PedBoxREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }*/
-        dto.setStatus("REVISAR");
-        dto.setConfirmed("N");
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
