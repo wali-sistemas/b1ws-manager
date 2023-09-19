@@ -88,7 +88,7 @@ public class EmployeeFacade {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = cb.createQuery(Employee.class);
         Root<Employee> root = cq.from(Employee.class);
-        cq.where(cb.equal(root.get(Employee_.status), "Y"));
+        cq.where(cb.and(cb.equal(root.get(Employee_.status), "Y")), cb.notEqual(root.get(Employee_.cardCode), "811011909"));
         cq.orderBy(cb.asc(root.get(Employee_.cardName)));
         try {
             return em.createQuery(cq).getResultList();
