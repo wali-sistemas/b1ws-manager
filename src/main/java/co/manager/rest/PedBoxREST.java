@@ -893,7 +893,7 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
         /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if (dto.getCardCode().equals("C900998242")) {
+        if (dto.getCardCode().equals("C900998242") && dto.getCompanyName().contains("VELEZ")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         } else {
@@ -931,6 +931,10 @@ public class PedBoxREST {
             for (Object[] obj : idAddress) {
                 dto.setPayToCode((String) obj[1]);
             }
+        }
+
+        if (dto.getShipToCode().equals("0")) {
+            dto.setShipToCode(dto.getPayToCode());
         }
 
         Gson gson = new Gson();
