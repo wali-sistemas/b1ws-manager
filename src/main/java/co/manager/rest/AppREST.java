@@ -547,7 +547,7 @@ public class AppREST {
         }
 
         /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if (dto.getCardCode().equals("C900998242") && dto.getCompanyName().contains("VELEZ")) {
+        if (dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("VELEZ")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         } else {
