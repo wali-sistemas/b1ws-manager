@@ -586,15 +586,17 @@ public class AppREST {
         /**** 5. Consultando código de transportadora asignada al cliente****/
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
         /**** 6. Consultando por cliente el id de la dirección de factura****/
+        String shipToCodeDefault= null;
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
+                shipToCodeDefault = (String) obj[0];
                 dto.setPayToCode((String) obj[1]);
             }
         }
 
-        if (dto.getShipToCode().equals("Elija un destino")) {
-            dto.setShipToCode(dto.getPayToCode());
+        if (dto.getShipToCode().equals("Elija un destino") || !dto.getShipToCode().equals(shipToCodeDefault)) {
+            dto.setShipToCode(shipToCodeDefault);
         }
 
         Gson gson = new Gson();
