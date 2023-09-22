@@ -407,7 +407,9 @@ public class AppREST {
         List<Object[]> objsSAP = salesOrderSAPFacade.listOrdersByDateAndSale(slpCode, year, month, day, companyname, false);
         if (objsSAP.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "No se encontraron ordenes en SAP para mostrar");
-            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes para mostrar.")).build();
+            List<ResponseDTO> response = new ArrayList<>();
+            response.add(new ResponseDTO(-1, "No se encontraron ordenes para mostrar."));
+            return Response.ok(response).build();
         }
 
         List<OrdersAppDTO> ordersAppDTO = new ArrayList<>();
