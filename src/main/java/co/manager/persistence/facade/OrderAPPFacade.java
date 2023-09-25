@@ -1,11 +1,16 @@
 package co.manager.persistence.facade;
 
 import co.manager.persistence.entity.OrderAPP;
+import co.manager.persistence.entity.OrderAPP_;
 import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -57,5 +62,25 @@ public class OrderAPPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes guardadas para el asesor [" + slpCode + "] en " + companyName, e);
         }
         return new ArrayList<>();
+    }
+
+    public boolean updateStatusOrderSaves(long idOrder, String status, Integer docNum, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema("", testing, DB_TYPE_WALI);
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaUpdate<OrderAPP> cu = cb.createCriteriaUpdate(OrderAPP.class);
+        Root<OrderAPP> root = cu.from(OrderAPP.class);
+        cu.set(root.get(OrderAPP_.status), status);
+        cu.set(root.get(OrderAPP_.docNum), docNum);
+        cu.where(cb.equal(cb.equal(root.get(OrderAPP_.idOrder), idOrder), cb.equal(root.get(OrderAPP_.companyName), companyName)));
+        try {
+            int row = em.createQuery(cu).executeUpdate();
+            if (row == 1) {
+                return true;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando la orden guardada. ", e);
+        }
+        return false;
     }
 }
