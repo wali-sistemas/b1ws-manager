@@ -71,7 +71,7 @@ public class OrderAPPFacade {
         Root<OrderAPP> root = cu.from(OrderAPP.class);
         cu.set(root.get(OrderAPP_.status), status);
         cu.set(root.get(OrderAPP_.docNum), docNum);
-        cu.where(cb.equal(cb.equal(root.get(OrderAPP_.idOrder), idOrder), cb.equal(root.get(OrderAPP_.companyName), companyName)));
+        cu.where(cb.and(cb.equal(root.get(OrderAPP_.idOrder), idOrder), cb.equal(root.get(OrderAPP_.companyName), companyName)));
         try {
             int row = em.createQuery(cu).executeUpdate();
             if (row == 1) {
