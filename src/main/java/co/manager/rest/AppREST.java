@@ -586,15 +586,17 @@ public class AppREST {
         /**** 5. Consultando código de transportadora asignada al cliente****/
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
         /**** 6. Consultando por cliente el id de la dirección de factura****/
+        String shipToCodeDefault = null;
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
+                shipToCodeDefault = (String) obj[0];
                 dto.setPayToCode((String) obj[1]);
             }
         }
 
-        if (dto.getShipToCode().equals("Elija un destino")) {
-            dto.setShipToCode(dto.getPayToCode());
+        if (dto.getShipToCode().equals("Elija un destino") || !dto.getShipToCode().equals(shipToCodeDefault)) {
+            dto.setShipToCode(shipToCodeDefault);
         }
 
         Gson gson = new Gson();
@@ -846,6 +848,16 @@ public class AppREST {
             }
         }
         return Response.ok(new ResponseDTO(0, order.getIdOrder())).build();
+    }
+
+    @GET
+    @Path("process-saved-order/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response processSavedOrder(@QueryParam("id") long idOrder,
+                                      @QueryParam("docNum") Integer docNum,
+                                      @PathParam("companyname") String companyname) {
+        return Response.ok(orderAPPFacade.updateStatusOrderSaves(idOrder, "F", docNum, companyname, false)).build();
     }
 
     private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode) {
