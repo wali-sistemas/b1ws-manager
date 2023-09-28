@@ -1019,8 +1019,21 @@ public class PedBoxREST {
                     detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
                     detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
                     itemsMDL.add(detailDTO);
+                    if (detailDTO.getQuantity() < detailSalesOrderDTO.getQuantity() && (Integer) stockCurrent[1] <= detailSalesOrderDTO.getQuantity()) {
+                        // llenamos detalle para enviar a cedi
+                        detailDTO = new DetailSalesOrderDTO();
+                        detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                        detailDTO.setQuantity((Integer) stockCurrent[1]);
+                        detailDTO.setWhsCode("01");
+                        detailDTO.setOcrCode(ocrCode);
+                        detailDTO.setBaseLine(detailSalesOrderDTO.getBaseLine());
+                        detailDTO.setBaseEntry(detailSalesOrderDTO.getBaseEntry());
+                        detailDTO.setBaseType(detailSalesOrderDTO.getBaseType());
+                        itemsSAP.add(detailDTO);
+                    }
                 } else {
                     // llenamos detalle para enviar a cedi
+                    detailDTO = new DetailSalesOrderDTO();
                     detailDTO.setItemCode(detailSalesOrderDTO.getItemCode());
                     detailDTO.setQuantity(detailSalesOrderDTO.getQuantity());
                     detailDTO.setWhsCode("01");
