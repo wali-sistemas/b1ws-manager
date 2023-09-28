@@ -595,7 +595,7 @@ public class AppREST {
             }
         }
 
-        if (dto.getShipToCode().equals("Elija un destino") || !dto.getShipToCode().equals(shipToCodeDefault)) {
+        if (dto.getShipToCode().equals("Elija un destino")) {
             dto.setShipToCode(shipToCodeDefault);
         }
 

@@ -938,7 +938,7 @@ public class PedBoxREST {
             }
         }
 
-        if (dto.getShipToCode().equals("0") || !dto.getShipToCode().equals(shipToCodeDefault)) {
+        if (dto.getShipToCode().equals("0")) {
             dto.setShipToCode(shipToCodeDefault);
         }
 
