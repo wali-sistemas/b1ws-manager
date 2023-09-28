@@ -510,6 +510,17 @@ public class AppREST {
         return Response.ok(salesOrderSaveDTO).build();
     }
 
+    @GET
+    @Path("process-saved-order/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response processSavedOrder(@QueryParam("id") long idOrder,
+                                      @QueryParam("docNum") Integer docNum,
+                                      @QueryParam("status") String status,
+                                      @PathParam("companyname") String companyname) {
+        return Response.ok(orderAPPFacade.updateStatusOrderSaves(idOrder, status, docNum, companyname, false)).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -848,16 +859,6 @@ public class AppREST {
             }
         }
         return Response.ok(new ResponseDTO(0, order.getIdOrder())).build();
-    }
-
-    @GET
-    @Path("process-saved-order/{companyname}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response processSavedOrder(@QueryParam("id") long idOrder,
-                                      @QueryParam("docNum") Integer docNum,
-                                      @PathParam("companyname") String companyname) {
-        return Response.ok(orderAPPFacade.updateStatusOrderSaves(idOrder, "F", docNum, companyname, false)).build();
     }
 
     private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode) {
