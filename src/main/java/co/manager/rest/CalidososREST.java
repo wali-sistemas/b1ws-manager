@@ -43,6 +43,8 @@ public class CalidososREST {
     @EJB
     private RedimePuntosSAPFacade redimePuntosSAPFacade;
     @EJB
+    private RedimeHistorialPuntosSAPFacade redimeHistorialPuntosSAPFacade;
+    @EJB
     private IncomingPaymentEJB incomingPaymentEJB;
 
     @GET
@@ -448,6 +450,47 @@ public class CalidososREST {
             }
             CONSOLE.log(Level.INFO, "Redención de puntos exitoso");
             return Response.ok(new ResponseDTO(0, "Redención de puntos exitoso.")).build();
+        } else {
+            CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
+            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+        }
+    }
+
+    @POST
+    @Path("add-point/redeem-caps")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response redeemPointsCaps(@HeaderParam("X-Company-Name") String companyName,
+                                     @HeaderParam("X-Warehouse-Code") String warehouseCode,
+                                     @HeaderParam("X-Pruebas") boolean pruebas,
+                                     @HeaderParam("X-TOKEN") String token,
+                                     PointHistoryCalidosoDTO dto) {
+        if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
+            if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Documento] es obligatorio para redimir tapas");
+                return Response.ok(new ResponseDTO(-2, "Campo [Documento] es obligatorio para redimir tapas.")).build();
+            } else if (dto.getPoint() <= 0) {
+                CONSOLE.log(Level.WARNING, "Campo [Puntos] es obligatorio para redimir tapas");
+                return Response.ok(new ResponseDTO(-2, "Campo [Puntos] es obligatorio para redimir tapas.")).build();
+            } else if (dto.getTransferDate() == null || dto.getTransferDate().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Fecha de Canje] es obligatorio para redimir tapas");
+                return Response.ok(new ResponseDTO(-2, "Campo [Fecha de Canje] es obligatorio para redimir tapas.")).build();
+            }
+
+            String cardName = businessPartnerSAPFacade.getCustomerName(dto.getCardCode(), companyName, pruebas);
+            if (cardName.isEmpty()) {
+                return Response.ok(new ResponseDTO(-3, "Lo sentimos, el cliente " + dto.getCardCode() + " no existe en el programa de fidelización.")).build();
+            }
+
+            try {
+                redimeHistorialPuntosSAPFacade.addRedeemHistoryPoints(dto, companyName, pruebas);
+                CONSOLE.log(Level.INFO, "Redencion de tapas realizada con exito");
+                return Response.ok(new ResponseDTO(0, "Redención de tapas realizada con éxito.")).build();
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error redimiendo los tapas en puntos en " + companyName, e);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error redimiendo los tapas en el")).build();
+            }
         } else {
             CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();

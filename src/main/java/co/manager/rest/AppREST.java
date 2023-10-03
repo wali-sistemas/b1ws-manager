@@ -828,7 +828,7 @@ public class AppREST {
         order.setShipToCode(dto.getShipToCode());
         order.setPayToCode(dto.getPayToCode());
         order.setDiscountPercent(dto.getDiscountPercent().doubleValue());
-        order.setLineNum(dto.getAssignedShipToCode());
+        order.setLineNum(dto.getShipToCode());
         try {
             orderAPPFacade.create(order, dto.getCompanyName(), false);
         } catch (Exception ex) {
