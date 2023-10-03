@@ -10,6 +10,7 @@ public class PointHistoryCalidosoDTO {
     private String docType;
     private String docDate;
     private Integer point;
+    private String transferDate;
 
     public PointHistoryCalidosoDTO() {
     }
@@ -71,15 +72,24 @@ public class PointHistoryCalidosoDTO {
         this.point = point;
     }
 
+    public String getTransferDate() {
+        return transferDate;
+    }
+
+    public void setTransferDate(String transferDate) {
+        this.transferDate = transferDate;
+    }
+
     @Override
     public String toString() {
-        return "PointCalidosoDTO{" +
+        return "PointHistoryCalidosoDTO{" +
                 "cardCode='" + cardCode + '\'' +
                 ", concept='" + concept + '\'' +
                 ", docNum=" + docNum +
                 ", docType='" + docType + '\'' +
                 ", docDate='" + docDate + '\'' +
                 ", point=" + point +
+                ", transferDate='" + transferDate + '\'' +
                 '}';
     }
 }
