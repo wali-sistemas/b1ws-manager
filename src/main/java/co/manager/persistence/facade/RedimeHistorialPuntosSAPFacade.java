@@ -41,8 +41,9 @@ public class RedimeHistorialPuntosSAPFacade {
         sb.append(new SimpleDateFormat("yyyy-MM-dd").format(dto.getDocDate()));
         sb.append("',");
         sb.append(dto.getPoint());
-        sb.append(",null,null");
-        sb.append(");");
+        sb.append(",null,null,'");
+        sb.append(new SimpleDateFormat("yyyy-MM-dd").format(dto.getTransferDate()));
+        sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (NoResultException ex) {
