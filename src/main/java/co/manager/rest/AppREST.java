@@ -487,7 +487,7 @@ public class AppREST {
                     dto.setCompanyName((String) obj[11]);
                     dto.setDiscountPercent((BigDecimal) obj[12]);
                     dto.setDocTotal((BigDecimal) obj[13]);
-                    dto.setAssignedShipToCode((String) obj[14]);
+                    dto.setLineNum((String) obj[14]);
                     //Detalle de orden guardada
                     DetailSalesOrderSaveDTO dto2 = new DetailSalesOrderSaveDTO();
                     dto2.setItemCode((String) obj[17]);
@@ -828,7 +828,7 @@ public class AppREST {
         order.setShipToCode(dto.getShipToCode());
         order.setPayToCode(dto.getPayToCode());
         order.setDiscountPercent(dto.getDiscountPercent().doubleValue());
-        order.setLineNum(dto.getShipToCode());
+        order.setLineNum(dto.getLineNum());
         try {
             orderAPPFacade.create(order, dto.getCompanyName(), false);
         } catch (Exception ex) {

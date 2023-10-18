@@ -39,8 +39,8 @@ public class SalesOrderSaveDTO implements Serializable {
     private BigDecimal discountPercent;
     @JsonProperty("docTotal")
     private BigDecimal docTotal;
-    @JsonProperty("assignedShipToCode")
-    private String assignedShipToCode;
+    @JsonProperty("lineNum")
+    private String lineNum;
     @JsonProperty("detailSalesOrderSave")
     private List<DetailSalesOrderSaveDTO> detailSalesOrderSave;
 
@@ -151,12 +151,12 @@ public class SalesOrderSaveDTO implements Serializable {
         this.docTotal = docTotal;
     }
 
-    public String getAssignedShipToCode() {
-        return assignedShipToCode;
+    public String getLineNum() {
+        return lineNum;
     }
 
-    public void setAssignedShipToCode(String assignedShipToCode) {
-        this.assignedShipToCode = assignedShipToCode;
+    public void setLineNum(String lineNum) {
+        this.lineNum = lineNum;
     }
 
     public List<DetailSalesOrderSaveDTO> getDetailSalesOrderSave() {
@@ -183,7 +183,7 @@ public class SalesOrderSaveDTO implements Serializable {
                 ", slpCode='" + slpCode + '\'' +
                 ", discountPercent=" + discountPercent +
                 ", docTotal=" + docTotal +
-                ", assignedShipToCode='" + assignedShipToCode + '\'' +
+                ", lineNum='" + lineNum + '\'' +
                 ", detailSalesOrderSave=" + detailSalesOrderSave +
                 '}';
     }

@@ -82,8 +82,9 @@ public class CalidososREST {
     public Response ListProducts(@QueryParam("companyname") String companyName,
                                  @HeaderParam("X-TOKEN") String token) {
         CONSOLE.log(Level.INFO, "Iniciando servicio de listar productos a redimir en el programa de fidelizacion");
+        companyName = companyName == null ? "IGB" : companyName;
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
-            List<Object[]> objects = redimeProductoSAPFacade.listActiveProducts(companyName == null ? "IGB" : companyName, false);
+            List<Object[]> objects = redimeProductoSAPFacade.listActiveProducts(companyName, false);
 
             List<ProductCalidosoDTO> products = new ArrayList<>();
             for (Object[] obj : objects) {
@@ -475,11 +476,21 @@ public class CalidososREST {
             } else if (dto.getTransferDate() == null || dto.getTransferDate().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Fecha de Canje] es obligatorio para redimir tapas");
                 return Response.ok(new ResponseDTO(-2, "Campo [Fecha de Canje] es obligatorio para redimir tapas.")).build();
+            } else if (dto.getConcept() == null || dto.getConcept().isEmpty()) {
+                CONSOLE.log(Level.WARNING, "Campo [Concepto] es obligatorio para redimir tapas");
+                return Response.ok(new ResponseDTO(-2, "Campo [Concepto] es obligatorio para redimir tapas.")).build();
             }
 
-            String cardName = businessPartnerSAPFacade.getCustomerName(dto.getCardCode(), companyName, pruebas);
-            if (cardName.isEmpty()) {
-                return Response.ok(new ResponseDTO(-3, "Lo sentimos, el cliente " + dto.getCardCode() + " no existe en el programa de fidelización.")).build();
+            String cardName;
+            if (dto.getConcept().equals("DISTRIBUIDOR")) {
+                cardName = businessPartnerSAPFacade.getCustomerName(dto.getCardCode(), companyName, pruebas);
+                if (cardName.isEmpty()) {
+                    return Response.ok(new ResponseDTO(-3, "Lo sentimos, el distribuidor " + dto.getCardCode() + " no existe en el programa de fidelización.")).build();
+                }
+            } else {
+                if (!vendedorMostradorSAPFacade.validateVendMostrador(dto.getCardCode(), companyName, pruebas)) {
+                    return Response.ok(new ResponseDTO(-3, "Lo sentimos, el vendedor de mostrador " + dto.getCardCode() + " no existe en el programa de fidelización.")).build();
+                }
             }
 
             try {
