@@ -457,14 +457,13 @@ public class CalidososREST {
     }
 
     @POST
-    @Path("add-point/redeem-caps")
+    @Path("add-point/redeem-caps/{X-TOKEN}")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response redeemPointsCaps(@HeaderParam("X-Company-Name") String companyName,
-                                     @HeaderParam("X-Warehouse-Code") String warehouseCode,
                                      @HeaderParam("X-Pruebas") boolean pruebas,
-                                     @HeaderParam("X-TOKEN") String token,
+                                     @PathParam("X-TOKEN") String token,
                                      PointHistoryCalidosoDTO dto) {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
