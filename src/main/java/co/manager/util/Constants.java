@@ -13,6 +13,7 @@ public class Constants {
     public static final String EMAIL_TEMPLATES = "mail.templates";
     public static final String DATABASE_TYPE_WALI = "WMS";
     public static final String DATABASE_TYPE_HANA = "HANA";
+    public static final String DATABASE_TYPE_NOVAWEB = "NOVAWEB";
     public static final String URL_SHARED = "url.shared";
     public static final String URL_SHARED_HTTPS_IGB = "url.shared.https.igb";
     public static final String URL_SHARED_HTTPS_MTZ = "url.shared.https.mtz";

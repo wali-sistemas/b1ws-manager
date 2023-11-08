@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class EmployeeFacade {
     private static final Logger CONSOLE = Logger.getLogger(EmployeeFacade.class.getSimpleName());
     private static final String DB_TYPE_WALI = Constants.DATABASE_TYPE_WALI;
+    private static final String DB_TYPE_NOVAWEB = Constants.DATABASE_TYPE_NOVAWEB;
 
     @EJB
     private PersistenceConf persistenceConf;
@@ -116,6 +117,29 @@ public class EmployeeFacade {
             }
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar los datos del empleado " + entity.getCardCode(), e);
+        }
+        return false;
+    }
+
+    public boolean validateEmployeeExistence(String empId, String birthdate, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select count(cast(cod_emp as varchar(12)))as nro ");
+        sb.append("from rhh_emplea ");
+        sb.append("where cod_emp='");
+        sb.append(empId);
+        sb.append("' and cast(fec_nac as date)='");
+        sb.append(birthdate);
+        sb.append("'");
+        try {
+            int result = (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB).createNativeQuery(sb.toString()).getSingleResult();
+            if (result > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando la existencia del empleado [" + empId + "]", e);
         }
         return false;
     }
