@@ -1141,7 +1141,10 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio.")).build();
         }
 
-        dto.setLicTradNum(dto.getCardCode().replace("C", ""));
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
 

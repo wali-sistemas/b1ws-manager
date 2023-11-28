@@ -73,7 +73,9 @@ public class BusinessPartnerEJB {
                 businessPartner.setProperties13(dto.getAcceptHabeasData());
                 businessPartner.setGroupCode(100l);
                 businessPartner.setPhone1(dto.getPhone());
+                businessPartner.setPhone2(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
+                businessPartner.setSalesPersonCode("22");
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
@@ -90,8 +92,8 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setuTrasp("03");
-                businessPartner.setDebitorAccount("11100520");
-
+                businessPartner.setDebitorAccount("13050505");
+                businessPartner.setBilltoDefault("DIR WEB");
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     businessPartner.setUfeccrea(date2);
@@ -104,6 +106,7 @@ public class BusinessPartnerEJB {
                     address.setAddressName("DIR WEB");
                     address.setStreet(dto.getAddress().toUpperCase());
                     address.setCity(citySAPFacade.getNameMunicipio(dto.getCodMunicipio(), dto.getCompanyName(), false));
+                    address.setBlock(dto.getCodMunicipio());
                     address.setState(dto.getCodDepartamento());
                     address.setCountry("CO");
 
@@ -111,7 +114,8 @@ public class BusinessPartnerEJB {
                         address.setAddressType("bo_BillTo");
                     } else {
                         address.setAddressType("bo_ShipTo");
-                        address.setTaxCode(taxCodeMotorepuesto);
+                        //address.setTaxCode(taxCodeMotorepuesto);
+                        address.setTaxCode("IVAG19");
                     }
 
                     address.setBpCode(dto.getCardCode());

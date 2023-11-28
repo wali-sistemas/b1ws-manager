@@ -115,6 +115,8 @@ public class ItemSAPFacade {
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','05','26','32'");
+        } else if (companyName.contains("REDPLAS")) {
+            sb.append("01");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26','32'");
@@ -127,6 +129,8 @@ public class ItemSAPFacade {
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','05','26','32'");
+        } else if (companyName.contains("REDPLAS")) {
+            sb.append("01");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26','32'");
@@ -154,6 +158,8 @@ public class ItemSAPFacade {
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
             sb.append("'01','05','26','32'");
+        } else if (companyName.contains("REDPLAS")) {
+            sb.append("01");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26','32'");

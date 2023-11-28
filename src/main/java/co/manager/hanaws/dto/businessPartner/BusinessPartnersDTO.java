@@ -25,6 +25,8 @@ public class BusinessPartnersDTO implements Serializable {
     protected Long groupCode;
     @JsonProperty("Phone1")
     protected String phone1;
+    @JsonProperty("Phone2")
+    protected String phone2;
     @JsonProperty("Cellular")
     protected String cellular;
     @JsonProperty("EmailAddress")
@@ -63,6 +65,12 @@ public class BusinessPartnersDTO implements Serializable {
     protected String uTrasp;
     @JsonProperty("DebitorAccount")
     protected String debitorAccount;
+    @JsonProperty("SalesPersonCode")
+    protected String salesPersonCode;
+    @JsonProperty("Block")
+    protected String block;
+    @JsonProperty("BilltoDefault")
+    protected String billtoDefault;
     @JsonProperty("BPAddresses")
     protected List<BusinessPartnersDTO.BPAddresses.BPAddress> bpAddresses;
 
@@ -120,6 +128,14 @@ public class BusinessPartnersDTO implements Serializable {
 
     public void setPhone1(String phone1) {
         this.phone1 = phone1;
+    }
+
+    public String getPhone2() {
+        return phone2;
+    }
+
+    public void setPhone2(String phone2) {
+        this.phone2 = phone2;
     }
 
     public String getCellular() {
@@ -274,6 +290,30 @@ public class BusinessPartnersDTO implements Serializable {
         this.debitorAccount = debitorAccount;
     }
 
+    public String getSalesPersonCode() {
+        return salesPersonCode;
+    }
+
+    public void setSalesPersonCode(String salesPersonCode) {
+        this.salesPersonCode = salesPersonCode;
+    }
+
+    public String getBilltoDefault() {
+        return billtoDefault;
+    }
+
+    public void setBilltoDefault(String billtoDefault) {
+        this.billtoDefault = billtoDefault;
+    }
+
+    public String getBlock() {
+        return block;
+    }
+
+    public void setBlock(String block) {
+        this.block = block;
+    }
+
     public List<BusinessPartnersDTO.BPAddresses.BPAddress> getBpAddresses() {
         return bpAddresses;
     }
@@ -424,6 +464,7 @@ public class BusinessPartnersDTO implements Serializable {
                 ", properties13='" + properties13 + '\'' +
                 ", groupCode=" + groupCode +
                 ", phone1='" + phone1 + '\'' +
+                ", phone2='" + phone2 + '\'' +
                 ", cellular='" + cellular + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", uManejo='" + uManejo + '\'' +
@@ -443,6 +484,9 @@ public class BusinessPartnersDTO implements Serializable {
                 ", ubpvtper='" + ubpvtper + '\'' +
                 ", uTrasp='" + uTrasp + '\'' +
                 ", debitorAccount='" + debitorAccount + '\'' +
+                ", salesPersonCode='" + salesPersonCode + '\'' +
+                ", block='" + block + '\'' +
+                ", billtoDefault='" + billtoDefault + '\'' +
                 ", bpAddresses=" + bpAddresses +
                 '}';
     }
