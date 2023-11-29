@@ -161,7 +161,7 @@ public class MotorepuestoREST {
         dto.setLicTradNum(dto.getDocument() + "-" + digito);
         dto.setCardCode("C" + dto.getDocument());
         dto.setCardName(dto.getLastname1().toUpperCase() + " " + dto.getLastname2().toUpperCase() + " " + dto.getFirstname().toUpperCase());
-        dto.setLicTradNum(dto.getCardCode().replace("C", ""));
+        //dto.setLicTradNum(dto.getCardCode().replace("C", ""));
 
         Gson gson = new Gson();
         String json = gson.toJson(dto);

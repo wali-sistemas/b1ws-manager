@@ -115,7 +115,11 @@ public class BusinessPartnerEJB {
                     } else {
                         address.setAddressType("bo_ShipTo");
                         //address.setTaxCode(taxCodeMotorepuesto);
-                        address.setTaxCode("IVAG19");
+                        if (dto.getCompanyName().contains("VELEZ")) {
+                            address.setTaxCode("IVAV01");
+                        } else {
+                            address.setTaxCode("IVAG19");
+                        }
                     }
 
                     address.setBpCode(dto.getCardCode());
