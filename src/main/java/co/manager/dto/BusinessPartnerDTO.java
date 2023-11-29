@@ -2,38 +2,152 @@ package co.manager.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Date;
+
 /**
  * @author jguisao
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BusinessPartnerDTO {
-    private String typeDoc;
+    private static String transp = "3";
+    private static Date createDate;
+    private static String documentRut = "Y";
+    private static String fidelity = "Y";
+    private static String aut3 = "Y";
+    private static String aut4 = "Y";
+    private static String subject = "Y";
+    private static String distributo = "Y";
+    private static String priceList = "03";
+    private static Character cardType = 'C';
     private String document;
+    private String cardCode;
+    private String cardName;
+    private String licTradNum;
+    private String cellular;
+    private String phone;
+    private String mail;
+    private String slpCode;
+    private String zona;
+    private String comment;
+    private String grupo;
+    private String acceptHabeasData;
+    private String companyName;
+    //contacto
+    private String contactPerson;
+    private String nameContactPerson;
+    private String secondNamecontactPerson;
+    private String lastNameContactPerson;
+    private String occupationContactPerson;
+    private String phoneContactPerson;
+    private Date DateContactPerson;
+    //Ubicación
+    private String idAddress;
+    private String address;
+    private String codDepartamento;
+    private String codMunicipio;
+    private String taxAddress;
+    private String lengthMap;
+    private String latitudeMap;
+    //Medios Mag
     private String firstname;
     private String lastname1;
     private String lastname2;
-    private String phone;
-    private String cellular;
-    private String mail;
-    private String codDepartamento;
-    private String codMunicipio;
-    private String address;
-    private String acceptHabeasData;
-    private String cardCode;
-    private String cardName;
-    private Character cardType;
-    private String licTradNum;
-    private String companyName;
+    private String typeDoc;
+    private String typePerson;
+    private String taxRegimen;
+    private String codeCity;
+    private String addressMM;
+    private String regional;
+    private String mailFE;
+    //Impustos & finanzas
+    private String paymentCondition;
+    private String discount;
+    private String taxType;
+    private String creditLimit;
+    private String comiteLimit;
+    //responsabilidad fiscal
 
     public BusinessPartnerDTO() {
     }
 
-    public String getTypeDoc() {
-        return typeDoc;
+    public static String getTransp() {
+        return transp;
     }
 
-    public void setTypeDoc(String typeDoc) {
-        this.typeDoc = typeDoc;
+    public static void setTransp(String transp) {
+        BusinessPartnerDTO.transp = transp;
+    }
+
+    public static Date getCreateDate() {
+        return createDate;
+    }
+
+    public static void setCreateDate(Date createDate) {
+        BusinessPartnerDTO.createDate = createDate;
+    }
+
+    public static String getDocumentRut() {
+        return documentRut;
+    }
+
+    public static void setDocumentRut(String documentRut) {
+        BusinessPartnerDTO.documentRut = documentRut;
+    }
+
+    public static String getFidelity() {
+        return fidelity;
+    }
+
+    public static void setFidelity(String fidelity) {
+        BusinessPartnerDTO.fidelity = fidelity;
+    }
+
+    public static String getAut3() {
+        return aut3;
+    }
+
+    public static void setAut3(String aut3) {
+        BusinessPartnerDTO.aut3 = aut3;
+    }
+
+    public static String getAut4() {
+        return aut4;
+    }
+
+    public static void setAut4(String aut4) {
+        BusinessPartnerDTO.aut4 = aut4;
+    }
+
+    public static String getSubject() {
+        return subject;
+    }
+
+    public static void setSubject(String subject) {
+        BusinessPartnerDTO.subject = subject;
+    }
+
+    public static String getDistributo() {
+        return distributo;
+    }
+
+    public static void setDistributo(String distributo) {
+        BusinessPartnerDTO.distributo = distributo;
+    }
+
+    public static String getPriceList() {
+        return priceList;
+    }
+
+    public static void setPriceList(String priceList) {
+        BusinessPartnerDTO.priceList = priceList;
+    }
+
+    public static Character getCardType() {
+        return cardType;
+    }
+
+    public static void setCardType(Character cardType) {
+        BusinessPartnerDTO.cardType = cardType;
     }
 
     public String getDocument() {
@@ -42,6 +156,214 @@ public class BusinessPartnerDTO {
 
     public void setDocument(String document) {
         this.document = document;
+    }
+
+    public String getCardCode() {
+        return cardCode;
+    }
+
+    public void setCardCode(String cardCode) {
+        this.cardCode = cardCode;
+    }
+
+    public String getCardName() {
+        return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        this.cardName = cardName;
+    }
+
+    public String getLicTradNum() {
+        return licTradNum;
+    }
+
+    public void setLicTradNum(String licTradNum) {
+        this.licTradNum = licTradNum;
+    }
+
+    public String getCellular() {
+        return cellular;
+    }
+
+    public void setCellular(String cellular) {
+        this.cellular = cellular;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public String getSlpCode() {
+        return slpCode;
+    }
+
+    public void setSlpCode(String slpCode) {
+        this.slpCode = slpCode;
+    }
+
+    public String getZona() {
+        return zona;
+    }
+
+    public void setZona(String zona) {
+        this.zona = zona;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(String grupo) {
+        this.grupo = grupo;
+    }
+
+    public String getAcceptHabeasData() {
+        return acceptHabeasData;
+    }
+
+    public void setAcceptHabeasData(String acceptHabeasData) {
+        this.acceptHabeasData = acceptHabeasData;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public String getNameContactPerson() {
+        return nameContactPerson;
+    }
+
+    public void setNameContactPerson(String nameContactPerson) {
+        this.nameContactPerson = nameContactPerson;
+    }
+
+    public String getSecondNamecontactPerson() {
+        return secondNamecontactPerson;
+    }
+
+    public void setSecondNamecontactPerson(String secondNamecontactPerson) {
+        this.secondNamecontactPerson = secondNamecontactPerson;
+    }
+
+    public String getLastNameContactPerson() {
+        return lastNameContactPerson;
+    }
+
+    public void setLastNameContactPerson(String lastNameContactPerson) {
+        this.lastNameContactPerson = lastNameContactPerson;
+    }
+
+    public String getOccupationContactPerson() {
+        return occupationContactPerson;
+    }
+
+    public void setOccupationContactPerson(String occupationContactPerson) {
+        this.occupationContactPerson = occupationContactPerson;
+    }
+
+    public String getPhoneContactPerson() {
+        return phoneContactPerson;
+    }
+
+    public void setPhoneContactPerson(String phoneContactPerson) {
+        this.phoneContactPerson = phoneContactPerson;
+    }
+
+    public Date getDateContactPerson() {
+        return DateContactPerson;
+    }
+
+    public void setDateContactPerson(Date dateContactPerson) {
+        DateContactPerson = dateContactPerson;
+    }
+
+    public String getIdAddress() {
+        return idAddress;
+    }
+
+    public void setIdAddress(String idAddress) {
+        this.idAddress = idAddress;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCodDepartamento() {
+        return codDepartamento;
+    }
+
+    public void setCodDepartamento(String codDepartamento) {
+        this.codDepartamento = codDepartamento;
+    }
+
+    public String getCodMunicipio() {
+        return codMunicipio;
+    }
+
+    public void setCodMunicipio(String codMunicipio) {
+        this.codMunicipio = codMunicipio;
+    }
+
+    public String getTaxAddress() {
+        return taxAddress;
+    }
+
+    public void setTaxAddress(String taxAddress) {
+        this.taxAddress = taxAddress;
+    }
+
+    public String getLengthMap() {
+        return lengthMap;
+    }
+
+    public void setLengthMap(String lengthMap) {
+        this.lengthMap = lengthMap;
+    }
+
+    public String getLatitudeMap() {
+        return latitudeMap;
+    }
+
+    public void setLatitudeMap(String latitudeMap) {
+        this.latitudeMap = latitudeMap;
     }
 
     public String getFirstname() {
@@ -68,122 +390,147 @@ public class BusinessPartnerDTO {
         this.lastname2 = lastname2;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getTypeDoc() {
+        return typeDoc;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setTypeDoc(String typeDoc) {
+        this.typeDoc = typeDoc;
     }
 
-    public String getCellular() {
-        return cellular;
+    public String getTypePerson() {
+        return typePerson;
     }
 
-    public void setCellular(String cellular) {
-        this.cellular = cellular;
+    public void setTypePerson(String typePerson) {
+        this.typePerson = typePerson;
     }
 
-    public String getMail() {
-        return mail;
+    public String getTaxRegimen() {
+        return taxRegimen;
     }
 
-    public void setMail(String mail) {
-        this.mail = mail;
+    public void setTaxRegimen(String taxRegimen) {
+        this.taxRegimen = taxRegimen;
     }
 
-    public String getCodDepartamento() {
-        return codDepartamento;
+    public String getCodeCity() {
+        return codeCity;
     }
 
-    public void setCodDepartamento(String codDepartamento) {
-        this.codDepartamento = codDepartamento;
+    public void setCodeCity(String codeCity) {
+        this.codeCity = codeCity;
     }
 
-    public String getCodMunicipio() {
-        return codMunicipio;
+    public String getAddressMM() {
+        return addressMM;
     }
 
-    public void setCodMunicipio(String codMunicipio) {
-        this.codMunicipio = codMunicipio;
+    public void setAddressMM(String addressMM) {
+        this.addressMM = addressMM;
     }
 
-    public String getAddress() {
-        return address;
+    public String getRegional() {
+        return regional;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setRegional(String regional) {
+        this.regional = regional;
     }
 
-    public String getAcceptHabeasData() {
-        return acceptHabeasData;
+    public String getMailFE() {
+        return mailFE;
     }
 
-    public void setAcceptHabeasData(String acceptHabeasData) {
-        this.acceptHabeasData = acceptHabeasData;
+    public void setMailFE(String mailFE) {
+        this.mailFE = mailFE;
     }
 
-    public String getCardCode() {
-        return cardCode;
+    public String getPaymentCondition() {
+        return paymentCondition;
     }
 
-    public void setCardCode(String cardCode) {
-        this.cardCode = cardCode;
+    public void setPaymentCondition(String paymentCondition) {
+        this.paymentCondition = paymentCondition;
     }
 
-    public String getCardName() {
-        return cardName;
+    public String getDiscount() {
+        return discount;
     }
 
-    public void setCardName(String cardName) {
-        this.cardName = cardName;
+    public void setDiscount(String discount) {
+        this.discount = discount;
     }
 
-    public Character getCardType() {
-        return cardType;
+    public String getTaxType() {
+        return taxType;
     }
 
-    public void setCardType(Character cardType) {
-        this.cardType = cardType;
+    public void setTaxType(String taxType) {
+        this.taxType = taxType;
     }
 
-    public String getLicTradNum() {
-        return licTradNum;
+    public String getCreditLimit() {
+        return creditLimit;
     }
 
-    public void setLicTradNum(String licTradNum) {
-        this.licTradNum = licTradNum;
+    public void setCreditLimit(String creditLimit) {
+        this.creditLimit = creditLimit;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getComiteLimit() {
+        return comiteLimit;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setComiteLimit(String comiteLimit) {
+        this.comiteLimit = comiteLimit;
     }
 
     @Override
     public String toString() {
         return "BusinessPartnerDTO{" +
-                "typeDoc='" + typeDoc + '\'' +
-                ", document='" + document + '\'' +
+                "document='" + document + '\'' +
+                ", cardCode='" + cardCode + '\'' +
+                ", cardName='" + cardName + '\'' +
+                ", licTradNum='" + licTradNum + '\'' +
+                ", cellular='" + cellular + '\'' +
+                ", phone='" + phone + '\'' +
+                ", mail='" + mail + '\'' +
+                ", slpCode='" + slpCode + '\'' +
+                ", zona='" + zona + '\'' +
+                ", comment='" + comment + '\'' +
+                ", grupo='" + grupo + '\'' +
+                ", acceptHabeasData='" + acceptHabeasData + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", contactPerson='" + contactPerson + '\'' +
+                ", nameContactPerson='" + nameContactPerson + '\'' +
+                ", secondNamecontactPerson='" + secondNamecontactPerson + '\'' +
+                ", lastNameContactPerson='" + lastNameContactPerson + '\'' +
+                ", occupationContactPerson='" + occupationContactPerson + '\'' +
+                ", phoneContactPerson='" + phoneContactPerson + '\'' +
+                ", DateContactPerson=" + DateContactPerson +
+                ", idAddress='" + idAddress + '\'' +
+                ", address='" + address + '\'' +
+                ", codDepartamento='" + codDepartamento + '\'' +
+                ", codMunicipio='" + codMunicipio + '\'' +
+                ", taxAddress='" + taxAddress + '\'' +
+                ", lengthMap='" + lengthMap + '\'' +
+                ", latitudeMap='" + latitudeMap + '\'' +
                 ", firstname='" + firstname + '\'' +
                 ", lastname1='" + lastname1 + '\'' +
                 ", lastname2='" + lastname2 + '\'' +
-                ", phone='" + phone + '\'' +
-                ", cellular='" + cellular + '\'' +
-                ", mail='" + mail + '\'' +
-                ", codDepartamento='" + codDepartamento + '\'' +
-                ", codMunicipio='" + codMunicipio + '\'' +
-                ", address='" + address + '\'' +
-                ", acceptHabeasData='" + acceptHabeasData + '\'' +
-                ", cardCode='" + cardCode + '\'' +
-                ", cardName='" + cardName + '\'' +
-                ", cardType=" + cardType +
-                ", licTradNum='" + licTradNum + '\'' +
-                ", companyName='" + companyName + '\'' +
+                ", typeDoc='" + typeDoc + '\'' +
+                ", typePerson='" + typePerson + '\'' +
+                ", taxRegimen='" + taxRegimen + '\'' +
+                ", codeCity='" + codeCity + '\'' +
+                ", addressMM='" + addressMM + '\'' +
+                ", regional='" + regional + '\'' +
+                ", mailFE='" + mailFE + '\'' +
+                ", paymentCondition='" + paymentCondition + '\'' +
+                ", discount='" + discount + '\'' +
+                ", taxType='" + taxType + '\'' +
+                ", creditLimit='" + creditLimit + '\'' +
+                ", comiteLimit='" + comiteLimit + '\'' +
                 '}';
     }
 }

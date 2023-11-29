@@ -11,6 +11,7 @@ import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.InvoiceSAPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
 import co.manager.util.Constants;
+import com.google.gson.Gson;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -161,6 +162,11 @@ public class MotorepuestoREST {
         dto.setCardCode("C" + dto.getDocument());
         dto.setCardName(dto.getLastname1().toUpperCase() + " " + dto.getLastname2().toUpperCase() + " " + dto.getFirstname().toUpperCase());
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
+
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
         return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
     }
 
