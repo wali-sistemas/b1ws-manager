@@ -75,7 +75,11 @@ public class BusinessPartnerEJB {
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setPhone2(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
-                businessPartner.setSalesPersonCode("22");
+                if (dto.getCompanyName().contains("VELEZ")) {
+                    businessPartner.setSalesPersonCode("05");
+                } else {
+                    businessPartner.setSalesPersonCode("22");
+                }
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
