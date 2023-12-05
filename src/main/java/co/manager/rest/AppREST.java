@@ -199,6 +199,8 @@ public class AppREST {
             objects = itemSAPFacade.getListItemsExtranet(companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
             objects = itemSAPFacade.getListItemsExtranet(companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+        } else if (companyname.equals("REDPLAS")) {
+            objects = itemSAPFacade.getListItemsBySellerRedPlas(slpCode, companyname, false);
         } else {
             objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
         }
@@ -404,24 +406,21 @@ public class AppREST {
                               @QueryParam("day") long day) {
         CONSOLE.log(Level.INFO, "Listando pedidos para la empresa {0}. ano[{1}]-mes[{2}]-dia[{3}]-asesor[{4}]", new Object[]{companyname, year, month, day, slpCode});
 
-        List<Object[]> objsSAP = salesOrderSAPFacade.listOrdersByDateAndSale(slpCode, year, month, day, companyname, false);
-        if (objsSAP.isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "No se encontraron ordenes en SAP para mostrar");
-            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes para mostrar.")).build();
-        }
-
         List<OrdersAppDTO> ordersAppDTO = new ArrayList<>();
-        for (Object[] obj : objsSAP) {
-            OrdersAppDTO dto = new OrdersAppDTO();
-            dto.setCardCode((String) obj[0]);
-            dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[1]));
-            dto.setDocTotal((BigDecimal) obj[2]);
-            dto.setComments((String) obj[3]);
-            dto.setDocEntry((Integer) obj[4]);
-            dto.setDocNum((Integer) obj[5]);
-            dto.setCardName((String) obj[6]);
+        List<Object[]> objsSAP = salesOrderSAPFacade.listOrdersByDateAndSale(slpCode, year, month, day, companyname, false);
+        if (!objsSAP.isEmpty()) {
+            for (Object[] obj : objsSAP) {
+                OrdersAppDTO dto = new OrdersAppDTO();
+                dto.setCardCode((String) obj[0]);
+                dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[1]));
+                dto.setDocTotal((BigDecimal) obj[2]);
+                dto.setComments((String) obj[3]);
+                dto.setDocEntry((Integer) obj[4]);
+                dto.setDocNum((Integer) obj[5]);
+                dto.setCardName((String) obj[6]);
 
-            ordersAppDTO.add(dto);
+                ordersAppDTO.add(dto);
+            }
         }
 
         List<Object[]> objsTEM = orderPedboxFacade.listOrderPendingBySales(slpCode, year, month, day, companyname, false);
