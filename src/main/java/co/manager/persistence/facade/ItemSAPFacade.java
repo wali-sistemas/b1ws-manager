@@ -272,6 +272,52 @@ public class ItemSAPFacade {
         return null;
     }
 
+    //TODO: solo aplica para REDPLAS
+    public List<Object[]> getListItemsBySellerRedPlas(String slpCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
+        sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("from ( ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
+        sb.append("  cast(it.\"InvntryUom\" as varchar(15))as Presentacion,cast(pre.\"Price\" as decimal(18,0))as Precio, ");
+        sb.append("  case when it.\"TaxCodeAR\" in ('IVAVEXE','IVAEXCLU') then 0 else 19 end as PorcentajeIva,cast(it.\"DfltWH\" as varchar(20))as Bodega, ");
+        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01') ");
+        sb.append("   and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01') ");
+        sb.append("   and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock,cast(it.\"PicturName\" as varchar)as PicturName, ");
+        sb.append("  cast(it.\"U_Aplicacion\" as varchar(100))as ModeloMoto,cast(tll.\"Name\" as varchar(20))as TipoLlanta, ");
+        sb.append("  cast(anc.\"Name\" as varchar(20))as AnchoLlanta, cast(pe.\"Name\" as varchar(20))as PerfilLlanta,cast(rin.\"Name\" as varchar(20))as RinLlanta, ");
+        sb.append("  cast(ta.\"Name\" as varchar(20))as Talla, cast(c.\"Name\" as varchar(100))as Categoria,cast(gru.\"Name\" as varchar(20))as Grupo, ");
+        sb.append("  cast(sub.\"Name\" as varchar(20))as Subgrupo,cast(mar.\"Name\" as varchar(20))as Marca,cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
+        sb.append(" from OITM it ");
+        sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=1 ");
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" ");
+        sb.append(" left join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
+        sb.append(" left join \"@GRUPOS\" gru on gru.\"Code\" = it.\"U_Grupo\" ");
+        sb.append(" left join \"@SUBGRUPOS\" sub on sub.\"Code\" = it.\"U_Subgrupo\" ");
+        sb.append(" left join \"@TIPO_LLANTA\" tll on tll.\"Code\" = it.\"U_TIPO_LLANTA\" ");
+        sb.append(" left join \"@ANCHO_LLANTA\" anc on anc.\"Code\" = it.\"U_ANCHO_LLANTA\" ");
+        sb.append(" left join \"@PERFIL_LLANTA\" pe on pe.\"Code\" = it.\"U_PERFIL_LLANTA\" ");
+        sb.append(" left join \"@RIN_LLANTA\" rin on rin.\"Code\" = it.\"U_RIN_LLANTA\" ");
+        sb.append(" left join \"@TALLA\" ta on ta.\"Code\" = it.\"U_TALLA\" ");
+        sb.append(" left join \"@CATEGORIA\" c on c.\"Code\" = it.\"U_CATEGORIA\" ");
+        sb.append(" left join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
+        sb.append(" left join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"SellItem\"='Y' and it.\"QryGroup10\"='Y'");
+        sb.append(" order by 1 ");
+        sb.append(")as t ");
+        sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto,t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
+        sb.append("order by Producto ASC ");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
+        }
+        return new ArrayList<>();
+    }
+
     //TODO: solo aplica para IGB
     public List<Object[]> getListItemsExtranetBySeller(String slpCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
