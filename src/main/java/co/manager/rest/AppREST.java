@@ -521,6 +521,38 @@ public class AppREST {
     }
 
     @GET
+    @Path("detail-age-customer-portfolio/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getDetailAgeCustomerPortfolio(@PathParam("companyname") String companyname,
+                                                  @QueryParam("slpcode") String slpCode) {
+        CONSOLE.log(Level.INFO, "Iniciando consulta de edad de cartera de clientes para el asesor {0} en la empresa {1}", new Object[]{slpCode, companyname});
+        List<Object[]> objects = businessPartnerSAPFacade.listDetailAgeCustomerPortfolioBySalesPerson(slpCode, companyname, false);
+        if (objects.isEmpty() || objects == null) {
+            CONSOLE.log(Level.SEVERE, "No se encontraron documentos para mostrar");
+            List<ResponseDTO> response = new ArrayList<>();
+            response.add(new ResponseDTO(-1, "No se encontraron documentos para mostrar."));
+            return Response.ok(response).build();
+        }
+
+        List<DetailAgeCustomerPortfolioDTO> details = new ArrayList<>();
+        for (Object[] obj : objects) {
+            DetailAgeCustomerPortfolioDTO dto = new DetailAgeCustomerPortfolioDTO();
+            dto.setSlpCode((String) obj[0]);
+            dto.setCardCode((String) obj[1]);
+            dto.setAgeSinVencer((BigDecimal) obj[2]);
+            dto.setAge0a30((BigDecimal) obj[3]);
+            dto.setAge30a60((BigDecimal) obj[4]);
+            dto.setAge61a90((BigDecimal) obj[5]);
+            dto.setAge91a120((BigDecimal) obj[6]);
+            dto.setAgeMas120((BigDecimal) obj[7]);
+
+            details.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, details)).build();
+    }
+
+    @GET
     @Path("customer-portfolio/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
