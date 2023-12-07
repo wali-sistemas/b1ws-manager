@@ -177,6 +177,48 @@ public class BusinessPartnerSAPFacade {
         return null;
     }
 
+    public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode, ");
+        sb.append(" cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\",cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"30 a 60\")as numeric(18,0))as \"30 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(\"+ 120\")as numeric(18,0))as \"+ 120\" ");
+        sb.append("from ( ");
+        sb.append(" select y.\"SlpCode\",y.\"CardCode\", ");
+        sb.append("  case when y.\"DiasAtraso\" < 0 then sum(y.\"Saldo\") else 0 end as \"Sin vencer\", ");
+        sb.append("  case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
+        sb.append("  case when (y.\"DiasAtraso\" >= 30 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
+        sb.append("  case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
+        sb.append("  case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
+        sb.append("  case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\" ");
+        sb.append(" from ( ");
+        sb.append("  select t.\"SlpCode\",t.\"CardCode\",cast(t.\"DiasAtraso\" as varchar(1000))as \"DiasAtraso\",sum(cast(t.\"Saldo\" as numeric(18,0)))as \"Saldo\" ");
+        sb.append("  from ( ");
+        sb.append("   select f.\"SlpCode\",f.\"CardCode\",cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as \"Saldo\",days_between(current_date,f.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
+        sb.append("   from OINV f ");
+        sb.append("   inner join OCRD s ON f.\"CardCode\"=s.\"CardCode\" ");
+        sb.append("   where (f.\"DocTotal\"-f.\"PaidToDate\")>1999 and f.\"DocStatus\"='O' ");
+        sb.append("  union all ");
+        sb.append("   select n.\"SlpCode\",n.\"CardCode\",cast((n.\"DocTotal\"-n.\"PaidToDate\")as numeric(18,0))*-1 as \"Saldo\",days_between(current_date,n.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
+        sb.append("   from ORIN n ");
+        sb.append("   inner join OCRD s ON n.\"CardCode\"=s.\"CardCode\" ");
+        sb.append("   where (n.\"DocTotal\"-n.\"PaidToDate\")>1999 and n.\"DocStatus\"='O' ");
+        sb.append("  )as t ");
+        sb.append("  group by t.\"DiasAtraso\",t.\"CardCode\",t.\"SlpCode\" ");
+        sb.append(" )as y ");
+        sb.append(" group by y.\"DiasAtraso\",y.\"CardCode\",y.\"SlpCode\" ");
+        sb.append(")as z ");
+        sb.append("where z.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(" group by z.\"CardCode\",z.\"SlpCode\" ");
+        sb.append("order by z.\"CardCode\" asc ");
+        try {
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando la edad de la cartera del asesor " + slpCode + " en " + companyName, e);
+        }
+        return null;
+    }
+
     public boolean updateGeolocation(GeolocationDTO dto, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(dto.getCompanyName(), pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
@@ -526,7 +568,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("'");
         try {
             return (BigDecimal) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex){
+        } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener el credito disponible para el cliente " + cardCode, e);
         }
