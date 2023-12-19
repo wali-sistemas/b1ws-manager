@@ -58,9 +58,10 @@ public class InvoiceSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(f.\"Comments\" as varchar(1000))as Comments,cast(d.\"ItemCode\" as varchar(20))as ItemCode, ");
         sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(d.\"Price\" as numeric(18,2))as Price,cast(d.\"LineNum\" as int)as lineNum, ");
-        sb.append(" cast(f.\"DiscPrcnt\" as numeric(18,2))as DiscPrcnt,cast(f.\"DocDueDate\" as date)as DocDueDate ");
+        sb.append(" cast(f.\"DiscPrcnt\" as numeric(18,2))as DiscPrcnt,cast(f.\"DocDueDate\" as date)as DocDueDate,cast(o.\"U_Grupo\" as varchar)as grupo ");
         sb.append("from OINV f ");
         sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
+        sb.append("inner join OITM o on o.\"ItemCode\"=d.\"ItemCode\"  ");
         sb.append("where f.\"DocNum\"=");
         sb.append(docNum);
         try {

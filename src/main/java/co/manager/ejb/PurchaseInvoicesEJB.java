@@ -90,7 +90,10 @@ public class PurchaseInvoicesEJB {
                     documentLine.setWarehouseCode("01");
                     documentLine.setPrice((BigDecimal) obj[3]);
 
+                    //TODO: validar que si el grupo es 09-LUBRICANTES debe ser IVADEXCL
                     if (companyName.contains("IGB")) {
+                        documentLine.setTaxCode("IVAD01");
+                    } else if (!obj[7].equals("9")) {
                         documentLine.setTaxCode("IVAD01");
                     } else {
                         documentLine.setTaxCode("IVADEXCL");
