@@ -75,15 +75,9 @@ public class BusinessPartnerEJB {
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setPhone2(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
-                if (dto.getCompanyName().contains("VELEZ")) {
-                    businessPartner.setSalesPersonCode("05");
-                } else {
-                    businessPartner.setSalesPersonCode("22");
-                }
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setuManejo("DIA");
                 businessPartner.setuDocFormEntFE(1l);
-                businessPartner.setuAddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
                 businessPartner.setuCelularFE(dto.getCellular());
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
@@ -96,7 +90,15 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setuTrasp("03");
-                businessPartner.setDebitorAccount("13050505");
+                if (dto.getCompanyName().contains("VELEZ")) {
+                    businessPartner.setSalesPersonCode("05");
+                    businessPartner.setuAddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
+                    businessPartner.setDebitorAccount("11100520");
+                } else {
+                    businessPartner.setSalesPersonCode("22");
+                    businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
+                    businessPartner.setDebitorAccount("13050505");
+                }
                 businessPartner.setBilltoDefault("DIR WEB");
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
