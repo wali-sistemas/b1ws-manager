@@ -66,7 +66,7 @@ public class TicketTIFacade {
         sb.append(" cast(t.asunt as varchar(100))as asunt,cast(t.status as varchar(15))as status,cast(t.type as varchar(20))as type,cast(t.date_end as varchar(10))as dateEnd ");
         sb.append("from  ticket_ti t ");
         sb.append("inner join ticket_ti_type p ON p.idticket_ti_type = t.idticket_ti_type ");
-        sb.append("where year(t.date) between year(getdate())/*-1*/ and year(getdate())+1 ");
+        sb.append("where year(t.date) between year(getdate()) and year(getdate())+1 ");
 
         if (!admUser) {
             sb.append("and t.emp_id_add = '");
