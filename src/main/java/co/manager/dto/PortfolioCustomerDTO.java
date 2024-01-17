@@ -19,12 +19,13 @@ public class PortfolioCustomerDTO {
     private BigDecimal cupo;
     private Integer payDayAvg;
     private Date lastSaleDay;
+    private Integer totalDoc;
     private List<DetailPortfolioCustomerDTO> detailPortfolio;
 
     public PortfolioCustomerDTO() {
     }
 
-    public PortfolioCustomerDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, List<DetailPortfolioCustomerDTO> detailPortfolio) {
+    public PortfolioCustomerDTO(String cardCode, String cardName, String licTradNum, String slpName, String payCondition, BigDecimal cupo, Integer payDayAvg, Date lastSaleDay, Integer totalDoc, List<DetailPortfolioCustomerDTO> detailPortfolio) {
         this.cardCode = cardCode;
         this.cardName = cardName;
         this.licTradNum = licTradNum;
@@ -33,6 +34,7 @@ public class PortfolioCustomerDTO {
         this.cupo = cupo;
         this.payDayAvg = payDayAvg;
         this.lastSaleDay = lastSaleDay;
+        this.totalDoc = totalDoc;
         this.detailPortfolio = detailPortfolio;
     }
 
@@ -108,6 +110,14 @@ public class PortfolioCustomerDTO {
         this.detailPortfolio = detailPortfolio;
     }
 
+    public Integer getTotalDoc() {
+        return totalDoc;
+    }
+
+    public void setTotalDoc(Integer totalDoc) {
+        this.totalDoc = totalDoc;
+    }
+
     @Override
     public String toString() {
         return "PortfolioCustomerDTO{" +
@@ -119,6 +129,7 @@ public class PortfolioCustomerDTO {
                 ", cupo=" + cupo +
                 ", payDayAvg=" + payDayAvg +
                 ", lastSaleDay=" + lastSaleDay +
+                ", totalDoc=" + totalDoc +
                 ", detailPortfolio=" + detailPortfolio +
                 '}';
     }

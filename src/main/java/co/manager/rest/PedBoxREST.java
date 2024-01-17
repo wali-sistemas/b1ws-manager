@@ -72,6 +72,8 @@ public class PedBoxREST {
     private OrderPedboxFacade orderPedboxFacade;
     @EJB
     private OrderDetailPedboxFacade orderDetailPedboxFacade;
+    @EJB
+    private BasicFunctions basicFunctions;
 
     @GET
     @Path("list-municipios/{companyname}")
@@ -847,6 +849,71 @@ public class PedBoxREST {
         return Response.ok(dto).build();
     }
 
+    @GET
+    @Path("customer-data/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getCustomerData(@PathParam("companyname") String companyName,
+                                    @QueryParam("cardcode") String cardCode) {
+        Object[] obj = businessPartnerSAPFacade.getCustomerData(cardCode, companyName, false);
+        if (obj == null) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos del cliente [{0}] en {1}", new Object[]{cardCode, companyName});
+            return Response.ok(new ResponseDTO(-2, "No se encontraron datos del cliente " + cardCode + " en " + companyName)).build();
+        }
+
+        CustomerDataDTO dto = new CustomerDataDTO();
+        dto.setCardCode((String) obj[0]);
+        dto.setCardType((String) obj[1]);
+        dto.setCardName((String) obj[2]);
+        dto.setLicTradNum((String) obj[3]);
+        dto.setGroupCode((Integer) obj[4]);
+        dto.setPhone1((String) obj[5]);
+        dto.setPhone2((String) obj[6]);
+        dto.setEmail((String) obj[7]);
+        dto.setUcodeResFis((String) obj[8]);
+        dto.setTerritory((Integer) obj[9]);
+        dto.setSlpCode((String) obj[10]);
+        dto.setFreeText((String) obj[11]);
+        dto.setIdContact((String) obj[12]);
+        dto.setFirstNameContact((String) obj[13]);
+        dto.setMiddleNameContact((String) obj[14]);
+        dto.setLastNameContact((String) obj[15]);
+        dto.setPositionContact((String) obj[16]);
+        dto.setTel1Contact((String) obj[17]);
+        dto.setBirthDateContact((Date) obj[18]);
+        dto.setBillToDef((String) obj[19]);
+        dto.setAddress((String) obj[20]);
+        dto.setState1((String) obj[21]);
+        dto.setBlock((String) obj[22]);
+        dto.setUlatitud((String) obj[23]);
+        dto.setUlongitud((String) obj[24]);
+        dto.setUbpcoNombre((String) obj[25]);
+        dto.setUbpco1Apellido((String) obj[26]);
+        dto.setUbpco2Apellido((String) obj[27]);
+        dto.setUbpcoTDC((Integer) obj[28]);
+        dto.setUbpcoTP((String) obj[29]);
+        dto.setUbpcoRTC((String) obj[30]);
+        dto.setUbpcoCity((String) obj[31]);
+        dto.setUbpcoAddress((String) obj[32]);
+        dto.setUemailFE((String) obj[33]);
+        dto.setUregional((String) obj[34]);
+        dto.setGroupNum((Integer) obj[35]);
+        dto.setDiscount((Integer) obj[36]);
+        dto.setVatStatus((String) obj[37]);
+        dto.setCreditLine((BigDecimal) obj[38]);
+        dto.setCreateDate((Date) obj[39]);
+        dto.setUtrasp((String) obj[40]);
+        dto.setQryGroup4((String) obj[41]);
+        dto.setQryGroup15((String) obj[42]);
+        dto.setWtliable((String) obj[43]);
+        dto.setRetAUT3((String) obj[44]);
+        dto.setRetAUT4((String) obj[45]);
+        dto.setUproFid((String) obj[46]);
+        dto.setListNum((Integer) obj[47]);
+
+        return Response.ok(new ResponseDTO(0, dto)).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -929,7 +996,7 @@ public class PedBoxREST {
         /**** 5.Consultando código de transportadora asignada al cliente****/
         dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
         /**** 6.Consultando por cliente el id de la dirección de factura****/
-        String shipToCodeDefault= null;
+        String shipToCodeDefault = null;
         List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
         if (idAddress.size() > 0) {
             for (Object[] obj : idAddress) {
@@ -1132,14 +1199,58 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createCustomer(BusinessPartnerDTO dto) {
-        CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
-        if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardCode es obligatorio.")).build();
-        } else if (dto.getCardName() == null || dto.getCardName().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio");
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo cardName es obligatorio.")).build();
+        if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo companyName es obligatorio.")).build();
+        } else if (dto.getDocument() == null || dto.getDocument().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo document es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo document es obligatorio.")).build();
+        } else if (dto.getTypeDoc() == null || dto.getTypeDoc().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo typeDoc es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo typeDoc es obligatorio.")).build();
+        } else if (dto.getFirstname() == null || dto.getFirstname().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo firstname es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo firstname es obligatorio.")).build();
+        } else if (dto.getLastname1() == null || dto.getLastname1().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo lastname1 es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo lastname1 es obligatorio.")).build();
+        } else if (dto.getPhone() == null || dto.getPhone().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo phone es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo phone es obligatorio.")).build();
+        } else if (dto.getCellular() == null || dto.getCellular().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo cellular es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo cellular es obligatorio.")).build();
+        } else if (dto.getMail() == null || dto.getMail().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo mail es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo mail es obligatorio.")).build();
+        } else if (dto.getCodDepartamento() == null || dto.getCodDepartamento().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo codDepartamento es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo codDepartamento es obligatorio.")).build();
+        } else if (dto.getCodMunicipio() == null || dto.getCodMunicipio().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo codMunicipio es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo codMunicipio es obligatorio.")).build();
+        } else if (dto.getAddress() == null || dto.getAddress().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo address es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo address es obligatorio.")).build();
+        } else if (dto.getAcceptHabeasData() == null || dto.getAcceptHabeasData().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo acceptHabeasData es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo acceptHabeasData es obligatorio.")).build();
         }
+
+        //Validar si ya existe el cliente en SAP.
+        if (businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false)) {
+            CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
+            return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
+        }
+
+        CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
+
+        int digito = basicFunctions.getDigitoDian(dto.getDocument());
+
+        dto.setLicTradNum(dto.getDocument() + "-" + digito);
+        dto.setCardCode("C" + dto.getDocument());
+        dto.setCardName(dto.getLastname1().toUpperCase() + " " + dto.getLastname2().toUpperCase() + " " + dto.getFirstname().toUpperCase());
+        //dto.setLicTradNum(dto.getCardCode().replace("C", ""));
 
         Gson gson = new Gson();
         String json = gson.toJson(dto);

@@ -14,11 +14,13 @@ public class DetailAgeCustomerPortfolioDTO {
     private BigDecimal age61a90;
     private BigDecimal age91a120;
     private BigDecimal ageMas120;
+    private BigDecimal subTotal;
+    private BigDecimal total;
 
     public DetailAgeCustomerPortfolioDTO() {
     }
 
-    public DetailAgeCustomerPortfolioDTO(String slpCode, String cardCode, BigDecimal ageSinVencer, BigDecimal age0a30, BigDecimal age30a60, BigDecimal age61a90, BigDecimal age91a120, BigDecimal ageMas120) {
+    public DetailAgeCustomerPortfolioDTO(String slpCode, String cardCode, BigDecimal ageSinVencer, BigDecimal age0a30, BigDecimal age30a60, BigDecimal age61a90, BigDecimal age91a120, BigDecimal ageMas120, BigDecimal subTotal, BigDecimal total) {
         this.slpCode = slpCode;
         this.cardCode = cardCode;
         this.ageSinVencer = ageSinVencer;
@@ -27,6 +29,8 @@ public class DetailAgeCustomerPortfolioDTO {
         this.age61a90 = age61a90;
         this.age91a120 = age91a120;
         this.ageMas120 = ageMas120;
+        this.subTotal = subTotal;
+        this.total = total;
     }
 
     public String getSlpCode() {
@@ -93,6 +97,22 @@ public class DetailAgeCustomerPortfolioDTO {
         this.ageMas120 = ageMas120;
     }
 
+    public BigDecimal getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(BigDecimal subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
     @Override
     public String toString() {
         return "DetailAgeCustomerPortfolioDTO{" +
@@ -104,6 +124,8 @@ public class DetailAgeCustomerPortfolioDTO {
                 ", age61a90=" + age61a90 +
                 ", age91a120=" + age91a120 +
                 ", ageMas120=" + ageMas120 +
+                ", subTotal=" + subTotal +
+                ", total=" + total +
                 '}';
     }
 }
