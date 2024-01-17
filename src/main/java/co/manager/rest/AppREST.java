@@ -23,10 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -546,6 +543,8 @@ public class AppREST {
             dto.setAge61a90((BigDecimal) obj[5]);
             dto.setAge91a120((BigDecimal) obj[6]);
             dto.setAgeMas120((BigDecimal) obj[7]);
+            dto.setSubTotal((BigDecimal) obj[8]);
+            dto.setTotal((BigDecimal) obj[9]);
 
             details.add(dto);
         }
@@ -588,26 +587,27 @@ public class AppREST {
             return Response.ok(new ResponseDTO(-1, "No se encontraron datos asociados al vendedor " + slpCode + " en " + companyname)).build();
         }
 
-        HashMap<String, String> customers = new HashMap<>();
+        TreeMap<String, String> customers = new TreeMap<>();
         for (Object[] obj : objects) {
-            customers.put((String) obj[0], "id");
+            customers.put((String) obj[1], "id");
         }
 
-        for (String client : customers.keySet()) {
+        for (Map.Entry<String, String> client : customers.entrySet()) {
             List<PortfolioCustomerDTO.DetailPortfolioCustomerDTO> customerDetailPortfolio = new ArrayList<>();
             PortfolioCustomerDTO dto = new PortfolioCustomerDTO();
-            dto.setCardCode(client);
+            dto.setCardName(client.getKey());
 
             for (Object[] obj : objects) {
-                if (dto.getCardCode().equals(obj[0])) {
+                if (dto.getCardName().equals(obj[1])) {
                     //Encabezado del CustomerDTO.
-                    dto.setCardName((String) obj[1]);
+                    dto.setCardCode((String) obj[0]);
                     dto.setLicTradNum((String) obj[2]);
                     dto.setSlpName((String) obj[10]);
                     dto.setPayCondition((String) obj[11]);
                     dto.setCupo((BigDecimal) obj[12]);
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
+                    dto.setTotalDoc((Integer) obj[16]);
                     //Detalle de direcciones al CustomerDTO
                     PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
                     dto2.setDocType((String) obj[3]);
@@ -1152,7 +1152,7 @@ public class AppREST {
             } catch (Exception ex) {
             }
         }
-
+        CONSOLE.log(Level.INFO, "Se creo la orden temporal satisfactoriamente. idOrden={0} en la empresa {1}", new Object[]{order.getIdOrder(), dto.getCompanyName()});
         return new ResponseDTO(0, order.getIdOrder());
     }
 }

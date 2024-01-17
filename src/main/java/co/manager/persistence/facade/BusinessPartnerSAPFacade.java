@@ -106,8 +106,8 @@ public class BusinessPartnerSAPFacade {
     public List<Object[]> listCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos, ");
-        sb.append("     cast(a.\"SlpName\" as varchar(50))as vendedor,cast(c.\"PymntGroup\" as varchar(20))as condicionPago,t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture ");
+        sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos*-1 as diasVenc, ");
+        sb.append("     cast(a.\"SlpName\" as varchar(50))as vendedor,cast(c.\"PymntGroup\" as varchar(20))as condicionPago,case when t.cupo < 0 then 0 else t.cupo end as cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture,cast(count(t.docNum) OVER(partition by t.cardCode)as int)as totalDoc ");
         sb.append("from (select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("            'Factura'as tipoDoc,cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("            cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, ");
@@ -115,7 +115,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("            (select max(cast(v.\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp,cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,f.\"SlpCode\",s.\"GroupNum\" ");
         sb.append("      from  OINV f ");
         sb.append("      inner join OCRD s ON f.\"CardCode\" = s.\"CardCode\" ");
-        sb.append("      where (f.\"DocTotal\"-f.\"PaidToDate\") > 1999 and f.\"DocStatus\" = 'O' union all ");
+        sb.append("      where f.\"DocStatus\" = 'O' union all ");
         sb.append("      select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("            'Nota Crédito'as tipoDoc,cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("            cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, ");
@@ -123,13 +123,14 @@ public class BusinessPartnerSAPFacade {
         sb.append("            null as fechaUltComp,cast(n.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,n.\"SlpCode\",s.\"GroupNum\" ");
         sb.append("      from  ORIN n ");
         sb.append("      inner join OCRD s ON n.\"CardCode\" = s.\"CardCode\" ");
-        sb.append("      where (n.\"DocTotal\"-n.\"PaidToDate\")>1999 and n.\"DocStatus\" = 'O' ");
+        sb.append("      where n.\"DocStatus\" = 'O' ");
         sb.append(")as t ");
         sb.append("inner join OSLP a ON a.\"SlpCode\" = t.\"SlpCode\" ");
         sb.append("inner join OCTG c ON c.\"GroupNum\" = t.\"GroupNum\" ");
-        sb.append("where t.\"SlpCode\" IN (");
+        sb.append("where t.\"SlpCode\"=");
         sb.append(slpCode);
-        sb.append(")");
+        sb.append(" group by t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos,a.\"SlpName\",c.\"PymntGroup\",t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture ");
+        sb.append("order by 2 asc");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -179,37 +180,41 @@ public class BusinessPartnerSAPFacade {
 
     public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode, ");
-        sb.append(" cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\",cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"30 a 60\")as numeric(18,0))as \"30 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(\"+ 120\")as numeric(18,0))as \"+ 120\" ");
+        sb.append("select r.*,cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\" ");
         sb.append("from ( ");
-        sb.append(" select y.\"SlpCode\",y.\"CardCode\", ");
-        sb.append("  case when y.\"DiasAtraso\" < 0 then sum(y.\"Saldo\") else 0 end as \"Sin vencer\", ");
-        sb.append("  case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
-        sb.append("  case when (y.\"DiasAtraso\" >= 30 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
-        sb.append("  case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
-        sb.append("  case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
-        sb.append("  case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\" ");
+        sb.append(" select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode, ");
+        sb.append("  cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\",cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"30 a 60\")as numeric(18,0))as \"30 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(z.\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(z.\"+ 120\")as numeric(18,0))as \"+ 120\", ");
+        sb.append("  cast(sum(z.\"Sin vencer\")+sum(z.\"0 a 30\")+sum(z.\"30 a 60\")+sum(z.\"61 a 90\")+sum(z.\"91 a 120\")+sum(z.\"+ 120\")as numeric(18,0))as \"SubTotal\" ");
         sb.append(" from ( ");
-        sb.append("  select t.\"SlpCode\",t.\"CardCode\",cast(t.\"DiasAtraso\" as varchar(1000))as \"DiasAtraso\",sum(cast(t.\"Saldo\" as numeric(18,0)))as \"Saldo\" ");
+        sb.append("  select y.\"SlpCode\",y.\"CardCode\", ");
+        sb.append("   case when y.\"DiasAtraso\" < 0 then sum(y.\"Saldo\") else 0 end as \"Sin vencer\", ");
+        sb.append("   case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
+        sb.append("   case when (y.\"DiasAtraso\" >= 30 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
+        sb.append("   case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
+        sb.append("   case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
+        sb.append("   case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\" ");
         sb.append("  from ( ");
-        sb.append("   select f.\"SlpCode\",f.\"CardCode\",cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as \"Saldo\",days_between(current_date,f.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
-        sb.append("   from OINV f ");
-        sb.append("   inner join OCRD s ON f.\"CardCode\"=s.\"CardCode\" ");
-        sb.append("   where (f.\"DocTotal\"-f.\"PaidToDate\")>1999 and f.\"DocStatus\"='O' ");
-        sb.append("  union all ");
-        sb.append("   select n.\"SlpCode\",n.\"CardCode\",cast((n.\"DocTotal\"-n.\"PaidToDate\")as numeric(18,0))*-1 as \"Saldo\",days_between(current_date,n.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
-        sb.append("   from ORIN n ");
-        sb.append("   inner join OCRD s ON n.\"CardCode\"=s.\"CardCode\" ");
-        sb.append("   where (n.\"DocTotal\"-n.\"PaidToDate\")>1999 and n.\"DocStatus\"='O' ");
-        sb.append("  )as t ");
-        sb.append("  group by t.\"DiasAtraso\",t.\"CardCode\",t.\"SlpCode\" ");
-        sb.append(" )as y ");
-        sb.append(" group by y.\"DiasAtraso\",y.\"CardCode\",y.\"SlpCode\" ");
-        sb.append(")as z ");
-        sb.append("where z.\"SlpCode\"=");
+        sb.append("   select t.\"SlpCode\",t.\"CardCode\",cast(t.\"DiasAtraso\" as varchar(1000))as \"DiasAtraso\",sum(cast(t.\"Saldo\" as numeric(18,0)))as \"Saldo\" ");
+        sb.append("   from ( ");
+        sb.append("    select f.\"SlpCode\",f.\"CardCode\",cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as \"Saldo\",days_between(current_date,f.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
+        sb.append("    from OINV f ");
+        sb.append("    inner join OCRD s ON f.\"CardCode\"=s.\"CardCode\" ");
+        sb.append("    where (f.\"DocTotal\"-f.\"PaidToDate\")>1999 and f.\"DocStatus\"='O' ");
+        sb.append("   union all ");
+        sb.append("    select n.\"SlpCode\",n.\"CardCode\",cast((n.\"DocTotal\"-n.\"PaidToDate\")as numeric(18,0))*-1 as \"Saldo\",days_between(current_date,n.\"DocDueDate\")*-1 as \"DiasAtraso\" ");
+        sb.append("    from ORIN n ");
+        sb.append("    inner join OCRD s ON n.\"CardCode\"=s.\"CardCode\" ");
+        sb.append("    where (n.\"DocTotal\"-n.\"PaidToDate\")>1999 and n.\"DocStatus\"='O' ");
+        sb.append("   )as t ");
+        sb.append("   group by t.\"DiasAtraso\",t.\"CardCode\",t.\"SlpCode\" ");
+        sb.append("  )as y ");
+        sb.append("  group by y.\"DiasAtraso\",y.\"CardCode\",y.\"SlpCode\" ");
+        sb.append(" )as z ");
+        sb.append(" where z.\"SlpCode\"=");
         sb.append(slpCode);
         sb.append(" group by z.\"CardCode\",z.\"SlpCode\" ");
-        sb.append("order by z.\"CardCode\" asc ");
+        sb.append(" order by z.\"CardCode\" asc ");
+        sb.append(")as r");
         try {
             return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
@@ -588,5 +593,36 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el nombre del cliente para el cardCode=" + cardCode + " en " + companyName, e);
         }
         return "";
+    }
+
+    public Object[] getCustomerData(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(s.\"CardCode\" as varchar(20))as cardCode,cast(s.\"CardType\" as varchar(1))as cardType,cast(s.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(15))as licTradNum, ");
+        sb.append(" cast(s.\"GroupCode\" as int)as groupCode,cast(s.\"Phone1\" as varchar(20))as phone1,cast(s.\"Phone2\" as varchar(20))as phone2,cast(s.\"E_Mail\" as varchar(100))as eMail,cast(d.\"U_codeResFis\" as varchar(20))as uCodeResFis, ");
+        sb.append(" cast(s.\"Territory\" as int)as territory,cast(s.\"SlpCode\" as varchar(5))as slpCode,cast(s.\"Free_Text\" as varchar(250))as freeText,cast(p.\"Name\" as varchar(20))as idContact,cast(p.\"FirstName\" as varchar(50))as firstName, ");
+        sb.append(" cast(p.\"MiddleName\" as varchar(50))as middleName,cast(p.\"LastName\" as varchar(50))as lastName,cast(p.\"Position\" as varchar(50))as position,cast(p.\"Tel1\" as varchar(20))as tel1,cast(p.\"BirthDate\" as date)as birthDate, ");
+        sb.append(" cast(s.\"BillToDef\" as varchar(100))as billToDef,cast(s.\"Address\" as varchar(100))as address,cast(s.\"State1\" as varchar(2))as state1,cast(s.\"Block\" as varchar(10))as block,cast( a.\"U_LATITUD\" as varchar(100))as uLatitud, ");
+        sb.append(" cast(a.\"U_LONGITUD\" as varchar(100))as uLongitud,cast(s.\"U_BPCO_Nombre\" as varchar(50))as uBPCONombre,cast(s.\"U_BPCO_1Apellido\" as varchar(50))as uBPCO1Apellido,cast(s.\"U_BPCO_2Apellido\" as varchar(50))as uBPCO2Apellido, ");
+        sb.append(" cast(s.\"U_BPCO_TDC\" as int)as uBPCOTDC,cast(s.\"U_BPCO_TP\" as varchar(5))as uBPCOTP,cast(s.\"U_BPCO_RTC\" as varchar(2))as uBPCORTC,cast(s.\"U_BPCO_City\" as varchar(10))as uBPCOCity, ");
+        sb.append(" cast(s.\"U_BPCO_Address\" as varchar(100))as uBPCOAddress,cast(s.\"U_addInFaElectronica_email_contacto_FE\" as varchar(100))as uEmailFE,cast(s.\"U_REGIONAL\" as varchar(50))as uRegional,cast(s.\"GroupNum\" as int)as groupNum, ");
+        sb.append(" cast(s.\"Discount\" as int)as discount,cast(s.\"VatStatus\" as varchar(1))as vatStatus,cast(s.\"CreditLine\" as numeric(18,2))as creditLine,cast(s.\"CreateDate\" as date)as createDate,cast(s.\"U_TRASP\" as varchar(2))as uTrasp, ");
+        sb.append(" cast(s.\"QryGroup4\" as varchar(1))as qryGroup4,cast(s.\"QryGroup15\" as varchar(1))as qryGroup15,cast(s.\"WTLiable\" as varchar(1))as wTLiable, ");
+        sb.append(" (select cast(a.\"WTCode\" as varchar(10)) from CRD4 a where a.\"WTCode\" like '%AUT3%' and a.\"CardCode\"= s.\"CardCode\")as AUT3, ");
+        sb.append(" (select cast(a.\"WTCode\" as varchar(10)) from CRD4 a where a.\"WTCode\" like '%AUT4%' and a.\"CardCode\"=s.\"CardCode\")as AUT4,cast(s.\"U_PRO_FIDELIZACION\" as varchar(2))as uProFid,cast(s.\"ListNum\" as int)as listNum ");
+        sb.append("from OCRD s ");
+        sb.append("inner join \"CRD1\" a on a.\"CardCode\"=s.\"CardCode\" and a.\"Address\"=s.\"BillToDef\" and a.\"AdresType\"='B' ");
+        sb.append("left join \"@OK1_FE_RES_FIS_SN\" e on e.\"U_CardCode\"=s.\"CardCode\" ");
+        sb.append("left join \"@OK1_FE_RES_FIS_SN_L\" d on d.\"DocEntry\"=e.\"DocEntry\" ");
+        sb.append("left join \"OCPR\" p on p.\"CardCode\"=s.\"CardCode\" ");
+        sb.append("where s.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo los datos del cliente " + cardCode + " en " + companyName, e);
+        }
+        return null;
     }
 }
