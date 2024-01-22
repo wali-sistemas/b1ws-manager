@@ -545,6 +545,8 @@ public class AppREST {
             dto.setAgeMas120((BigDecimal) obj[7]);
             dto.setSubTotal((BigDecimal) obj[8]);
             dto.setTotal((BigDecimal) obj[9]);
+            dto.setEmail((String) obj[10]);
+            dto.setPhone((String) obj[11]);
 
             details.add(dto);
         }
@@ -608,6 +610,7 @@ public class AppREST {
                     dto.setPayDayAvg((Integer) obj[13]);
                     dto.setLastSaleDay((Date) obj[14]);
                     dto.setTotalDoc((Integer) obj[16]);
+                    dto.setEmailFE((String) obj[17]);
                     //Detalle de direcciones al CustomerDTO
                     PortfolioCustomerDTO.DetailPortfolioCustomerDTO dto2 = new PortfolioCustomerDTO.DetailPortfolioCustomerDTO();
                     dto2.setDocType((String) obj[3]);
