@@ -60,6 +60,13 @@ public class ReportREST implements Serializable {
                         "customer" + File.separator + dto.getDocumento() + ".jrxml");
                 rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
                 break;
+            case "collection":
+                rutaArchivo = appBean.obtenerValorPropiedad("url.archivo");
+                reportName = dto.getId() + ".pdf";
+                report = JasperCompileManager.compileReportToFile(appBean.obtenerValorPropiedad("url.jasper") + dto.getCompanyName() + File.separator +
+                        "customer" + File.separator + dto.getDocumento() + ".jrxml");
+                rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
+                break;
             default:
                 reportName = "";
                 break;
@@ -69,10 +76,28 @@ public class ReportREST implements Serializable {
         String cn = null;
         InitialContext initialContext = new InitialContext();
         if (dto.getOrigen().equals("S")) {
-            if (dto.getCompanyName().equals("IGB")) {
-                cn = "java:/HANAIGBDS";
-            } else {
-                cn = "java:/HANAVARROCDS";
+            switch (dto.getCompanyName()) {
+                case "IGB":
+                    cn = "java:/HANAIGBDS";
+                    break;
+                case "VARROC":
+                    cn = "java:/HANAVARROCDS";
+                    break;
+                case "REDPLAS":
+                    cn = "java:/HANAREDPLASDS";
+                    break;
+                case "IGBPruebas":
+                    cn = "java:/HANAIGBTESTDS";
+                    break;
+                case "VARROCPruebas":
+                    cn = "java:/HANAVARROCTESTDS";
+                    break;
+                case "REDPLASPruebas":
+                    cn = "java:/HANAREDPLASTESTDS";
+                    break;
+                default:
+                    cn = "";
+                    break;
             }
         } else {
             cn = "java:/WMSDS";
