@@ -522,9 +522,10 @@ public class AppREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getDetailAgeCustomerPortfolio(@PathParam("companyname") String companyname,
-                                                  @QueryParam("slpcode") String slpCode) {
+                                                  @QueryParam("slpcode") String slpCode,
+                                                  @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Iniciando consulta de edad de cartera de clientes para el asesor {0} en la empresa {1}", new Object[]{slpCode, companyname});
-        List<Object[]> objects = businessPartnerSAPFacade.listDetailAgeCustomerPortfolioBySalesPerson(slpCode, companyname, false);
+        List<Object[]> objects = businessPartnerSAPFacade.listDetailAgeCustomerPortfolioBySalesPerson(slpCode, cardCode, companyname, false);
         if (objects.isEmpty() || objects == null) {
             CONSOLE.log(Level.SEVERE, "No se encontraron documentos para mostrar");
             List<ResponseDTO> response = new ArrayList<>();
@@ -575,10 +576,11 @@ public class AppREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getAllCustomersPortfolioBySalesPerson(@PathParam("companyname") String companyname,
-                                                          @QueryParam("slpcode") String slpCode) {
+                                                          @QueryParam("slpcode") String slpCode,
+                                                          @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Iniciando servicio para obtener la cartera de clientes para el vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
         List<PortfolioCustomerDTO> customerPortfolio = new ArrayList<>();
-        List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioBySalesPerson(slpCode, companyname, false);
+        List<Object[]> objects = businessPartnerSAPFacade.listCustomerPortfolioBySalesPerson(slpCode, cardCode, companyname, false);
 
         if (objects == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la cartera de los clientes asignados al vendedor {0} en {1}", new Object[]{slpCode, companyname});

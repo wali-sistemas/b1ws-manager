@@ -103,7 +103,7 @@ public class BusinessPartnerSAPFacade {
         return null;
     }
 
-    public List<Object[]> listCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
+    public List<Object[]> listCustomerPortfolioBySalesPerson(String slpCode, String cardCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos*-1 as diasVenc, ");
@@ -131,6 +131,11 @@ public class BusinessPartnerSAPFacade {
         sb.append("inner join OCTG c ON c.\"GroupNum\" = t.\"GroupNum\" ");
         sb.append("where t.\"SlpCode\"=");
         sb.append(slpCode);
+        if (cardCode != null) {
+            sb.append(" and t.cardCode='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
         sb.append(" group by t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos,a.\"SlpName\",c.\"PymntGroup\",t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture,t.emailFE ");
         sb.append("order by 2 asc");
         try {
@@ -180,7 +185,7 @@ public class BusinessPartnerSAPFacade {
         return null;
     }
 
-    public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String companyName, boolean pruebas) {
+    public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String cardCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select r.SlpCode,r.CardCode,r.\"Sin vencer\",r.\"0 a 30\",r.\"30 a 60\",r.\"61 a 90\",r.\"91 a 120\",r.\"+ 120\",r.\"SubTotal\",cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\",r.\"E_Mail\",r.\"Phone2\" ");
         sb.append("from ( ");
@@ -214,6 +219,11 @@ public class BusinessPartnerSAPFacade {
         sb.append(" )as z ");
         sb.append(" where z.\"SlpCode\"=");
         sb.append(slpCode);
+        if (cardCode != null) {
+            sb.append(" and z.\"CardCode\"='");
+            sb.append(cardCode);
+            sb.append("' ");
+        }
         sb.append(" group by z.\"CardCode\",z.\"SlpCode\",z.\"E_Mail\",z.\"Phone2\" ");
         sb.append(" order by z.\"CardCode\" asc ");
         sb.append(")as r");
