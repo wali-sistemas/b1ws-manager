@@ -187,7 +187,7 @@ public class BusinessPartnerSAPFacade {
 
     public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String cardCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select r.SlpCode,r.CardCode,r.\"Sin vencer\",r.\"0 a 30\",r.\"30 a 60\",r.\"61 a 90\",r.\"91 a 120\",r.\"+ 120\",r.\"SubTotal\",cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\",r.\"E_Mail\",r.\"Phone2\" ");
+        sb.append("select r.SlpCode,r.CardCode,r.\"Sin vencer\",r.\"0 a 30\",r.\"30 a 60\",r.\"61 a 90\",r.\"91 a 120\",r.\"+ 120\",r.\"SubTotal\",cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\",r.\"E_Mail\",substring(r.\"Phone2\",0,10)as \"Phone2\" ");
         sb.append("from ( ");
         sb.append(" select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode, ");
         sb.append("  cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\",cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"30 a 60\")as numeric(18,0))as \"30 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(z.\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(z.\"+ 120\")as numeric(18,0))as \"+ 120\", ");
