@@ -167,7 +167,7 @@ public class MotorepuestoREST {
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
+        return Response.ok(businessPartnerEJB.createBusinessPartnerFromEcommerce(dto)).build();
     }
 
     @POST
@@ -177,7 +177,7 @@ public class MotorepuestoREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(BusinessPartnerDTO dto) {
         dto.setLicTradNum(dto.getCardCode().replace("C", ""));
-        return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
+        return Response.ok(businessPartnerEJB.createBusinessPartnerFromEcommerce(dto)).build();
     }
 
     @GET

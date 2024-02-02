@@ -55,6 +55,9 @@ public class OrderAPPFacade {
         sb.append(day);
         sb.append(" and e.slpCode=");
         sb.append(slpCode);
+        sb.append(" and companyName='");
+        sb.append(companyName);
+        sb.append("'");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

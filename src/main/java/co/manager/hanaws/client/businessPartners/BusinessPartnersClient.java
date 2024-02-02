@@ -8,6 +8,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author jguisao
@@ -26,8 +27,19 @@ public class BusinessPartnersClient {
         webTarget = client.target(BASE_URI).path(path);
     }
 
+    public BusinessPartnersRestDTO getBusinessPartner(String cardCode, String sessionId) {
+        WebTarget url = webTarget.path("BusinessPartners('" + cardCode + "')");
+        return url.request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+                .get(BusinessPartnersRestDTO.class);
+    }
+
     public BusinessPartnersRestDTO addBusinessPartner(BusinessPartnersDTO dto, String sessionId) {
         return webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), BusinessPartnersRestDTO.class);
+    }
+
+    public Response updateBusinessPartner(BusinessPartnersRestDTO dto, String cardCode, String sessionId) {
+        return webTarget.path("BusinessPartners('" + cardCode + "')").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+                .put(Entity.entity(dto, MediaType.APPLICATION_JSON));
     }
 }

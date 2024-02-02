@@ -159,6 +159,8 @@ public class BusinessPartnersRestDTO implements Serializable {
     protected String block;
     @JsonProperty("BillToState")
     protected String billToState;
+    @JsonProperty("ShipToState")
+    protected String shipToState;
     @JsonProperty("ExemptNum")
     protected String exemptNum;
     @JsonProperty("Priority")
@@ -458,7 +460,7 @@ public class BusinessPartnersRestDTO implements Serializable {
     @JsonProperty("GTSBillingAddrTel")
     protected String gtsBillingAddrTel;
     @JsonProperty("ETaxWebSite")
-    protected Long eTaxWebSite;
+    protected Long etaxWebSite;
     @JsonProperty("HouseBankIBAN")
     protected String houseBankIBAN;
     @JsonProperty("VATRegistrationNumber")
@@ -534,7 +536,7 @@ public class BusinessPartnersRestDTO implements Serializable {
     @JsonProperty("U_BPCO_Address")
     protected String ubpcoAddress;
     @JsonProperty("U_Manejo")
-    protected String uManejo;
+    protected String umanejo;
     @JsonProperty("U_FEC_CREA")
     protected String ufeccrea;
     @JsonProperty("U_TRASP")
@@ -560,25 +562,42 @@ public class BusinessPartnersRestDTO implements Serializable {
     @JsonProperty("U_VLGX_VFV")
     protected Long uvlgxvfv;
     @JsonProperty("U_EsAutorret")
-    protected String uEsAutorret;
+    protected String uesAutorret;
     @JsonProperty("U_OK1_AC_ECO")
     protected String uok1ACECO;
     @JsonProperty("U_DocFormEnt")
-    protected Long uDocFormEntFE;
+    protected Long udocFormEntFE;
     @JsonProperty("U_addInFaElectronica_email_contacto_FE")
-    protected String uAddInFaElectronicaEmailContactoFE;
+    protected String uaddInFaElectronicaEmailContactoFE;
     @JsonProperty("U_Celular")
-    protected String uCelularFE;
+    protected String ucelularFE;
+    @JsonProperty("U_REGIONAL")
+    protected String uregional;
+    @JsonProperty("U_PRO_FIDELIZACION")
+    protected String uproFidelizacion;
+    @JsonProperty("BlockSendingMarketingContent")
+    protected String blockSendingMarketingContent;
+    @JsonProperty("BPAddresses")
     protected List<BusinessPartnersRestDTO.BPAddresses.BPAddress> bpAddresses;
+    @JsonProperty("ContactEmployees")
     protected List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees;
+    @JsonProperty("BPAccountReceivablePaybleCollection")
     protected List<BusinessPartnersRestDTO.BPAccountReceivablePaybleCollection.BPAccountReceivablePayble> bpAccountReceivablePaybleCollection;
+    @JsonProperty("BPPaymentMethods")
     protected List<BusinessPartnersRestDTO.BPPaymentMethods.BPPaymentMethod> bpPaymentMethods;
-    protected List<BusinessPartnersRestDTO.BPWithholdingTaxCollection> bpWithholdingTaxCollection;
+    @JsonProperty("BPWithholdingTaxCollection")
+    protected List<BusinessPartnersRestDTO.BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxCollection;
+    @JsonProperty("BPPaymentDates")
     protected List<BusinessPartnersRestDTO.BPPaymentDates.BPPaymentDate> bpPaymentDates;
+    @JsonProperty("BPBranchAssignment")
     protected List<BusinessPartnersRestDTO.BPBranchAssignment.BPBranchAssignmentItem> bpBranchAssignment;
+    @JsonProperty("BPBankAccounts")
     protected List<BusinessPartnersRestDTO.BPBankAccounts.BPBankAccount> bpBankAccounts;
+    @JsonProperty("BPFiscalTaxIDCollection")
     protected List<BusinessPartnersRestDTO.BPFiscalTaxIDCollection.BPFiscalTaxID> bpFiscalTaxIDCollection;
+    @JsonProperty("DiscountGroups")
     protected List<BusinessPartnersRestDTO.DiscountGroups.DiscountGroup> discountGroups;
+    @JsonProperty("BPIntrastatExtension")
     protected BusinessPartnersRestDTO.BPIntrastatExtension bpIntrastatExtension;
 
     public String getCardCode() {
@@ -1171,6 +1190,14 @@ public class BusinessPartnersRestDTO implements Serializable {
 
     public void setBillToState(String billToState) {
         this.billToState = billToState;
+    }
+
+    public String getShipToState() {
+        return shipToState;
+    }
+
+    public void setShipToState(String shipToState) {
+        this.shipToState = shipToState;
     }
 
     public String getExemptNum() {
@@ -2365,12 +2392,12 @@ public class BusinessPartnersRestDTO implements Serializable {
         this.gtsBillingAddrTel = gtsBillingAddrTel;
     }
 
-    public Long geteTaxWebSite() {
-        return eTaxWebSite;
+    public Long getEtaxWebSite() {
+        return etaxWebSite;
     }
 
-    public void seteTaxWebSite(Long eTaxWebSite) {
-        this.eTaxWebSite = eTaxWebSite;
+    public void setEtaxWebSite(Long etaxWebSite) {
+        this.etaxWebSite = etaxWebSite;
     }
 
     public String getHouseBankIBAN() {
@@ -2669,12 +2696,12 @@ public class BusinessPartnersRestDTO implements Serializable {
         this.ubpcoAddress = ubpcoAddress;
     }
 
-    public String getuManejo() {
-        return uManejo;
+    public String getUmanejo() {
+        return umanejo;
     }
 
-    public void setuManejo(String uManejo) {
-        this.uManejo = uManejo;
+    public void setUmanejo(String umanejo) {
+        this.umanejo = umanejo;
     }
 
     public String getUfeccrea() {
@@ -2773,12 +2800,12 @@ public class BusinessPartnersRestDTO implements Serializable {
         this.uvlgxvfv = uvlgxvfv;
     }
 
-    public String getuEsAutorret() {
-        return uEsAutorret;
+    public String getUesAutorret() {
+        return uesAutorret;
     }
 
-    public void setuEsAutorret(String uEsAutorret) {
-        this.uEsAutorret = uEsAutorret;
+    public void setUesAutorret(String uesAutorret) {
+        this.uesAutorret = uesAutorret;
     }
 
     public String getUok1ACECO() {
@@ -2789,28 +2816,52 @@ public class BusinessPartnersRestDTO implements Serializable {
         this.uok1ACECO = uok1ACECO;
     }
 
-    public Long getuDocFormEntFE() {
-        return uDocFormEntFE;
+    public Long getUdocFormEntFE() {
+        return udocFormEntFE;
     }
 
-    public void setuDocFormEntFE(Long uDocFormEntFE) {
-        this.uDocFormEntFE = uDocFormEntFE;
+    public void setUdocFormEntFE(Long udocFormEntFE) {
+        this.udocFormEntFE = udocFormEntFE;
     }
 
-    public String getuAddInFaElectronicaEmailContactoFE() {
-        return uAddInFaElectronicaEmailContactoFE;
+    public String getUaddInFaElectronicaEmailContactoFE() {
+        return uaddInFaElectronicaEmailContactoFE;
     }
 
-    public void setuAddInFaElectronicaEmailContactoFE(String uAddInFaElectronicaEmailContactoFE) {
-        this.uAddInFaElectronicaEmailContactoFE = uAddInFaElectronicaEmailContactoFE;
+    public void setUaddInFaElectronicaEmailContactoFE(String uaddInFaElectronicaEmailContactoFE) {
+        this.uaddInFaElectronicaEmailContactoFE = uaddInFaElectronicaEmailContactoFE;
     }
 
-    public String getuCelularFE() {
-        return uCelularFE;
+    public String getUcelularFE() {
+        return ucelularFE;
     }
 
-    public void setuCelularFE(String uCelularFE) {
-        this.uCelularFE = uCelularFE;
+    public void setUcelularFE(String ucelularFE) {
+        this.ucelularFE = ucelularFE;
+    }
+
+    public String getUregional() {
+        return uregional;
+    }
+
+    public void setUregional(String uregional) {
+        this.uregional = uregional;
+    }
+
+    public String getUproFidelizacion() {
+        return uproFidelizacion;
+    }
+
+    public void setUproFidelizacion(String uproFidelizacion) {
+        this.uproFidelizacion = uproFidelizacion;
+    }
+
+    public String getBlockSendingMarketingContent() {
+        return blockSendingMarketingContent;
+    }
+
+    public void setBlockSendingMarketingContent(String blockSendingMarketingContent) {
+        this.blockSendingMarketingContent = blockSendingMarketingContent;
     }
 
     public List<BPAddresses.BPAddress> getBpAddresses() {
@@ -2845,11 +2896,11 @@ public class BusinessPartnersRestDTO implements Serializable {
         this.bpPaymentMethods = bpPaymentMethods;
     }
 
-    public List<BPWithholdingTaxCollection> getBpWithholdingTaxCollection() {
+    public List<BPWithholdingTaxCollection.BPWithholdingTax> getBpWithholdingTaxCollection() {
         return bpWithholdingTaxCollection;
     }
 
-    public void setBpWithholdingTaxCollection(List<BPWithholdingTaxCollection> bpWithholdingTaxCollection) {
+    public void setBpWithholdingTaxCollection(List<BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxCollection) {
         this.bpWithholdingTaxCollection = bpWithholdingTaxCollection;
     }
 
@@ -2943,8 +2994,26 @@ public class BusinessPartnersRestDTO implements Serializable {
             protected String globalLocationNumber;
             @JsonProperty("Nationality")
             protected String nationality;
+            @JsonProperty("TaxOffice")
+            protected String taxOffice;
+            @JsonProperty("GSTIN")
+            protected String gstin;
+            @JsonProperty("GstType")
+            protected String gstType;
+            @JsonProperty("CreateDate")
+            protected String createDate;
+            @JsonProperty("CreateTime")
+            protected String createTime;
+            @JsonProperty("MYFType")
+            protected String myfType;
+            @JsonProperty("TaasEnabled")
+            protected String taasEnabled;
             @JsonProperty("U_Municipio")
-            protected String uMunicipio;
+            protected String umunicipio;
+            @JsonProperty("U_LATITUD")
+            protected String ulatitud;
+            @JsonProperty("U_LONGITUD")
+            protected String ulongitud;
 
             public String getAddressName() {
                 return addressName;
@@ -3106,12 +3175,84 @@ public class BusinessPartnersRestDTO implements Serializable {
                 this.nationality = nationality;
             }
 
-            public String getuMunicipio() {
-                return uMunicipio;
+            public String getTaxOffice() {
+                return taxOffice;
             }
 
-            public void setuMunicipio(String uMunicipio) {
-                this.uMunicipio = uMunicipio;
+            public void setTaxOffice(String taxOffice) {
+                this.taxOffice = taxOffice;
+            }
+
+            public String getGstin() {
+                return gstin;
+            }
+
+            public void setGstin(String gstin) {
+                this.gstin = gstin;
+            }
+
+            public String getGstType() {
+                return gstType;
+            }
+
+            public void setGstType(String gstType) {
+                this.gstType = gstType;
+            }
+
+            public String getCreateDate() {
+                return createDate;
+            }
+
+            public void setCreateDate(String createDate) {
+                this.createDate = createDate;
+            }
+
+            public String getCreateTime() {
+                return createTime;
+            }
+
+            public void setCreateTime(String createTime) {
+                this.createTime = createTime;
+            }
+
+            public String getMyfType() {
+                return myfType;
+            }
+
+            public void setMyfType(String myfType) {
+                this.myfType = myfType;
+            }
+
+            public String getTaasEnabled() {
+                return taasEnabled;
+            }
+
+            public void setTaasEnabled(String taasEnabled) {
+                this.taasEnabled = taasEnabled;
+            }
+
+            public String getUmunicipio() {
+                return umunicipio;
+            }
+
+            public void setUmunicipio(String umunicipio) {
+                this.umunicipio = umunicipio;
+            }
+
+            public String getUlatitud() {
+                return ulatitud;
+            }
+
+            public void setUlatitud(String ulatitud) {
+                this.ulatitud = ulatitud;
+            }
+
+            public String getUlongitud() {
+                return ulongitud;
+            }
+
+            public void setUlongitud(String ulongitud) {
+                this.ulongitud = ulongitud;
             }
         }
     }
@@ -3135,7 +3276,7 @@ public class BusinessPartnersRestDTO implements Serializable {
             @JsonProperty("Fax")
             protected String fax;
             @JsonProperty("E_Mail")
-            protected String eMail;
+            protected String email;
             @JsonProperty("Pager")
             protected String pager;
             @JsonProperty("Remarks1")
@@ -3168,6 +3309,22 @@ public class BusinessPartnersRestDTO implements Serializable {
             protected String lastName;
             @JsonProperty("EmailGroupCode")
             protected String emailGroupCode;
+            @JsonProperty("BlockSendingMarketingContent")
+            protected String blockSendingMarketingContent;
+            @JsonProperty("CreateDate")
+            protected String createDate;
+            @JsonProperty("CreateTime")
+            protected String createTime;
+            @JsonProperty("UpdateDate")
+            protected String updateDate;
+            @JsonProperty("UpdateTime")
+            protected String updateTime;
+            @JsonProperty("ConnectedAddressName")
+            protected String connectedAddressName;
+            @JsonProperty("ConnectedAddressType")
+            protected String connectedAddressType;
+            @JsonProperty("ContactEmployeeBlockSendingMarketingContents")
+            protected List<Object> contactEmployeeBlockSendingMarketingContents;
 
             public String getCardCode() {
                 return cardCode;
@@ -3233,12 +3390,12 @@ public class BusinessPartnersRestDTO implements Serializable {
                 this.fax = fax;
             }
 
-            public String geteMail() {
-                return eMail;
+            public String getEmail() {
+                return email;
             }
 
-            public void seteMail(String eMail) {
-                this.eMail = eMail;
+            public void setEmail(String email) {
+                this.email = email;
             }
 
             public String getPager() {
@@ -3367,6 +3524,70 @@ public class BusinessPartnersRestDTO implements Serializable {
 
             public void setEmailGroupCode(String emailGroupCode) {
                 this.emailGroupCode = emailGroupCode;
+            }
+
+            public String getBlockSendingMarketingContent() {
+                return blockSendingMarketingContent;
+            }
+
+            public void setBlockSendingMarketingContent(String blockSendingMarketingContent) {
+                this.blockSendingMarketingContent = blockSendingMarketingContent;
+            }
+
+            public String getCreateDate() {
+                return createDate;
+            }
+
+            public void setCreateDate(String createDate) {
+                this.createDate = createDate;
+            }
+
+            public String getCreateTime() {
+                return createTime;
+            }
+
+            public void setCreateTime(String createTime) {
+                this.createTime = createTime;
+            }
+
+            public String getUpdateDate() {
+                return updateDate;
+            }
+
+            public void setUpdateDate(String updateDate) {
+                this.updateDate = updateDate;
+            }
+
+            public String getUpdateTime() {
+                return updateTime;
+            }
+
+            public void setUpdateTime(String updateTime) {
+                this.updateTime = updateTime;
+            }
+
+            public String getConnectedAddressName() {
+                return connectedAddressName;
+            }
+
+            public void setConnectedAddressName(String connectedAddressName) {
+                this.connectedAddressName = connectedAddressName;
+            }
+
+            public String getConnectedAddressType() {
+                return connectedAddressType;
+            }
+
+            public void setConnectedAddressType(String connectedAddressType) {
+                this.connectedAddressType = connectedAddressType;
+            }
+
+            public List<Object> getContactEmployeeBlockSendingMarketingContents() {
+                return contactEmployeeBlockSendingMarketingContents;
+            }
+
+            public void setContactEmployeeBlockSendingMarketingContents(List<Object> contactEmployeeBlockSendingMarketingContents) {
+                this.contactEmployeeBlockSendingMarketingContents = contactEmployeeBlockSendingMarketingContents;
             }
         }
     }
