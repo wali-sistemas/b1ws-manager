@@ -9,16 +9,17 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BusinessPartnerDTO {
-    private static String transp = "3";
+    private static String transp = "03";
     private static Date createDate;
     private static String documentRut = "Y";
     private static String fidelity = "Y";
     private static String aut3 = "Y";
     private static String aut4 = "Y";
     private static String subject = "Y";
-    private static String distributo = "Y";
-    private static String priceList = "03";
+    private static String distributo = "02";
+    private static String priceList = "4";
     private static Character cardType = 'C';
+    private String typeTransaction;
     private String document;
     private String cardCode;
     private String cardName;
@@ -39,7 +40,7 @@ public class BusinessPartnerDTO {
     private String lastNameContactPerson;
     private String occupationContactPerson;
     private String phoneContactPerson;
-    private Date DateContactPerson;
+    private String dateContactPerson;
     //Ubicación
     private String idAddress;
     private String address;
@@ -61,11 +62,13 @@ public class BusinessPartnerDTO {
     private String mailFE;
     //Impustos & finanzas
     private String paymentCondition;
-    private String discount;
+    private Double discount;
     private String taxType;
-    private String creditLimit;
-    private String comiteLimit;
+    private Double creditLimit;
+    private Double comiteLimit;
     //responsabilidad fiscal
+    private String codeResFis;
+    private String descResFis;
 
     public BusinessPartnerDTO() {
     }
@@ -302,12 +305,12 @@ public class BusinessPartnerDTO {
         this.phoneContactPerson = phoneContactPerson;
     }
 
-    public Date getDateContactPerson() {
-        return DateContactPerson;
+    public String getDateContactPerson() {
+        return dateContactPerson;
     }
 
-    public void setDateContactPerson(Date dateContactPerson) {
-        DateContactPerson = dateContactPerson;
+    public void setDateContactPerson(String dateContactPerson) {
+        this.dateContactPerson = dateContactPerson;
     }
 
     public String getIdAddress() {
@@ -454,11 +457,11 @@ public class BusinessPartnerDTO {
         this.paymentCondition = paymentCondition;
     }
 
-    public String getDiscount() {
+    public Double getDiscount() {
         return discount;
     }
 
-    public void setDiscount(String discount) {
+    public void setDiscount(Double discount) {
         this.discount = discount;
     }
 
@@ -470,26 +473,51 @@ public class BusinessPartnerDTO {
         this.taxType = taxType;
     }
 
-    public String getCreditLimit() {
+    public Double getCreditLimit() {
         return creditLimit;
     }
 
-    public void setCreditLimit(String creditLimit) {
+    public void setCreditLimit(Double creditLimit) {
         this.creditLimit = creditLimit;
     }
 
-    public String getComiteLimit() {
+    public Double getComiteLimit() {
         return comiteLimit;
     }
 
-    public void setComiteLimit(String comiteLimit) {
+    public void setComiteLimit(Double comiteLimit) {
         this.comiteLimit = comiteLimit;
+    }
+
+    public String getTypeTransaction() {
+        return typeTransaction;
+    }
+
+    public void setTypeTransaction(String typeTransaction) {
+        this.typeTransaction = typeTransaction;
+    }
+
+    public String getCodeResFis() {
+        return codeResFis;
+    }
+
+    public void setCodeResFis(String codeResFis) {
+        this.codeResFis = codeResFis;
+    }
+
+    public String getDescResFis() {
+        return descResFis;
+    }
+
+    public void setDescResFis(String descResFis) {
+        this.descResFis = descResFis;
     }
 
     @Override
     public String toString() {
         return "BusinessPartnerDTO{" +
-                "document='" + document + '\'' +
+                "typeTransaction='" + typeTransaction + '\'' +
+                ", document='" + document + '\'' +
                 ", cardCode='" + cardCode + '\'' +
                 ", cardName='" + cardName + '\'' +
                 ", licTradNum='" + licTradNum + '\'' +
@@ -508,7 +536,7 @@ public class BusinessPartnerDTO {
                 ", lastNameContactPerson='" + lastNameContactPerson + '\'' +
                 ", occupationContactPerson='" + occupationContactPerson + '\'' +
                 ", phoneContactPerson='" + phoneContactPerson + '\'' +
-                ", DateContactPerson=" + DateContactPerson +
+                ", dateContactPerson='" + dateContactPerson + '\'' +
                 ", idAddress='" + idAddress + '\'' +
                 ", address='" + address + '\'' +
                 ", codDepartamento='" + codDepartamento + '\'' +
@@ -527,10 +555,12 @@ public class BusinessPartnerDTO {
                 ", regional='" + regional + '\'' +
                 ", mailFE='" + mailFE + '\'' +
                 ", paymentCondition='" + paymentCondition + '\'' +
-                ", discount='" + discount + '\'' +
+                ", discount=" + discount +
                 ", taxType='" + taxType + '\'' +
-                ", creditLimit='" + creditLimit + '\'' +
-                ", comiteLimit='" + comiteLimit + '\'' +
+                ", creditLimit=" + creditLimit +
+                ", comiteLimit=" + comiteLimit +
+                ", codeResFis='" + codeResFis + '\'' +
+                ", descResFis='" + descResFis + '\'' +
                 '}';
     }
 }

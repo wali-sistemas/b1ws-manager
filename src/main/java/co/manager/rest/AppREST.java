@@ -264,7 +264,7 @@ public class AppREST {
             //Consultar las bodegas por defecto asignadas al asesor
             Object[] whsCodeDefaultSale = salesPersonSAPFacade.getWhsCodeDefaultBySeller(slpCode, companyname, false);
             if (whsCodeDefaultSale != null) {
-                objects = itemSAPFacade.getStockWarehouseCurrentBySeller(itemCode.trim(), whsCodeDefaultSale[0].toString() + "," + whsCodeDefaultSale[1].toString() + "," + whsCodeDefaultSale[2].toString(), companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+                objects = itemSAPFacade.getStockWarehouseCurrentBySeller(itemCode.trim(), whsCodeDefaultSale[0].toString() + "," + whsCodeDefaultSale[1].toString() + "," + whsCodeDefaultSale[2].toString() + "," + whsCodeDefaultSale[3].toString(), companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
             } else {
                 objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
             }

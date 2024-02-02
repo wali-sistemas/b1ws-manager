@@ -56,49 +56,6 @@ public class ItemSAPFacade {
         }
     }
 
-    public List<Object[]> getListItems(String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
-        StringBuilder sb = new StringBuilder();
-        sb.append("select * from ( ");
-        sb.append("select distinct cast(it.\"ItemCode\" as varchar(20)) as Producto, ");
-        sb.append("      cast(it.\"ItemName\" as varchar(100)) as Descripcion, ");
-        sb.append("      cast(it.\"PurPackUn\" as int) as Presentacion, cast(pre.\"Price\" as decimal(18,0)) as Precio, ");
-        sb.append("      cast(imp.\"Rate\" as int) as PorcentajeIva, cast(it.\"DfltWH\" as varchar(20)) as Bodega, ");
-        sb.append("      cast(case when (select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\" = de.\"BinAbs\" ");
-        sb.append("      where ub.\"Attr4Val\" = 'N' and de.\"OnHandQty\" > 0 and de.\"ItemCode\" = it. \"ItemCode\") >0 ");
-        sb.append("      then(inv.\"OnHand\" - inv.\"IsCommited\" - (select sum(de.\"OnHandQty\") ");
-        sb.append("      from OBIN ub ");
-        sb.append("      inner join OIBQ de on ub.\"AbsEntry\" = de.\"BinAbs\" where ub.\"Attr4Val\" = 'N' and de.\"OnHandQty\" > 0 and de.\"ItemCode\" = it.\"ItemCode\")) ");
-        sb.append("      else(inv. \"OnHand\" - inv. \"IsCommited\")end as int)as Stock, cast (it. \"PicturName\" as varchar (50))as PicturName ");
-        sb.append("from  OITM it ");
-        sb.append("inner join ITM1 pre on it.\"ItemCode\" = pre. \"ItemCode\" ");
-        sb.append("inner join OSTC imp on imp.\"Code\" = it. \"TaxCodeAR\" ");
-        sb.append("inner join OITW inv on inv.\"ItemCode\" = it. \"ItemCode\" ");
-        sb.append("where inv.\"OnHand\" > 0 and it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <>'' and inv.\"WhsCode\" in (");
-        if (companyName.contains("IGB")) {
-            //Filtro bodegas de solo ventas para IGB
-            sb.append("'01', '30', '05', '26'");
-        } else {
-            //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13', '26'");
-        }
-        sb.append(")and pre.\"PriceList\" =");
-        if (companyName.contains("IGB")) {
-            sb.append(4);
-        } else {
-            sb.append(1);
-        }
-        sb.append(") as t where t.Stock > 0 ");
-        sb.append("order by Producto ASC");
-        try {
-            return em.createNativeQuery(sb.toString()).getResultList();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el stock actual para " + companyName, e);
-        }
-        return null;
-    }
-
     public List<Object[]> getListItemsExtranet(String companyName, String statusModula, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();

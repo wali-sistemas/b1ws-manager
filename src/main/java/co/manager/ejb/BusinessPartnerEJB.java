@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 @Stateless
 public class BusinessPartnerEJB {
     private static final Logger CONSOLE = Logger.getLogger(BusinessPartnerEJB.class.getSimpleName());
-    private static final String taxCodeMotorepuesto = "IVAV01";
     private BusinessPartnersClient service;
 
     @Inject
@@ -48,7 +47,7 @@ public class BusinessPartnerEJB {
         }
     }
 
-    public ResponseDTO createBusinessPartner(BusinessPartnerDTO dto) {
+    public ResponseDTO createBusinessPartnerFromEcommerce(BusinessPartnerDTO dto) {
         String cardCode = "";
         //1. Login
         String sessionId = null;
@@ -76,9 +75,9 @@ public class BusinessPartnerEJB {
                 businessPartner.setPhone2(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
-                businessPartner.setuManejo("DIA");
-                businessPartner.setuDocFormEntFE(1l);
-                businessPartner.setuCelularFE(dto.getCellular());
+                businessPartner.setUmanejo("DIA");
+                businessPartner.setUdocFormEntFE(1l);
+                businessPartner.setUcelularFE(dto.getCellular());
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
                 businessPartner.setUbpcotp("01");
@@ -89,14 +88,14 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
-                businessPartner.setuTrasp("03");
+                businessPartner.setUtrasp("03");
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartner.setSalesPersonCode("05");
-                    businessPartner.setuAddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
                     businessPartner.setDebitorAccount("11100520");
                 } else {
                     businessPartner.setSalesPersonCode("22");
-                    businessPartner.setuAddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
                     businessPartner.setDebitorAccount("13050505");
                 }
                 businessPartner.setBilltoDefault("DIR WEB");
@@ -130,7 +129,7 @@ public class BusinessPartnerEJB {
 
                     address.setBpCode(dto.getCardCode());
                     address.setRowNum(0l);
-                    address.setuMunicipio(dto.getCodMunicipio());
+                    address.setUmunicipio(dto.getCodMunicipio());
                     addresses.add(address);
                 }
                 businessPartner.setBpAddresses(addresses);
@@ -148,7 +147,7 @@ public class BusinessPartnerEJB {
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente");
                     //agregar las resposabilidades fiscales al socio de negocio
-                    addRespFisSN(cardCode, res.getCardName(), sessionId, dto.getCompanyName());
+                    addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
@@ -167,7 +166,277 @@ public class BusinessPartnerEJB {
         return new ResponseDTO(0, cardCode);
     }
 
-    private void addRespFisSN(String cardCode, String cardName, String sessionId, String companyName) {
+    public ResponseDTO createBusinessPartnerFromWali(BusinessPartnerDTO dto) {
+        String cardCode = "";
+        //1. Login
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(dto.getCompanyName());
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
+                businessPartner.setCardCode(dto.getCardCode());
+                businessPartner.setCardName(dto.getCardName().toUpperCase());
+                businessPartner.setCardType("C");
+                businessPartner.setFederalTaxID(dto.getLicTradNum());
+                businessPartner.setProperties4(dto.getDocumentRut());
+                businessPartner.setProperties13(dto.getAcceptHabeasData());
+                businessPartner.setProperties15(dto.getFidelity());
+                businessPartner.setGroupCode(Long.valueOf(dto.getGrupo()));
+                businessPartner.setPhone1(dto.getPhone());
+                businessPartner.setPhone2(dto.getPhone());
+                businessPartner.setCellular(dto.getCellular());
+                businessPartner.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartner.setUmanejo("DIA");
+                businessPartner.setUdocFormEntFE(1l);
+                businessPartner.setUcelularFE(dto.getCellular());
+                businessPartner.setUbpcortc(dto.getTaxRegimen());
+                businessPartner.setUbpcotdc(dto.getTypeDoc());
+                businessPartner.setUbpcotp(dto.getTypePerson());
+                businessPartner.setUbpcocs(dto.getCodeCity());
+                businessPartner.setUbpcoCity(dto.getCodeCity());
+                businessPartner.setUbpcoNombre(dto.getFirstname().toUpperCase());
+                businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
+                businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
+                businessPartner.setUbpcoAddress(dto.getAddressMM().toUpperCase());
+                businessPartner.setUbpvtper("PNRE");
+                businessPartner.setUtrasp("03");
+                businessPartner.setTerritory(Long.valueOf(dto.getZona()));
+                businessPartner.setContactPerson(dto.getContactPerson());
+                businessPartner.setUregional(dto.getRegional());
+                businessPartner.setPayTermsGrpCode(Long.valueOf(dto.getPaymentCondition()));
+                businessPartner.setDiscountPercent(dto.getDiscount());
+                businessPartner.setVatLiable(dto.getTaxType());
+                businessPartner.setCreditLimit(dto.getCreditLimit());
+                businessPartner.setMaxCommitment(dto.getComiteLimit());
+                businessPartner.setSubjectToWithholdingTax(dto.getSubject());
+                businessPartner.setUproFidelizacion(dto.getDistributo());
+                businessPartner.setPriceListNum(Long.valueOf(dto.getPriceList()));
+                businessPartner.setFreeText(dto.getComment());
+
+                try {
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    businessPartner.setUfeccrea(date2);
+                } catch (Exception e) {
+                }
+
+                List<BusinessPartnersDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
+                for (int i = 0; i < 1; i++) {
+                    BusinessPartnersDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersDTO.ContactEmployees.ContactEmployee();
+                    contactEmployee.setName(dto.getContactPerson());
+                    contactEmployee.setFirstName(dto.getNameContactPerson());
+                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson());
+                    contactEmployee.setLastName(dto.getLastNameContactPerson());
+                    contactEmployee.setPosition(dto.getOccupationContactPerson());
+                    contactEmployee.setPhone1(dto.getPhoneContactPerson());
+                    contactEmployee.setDateOfBirth(dto.getDateContactPerson());
+                    contactEmployees.add(contactEmployee);
+                }
+                businessPartner.setContactEmployees(contactEmployees);
+
+                if (dto.getCompanyName().contains("VELEZ")) {
+                    businessPartner.setGroupCode(100l);
+                    businessPartner.setBilltoDefault("DIR WEB");
+                    businessPartner.setUbpcortc("RS");
+                    businessPartner.setUbpcotdc("13");
+                    businessPartner.setUbpcotp("01");
+                    businessPartner.setSalesPersonCode("05");
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE().toUpperCase());
+                    businessPartner.setDebitorAccount("11100520");
+                } else {
+                    businessPartner.setBilltoDefault(dto.getIdAddress());
+                    businessPartner.setSalesPersonCode(dto.getSlpCode());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE().toUpperCase());
+                    businessPartner.setDebitorAccount("13050505");
+                }
+
+                List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
+                    address.setStreet(dto.getAddress().toUpperCase());
+                    address.setCity(citySAPFacade.getNameMunicipio(dto.getCodMunicipio(), dto.getCompanyName(), false));
+                    address.setBlock(dto.getCodMunicipio());
+                    address.setState(dto.getCodDepartamento());
+                    address.setCountry("CO");
+                    address.setUlatitud(dto.getLatitudeMap());
+                    address.setUlongitud(dto.getLengthMap());
+
+                    if (i == 0) {
+                        address.setAddressType("bo_BillTo");
+                        if (dto.getCompanyName().contains("VELEZ")) {
+                            address.setAddressName("DIR WEB");
+                        } else {
+                            address.setAddressName(dto.getIdAddress());
+                        }
+                    } else {
+                        address.setAddressType("bo_ShipTo");
+                        if (dto.getCompanyName().contains("VELEZ")) {
+                            address.setAddressName("DIR WEB");
+                            address.setTaxCode("IVAV01");
+                        } else {
+                            address.setAddressName(dto.getIdAddress());
+                            address.setTaxCode(dto.getTaxAddress());
+                        }
+                    }
+
+                    address.setBpCode(dto.getCardCode());
+                    address.setRowNum(0l);
+                    address.setUmunicipio(dto.getCodMunicipio());
+                    addresses.add(address);
+                }
+                businessPartner.setBpAddresses(addresses);
+
+                CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
+                Gson gson = new Gson();
+                String json = gson.toJson(businessPartner);
+                CONSOLE.log(Level.INFO, json);
+                BusinessPartnersRestDTO res = service.addBusinessPartner(businessPartner, sessionId);
+                cardCode = res.getCardCode();
+
+                if (cardCode.isEmpty()) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
+                    return new ResponseDTO(-1, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
+                } else {
+                    CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente");
+                    //agregar las resposabilidades fiscales al socio de negocio
+                    if (dto.getCompanyName().contains("VELEZ")) {
+                        addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
+                    } else {
+                        addRespFisSN(cardCode, res.getCardName(), dto.getCodeResFis(), dto.getDescResFis(), sessionId, dto.getCompanyName());
+                    }
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, cardCode);
+    }
+
+    public ResponseDTO updateBusinessPartnerFromWali(BusinessPartnerDTO dto) {
+        //1. Login
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(dto.getCompanyName());
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                //TODO: obtener todo el object para setear los valor a modificar
+                BusinessPartnersRestDTO businessPartnersRestDTO = service.getBusinessPartner(dto.getCardCode(), sessionId);
+
+                businessPartnersRestDTO.setCardCode(dto.getCardCode());
+                businessPartnersRestDTO.setCardName(dto.getCardName().toUpperCase());
+                businessPartnersRestDTO.setCardType("C");
+                businessPartnersRestDTO.setFederalTaxID(dto.getLicTradNum());
+                businessPartnersRestDTO.setProperties4(dto.getDocumentRut());
+                businessPartnersRestDTO.setProperties13(dto.getAcceptHabeasData());
+                businessPartnersRestDTO.setProperties15(dto.getFidelity());
+                businessPartnersRestDTO.setGroupCode(Long.valueOf(dto.getGrupo()));
+                businessPartnersRestDTO.setPhone1(dto.getPhone());
+                businessPartnersRestDTO.setPhone2(dto.getPhone());
+                businessPartnersRestDTO.setCellular(dto.getCellular());
+                businessPartnersRestDTO.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartnersRestDTO.setUcelularFE(dto.getCellular());
+                businessPartnersRestDTO.setUbpcortc(dto.getTaxRegimen());
+                businessPartnersRestDTO.setUbpcotdc(dto.getTypeDoc());
+                businessPartnersRestDTO.setUbpcotp(dto.getTypePerson());
+                businessPartnersRestDTO.setUbpcocs(dto.getCodeCity());
+                businessPartnersRestDTO.setUbpcoCity(dto.getCodeCity());
+                businessPartnersRestDTO.setUbpcoNombre(dto.getFirstname().toUpperCase());
+                businessPartnersRestDTO.setUbpco1Apellido(dto.getLastname1().toUpperCase());
+                businessPartnersRestDTO.setUbpco2Apellido(dto.getLastname2().toUpperCase());
+                businessPartnersRestDTO.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartnersRestDTO.setTerritory(Long.valueOf(dto.getZona()));
+                businessPartnersRestDTO.setContactPerson(dto.getContactPerson());
+                businessPartnersRestDTO.setUregional(dto.getRegional());
+                businessPartnersRestDTO.setPayTermsGrpCode(Long.valueOf(dto.getPaymentCondition()));
+                businessPartnersRestDTO.setDiscountPercent(dto.getDiscount());
+                businessPartnersRestDTO.setVatLiable(dto.getTaxType());
+                businessPartnersRestDTO.setCreditLimit(dto.getCreditLimit());
+                businessPartnersRestDTO.setMaxCommitment(dto.getComiteLimit());
+                businessPartnersRestDTO.setSubjectToWithholdingTax(dto.getSubject());
+                businessPartnersRestDTO.setUproFidelizacion(dto.getDistributo());
+                businessPartnersRestDTO.setPriceListNum(Long.valueOf(dto.getPriceList()));
+
+                List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
+                for (int i = 0; i < 1; i++) {
+                    BusinessPartnersRestDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersRestDTO.ContactEmployees.ContactEmployee();
+                    contactEmployee.setName(dto.getContactPerson().toUpperCase());
+                    contactEmployee.setFirstName(dto.getNameContactPerson().toUpperCase());
+                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson().toUpperCase());
+                    contactEmployee.setLastName(dto.getLastNameContactPerson().toUpperCase());
+                    contactEmployee.setPosition(dto.getOccupationContactPerson().toUpperCase());
+                    contactEmployee.setPhone1(dto.getPhoneContactPerson());
+                    contactEmployee.setDateOfBirth(dto.getDateContactPerson());
+                    contactEmployees.add(contactEmployee);
+                }
+                businessPartnersRestDTO.setContactEmployees(contactEmployees);
+
+                if (dto.getCompanyName().contains("VELEZ")) {
+                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE().toUpperCase());
+                } else {
+                    businessPartnersRestDTO.setBilltoDefault(dto.getIdAddress());
+                    businessPartnersRestDTO.setSalesPersonCode(Long.valueOf(dto.getSlpCode()));
+                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE().toUpperCase());
+                }
+                //TODO: pendiente la modificación de direcciones
+
+                CONSOLE.log(Level.INFO, "Iniciando actualizacion de socio de negocio para {0}", dto.getCompanyName());
+                Gson gson = new Gson();
+                String json = gson.toJson(businessPartnersRestDTO);
+                CONSOLE.log(Level.INFO, json);
+                try {
+                    service.updateBusinessPartner(businessPartnersRestDTO, dto.getCardCode(), sessionId);
+                } catch (Exception e) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actulizando el socio de negocio " + dto.getCardCode(), e);
+                    return new ResponseDTO(-1, "Ocurrio un error actulizando el socio de negocio " + dto.getCardCode());
+                }
+                //TODO: pendiente la modificación de responsabilidad fiscal
+
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el socio de negocio " + dto.getCardCode(), e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, "Socio de negocio actualizado con éxito " + dto.getCardCode());
+    }
+
+    private void addRespFisSN(String cardCode, String cardName, String codeResFis, String descResFis, String sessionId, String companyName) {
         FeResFisSnClient client = new FeResFisSnClient(Constants.HANAWS_SL_URL);
         FeResFisSnDTO header = new FeResFisSnDTO();
         List<FeResFisSnDTO.FeResFisSnLDTO> detail = new ArrayList<>();
@@ -196,8 +465,8 @@ public class BusinessPartnerEJB {
         detailLine.setVisOrder(1l);
         detailLine.setObject("FE_RES_FIS_SN");
         detailLine.setLogInst(null);
-        detailLine.setuCodeResFis("R-99-PN");
-        detailLine.setuDescResFis("No aplica – Otros");
+        detailLine.setuCodeResFis(codeResFis);
+        detailLine.setuDescResFis(descResFis);
         detailLine.setuLineNum(1l);
 
         detail.add(detailLine);
@@ -220,7 +489,7 @@ public class BusinessPartnerEJB {
         }
     }
 
-    public ResponseDTO addRespFisMassiveSN(String companyName, List<Object[]> items) {
+    public ResponseDTO addRespFisMassiveSN(String companyName, List<Object[]> customers) {
         //1. Login0
         String sessionId = null;
         try {
@@ -236,9 +505,9 @@ public class BusinessPartnerEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                for (Object[] obj : items) {
+                for (Object[] obj : customers) {
                     //agregar las resposabilidades fiscales al socio de negocio
-                    addRespFisSN((String) obj[0], (String) obj[1], sessionId, companyName);
+                    addRespFisSN((String) obj[0], (String) obj[1], "RP-99-PN", "No aplica – Otros", sessionId, companyName);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);

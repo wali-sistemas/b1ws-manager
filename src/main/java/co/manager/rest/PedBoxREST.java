@@ -153,37 +153,6 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(0, warehouses)).build();
     }
 
-    /*@GET
-    @Path("items/{companyname}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getListItems(@PathParam("companyname") String companyname) {
-        CONSOLE.log(Level.INFO, "Listando items actual para la empresa [{0}]", companyname);
-        List<Object[]> objects = itemSAPFacade.getListItems(companyname, false);
-
-        if (objects == null || objects.size() <= 0) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando items actual para {0}", companyname);
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando items actual para " + companyname)).build();
-        }
-
-        List<ItemDTO> stock = new ArrayList<>();
-        for (Object[] obj : objects) {
-            ItemDTO dto = new ItemDTO();
-            dto.setItemCode((String) obj[0]);
-            dto.setItemName((String) obj[1]);
-            dto.setUnit("UND");//Modificar hasta que compras termine el proyecto de unidad de empaque.
-            dto.setPresentation((Integer) obj[2]);
-            dto.setPrice((BigDecimal) obj[3]);
-            dto.setIva((Integer) obj[4]);
-            dto.setDiscount(0);
-            dto.setWhsCode((String) obj[5]);
-            dto.setPictureUrl(managerApplicationBean.obtenerValorPropiedad(Constants.URL_SHARED) + "images/mtz/" + obj[7]);
-            stock.add(dto);
-        }
-        CONSOLE.log(Level.INFO, "Retornando items actual para la empresa [{0}]", companyname);
-        return Response.ok(new ResponseDTO(0, stock)).build();
-    }*/
-
     @GET
     @Path("items/extranet/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -1237,26 +1206,29 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo acceptHabeasData es obligatorio.")).build();
         }
 
-        //Validar si ya existe el cliente en SAP.
-        if (businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false)) {
-            CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
-            return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
-        }
-
-        CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
-
         int digito = basicFunctions.getDigitoDian(dto.getDocument());
 
         dto.setLicTradNum(dto.getDocument() + "-" + digito);
         dto.setCardCode("C" + dto.getDocument());
-        dto.setCardName(dto.getLastname1().toUpperCase() + " " + dto.getLastname2().toUpperCase() + " " + dto.getFirstname().toUpperCase());
-        //dto.setLicTradNum(dto.getCardCode().replace("C", ""));
 
-        Gson gson = new Gson();
-        String json = gson.toJson(dto);
-        CONSOLE.log(Level.INFO, json);
+        if (dto.getTypeTransaction().equals("add")) {
+            //Validar si ya existe el cliente en SAP.
+            if (businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false)) {
+                CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
+                return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
+            }
 
-        return Response.ok(businessPartnerEJB.createBusinessPartner(dto)).build();
+            CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en {0}", dto.getCompanyName());
+            Gson gson = new Gson();
+            String json = gson.toJson(dto);
+            CONSOLE.log(Level.INFO, json);
+            return Response.ok(businessPartnerEJB.createBusinessPartnerFromWali(dto)).build();
+        } else {
+            Gson gson = new Gson();
+            String json = gson.toJson(dto);
+            CONSOLE.log(Level.INFO, json);
+            return Response.ok(businessPartnerEJB.updateBusinessPartnerFromWali(dto)).build();
+        }
     }
 
     @POST

@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ConceptCalidosoDTO {
     private String code;
-    private String Concepto;
+    private String concepto;
 
     public ConceptCalidosoDTO() {
     }
 
     public ConceptCalidosoDTO(String code, String concepto) {
         this.code = code;
-        Concepto = concepto;
+        this.concepto = concepto;
     }
 
     public String getCode() {
@@ -27,18 +27,18 @@ public class ConceptCalidosoDTO {
     }
 
     public String getConcepto() {
-        return Concepto;
+        return concepto;
     }
 
     public void setConcepto(String concepto) {
-        Concepto = concepto;
+        this.concepto = concepto;
     }
 
     @Override
     public String toString() {
-        return "RedencionConceptoDTO{" +
+        return "ConceptCalidosoDTO{" +
                 "code='" + code + '\'' +
-                ", Concepto='" + Concepto + '\'' +
+                ", concepto='" + concepto + '\'' +
                 '}';
     }
 }
