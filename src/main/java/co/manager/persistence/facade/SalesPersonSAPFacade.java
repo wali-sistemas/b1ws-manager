@@ -316,7 +316,7 @@ public class SalesPersonSAPFacade {
         if (companyName.contains("VARROC")) {
             sb.append(",cast(ifnull(\"Memo\",'26') as varchar(3)) as whsCodeDefTireCali ");
         } else {
-            sb.append(",'' as whsCodeDefTireCali");
+            sb.append(",'00' as whsCodeDefTireCali ");
         }
         sb.append("from OSLP ");
         sb.append("where \"SlpCode\"='");
@@ -326,7 +326,7 @@ public class SalesPersonSAPFacade {
             return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas por defecto asignadas al asesor " + slpCode + " en " + companyName);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas por defecto asignadas al asesor " + slpCode + " en " + companyName, e);
         }
         return null;
     }
