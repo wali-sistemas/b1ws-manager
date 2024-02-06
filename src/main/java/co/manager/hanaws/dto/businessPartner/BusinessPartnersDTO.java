@@ -607,25 +607,6 @@ public class BusinessPartnersDTO implements Serializable {
             public void setUlongitud(String ulongitud) {
                 this.ulongitud = ulongitud;
             }
-
-            @Override
-            public String toString() {
-                return "BPAddress{" +
-                        "addressName='" + addressName + '\'' +
-                        ", street='" + street + '\'' +
-                        ", block='" + block + '\'' +
-                        ", city='" + city + '\'' +
-                        ", state='" + state + '\'' +
-                        ", country='" + country + '\'' +
-                        ", addressType='" + addressType + '\'' +
-                        ", taxCode='" + taxCode + '\'' +
-                        ", bpCode='" + bpCode + '\'' +
-                        ", rowNum=" + rowNum +
-                        ", umunicipio='" + umunicipio + '\'' +
-                        ", ulatitud='" + ulatitud + '\'' +
-                        ", ulongitud='" + ulongitud + '\'' +
-                        '}';
-            }
         }
     }
 

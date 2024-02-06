@@ -1,6 +1,7 @@
 package co.manager.hanaws.client.businessPartners;
 
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 
 import javax.ws.rs.client.Client;
@@ -33,7 +34,12 @@ public class BusinessPartnersClient {
                 .get(BusinessPartnersRestDTO.class);
     }
 
-    public BusinessPartnersRestDTO addBusinessPartner(BusinessPartnersDTO dto, String sessionId) {
+    public BusinessPartnersRestDTO addBusinessPartnerFromWali(BusinessPartnersDTO dto, String sessionId) {
+        return webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+                .post(Entity.entity(dto, MediaType.APPLICATION_JSON), BusinessPartnersRestDTO.class);
+    }
+
+    public BusinessPartnersRestDTO addBusinessPartnerFromEcommerce(BusinessPartnersEcommerceDTO dto, String sessionId) {
         return webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), BusinessPartnersRestDTO.class);
     }

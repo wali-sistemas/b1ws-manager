@@ -5,6 +5,7 @@ import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
 import co.manager.hanaws.client.udo.FeResFisSnClient;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnRestDTO;
@@ -64,7 +65,7 @@ public class BusinessPartnerEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
+                BusinessPartnersEcommerceDTO businessPartner = new BusinessPartnersEcommerceDTO();
                 businessPartner.setCardCode(dto.getCardCode());
                 businessPartner.setCardName(dto.getCardName().toUpperCase());
                 businessPartner.setCardType("C");
@@ -105,9 +106,9 @@ public class BusinessPartnerEJB {
                 } catch (Exception e) {
                 }
 
-                List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                List<BusinessPartnersEcommerceDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
                 for (int i = 0; i < 2; i++) {
-                    BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
+                    BusinessPartnersEcommerceDTO.BPAddresses.BPAddress address = new BusinessPartnersEcommerceDTO.BPAddresses.BPAddress();
                     address.setAddressName("DIR WEB");
                     address.setStreet(dto.getAddress().toUpperCase());
                     address.setCity(citySAPFacade.getNameMunicipio(dto.getCodMunicipio(), dto.getCompanyName(), false));
@@ -138,7 +139,7 @@ public class BusinessPartnerEJB {
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
-                BusinessPartnersRestDTO res = service.addBusinessPartner(businessPartner, sessionId);
+                BusinessPartnersRestDTO res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 
                 if (cardCode.isEmpty()) {
@@ -299,7 +300,7 @@ public class BusinessPartnerEJB {
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
-                BusinessPartnersRestDTO res = service.addBusinessPartner(businessPartner, sessionId);
+                BusinessPartnersRestDTO res = service.addBusinessPartnerFromWali(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 
                 if (cardCode.isEmpty()) {
