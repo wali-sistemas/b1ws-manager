@@ -27,6 +27,8 @@ public class PersistenceConf {
     private EntityManager emHANAREDPLAS;
     @PersistenceContext(unitName = "IGBNOVAWEBPU")
     private EntityManager emIGBNOVAWEBPU;
+    @PersistenceContext(unitName = "MTZNOVAWEBPU")
+    private EntityManager emMTZNOVAWEBPU;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
@@ -35,6 +37,8 @@ public class PersistenceConf {
             switch (companyName) {
                 case "IGB":
                     return emIGBNOVAWEBPU;
+                case "VARROC":
+                    return emMTZNOVAWEBPU;
                 default:
                     return null;
             }

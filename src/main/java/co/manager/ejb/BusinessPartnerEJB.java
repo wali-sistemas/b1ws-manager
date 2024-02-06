@@ -186,7 +186,7 @@ public class BusinessPartnerEJB {
             try {
                 BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
                 businessPartner.setCardCode(dto.getCardCode());
-                businessPartner.setCardName(dto.getCardName().toUpperCase());
+                businessPartner.setCardName(dto.getCardName());
                 businessPartner.setCardType("C");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setProperties4(dto.getDocumentRut());
@@ -196,7 +196,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setPhone1(dto.getPhone());
                 businessPartner.setPhone2(dto.getPhone());
                 businessPartner.setCellular(dto.getCellular());
-                businessPartner.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartner.setEmailAddress(dto.getMail());
                 businessPartner.setUmanejo("DIA");
                 businessPartner.setUdocFormEntFE(1l);
                 businessPartner.setUcelularFE(dto.getCellular());
@@ -205,10 +205,10 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcotp(dto.getTypePerson());
                 businessPartner.setUbpcocs(dto.getCodeCity());
                 businessPartner.setUbpcoCity(dto.getCodeCity());
-                businessPartner.setUbpcoNombre(dto.getFirstname().toUpperCase());
-                businessPartner.setUbpco1Apellido(dto.getLastname1().toUpperCase());
-                businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
-                businessPartner.setUbpcoAddress(dto.getAddressMM().toUpperCase());
+                businessPartner.setUbpcoNombre(dto.getFirstname());
+                businessPartner.setUbpco1Apellido(dto.getLastname1());
+                businessPartner.setUbpco2Apellido(dto.getLastname2());
+                businessPartner.setUbpcoAddress(dto.getAddressMM());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setUtrasp("03");
                 businessPartner.setTerritory(Long.valueOf(dto.getZona()));
@@ -251,19 +251,19 @@ public class BusinessPartnerEJB {
                     businessPartner.setUbpcotdc("13");
                     businessPartner.setUbpcotp("01");
                     businessPartner.setSalesPersonCode("05");
-                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE().toUpperCase());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE());
                     businessPartner.setDebitorAccount("11100520");
                 } else {
                     businessPartner.setBilltoDefault(dto.getIdAddress());
                     businessPartner.setSalesPersonCode(dto.getSlpCode());
-                    businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE().toUpperCase());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE());
                     businessPartner.setDebitorAccount("13050505");
                 }
 
                 List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
                 for (int i = 0; i < 2; i++) {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
-                    address.setStreet(dto.getAddress().toUpperCase());
+                    address.setStreet(dto.getAddress());
                     address.setCity(citySAPFacade.getNameMunicipio(dto.getCodMunicipio(), dto.getCompanyName(), false));
                     address.setBlock(dto.getCodMunicipio());
                     address.setState(dto.getCodDepartamento());
@@ -352,7 +352,7 @@ public class BusinessPartnerEJB {
                 BusinessPartnersRestDTO businessPartnersRestDTO = service.getBusinessPartner(dto.getCardCode(), sessionId);
 
                 businessPartnersRestDTO.setCardCode(dto.getCardCode());
-                businessPartnersRestDTO.setCardName(dto.getCardName().toUpperCase());
+                businessPartnersRestDTO.setCardName(dto.getCardName());
                 businessPartnersRestDTO.setCardType("C");
                 businessPartnersRestDTO.setFederalTaxID(dto.getLicTradNum());
                 businessPartnersRestDTO.setProperties4(dto.getDocumentRut());
@@ -362,17 +362,17 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setPhone1(dto.getPhone());
                 businessPartnersRestDTO.setPhone2(dto.getPhone());
                 businessPartnersRestDTO.setCellular(dto.getCellular());
-                businessPartnersRestDTO.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartnersRestDTO.setEmailAddress(dto.getMail());
                 businessPartnersRestDTO.setUcelularFE(dto.getCellular());
                 businessPartnersRestDTO.setUbpcortc(dto.getTaxRegimen());
                 businessPartnersRestDTO.setUbpcotdc(dto.getTypeDoc());
                 businessPartnersRestDTO.setUbpcotp(dto.getTypePerson());
                 businessPartnersRestDTO.setUbpcocs(dto.getCodeCity());
                 businessPartnersRestDTO.setUbpcoCity(dto.getCodeCity());
-                businessPartnersRestDTO.setUbpcoNombre(dto.getFirstname().toUpperCase());
-                businessPartnersRestDTO.setUbpco1Apellido(dto.getLastname1().toUpperCase());
-                businessPartnersRestDTO.setUbpco2Apellido(dto.getLastname2().toUpperCase());
-                businessPartnersRestDTO.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartnersRestDTO.setUbpcoNombre(dto.getFirstname());
+                businessPartnersRestDTO.setUbpco1Apellido(dto.getLastname1());
+                businessPartnersRestDTO.setUbpco2Apellido(dto.getLastname2());
+                businessPartnersRestDTO.setUbpcoAddress(dto.getAddress());
                 businessPartnersRestDTO.setTerritory(Long.valueOf(dto.getZona()));
                 businessPartnersRestDTO.setContactPerson(dto.getContactPerson());
                 businessPartnersRestDTO.setUregional(dto.getRegional());
@@ -388,11 +388,11 @@ public class BusinessPartnerEJB {
                 List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
                 for (int i = 0; i < 1; i++) {
                     BusinessPartnersRestDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersRestDTO.ContactEmployees.ContactEmployee();
-                    contactEmployee.setName(dto.getContactPerson().toUpperCase());
-                    contactEmployee.setFirstName(dto.getNameContactPerson().toUpperCase());
-                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson().toUpperCase());
-                    contactEmployee.setLastName(dto.getLastNameContactPerson().toUpperCase());
-                    contactEmployee.setPosition(dto.getOccupationContactPerson().toUpperCase());
+                    contactEmployee.setName(dto.getContactPerson());
+                    contactEmployee.setFirstName(dto.getNameContactPerson());
+                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson());
+                    contactEmployee.setLastName(dto.getLastNameContactPerson());
+                    contactEmployee.setPosition(dto.getOccupationContactPerson());
                     contactEmployee.setPhone1(dto.getPhoneContactPerson());
                     contactEmployee.setDateOfBirth(dto.getDateContactPerson());
                     contactEmployees.add(contactEmployee);
@@ -400,11 +400,11 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setContactEmployees(contactEmployees);
 
                 if (dto.getCompanyName().contains("VELEZ")) {
-                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE().toUpperCase());
+                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE());
                 } else {
                     businessPartnersRestDTO.setBilltoDefault(dto.getIdAddress());
                     businessPartnersRestDTO.setSalesPersonCode(Long.valueOf(dto.getSlpCode()));
-                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE().toUpperCase());
+                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE());
                 }
                 //TODO: pendiente la modificación de direcciones
 
@@ -434,6 +434,7 @@ public class BusinessPartnerEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
+        CONSOLE.log(Level.SEVERE, "Socio de negocio actualizado con éxito " + dto.getCardCode());
         return new ResponseDTO(0, "Socio de negocio actualizado con éxito " + dto.getCardCode());
     }
 
