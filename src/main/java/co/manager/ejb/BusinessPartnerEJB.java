@@ -434,7 +434,7 @@ public class BusinessPartnerEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        CONSOLE.log(Level.SEVERE, "Socio de negocio actualizado con éxito " + dto.getCardCode());
+        CONSOLE.log(Level.INFO, "Socio de negocio actualizado con éxito " + dto.getCardCode());
         return new ResponseDTO(0, "Socio de negocio actualizado con éxito " + dto.getCardCode());
     }
 

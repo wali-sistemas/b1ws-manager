@@ -511,7 +511,7 @@ public class ItemSAPFacade {
         sb.append("select t.Producto,t.Bodega,sum(t.Stock)as Stock from ( ");
         if (companyName.contains("VARROC")) {
             //LINK MTZ
-            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('32' as varchar(20))as Bodega,cast(case when (");
             sb.append("  select sum(de.\"OnHandQty\") ");
             sb.append("  from OBIN ub ");
             sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
