@@ -1204,6 +1204,9 @@ public class PedBoxREST {
         } else if (dto.getAcceptHabeasData() == null || dto.getAcceptHabeasData().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo acceptHabeasData es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo acceptHabeasData es obligatorio.")).build();
+        } else if (dto.getTransp() == null || dto.getTransp().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo transportadora es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo transportadora es obligatorio.")).build();
         }
 
         int digito = basicFunctions.getDigitoDian(dto.getDocument());

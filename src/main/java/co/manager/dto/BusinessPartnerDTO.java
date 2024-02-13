@@ -9,7 +9,6 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BusinessPartnerDTO {
-    private static String transp = "03";
     private static Date createDate;
     private static String documentRut = "Y";
     private static String fidelity = "Y";
@@ -33,6 +32,7 @@ public class BusinessPartnerDTO {
     private String grupo;
     private String acceptHabeasData;
     private String companyName;
+    private String transp;
     //contacto
     private String contactPerson;
     private String nameContactPerson;
@@ -73,12 +73,12 @@ public class BusinessPartnerDTO {
     public BusinessPartnerDTO() {
     }
 
-    public static String getTransp() {
+    public String getTransp() {
         return transp;
     }
 
-    public static void setTransp(String transp) {
-        BusinessPartnerDTO.transp = transp;
+    public void setTransp(String transp) {
+        this.transp = transp;
     }
 
     public static Date getCreateDate() {
