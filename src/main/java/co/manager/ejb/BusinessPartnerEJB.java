@@ -209,7 +209,6 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco1Apellido(dto.getLastname1());
                 businessPartner.setUbpco2Apellido(dto.getLastname2());
                 businessPartner.setUbpcoAddress(dto.getAddressMM());
-                businessPartner.setUbpvtper("PNRE");
                 businessPartner.setUtrasp(dto.getTransp());
                 businessPartner.setTerritory(Long.valueOf(dto.getZona()));
                 businessPartner.setContactPerson(dto.getContactPerson());

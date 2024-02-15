@@ -16,7 +16,6 @@ public class BusinessPartnerDTO {
     private static String aut4 = "Y";
     private static String subject = "Y";
     private static String distributo = "02";
-    private static String priceList = "4";
     private static Character cardType = 'C';
     private String typeTransaction;
     private String document;
@@ -33,6 +32,7 @@ public class BusinessPartnerDTO {
     private String acceptHabeasData;
     private String companyName;
     private String transp;
+    private String priceList;
     //contacto
     private String contactPerson;
     private String nameContactPerson;
@@ -137,12 +137,12 @@ public class BusinessPartnerDTO {
         BusinessPartnerDTO.distributo = distributo;
     }
 
-    public static String getPriceList() {
+    public String getPriceList() {
         return priceList;
     }
 
-    public static void setPriceList(String priceList) {
-        BusinessPartnerDTO.priceList = priceList;
+    public void setPriceList(String priceList) {
+        this.priceList = priceList;
     }
 
     public static Character getCardType() {
