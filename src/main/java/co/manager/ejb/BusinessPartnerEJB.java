@@ -509,7 +509,7 @@ public class BusinessPartnerEJB {
             try {
                 for (Object[] obj : customers) {
                     //agregar las resposabilidades fiscales al socio de negocio
-                    addRespFisSN((String) obj[0], (String) obj[1], "RP-99-PN", "No aplica – Otros", sessionId, companyName);
+                    addRespFisSN((String) obj[0], (String) obj[1], "R-99-PN", "No aplica – Otros", sessionId, companyName);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
