@@ -9,7 +9,6 @@ import java.util.Date;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BusinessPartnerDTO {
-    private static String transp = "03";
     private static Date createDate;
     private static String documentRut = "Y";
     private static String fidelity = "Y";
@@ -17,7 +16,6 @@ public class BusinessPartnerDTO {
     private static String aut4 = "Y";
     private static String subject = "Y";
     private static String distributo = "02";
-    private static String priceList = "4";
     private static Character cardType = 'C';
     private String typeTransaction;
     private String document;
@@ -33,6 +31,8 @@ public class BusinessPartnerDTO {
     private String grupo;
     private String acceptHabeasData;
     private String companyName;
+    private String transp;
+    private String priceList;
     //contacto
     private String contactPerson;
     private String nameContactPerson;
@@ -73,12 +73,12 @@ public class BusinessPartnerDTO {
     public BusinessPartnerDTO() {
     }
 
-    public static String getTransp() {
+    public String getTransp() {
         return transp;
     }
 
-    public static void setTransp(String transp) {
-        BusinessPartnerDTO.transp = transp;
+    public void setTransp(String transp) {
+        this.transp = transp;
     }
 
     public static Date getCreateDate() {
@@ -137,12 +137,12 @@ public class BusinessPartnerDTO {
         BusinessPartnerDTO.distributo = distributo;
     }
 
-    public static String getPriceList() {
+    public String getPriceList() {
         return priceList;
     }
 
-    public static void setPriceList(String priceList) {
-        BusinessPartnerDTO.priceList = priceList;
+    public void setPriceList(String priceList) {
+        this.priceList = priceList;
     }
 
     public static Character getCardType() {

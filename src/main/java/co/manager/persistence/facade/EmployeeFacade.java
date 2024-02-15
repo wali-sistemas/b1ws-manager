@@ -127,8 +127,10 @@ public class EmployeeFacade {
         sb.append("from rhh_emplea ");
         sb.append("where cod_emp='");
         sb.append(empId);
-        sb.append("' and cast(fec_nac as date)='");
-        sb.append(birthdate);
+        if (birthdate != null || !birthdate.isEmpty()) {
+            sb.append("' and cast(fec_nac as date)='");
+            sb.append(birthdate);
+        }
         sb.append("'");
         try {
             int result = (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB).createNativeQuery(sb.toString()).getSingleResult();

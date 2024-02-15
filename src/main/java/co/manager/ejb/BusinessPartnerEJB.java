@@ -209,8 +209,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco1Apellido(dto.getLastname1());
                 businessPartner.setUbpco2Apellido(dto.getLastname2());
                 businessPartner.setUbpcoAddress(dto.getAddressMM());
-                businessPartner.setUbpvtper("PNRE");
-                businessPartner.setUtrasp("03");
+                businessPartner.setUtrasp(dto.getTransp());
                 businessPartner.setTerritory(Long.valueOf(dto.getZona()));
                 businessPartner.setContactPerson(dto.getContactPerson());
                 businessPartner.setUregional(dto.getRegional());
@@ -384,6 +383,7 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setSubjectToWithholdingTax(dto.getSubject());
                 businessPartnersRestDTO.setUproFidelizacion(dto.getDistributo());
                 businessPartnersRestDTO.setPriceListNum(Long.valueOf(dto.getPriceList()));
+                businessPartnersRestDTO.setUtrasp(dto.getTransp());
 
                 List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
                 for (int i = 0; i < 1; i++) {
