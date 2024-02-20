@@ -412,7 +412,7 @@ public class ItemSAPFacade {
         } else {
             if (statusModula.equals("true")) {
                 //MDL IGB
-                //TODO: se fija bodega 01 para modula, debido a que en pedbox unificamos la bodega 30 en la 01
+                //TODO: se fija bodega 01 para modula, debido a que unificamos la bodega 30 en la 01
                 sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('01' as varchar(20))as Bodega,cast(case when (");
                 sb.append("  select sum(de.\"OnHandQty\") ");
                 sb.append("  from OBIN ub ");
