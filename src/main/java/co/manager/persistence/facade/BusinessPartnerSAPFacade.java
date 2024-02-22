@@ -203,12 +203,12 @@ public class BusinessPartnerSAPFacade {
         sb.append("  from ( ");
         sb.append("   select t.\"SlpCode\",t.\"CardCode\",cast(t.\"DiasAtraso\" as varchar(1000))as \"DiasAtraso\",sum(cast(t.\"Saldo\" as numeric(18,0)))as \"Saldo\",t.\"E_Mail\",t.\"Phone2\" ");
         sb.append("   from ( ");
-        sb.append("    select f.\"SlpCode\",f.\"CardCode\",cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as \"Saldo\",days_between(current_date,f.\"DocDueDate\")*-1 as \"DiasAtraso\",s.\"E_Mail\",s.\"Phone2\" ");
+        sb.append("    select s.\"SlpCode\",f.\"CardCode\",cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as \"Saldo\",days_between(current_date,f.\"DocDueDate\")*-1 as \"DiasAtraso\",s.\"E_Mail\",s.\"Phone2\" ");
         sb.append("    from OINV f ");
         sb.append("    inner join OCRD s ON f.\"CardCode\"=s.\"CardCode\" ");
         sb.append("    where (f.\"DocTotal\"-f.\"PaidToDate\")>1999 and f.\"DocStatus\"='O' ");
         sb.append("   union all ");
-        sb.append("    select n.\"SlpCode\",n.\"CardCode\",cast((n.\"DocTotal\"-n.\"PaidToDate\")as numeric(18,0))*-1 as \"Saldo\",days_between(current_date,n.\"DocDueDate\")*-1 as \"DiasAtraso\",s.\"E_Mail\",s.\"Phone2\" ");
+        sb.append("    select s.\"SlpCode\",n.\"CardCode\",cast((n.\"DocTotal\"-n.\"PaidToDate\")as numeric(18,0))*-1 as \"Saldo\",days_between(current_date,n.\"DocDueDate\")*-1 as \"DiasAtraso\",s.\"E_Mail\",s.\"Phone2\" ");
         sb.append("    from ORIN n ");
         sb.append("    inner join OCRD s ON n.\"CardCode\"=s.\"CardCode\" ");
         sb.append("    where (n.\"DocTotal\"-n.\"PaidToDate\")>1999 and n.\"DocStatus\"='O' ");
