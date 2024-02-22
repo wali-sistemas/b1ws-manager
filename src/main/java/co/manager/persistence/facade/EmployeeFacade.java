@@ -127,7 +127,7 @@ public class EmployeeFacade {
         sb.append("from rhh_emplea ");
         sb.append("where cod_emp='");
         sb.append(empId);
-        if (birthdate != null || !birthdate.isEmpty()) {
+        if (!birthdate.equals("null")) {
             sb.append("' and cast(fec_nac as date)='");
             sb.append(birthdate);
         }
