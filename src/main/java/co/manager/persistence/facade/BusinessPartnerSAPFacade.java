@@ -113,7 +113,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       'Factura'as tipoDoc,cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("       cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, ");
         sb.append("       cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
-        sb.append("       (select max(cast(v.\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp,cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,f.\"SlpCode\",s.\"GroupNum\", ");
+        sb.append("       (select max(cast(v.\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp,cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,s.\"SlpCode\",s.\"GroupNum\", ");
         sb.append("       s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE ");
         sb.append("      from  OINV f ");
         sb.append("      inner join OCRD s ON f.\"CardCode\" = s.\"CardCode\" ");
@@ -122,7 +122,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("       'Nota Crédito'as tipoDoc,cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("       cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, ");
         sb.append("       cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
-        sb.append("       null as fechaUltComp,cast(n.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,n.\"SlpCode\",s.\"GroupNum\",s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE ");
+        sb.append("       null as fechaUltComp,cast(n.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,s.\"SlpCode\",s.\"GroupNum\",s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE ");
         sb.append("      from  ORIN n ");
         sb.append("      inner join OCRD s ON n.\"CardCode\" = s.\"CardCode\" ");
         sb.append("      where n.\"DocStatus\" = 'O' ");
