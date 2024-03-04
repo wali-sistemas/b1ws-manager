@@ -196,7 +196,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  select y.\"SlpCode\",y.\"CardCode\", ");
         sb.append("   case when y.\"DiasAtraso\" < 0 then sum(y.\"Saldo\") else 0 end as \"Sin vencer\", ");
         sb.append("   case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
-        sb.append("   case when (y.\"DiasAtraso\" >= 30 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
+        sb.append("   case when (y.\"DiasAtraso\" >= 31 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
         sb.append("   case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
         sb.append("   case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
         sb.append("   case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\",y.\"E_Mail\",y.\"Phone2\" ");

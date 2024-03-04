@@ -5,10 +5,7 @@ import co.manager.ejb.ManagerApplicationBean;
 import co.manager.ejb.SalesOrderEJB;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
-import co.manager.persistence.entity.OrderAPP;
-import co.manager.persistence.entity.OrderDetailAPP;
-import co.manager.persistence.entity.OrderDetailPedbox;
-import co.manager.persistence.entity.OrderPedbox;
+import co.manager.persistence.entity.*;
 import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
@@ -59,6 +56,8 @@ public class AppREST {
     private OrderAPPFacade orderAPPFacade;
     @EJB
     private OrderDetailAPPFacade orderDetailAPPFacade;
+    @EJB
+    private HistoryGeoLocationSAPFacade historyGeoLocationSAPFacade;
 
     @GET
     @Path("active-companies")
@@ -632,6 +631,75 @@ public class AppREST {
         }
         CONSOLE.log(Level.INFO, "Retornando el listado de la cartera de clientes asignados al vendedor {0} en la empresa [{1}]", new Object[]{slpCode, companyname});
         return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
+    }
+
+    @POST
+    @Path("create-record-geo-location")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createRecordGeoLocation(HistoryGeoLocationDTO dto) {
+        if (dto.getSlpCode() == null || dto.getSlpCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el registro de geo-localizacion. Campo slpCode es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el registro de geo-localizacion. Campo slpCode es obligatorio.")).build();
+        } else if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el registro de geo-localizacion. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el registro de geo-localizacion. Campo companyName es obligatorio.")).build();
+        } else if (dto.getLatitude() == null || dto.getLatitude().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el registro de geo-localizacion. Campo latitude es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el registro de geo-localizacion. Campo latitude es obligatorio.")).build();
+        } else if (dto.getLongitude() == null || dto.getLongitude().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el registro de geo-localizacion. Campo longitude es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el registro de geo-localizacion. Campo longitude es obligatorio.")).build();
+        } else if (dto.getDocType() == null || dto.getDocType().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el registro de geo-localizacion. Campo docType es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el registro de geo-localizacion. Campo docType es obligatorio.")).build();
+        }
+        CONSOLE.log(Level.INFO, "Iniciando servicio para crear registro de geo-localizacion para el asesor {0} en {1}", new Object[]{dto.getSlpCode(), dto.getCompanyName()});
+
+        HistoryGeoLocationSAP entity = new HistoryGeoLocationSAP();
+        entity.setCode(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + dto.getSlpCode());
+        entity.setName(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + dto.getSlpCode());
+        entity.setUslpCode(dto.getSlpCode());
+        entity.setUdocDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        entity.setUdocTime(new SimpleDateFormat("HHmm").format(new Date()));
+        entity.setUlatitud(dto.getLatitude());
+        entity.setUlongitud(dto.getLongitude());
+        entity.setUdocType(dto.getDocType());
+        try {
+            historyGeoLocationSAPFacade.addHistoryGeoLocation(entity, dto.getCompanyName(), false);
+            CONSOLE.log(Level.INFO, "Asesor [" + dto.getSlpCode() + "]-" + dto.getCompanyName() + " geo-localizado con exito");
+            return Response.ok(new ResponseDTO(0, "Asesor [" + dto.getSlpCode() + "]-" + dto.getCompanyName() + " geo-localizado con exito")).build();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error geo-localizando el asesor " + dto.getSlpCode() + " en " + dto.getCompanyName());
+            return Response.ok(-1, "Ocurrio un error geo-localizando el asesor " + dto.getSlpCode() + " en " + dto.getCompanyName()).build();
+        }
+    }
+
+    @GET
+    @Path("get-geo-location/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getGeoLoactionByAsesor(@PathParam("companyname") String companyname,
+                                           @QueryParam("slpcode") String slpCode,
+                                           @QueryParam("year") String year,
+                                           @QueryParam("month") String month,
+                                           @QueryParam("day") String day) {
+        List<Object[]> objs = historyGeoLocationSAPFacade.listGeoLocationBySeller(slpCode, year, month, day, companyname, false);
+        List<HistoryGeoLocationDTO> recordGeoLocations = new ArrayList<>();
+        for (Object[] obj : objs) {
+            HistoryGeoLocationDTO dto = new HistoryGeoLocationDTO();
+            dto.setSlpCode((String) obj[0]);
+            dto.setSlpName((String) obj[1]);
+            dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format(obj[2]));
+            dto.setDocTime((String) obj[3]);
+            dto.setLatitude((String) obj[4]);
+            dto.setLongitude((String) obj[5]);
+            dto.setDocType((String) obj[6]);
+            dto.setRegional((String) obj[7]);
+            recordGeoLocations.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, recordGeoLocations)).build();
     }
 
     @POST
