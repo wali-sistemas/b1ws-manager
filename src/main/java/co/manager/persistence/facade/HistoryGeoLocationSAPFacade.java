@@ -53,7 +53,8 @@ public class HistoryGeoLocationSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select distinct cast(h.\"U_SlpCode\" as varchar)as slpcode,cast(a.\"SlpName\" as varchar)as slpName, ");
         sb.append(" cast(h.\"U_Fecha\" as date)as fecha,cast(h.\"U_Hora\" as varchar)as hora,cast(h.\"U_Latitud\" as varchar)as lat, ");
-        sb.append(" cast(h.\"U_Longitud\" as varchar)as lon,cast(h.\"U_Tipo\" as varchar)as tipo,cast(a.\"Memo\" as varchar)as regional ");
+        sb.append(" cast(h.\"U_Longitud\" as varchar)as lon,cast(h.\"U_Tipo\" as varchar)as tipo,cast(a.\"Memo\" as varchar)as regional, ");
+        sb.append(" cast(a.\"U_CEDULA\" as varchar)as cedula ");
         sb.append("from \"@HIST_COORDENADAS\" h ");
         sb.append("inner join \"OSLP\" a on a.\"SlpCode\"=h.\"U_SlpCode\" ");
         sb.append("where h.\"U_SlpCode\"=");

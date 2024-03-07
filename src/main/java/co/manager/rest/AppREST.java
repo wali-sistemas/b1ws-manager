@@ -697,6 +697,7 @@ public class AppREST {
             dto.setLongitude((String) obj[5]);
             dto.setDocType((String) obj[6]);
             dto.setRegional((String) obj[7]);
+            dto.setIdCard((String) obj[8]);
             recordGeoLocations.add(dto);
         }
         return Response.ok(new ResponseDTO(0, recordGeoLocations)).build();
