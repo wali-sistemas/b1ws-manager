@@ -194,7 +194,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setProperties15(dto.getFidelity());
                 businessPartner.setGroupCode(Long.valueOf(dto.getGrupo()));
                 businessPartner.setPhone1(dto.getPhone());
-                businessPartner.setPhone2(dto.getPhone());
+                businessPartner.setPhone2(dto.getCellular());
                 businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail());
                 businessPartner.setUmanejo("DIA");
@@ -359,7 +359,7 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setProperties15(dto.getFidelity());
                 businessPartnersRestDTO.setGroupCode(Long.valueOf(dto.getGrupo()));
                 businessPartnersRestDTO.setPhone1(dto.getPhone());
-                businessPartnersRestDTO.setPhone2(dto.getPhone());
+                businessPartnersRestDTO.setPhone2(dto.getCellular());
                 businessPartnersRestDTO.setCellular(dto.getCellular());
                 businessPartnersRestDTO.setEmailAddress(dto.getMail());
                 businessPartnersRestDTO.setUcelularFE(dto.getCellular());

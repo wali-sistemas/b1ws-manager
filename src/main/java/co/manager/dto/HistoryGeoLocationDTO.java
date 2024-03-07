@@ -15,11 +15,12 @@ public class HistoryGeoLocationDTO implements Serializable {
     private String docType;
     private String companyName;
     private String regional;
+    private String idCard;
 
     public HistoryGeoLocationDTO() {
     }
 
-    public HistoryGeoLocationDTO(String slpCode, String slpName, String docDate, String docTime, String latitude, String longitude, String docType, String companyName, String regional) {
+    public HistoryGeoLocationDTO(String slpCode, String slpName, String docDate, String docTime, String latitude, String longitude, String docType, String companyName, String regional, String idCard) {
         this.slpCode = slpCode;
         this.slpName = slpName;
         this.docDate = docDate;
@@ -29,6 +30,7 @@ public class HistoryGeoLocationDTO implements Serializable {
         this.docType = docType;
         this.companyName = companyName;
         this.regional = regional;
+        this.idCard = idCard;
     }
 
     public String getSlpCode() {
@@ -103,6 +105,14 @@ public class HistoryGeoLocationDTO implements Serializable {
         this.regional = regional;
     }
 
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
     @Override
     public String toString() {
         return "HistoryGeoLocationDTO{" +
@@ -115,6 +125,7 @@ public class HistoryGeoLocationDTO implements Serializable {
                 ", docType='" + docType + '\'' +
                 ", companyName='" + companyName + '\'' +
                 ", regional='" + regional + '\'' +
+                ", idCard='" + idCard + '\'' +
                 '}';
     }
 }
