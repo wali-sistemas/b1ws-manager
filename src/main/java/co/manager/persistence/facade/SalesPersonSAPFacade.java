@@ -206,7 +206,13 @@ public class SalesPersonSAPFacade {
         sb.append("   )as \"SlpCode\",(d.\"Debit\"-d.\"Credit\") as \"DocTotal\",e.\"BaseRef\",e.\"TaxDate\" ");
         sb.append("  from OJDT e ");
         sb.append("  inner join JDT1 d on e.\"TransId\"=d.\"TransId\" ");
-        sb.append("  where e.\"Memo\"<>'P.133 períodos de cierre' and d.\"Account\" in ('41350520','41750540','41750525','41750530') and e.\"TransId\" not in (select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='AS') ");
+        sb.append("  where e.\"Memo\"<>'P.133 períodos de cierre' and d.\"Account\" in ");
+        if (companyName.contains("VARROC")) {
+            sb.append("('41350515','41750540','41750525','41750530') ");
+        } else {
+            sb.append("('41350520','41750540','41750525','41750530') ");
+        }
+        sb.append("    and e.\"TransId\" not in (select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='AS') ");
         sb.append(" )as f ");
         sb.append(" where year(f.\"TaxDate\")='");
         sb.append(year);
