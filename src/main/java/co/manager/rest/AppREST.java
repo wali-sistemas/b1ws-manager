@@ -808,8 +808,8 @@ public class AppREST {
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
 
-        /**** 8. Crear orden directamente en cedi solo para motorepuestos.co ****/
-        if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242")) {
+        /**** 8. Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
+        if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("REDPLAS")) {
             res = salesOrderEJB.createSalesOrder(dto);
             if (res.getCode() == 0) {
                 return Response.ok(res).build();
