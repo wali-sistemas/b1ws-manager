@@ -187,19 +187,40 @@ public class BusinessPartnerSAPFacade {
 
     public List<Object[]> listDetailAgeCustomerPortfolioBySalesPerson(String slpCode, String cardCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select r.SlpCode,r.CardCode,r.\"Sin vencer\",r.\"0 a 30\",r.\"30 a 60\",r.\"61 a 90\",r.\"91 a 120\",r.\"+ 120\",r.\"SubTotal\",cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\",r.\"E_Mail\",substring(r.\"Phone2\",0,10)as \"Phone2\" ");
+        sb.append("select r.SlpCode,r.CardCode,r.\"Sin vencer\", ");
+        if (companyName.contains("REDPLAS")) {
+            sb.append("r.\"0 a 30\",r.\"31 a 45\",r.\"46 a 60\",r.\"61 a 90\",r.\"+ 90\", ");
+        } else {
+            sb.append("r.\"0 a 30\",r.\"31 a 60\",r.\"61 a 90\",r.\"91 a 120\",r.\"+ 120\", ");
+        }
+        sb.append("r.\"SubTotal\",cast(sum(r.\"SubTotal\")OVER(PARTITION BY r.SlpCode)as numeric(18,0))as \"Total\",r.\"E_Mail\",substring(r.\"Phone2\",0,10)as \"Phone2\" ");
         sb.append("from ( ");
-        sb.append(" select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode, ");
-        sb.append("  cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\",cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"30 a 60\")as numeric(18,0))as \"30 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(z.\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(z.\"+ 120\")as numeric(18,0))as \"+ 120\", ");
-        sb.append("  cast(sum(z.\"Sin vencer\")+sum(z.\"0 a 30\")+sum(z.\"30 a 60\")+sum(z.\"61 a 90\")+sum(z.\"91 a 120\")+sum(z.\"+ 120\")as numeric(18,0))as \"SubTotal\",cast(z.\"E_Mail\" as varchar(100))as \"E_Mail\",cast(z.\"Phone2\" as varchar(20))as \"Phone2\" ");
+        sb.append(" select cast(z.\"SlpCode\" as varchar)as SlpCode,cast(z.\"CardCode\"as varchar)as CardCode,cast(sum(z.\"Sin vencer\")as numeric(18,0))as \"Sin vencer\", ");
+        if (companyName.contains("REDPLAS")) {
+            sb.append(" cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"31 a 45\")as numeric(18,0))as \"31 a 45\",cast(sum(z.\"46 a 60\")as numeric(18,0))as \"46 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(z.\"+ 90\")as numeric(18,0))as \"+ 90\", ");
+            sb.append(" cast(sum(z.\"Sin vencer\")+sum(z.\"0 a 30\")+sum(z.\"31 a 45\")+sum(z.\"46 a 60\")+sum(z.\"61 a 90\")+sum(z.\"+ 90\")as numeric(18,0))as \"SubTotal\", ");
+        } else {
+            sb.append(" cast(sum(z.\"0 a 30\")as numeric(18,0))as \"0 a 30\",cast(sum(z.\"31 a 60\")as numeric(18,0))as \"31 a 60\",cast(sum(z.\"61 a 90\")as numeric(18,0))as \"61 a 90\",cast(sum(z.\"91 a 120\")as numeric(18,0))as \"91 a 120\",cast(sum(z.\"+ 120\")as numeric(18,0))as \"+ 120\", ");
+            sb.append(" cast(sum(z.\"Sin vencer\")+sum(z.\"0 a 30\")+sum(z.\"31 a 60\")+sum(z.\"61 a 90\")+sum(z.\"91 a 120\")+sum(z.\"+ 120\")as numeric(18,0))as \"SubTotal\", ");
+        }
+        sb.append("  cast(z.\"E_Mail\" as varchar(100))as \"E_Mail\",cast(z.\"Phone2\" as varchar(20))as \"Phone2\" ");
         sb.append(" from ( ");
         sb.append("  select y.\"SlpCode\",y.\"CardCode\", ");
         sb.append("   case when y.\"DiasAtraso\" < 0 then sum(y.\"Saldo\") else 0 end as \"Sin vencer\", ");
-        sb.append("   case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
-        sb.append("   case when (y.\"DiasAtraso\" >= 31 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"30 a 60\", ");
-        sb.append("   case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
-        sb.append("   case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
-        sb.append("   case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\",y.\"E_Mail\",y.\"Phone2\" ");
+        if (companyName.contains("REDPLAS")) {
+            sb.append("   case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 31 and y.\"DiasAtraso\" <= 45) then sum(y.\"Saldo\") else 0 end as \"31 a 45\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"46 a 60\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
+            sb.append("   case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 90\", ");
+        } else {
+            sb.append("   case when (y.\"DiasAtraso\" >= 0 and y.\"DiasAtraso\" <= 30) then sum(y.\"Saldo\") else 0 end as \"0 a 30\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 31 and y.\"DiasAtraso\" <= 60) then sum(y.\"Saldo\") else 0 end as \"31 a 60\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 61 and y.\"DiasAtraso\" <= 90) then sum(y.\"Saldo\") else 0 end as \"61 a 90\", ");
+            sb.append("   case when (y.\"DiasAtraso\" >= 91 and y.\"DiasAtraso\" <= 120) then sum(y.\"Saldo\") else 0 end as \"91 a 120\", ");
+            sb.append("   case when (y.\"DiasAtraso\" > 120) then sum(y.\"Saldo\") else 0 end as \"+ 120\", ");
+        }
+        sb.append(" y.\"E_Mail\",y.\"Phone2\" ");
         sb.append("  from ( ");
         sb.append("   select t.\"SlpCode\",t.\"CardCode\",cast(t.\"DiasAtraso\" as varchar(1000))as \"DiasAtraso\",sum(cast(t.\"Saldo\" as numeric(18,0)))as \"Saldo\",t.\"E_Mail\",t.\"Phone2\" ");
         sb.append("   from ( ");
