@@ -680,7 +680,7 @@ public class AppREST {
     @Path("get-geo-location/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getGeoLoactionByAsesor(@PathParam("companyname") String companyname,
+    public Response getGeoLoactionBySeller(@PathParam("companyname") String companyname,
                                            @QueryParam("slpcode") String slpCode,
                                            @QueryParam("year") String year,
                                            @QueryParam("month") String month,
@@ -701,6 +701,14 @@ public class AppREST {
             recordGeoLocations.add(dto);
         }
         return Response.ok(new ResponseDTO(0, recordGeoLocations)).build();
+    }
+
+    @GET
+    @Path("list-activity-report/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listActivityReportBySellers(@PathParam("companyname") String companyName) {
+        return Response.ok(historyGeoLocationSAPFacade.listActivityReportBySeller(companyName, false)).build();
     }
 
     @POST

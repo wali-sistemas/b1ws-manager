@@ -883,6 +883,29 @@ public class PedBoxREST {
         return Response.ok(new ResponseDTO(0, dto)).build();
     }
 
+    @GET
+    @Path("detail-tracking/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getDetailTrackingByInvoice(@PathParam("companyname") String companyName,
+                                               @QueryParam("docnum") String docNum) {
+        Object[] obj = invoiceSAPFacade.getDetailTrackingByInvoice(docNum, companyName, false);
+
+        DetailTrackingInvoiceDTO dto = new DetailTrackingInvoiceDTO();
+        dto.setOrder((String) obj[0]);
+        dto.setDocDateOrder(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[1]));
+        dto.setStatusOrder((String) obj[2]);
+        dto.setDocDueDateOrder(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
+        dto.setInvoice((String) obj[4]);
+        dto.setDocDateInvoice(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[5]));
+        dto.setTransport((String) obj[6]);
+        dto.setGuia((String) obj[7]);
+        dto.setStatusInvoice((String) obj[8]);
+        dto.setUrlTracking((String) obj[9]);
+
+        return Response.ok(dto).build();
+    }
+
     @POST
     @Path("create-order")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})

@@ -74,4 +74,19 @@ public class HistoryGeoLocationSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public List<Object[]> listActivityReportBySeller(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(a.\"SlpCode\" as varchar)as slpCode,cast(a.\"SlpName\" as varchar)as slpName,cast(a.\"U_CEDULA\" as varchar)as cedula, ");
+        sb.append(" cast((select count(*) from \"@HIST_COORDENADAS\" h where a.\"SlpCode\"=h.\"U_SlpCode\" and h.\"U_Fecha\"=current_date)as int)as countHistC ");
+        sb.append("from OSLP a ");
+        sb.append("where a.\"Fax\"='Y' ");
+        sb.append("order by a.\"SlpCode\" asc");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el reporte de actividad de los asesores", e);
+        }
+        return new ArrayList<>();
+    }
 }
