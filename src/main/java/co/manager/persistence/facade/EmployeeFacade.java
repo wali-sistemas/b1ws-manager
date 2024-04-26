@@ -121,7 +121,7 @@ public class EmployeeFacade {
         return false;
     }
 
-    public boolean validateEmployeeExistence(String empId, String birthdate, String companyName, boolean testing) {
+    public boolean validateEmployeeExistenceNovaWeb(String empId, String birthdate, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(cast(cod_emp as varchar(12)))as nro ");
         sb.append("from rhh_emplea ");
@@ -144,5 +144,23 @@ public class EmployeeFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error validando la existencia del empleado [" + empId + "]", e);
         }
         return false;
+    }
+
+    public Object[] findEmployeeNovaWeb(String empId, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select top 1 cast(rtrim(ltrim(e.cod_emp)) as varchar)as cedula,cast(e.nom_emp as varchar)as nombre,cast(e.ap1_emp as varchar)as apell1, ");
+        sb.append(" cast(e.ap2_emp as varchar)as apell2,cast(e.fec_ing as date)as ingreso,cast(c.nom_car as varchar)as nomCar,cast(e_mail_alt as varchar)as jefe ");
+        sb.append("from rhh_emplea e ");
+        sb.append("inner join rhh_cargos c ON e.cod_car=c.cod_car ");
+        sb.append("where cod_emp='");
+        sb.append(empId);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al encontrar el empleado " + empId + " en novaweb de la empresa " + companyName, e);
+        }
+        return null;
     }
 }

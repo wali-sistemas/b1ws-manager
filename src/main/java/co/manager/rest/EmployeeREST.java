@@ -310,14 +310,24 @@ public class EmployeeREST {
     @Path("validate-employee-existence")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response validateEmployeeExistence(@QueryParam("id") String emplId,
-                                              @QueryParam("birthdate") String birthdate,
-                                              @HeaderParam("X-Company-Name") String companyName,
-                                              @HeaderParam("X-Pruebas") boolean pruebas) {
+    public Response validateEmployeeExistenceNovaWeb(@QueryParam("id") String emplId,
+                                                     @QueryParam("birthdate") String birthdate,
+                                                     @HeaderParam("X-Company-Name") String companyName,
+                                                     @HeaderParam("X-Pruebas") boolean pruebas) {
         if (companyName == null || companyName.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al validar el empleado. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al validar el empleado. Campo companyName es obligatorio.")).build();
         }
-        return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistence(emplId, birthdate, companyName, pruebas))).build();
+        return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistenceNovaWeb(emplId, birthdate, companyName, pruebas))).build();
+    }
+
+    @GET
+    @Path("find-employee-novaweb/{cardcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findEmployeeNovaWeb(@PathParam("cardcode") String cardCode,
+                                        @HeaderParam("X-Company-Name") String companyName,
+                                        @HeaderParam("X-Pruebas") boolean pruebas) {
+        return Response.ok(employeeFacade.findEmployeeNovaWeb(cardCode, companyName, pruebas)).build();
     }
 }
