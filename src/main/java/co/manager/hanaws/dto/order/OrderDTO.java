@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -49,6 +50,8 @@ public class OrderDTO implements Serializable {
     protected String userialMDL;
     @JsonProperty("DocumentLines")
     protected List<OrderDTO.DocumentLines.DocumentLine> documentLines;
+    @JsonProperty("DocumentAdditionalExpenses")
+    protected List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> documentAdditionalExpenses;
 
     public Long getDocEntry() {
         return docEntry;
@@ -202,6 +205,14 @@ public class OrderDTO implements Serializable {
         this.documentLines = documentLines;
     }
 
+    public List<DocumentAdditionalExpenses.DocumentAdditionalExpense> getDocumentAdditionalExpenses() {
+        return documentAdditionalExpenses;
+    }
+
+    public void setDocumentAdditionalExpenses(List<DocumentAdditionalExpenses.DocumentAdditionalExpense> documentAdditionalExpenses) {
+        this.documentAdditionalExpenses = documentAdditionalExpenses;
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DocumentLines implements Serializable {
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -210,6 +221,10 @@ public class OrderDTO implements Serializable {
             protected String itemCode;
             @JsonProperty("Quantity")
             protected Double quantity;
+            @JsonProperty("Price")
+            protected Double price;
+            @JsonProperty("UnitPrice")
+            protected Double unitPrice;
             @JsonProperty("WarehouseCode")
             protected String warehouseCode;
             @JsonProperty("CostingCode")
@@ -239,6 +254,22 @@ public class OrderDTO implements Serializable {
 
             public void setQuantity(Double quantity) {
                 this.quantity = quantity;
+            }
+
+            public Double getPrice() {
+                return price;
+            }
+
+            public void setPrice(Double price) {
+                this.price = price;
+            }
+
+            public Double getUnitPrice() {
+                return unitPrice;
+            }
+
+            public void setUnitPrice(Double unitPrice) {
+                this.unitPrice = unitPrice;
             }
 
             public String getWarehouseCode() {
@@ -299,6 +330,42 @@ public class OrderDTO implements Serializable {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class DocumentAdditionalExpenses implements Serializable {
+        public static class DocumentAdditionalExpense implements Serializable {
+            @JsonProperty("ExpenseCode")
+            protected Long expenseCode;
+            @JsonProperty("LineTotal")
+            protected BigDecimal lineTotal;
+            @JsonProperty("TaxCode")
+            protected String taxCode;
+
+            public Long getExpenseCode() {
+                return expenseCode;
+            }
+
+            public void setExpenseCode(Long expenseCode) {
+                this.expenseCode = expenseCode;
+            }
+
+            public BigDecimal getLineTotal() {
+                return lineTotal;
+            }
+
+            public void setLineTotal(BigDecimal lineTotal) {
+                this.lineTotal = lineTotal;
+            }
+
+            public String getTaxCode() {
+                return taxCode;
+            }
+
+            public void setTaxCode(String taxCode) {
+                this.taxCode = taxCode;
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "OrderDTO{" +
@@ -321,6 +388,7 @@ public class OrderDTO implements Serializable {
                 ", ufecini='" + ufecini + '\'' +
                 ", userialMDL='" + userialMDL + '\'' +
                 ", documentLines=" + documentLines +
+                ", documentAdditionalExpenses=" + documentAdditionalExpenses +
                 '}';
     }
 }

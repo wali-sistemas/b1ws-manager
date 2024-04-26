@@ -1,15 +1,10 @@
 package co.manager.rest;
 
-import co.manager.dto.BusinessPartnerDTO;
-import co.manager.dto.ItemMotorepuestoDTO;
-import co.manager.dto.ResponseDTO;
-import co.manager.ejb.BasicFunctions;
-import co.manager.ejb.BusinessPartnerEJB;
-import co.manager.ejb.ManagerApplicationBean;
-import co.manager.ejb.PurchaseInvoicesEJB;
-import co.manager.persistence.facade.BusinessPartnerSAPFacade;
-import co.manager.persistence.facade.InvoiceSAPFacade;
-import co.manager.persistence.facade.ItemSAPFacade;
+import co.manager.dto.*;
+import co.manager.ejb.*;
+import co.manager.persistence.entity.OrderDetailPedbox;
+import co.manager.persistence.entity.OrderPedbox;
+import co.manager.persistence.facade.*;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
 
@@ -23,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +45,16 @@ public class MotorepuestoREST {
     private PurchaseInvoicesEJB purchaseInvoicesEJB;
     @EJB
     private InvoiceSAPFacade invoiceSAPFacade;
+    @EJB
+    private SalesOrderSAPFacade salesOrderSAPFacade;
+    @EJB
+    private SalesPersonSAPFacade salesPersonSAPFacade;
+    @EJB
+    private SalesOrderEJB salesOrderEJB;
+    @EJB
+    private OrderPedboxFacade orderPedboxFacade;
+    @EJB
+    private OrderDetailPedboxFacade orderDetailPedboxFacade;
 
     @GET
     @Path("items")
@@ -102,6 +108,24 @@ public class MotorepuestoREST {
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");
         return Response.ok(new ResponseDTO(0, items)).build();
+    }
+
+    @GET
+    @Path("purchase/create-invoice")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createPurchaseInvoice(@QueryParam("docnum") String docNum,
+                                          @HeaderParam("X-Company-Name") String companyName,
+                                          @HeaderParam("X-Employee") String userName,
+                                          @HeaderParam("X-Pruebas") boolean pruebas) {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para la venta # {0} realizada en [{1}]", new Object[]{docNum, companyName});
+
+        List<Object[]> details = invoiceSAPFacade.listDetailInvoice(docNum, companyName, pruebas);
+        if (details.isEmpty()) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", docNum);
+            return Response.ok(new ResponseDTO(-2, "No se encontraron datos de la FV [" + docNum + "] para crear la factura de compra.")).build();
+        }
+        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(details, docNum, companyName)).build();
     }
 
     @POST
@@ -171,6 +195,80 @@ public class MotorepuestoREST {
     }
 
     @POST
+    @Path("create-order")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createOrderSale(SalesB2CorderDTO dto) {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
+        /**** 1.Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/
+        if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo numAtCard es obligatorio.")).build();
+        } else {
+            Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
+            if (docNum != 0) {
+                CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
+                return Response.ok(new ResponseDTO(0, docNum)).build();
+            }
+        }
+        /**** 2.Validar campos obligatorios para creación de orden de venta****/
+        if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta. Campo companyName es obligatorio.")).build();
+        } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo cardCode es obligatorio.")).build();
+        } else if (dto.getDetailSalesOrder().size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo detailSalesOrder es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo detailSalesOrder es obligatorio.")).build();
+        } else if (dto.getSlpCode() == null || dto.getSlpCode() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo slpCode es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo slpCode es obligatorio.")).build();
+        } else if (dto.getStatus() == null || dto.getStatus().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo status es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo status es obligatorio.")).build();
+        } else if (dto.getConfirmed() == null || dto.getConfirmed().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo confirmed es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo confirmed es obligatorio.")).build();
+        } else if (dto.getDocTotal() == null || dto.getDocTotal() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
+        }
+        /**** 3.Asignar valores predeterminados a la orden****/
+        dto.setStatus("APROBADO");
+        dto.setConfirmed("Y");
+        dto.setDocTotal(dto.getDocTotal());
+        /**** 4.Consultando código de transportadora asignada al cliente****/
+        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        /**** 5.Consultando por cliente el id de la dirección de factura****/
+        String shipToCodeDefault = null;
+        List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
+        if (idAddress.size() > 0) {
+            for (Object[] obj : idAddress) {
+                shipToCodeDefault = (String) obj[0];
+                dto.setPayToCode((String) obj[1]);
+            }
+        }
+        if (dto.getShipToCode().equals("0")) {
+            dto.setShipToCode(shipToCodeDefault);
+        }
+
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
+        /**** 6.Crear orden directamente en cedi solo para MTZ, MOTOREPUESTOS, IGB(solo llantas y cliente C900998242), wms-Modula(apagada)****/
+        ResponseDTO res = salesOrderEJB.createSalesOrderB2C(dto);
+        if (res.getCode() == 0) {
+            return Response.ok(res).build();
+        } else {
+            /**** 6.1.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+            return Response.ok(createOrderTemporary(dto, 0)).build();
+        }
+    }
+
+    @POST
     @Path("create-payments")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -180,21 +278,41 @@ public class MotorepuestoREST {
         return Response.ok(businessPartnerEJB.createBusinessPartnerFromEcommerce(dto)).build();
     }
 
-    @GET
-    @Path("purchase/create-invoice")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response createPurchaseInvoice(@QueryParam("docnum") String docNum,
-                                          @HeaderParam("X-Company-Name") String companyName,
-                                          @HeaderParam("X-Employee") String userName,
-                                          @HeaderParam("X-Pruebas") boolean pruebas) {
-        CONSOLE.log(Level.INFO, "Iniciando creacion de factura de compra para la venta # {0} realizada en [{1}]", new Object[]{docNum, companyName});
+    private ResponseDTO createOrderTemporary(SalesB2CorderDTO dto, Integer docNum) {
+        OrderPedbox order = new OrderPedbox();
+        OrderDetailPedbox detail = new OrderDetailPedbox();
 
-        List<Object[]> details = invoiceSAPFacade.listDetailInvoice(docNum, companyName, pruebas);
-        if (details.isEmpty()) {
-            CONSOLE.log(Level.WARNING, "No se encontraron datos de la FV# {0} para crear la factura de compra", docNum);
-            return Response.ok(new ResponseDTO(-2, "No se encontraron datos de la FV [" + docNum + "] para crear la factura de compra.")).build();
+        order.setDocNum(docNum);
+        order.setDocDate(new Date());
+        order.setCardCode(dto.getCardCode());
+        order.setNumAtCard(dto.getNumAtCard());
+        order.setComments(dto.getComments());
+        order.setSlpCode(dto.getSlpCode().toString());
+        order.setStatus("F");
+        order.setCompanyName(dto.getCompanyName());
+        order.setDocTotal(dto.getDocTotal());
+        try {
+            orderPedboxFacade.create(order, dto.getCompanyName(), false);
+        } catch (Exception ex) {
         }
-        return Response.ok(purchaseInvoicesEJB.createPurchaseInvoice(details, docNum, companyName)).build();
+
+        for (DetailSalesB2CorderDTO dt : dto.getDetailSalesOrder()) {
+            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(dt.getItemCode(), dt.getWhsCode(), dto.getCompanyName(), false);
+
+            detail.setIdOrder(order);
+            detail.setIdOrderDetail(0);
+            detail.setItemCode(dt.getItemCode());
+            detail.setWhsCode(dt.getWhsCode());
+            detail.setQtyAPP(dt.getQuantity());
+            detail.setQtyMDL((Integer) stockCurrent[0]);
+            detail.setQtySAP((Integer) stockCurrent[1]);
+            detail.setQtySBT((Integer) stockCurrent[2]);
+            try {
+                orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
+            } catch (Exception ex) {
+            }
+        }
+
+        return new ResponseDTO(0, order.getIdOrder());
     }
 }
