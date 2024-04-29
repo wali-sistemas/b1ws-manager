@@ -234,4 +234,25 @@ public class SalesOrderSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public Object[] getDetailTrackingByInvoice(String docNum, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.\"DocNum\" as varchar)as orders,cast(o.\"DocDate\" as date)as docDateOrder,cast(o.\"U_SEPARADOR\" as varchar)as statusOrder, ");
+        sb.append(" cast(o.\"DocDueDate\" as date)as docDueDateOrder,cast(f.\"DocNum\" as varchar)as invoice,cast(f.\"DocDate\" as date)as docDateInvoice, ");
+        sb.append(" cast(t.\"Name\" as varchar)as transpInvoice,cast(f.\"U_UBIC1\" as varchar)as guiaInvoice,cast(f.\"U_SEPARADOR\" as varchar)as statusInvoice, ");
+        sb.append(" cast(t.\"U_URL\" as varchar)as urlTracking ");
+        sb.append("from OINV f ");
+        sb.append("inner join ODLN e on o.\"DocNum\"=e.\"U_NUNFAC\" ");
+        sb.append("inner join OINV f on f.\"U_NUNFAC\"=cast(e.\"DocNum\" as varchar) ");
+        sb.append("inner join \"@TRANSP\" t on t.\"Code\"=f.\"U_TRANSP\" ");
+        sb.append("where o.\"DocNum\"=");
+        sb.append(docNum);
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el detalle de seguimineto de la factura " + docNum + " en " + companyName, e);
+        }
+        return null;
+    }
 }
