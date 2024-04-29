@@ -889,7 +889,7 @@ public class PedBoxREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getDetailTrackingByInvoice(@PathParam("companyname") String companyName,
                                                @QueryParam("docnum") String docNum) {
-        Object[] obj = salesOrderSAPFacade.getDetailTrackingByInvoice(docNum, companyName, false);
+        Object[] obj = salesOrderSAPFacade.getDetailTrackingByOrder(docNum, companyName, false);
 
         DetailTrackingInvoiceDTO dto = new DetailTrackingInvoiceDTO();
         dto.setOrder((String) obj[0]);
