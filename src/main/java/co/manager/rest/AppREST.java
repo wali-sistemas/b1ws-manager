@@ -808,10 +808,14 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrderWS = dto.getDetailSalesOrder();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_desc = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LU = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LU_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_link = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_desc = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
@@ -829,10 +833,18 @@ public class AppREST {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
-                        } else {
-                            detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getWhsCode().equals("05")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cart.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("26")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                            }
                         }
                     } else {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
@@ -844,9 +856,9 @@ public class AppREST {
                 } else {
                     if (detail.getGroup().equals("LLANTAS")) {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_LL_desc.add(setDetailOrder(detail, ocrCode));
+                            detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
                         } else {
-                            detailSalesOrder_LL.add(setDetailOrder(detail, ocrCode));
+                            detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
@@ -866,11 +878,11 @@ public class AppREST {
             }
         }
         /**** 9.Crear ordenes separadas por regla de negocio ****/
-        /**** 9.1. Solo llantas ****/
-        if (detailSalesOrder_LL.size() > 0) {
+        /**** 9.1. Solo llantas de cali ****/
+        if (detailSalesOrder_LL_cali.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL);
-            dto.setNumAtCard(numAtCard + "LL");
+            dto.setDetailSalesOrder(detailSalesOrder_LL_cali);
+            dto.setNumAtCard(numAtCard + "LL26");
 
             res = salesOrderEJB.createSalesOrder(dto);
             if (res.getCode() < 0) {
@@ -879,15 +891,15 @@ public class AppREST {
                 gson = new Gson();
                 json = gson.toJson(dto);
                 CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali sin (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
         }
-        /**** 9.1. Solo llantas con (**) ****/
-        if (detailSalesOrder_LL_desc.size() > 0) {
+        /**** 9.2. Solo llantas de cali con (**) ****/
+        if (detailSalesOrder_LL_cali_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_desc);
-            dto.setNumAtCard(numAtCard + "LLD");
+            dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
+            dto.setNumAtCard(numAtCard + "LL26D");
 
             res = salesOrderEJB.createSalesOrder(dto);
             if (res.getCode() < 0) {
@@ -896,16 +908,52 @@ public class AppREST {
                 gson = new Gson();
                 json = gson.toJson(dto);
                 CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali con (**). Orden Temp={0}", response.getContent());
                 res = response;
             }
         }
-        /**** 9.2. Solo repuestos con (**) ****/
+
+        /**** 9.3. Solo llantas de cartagena ****/
+        if (detailSalesOrder_LL_cart.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
+            dto.setNumAtCard(numAtCard + "LL05");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena sin (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+
+        /**** 9.4. Solo llantas de cartagena con (**) ****/
+        if (detailSalesOrder_LL_cart_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
+            dto.setNumAtCard(numAtCard + "LL05D");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena con (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.5. Solo repuestos con (**) ****/
         if (detailSalesOrder_REP_desc.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
             dto.setNumAtCard(numAtCard + "RD");
-            /**** 9.2.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+            /**** 9.5.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
             if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                 res = sortOutItemsOnlyParts(dto, ocrCode);
             } else {
@@ -921,12 +969,12 @@ public class AppREST {
                 }
             }
         }
-        /**** 9.3. Solo repuestos ****/
+        /**** 9.6. Solo repuestos ****/
         if (detailSalesOrder_REP.size() > 0) {
             dto.setDetailSalesOrder(new ArrayList<>());
             dto.setDetailSalesOrder(detailSalesOrder_REP);
             dto.setNumAtCard(numAtCard + "R");
-            /**** 9.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+            /**** 9.6.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
             if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                 res = sortOutItemsOnlyParts(dto, ocrCode);
             } else {
@@ -944,7 +992,7 @@ public class AppREST {
         }
         //TODO: crear ordenes separadas para lubricantes solo para MotoZone
         if (dto.getCompanyName().contains("VARROC")) {
-            /**** 9.4. Solo lubricantes con (**) ****/
+            /**** 9.7. Solo lubricantes con (**) ****/
             if (detailSalesOrder_LU_desc.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
@@ -961,7 +1009,7 @@ public class AppREST {
                     res = response;
                 }
             }
-            /**** 9.5. Solo lubricantes ****/
+            /**** 9.8. Solo lubricantes ****/
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LU);
