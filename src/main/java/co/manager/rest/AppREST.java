@@ -1026,6 +1026,40 @@ public class AppREST {
                     res = response;
                 }
             }
+            /**** 9.9. Solo llantas sin (**) ****/
+            if (detailSalesOrder_LL_link.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link);
+                dto.setNumAtCard(numAtCard + "LLK");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
+            /**** 9.10. Solo llantas con (**) ****/
+            if (detailSalesOrder_LL_link_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
+                dto.setNumAtCard(numAtCard + "LLKD");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
         }
         //TODO: crear orden temporal, si no clasifico bien los articulos
         if (res.getContent() == null) {
