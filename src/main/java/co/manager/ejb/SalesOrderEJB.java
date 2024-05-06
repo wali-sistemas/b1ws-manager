@@ -108,8 +108,8 @@ public class SalesOrderEJB {
                     orderLine.setBaseEntry(line.getBaseEntry());
                     /*** Consultando la cuenta de ingreso en ventas del primer item de la orden***/
                     Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(line.getItemCode(), dto.getCompanyName(), false);
-                    /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante) y 112-ELF(Lubricante)***/
-                    if (incomeAccountItem[2].equals("54") || incomeAccountItem[2].equals("112")) {
+                    /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante)***/
+                    if (incomeAccountItem[2].equals("54")) {
                         /***Corresponde a Lubricantes***/
                         orderLine.setTaxCode((String) incomeAccountItem[0]);
                         orderLine.setAccountCode((String) incomeAccountItem[1]);
@@ -212,8 +212,8 @@ public class SalesOrderEJB {
                     orderLine.setBaseEntry(line.getBaseEntry());
                     /*** Consultando la cuenta de ingreso en ventas del primer item de la orden***/
                     Object[] incomeAccountItem = itemSAPFacade.getIncomeAccountByItem(line.getItemCode(), dto.getCompanyName(), false);
-                    /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante) y 112-ELF(Lubricante)***/
-                    if (incomeAccountItem[2].equals("54") || incomeAccountItem[2].equals("112")) {
+                    /*** Validando cuenta de ingreso en ventas por marca 54-REPSOL(Lubricante)***/
+                    if (incomeAccountItem[2].equals("54")) {
                         /***Corresponde a Lubricantes***/
                         orderLine.setTaxCode((String) incomeAccountItem[0]);
                         orderLine.setAccountCode((String) incomeAccountItem[1]);
