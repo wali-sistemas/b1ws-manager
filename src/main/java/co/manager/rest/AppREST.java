@@ -991,76 +991,76 @@ public class AppREST {
             }
         }
         //TODO: crear ordenes separadas para lubricantes solo para MotoZone
-        if (dto.getCompanyName().contains("VARROC")) {
-            /**** 9.7. Solo lubricantes con (**) ****/
-            if (detailSalesOrder_LU_desc.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
-                dto.setNumAtCard(numAtCard + "LUD");
+        /*if (dto.getCompanyName().contains("VARROC")) {*/
+        /**** 9.7. Solo lubricantes con (**) ****/
+        if (detailSalesOrder_LU_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
+            dto.setNumAtCard(numAtCard + "LUD");
 
-                res = salesOrderEJB.createSalesOrder(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
 
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes con (**). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-            /**** 9.8. Solo lubricantes ****/
-            if (detailSalesOrder_LU.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LU);
-                dto.setNumAtCard(numAtCard + "LU");
-
-                res = salesOrderEJB.createSalesOrder(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes sin (**). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-            /**** 9.9. Solo llantas sin (**) ****/
-            if (detailSalesOrder_LL_link.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link);
-                dto.setNumAtCard(numAtCard + "LLK");
-
-                res = salesOrderEJB.createSalesOrder(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-            /**** 9.10. Solo llantas con (**) ****/
-            if (detailSalesOrder_LL_link_desc.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
-                dto.setNumAtCard(numAtCard + "LLKD");
-
-                res = salesOrderEJB.createSalesOrder(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes con (**). Orden Temp={0}", response.getContent());
+                res = response;
             }
         }
+        /**** 9.8. Solo lubricantes ****/
+        if (detailSalesOrder_LU.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LU);
+            dto.setNumAtCard(numAtCard + "LU");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes sin (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.9. Solo llantas sin (**) ****/
+        if (detailSalesOrder_LL_link.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL_link);
+            dto.setNumAtCard(numAtCard + "LLK");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        /**** 9.10. Solo llantas con (**) ****/
+        if (detailSalesOrder_LL_link_desc.size() > 0) {
+            dto.setDetailSalesOrder(new ArrayList<>());
+            dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
+            dto.setNumAtCard(numAtCard + "LLKD");
+
+            res = salesOrderEJB.createSalesOrder(dto);
+            if (res.getCode() < 0) {
+                ResponseDTO response = createOrderTemporary(dto, 0);
+
+                gson = new Gson();
+                json = gson.toJson(dto);
+                CONSOLE.log(Level.INFO, json);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
+                res = response;
+            }
+        }
+        //}
         //TODO: crear orden temporal, si no clasifico bien los articulos
         if (res.getContent() == null) {
             ResponseDTO response = createOrderTemporary(dto, 0);

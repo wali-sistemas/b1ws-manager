@@ -864,4 +864,20 @@ public class ItemSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando los stock min-max para el item {0} en la bodega {1}", new Object[]{itemCode, whsCode});
         }
     }
+
+    public Object[] getItemNameAndGrup(String itemCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(a.\"ItemName\" as varchar)as itemName,cast(g.\"Name\" as varchar)as grupo ");
+        sb.append("from OITM a ");
+        sb.append("inner join \"@GRUPOS\" g on a.\"U_Grupo\"=g.\"Code\" ");
+        sb.append("where a.\"ItemCode\"='");
+        sb.append(itemCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el nombre y el grupo del item " + itemCode + " en " + companyName, e);
+        }
+        return null;
+    }
 }
