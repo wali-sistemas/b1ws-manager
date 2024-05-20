@@ -90,6 +90,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setUtrasp("03");
+                businessPartner.setPriceListNum(dto.getPriceList() == null ? 1 : Long.valueOf(dto.getPriceList()));
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartner.setSalesPersonCode("05");
                     businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
