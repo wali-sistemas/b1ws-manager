@@ -13,6 +13,7 @@ public class OrdersAppDTO {
     private String cardCode;
     private String cardName;
     private String comments;
+    private String status;
     private BigDecimal docTotal;
 
     public OrdersAppDTO() {
@@ -82,6 +83,14 @@ public class OrdersAppDTO {
 
     public void setDocNum(Integer docNum) {
         this.docNum = docNum;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

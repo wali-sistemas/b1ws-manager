@@ -414,6 +414,7 @@ public class AppREST {
                 dto.setDocEntry((Integer) obj[4]);
                 dto.setDocNum((Integer) obj[5]);
                 dto.setCardName((String) obj[6]);
+                dto.setStatus((String) obj[7]);
 
                 ordersAppDTO.add(dto);
             }

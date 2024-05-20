@@ -215,7 +215,8 @@ public class SalesOrderSAPFacade {
     public List<Object[]> listOrdersByDateAndSale(long slpCode, long year, long month, long day, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"CardCode\" as varchar(20))as cardCode,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
-        sb.append(" cast(\"Comments\" as varchar(500))as comments,cast(\"DocEntry\" as int)as docEntry,cast(\"DocNum\" as int)as docNum,cast(\"CardName\" as varchar(100))as cardName ");
+        sb.append(" cast(\"Comments\" as varchar(500))as comments,cast(\"DocEntry\" as int)as docEntry,cast(\"DocNum\" as int)as docNum,cast(\"CardName\" as varchar(100))as cardName, ");
+        sb.append(" cast(ifnull(\"U_SEPARADOR\", 'REVISAR')as varchar(100))as status ");
         sb.append("from ORDR ");
         sb.append("where \"CANCELED\"='N' and \"SlpCode\"=");
         sb.append(slpCode);
