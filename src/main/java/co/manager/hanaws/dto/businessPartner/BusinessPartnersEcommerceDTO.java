@@ -71,6 +71,8 @@ public class BusinessPartnersEcommerceDTO implements Serializable {
     protected String block;
     @JsonProperty("BilltoDefault")
     protected String billtoDefault;
+    @JsonProperty("PriceListNum")
+    protected Long priceListNum;
     @JsonProperty("BPAddresses")
     protected List<BusinessPartnersEcommerceDTO.BPAddresses.BPAddress> bpAddresses;
 
@@ -323,6 +325,14 @@ public class BusinessPartnersEcommerceDTO implements Serializable {
 
     public void setBpAddresses(List<BPAddresses.BPAddress> bpAddresses) {
         this.bpAddresses = bpAddresses;
+    }
+
+    public Long getPriceListNum() {
+        return priceListNum;
+    }
+
+    public void setPriceListNum(Long priceListNum) {
+        this.priceListNum = priceListNum;
     }
 
     public static class BPAddresses {
