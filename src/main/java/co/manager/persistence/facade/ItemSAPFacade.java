@@ -336,9 +336,9 @@ public class ItemSAPFacade {
         sb.append(" left  join \"@CATEGORIA\" c on c.\"Code\" = it.\"U_CATEGORIA\" ");
         sb.append(" left  join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
         sb.append(" left  join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
-        sb.append(" where r.Stock>0");
+        //sb.append(" where r.Stock>0");
         sb.append(")as t ");
-        sb.append("where t.Stock>0 ");
+        //sb.append("where t.Stock>0 ");
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto,t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
         sb.append("order by Producto ASC");
         try {
