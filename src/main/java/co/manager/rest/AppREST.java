@@ -634,6 +634,51 @@ public class AppREST {
         return Response.ok(new ResponseDTO(0, customerPortfolio)).build();
     }
 
+    @GET
+    @Path("get-geo-location/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getGeoLoactionBySeller(@PathParam("companyname") String companyname,
+                                           @QueryParam("slpcode") String slpCode,
+                                           @QueryParam("year") String year,
+                                           @QueryParam("month") String month,
+                                           @QueryParam("day") String day) {
+        List<Object[]> objs = historyGeoLocationSAPFacade.listGeoLocationBySeller(slpCode, year, month, day, companyname, false);
+        List<HistoryGeoLocationDTO> recordGeoLocations = new ArrayList<>();
+        for (Object[] obj : objs) {
+            HistoryGeoLocationDTO dto = new HistoryGeoLocationDTO();
+            dto.setSlpCode((String) obj[0]);
+            dto.setSlpName((String) obj[1]);
+            dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format(obj[2]));
+            dto.setDocTime((String) obj[3]);
+            dto.setLatitude((String) obj[4]);
+            dto.setLongitude((String) obj[5]);
+            dto.setDocType((String) obj[6]);
+            dto.setRegional((String) obj[7]);
+            dto.setIdCard((String) obj[8]);
+            recordGeoLocations.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, recordGeoLocations)).build();
+    }
+
+    @GET
+    @Path("list-activity-report/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response listActivityReportBySellers(@PathParam("companyname") String companyName) {
+        return Response.ok(historyGeoLocationSAPFacade.listActivityReportBySeller(companyName, false)).build();
+    }
+
+    @GET
+    @Path("create-record-login/{companyname}/{slpcode}/{version}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createRecordLogin(@PathParam("companyname") String companyName,
+                                      @PathParam("slpcode") String slpCode,
+                                      @PathParam("version") String version) {
+        return Response.ok(new ResponseDTO(0, salesPersonSAPFacade.addLoginVersionApp(slpCode, version, companyName, false))).build();
+    }
+
     @POST
     @Path("create-record-geo-location")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -675,41 +720,6 @@ public class AppREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error geo-localizando el asesor " + dto.getSlpCode() + " en " + dto.getCompanyName());
             return Response.ok(-1, "Ocurrio un error geo-localizando el asesor " + dto.getSlpCode() + " en " + dto.getCompanyName()).build();
         }
-    }
-
-    @GET
-    @Path("get-geo-location/{companyname}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getGeoLoactionBySeller(@PathParam("companyname") String companyname,
-                                           @QueryParam("slpcode") String slpCode,
-                                           @QueryParam("year") String year,
-                                           @QueryParam("month") String month,
-                                           @QueryParam("day") String day) {
-        List<Object[]> objs = historyGeoLocationSAPFacade.listGeoLocationBySeller(slpCode, year, month, day, companyname, false);
-        List<HistoryGeoLocationDTO> recordGeoLocations = new ArrayList<>();
-        for (Object[] obj : objs) {
-            HistoryGeoLocationDTO dto = new HistoryGeoLocationDTO();
-            dto.setSlpCode((String) obj[0]);
-            dto.setSlpName((String) obj[1]);
-            dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format(obj[2]));
-            dto.setDocTime((String) obj[3]);
-            dto.setLatitude((String) obj[4]);
-            dto.setLongitude((String) obj[5]);
-            dto.setDocType((String) obj[6]);
-            dto.setRegional((String) obj[7]);
-            dto.setIdCard((String) obj[8]);
-            recordGeoLocations.add(dto);
-        }
-        return Response.ok(new ResponseDTO(0, recordGeoLocations)).build();
-    }
-
-    @GET
-    @Path("list-activity-report/{companyname}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listActivityReportBySellers(@PathParam("companyname") String companyName) {
-        return Response.ok(historyGeoLocationSAPFacade.listActivityReportBySeller(companyName, false)).build();
     }
 
     @POST
