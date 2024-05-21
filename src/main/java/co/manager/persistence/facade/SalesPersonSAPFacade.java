@@ -7,6 +7,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -335,5 +337,26 @@ public class SalesPersonSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas por defecto asignadas al asesor " + slpCode + " en " + companyName, e);
         }
         return null;
+    }
+
+    public boolean addLoginVersionApp(String slpCode, String version, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update OSLP set \"U_VERSION\"='");
+        sb.append(version);
+        sb.append("',\"U_LASTDUEDATE\"='");
+        sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()));
+        sb.append("' where \"SlpCode\"='");
+        sb.append(slpCode);
+        sb.append("'");
+        try {
+            int rows = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+            if (rows == 1) {
+                return true;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error registrando la version para el asesor " + slpCode + " en " + companyName, e);
+        }
+        return false;
     }
 }
