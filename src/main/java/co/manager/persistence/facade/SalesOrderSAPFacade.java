@@ -131,6 +131,28 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
+    public List<Object[]> listOrdersHistoryWithDetailByCustomer(String cardCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.\"DocDate\" as date)as DocDate,cast(o.\"DocNum\" as varchar)as DocNum,cast(d.\"WhsCode\" as varchar)as WhsCode, ");
+        sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(o.\"DiscPrcnt\" as int)as desc1,cast(d.\"DiscPrcnt\" as int)as desc2,cast(d.\"Dscription\" as varchar)as itemName, ");
+        sb.append(" cast(i.\"Rate\" as int)as iva,cast(d.\"Price\" as numeric(18,2))as Price,cast(d.\"ItemCode\" as varchar)as ItemCode,cast(d.\"LineNum\" as int)as seq, ");
+        sb.append(" cast((d.\"Quantity\"*d.\"Price\")as numeric(18,2))as SubTotal,cast((select sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))+e.\"VatSum\" from ORDR e ");
+        sb.append(" inner join RDR1 d on d.\"DocEntry\"=e.\"DocEntry\" where e.\"DocNum\"=o.\"DocNum\" group by e.\"VatSum\")as numeric(18,2))as Total ");
+        sb.append("from ORDR o ");
+        sb.append("inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
+        sb.append("inner join OSTC i on i.\"Code\"=d.\"TaxCode\" ");
+        sb.append("where o.\"DocDate\" between ADD_MONTHS(TO_DATE(current_date,'YYYY-MM-DD'),-3) and current_date and o.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("' order by cast(o.\"DocDate\" as date) desc ");
+        try {
+            return persistenceConf.chooseSchema(companyName,pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar el historico de ordenes con detalle para el cliente " + cardCode + " en " + companyName, e);
+        }
+        return new ArrayList<>();
+    }
+
     public List<Object[]> listDetailOrder(Integer docNum, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();

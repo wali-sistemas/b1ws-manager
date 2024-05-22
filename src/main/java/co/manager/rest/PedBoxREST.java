@@ -691,8 +691,8 @@ public class PedBoxREST {
     @Path("orders-history/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listOrdersHitoryByCustomer(@PathParam("companyname") String companyname,
-                                               @QueryParam("cardcode") String cardCode) {
+    public Response listOrdersHistoryByCustomer(@PathParam("companyname") String companyname,
+                                                @QueryParam("cardcode") String cardCode) {
         CONSOLE.log(Level.INFO, "Listando historial de ordenes para el cliente [{0}] de la empresa [{1}]", new Object[]{cardCode, companyname});
         //historial de ordenes de los últimos 3 meses.
         List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryByCustomer(cardCode, companyname, false);
@@ -713,6 +713,56 @@ public class PedBoxREST {
         }
         CONSOLE.log(Level.INFO, "Retornando historial de ordenes para el cliente {0} en {1}", new Object[]{cardCode, companyname});
         return Response.ok(new ResponseDTO(0, ordersHistory)).build();
+    }
+
+    @GET
+    @Path("orders-detail-history/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getHistoryByCustomer(@PathParam("companyname") String companyname,
+                                         @QueryParam("cardcode") String cardCode) {
+        List<OrdersPedboxHistoryDTO> ordersPedboxHistory = new ArrayList<>();
+
+        List<Object[]> objects = salesOrderSAPFacade.listOrdersHistoryWithDetailByCustomer(cardCode, companyname, false);
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el historial de ordenes para el cliente {0} en {1}", new Object[]{cardCode, companyname});
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error listando el historial de ordenes para el cliente " + cardCode + " en " + companyname)).build();
+        }
+
+        HashMap<String, String> orders = new HashMap<>();
+        for (Object[] obj : objects) {
+            orders.put((String) obj[1], "id");
+        }
+
+        for (String client : orders.keySet()) {
+            List<OrdersPedboxHistoryDTO.OrdersDetailsPedboxHistoryDTO> orderDetailHistory = new ArrayList<>();
+            OrdersPedboxHistoryDTO dto = new OrdersPedboxHistoryDTO();
+            dto.setDocNum(client);
+            for (Object[] obj : objects) {
+                if (dto.getDocNum().equals(obj[1])) {
+                    //Encabezado
+                    dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format(obj[0]));
+                    dto.setDocNum((String) obj[1]);
+                    dto.setDesc1((Integer) obj[4]);
+                    dto.setTotal((BigDecimal) obj[12]);
+                    //Detalle
+                    OrdersPedboxHistoryDTO.OrdersDetailsPedboxHistoryDTO dto2 = new OrdersPedboxHistoryDTO.OrdersDetailsPedboxHistoryDTO();
+                    dto2.setWhsCode((String) obj[2]);
+                    dto2.setQty((Integer) obj[3]);
+                    dto2.setDesc2((Integer) obj[5]);
+                    dto2.setItemName((String) obj[6]);
+                    dto2.setPrice((BigDecimal) obj[8]);
+                    dto2.setItemCode((String) obj[9]);
+                    dto2.setSeq((Integer) obj[10]);
+                    dto2.setIva((Integer) obj[7]);
+                    dto2.setSubTotal((BigDecimal) obj[11]);
+                    orderDetailHistory.add(dto2);
+                }
+            }
+            dto.setDetailHistory(orderDetailHistory);
+            ordersPedboxHistory.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, ordersPedboxHistory)).build();
     }
 
     @GET
