@@ -320,7 +320,7 @@ public class SalesPersonSAPFacade {
 
     public Object[] getWhsCodeDefaultBySeller(String slpCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(ifnull(\"Telephone\",'01') as varchar(3))as whsCodeDefTire,'01' as WhsCodeDefLub,'32' as WhsCodeDefPart ");
+        sb.append("select cast(ifnull(\"Telephone\",'01') as varchar(3))as whsCodeDefTire,'01' as WhsCodeDefLub/*,'32' as WhsCodeDefPart*/ ");
         if (companyName.contains("VARROC")) {
             sb.append(",cast(ifnull(\"Memo\",'26') as varchar(3)) as whsCodeDefTireCali ");
         } else {
