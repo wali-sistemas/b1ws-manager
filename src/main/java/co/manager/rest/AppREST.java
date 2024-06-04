@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 @Path("app")
 public class AppREST {
     private static final Logger CONSOLE = Logger.getLogger(AppREST.class.getSimpleName());
+    private boolean orderCompleted = true;
 
     @Inject
     private ManagerApplicationBean managerApplicationBean;
@@ -830,6 +831,7 @@ public class AppREST {
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
+        orderCompleted = true;
 
         /**** 8. Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
         if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("REDPLAS")) {
@@ -888,107 +890,69 @@ public class AppREST {
                 }
             }
         }
-        /**** 9.Crear ordenes separadas por regla de negocio ****/
-        /**** 9.1. Solo llantas de cali ****/
-        if (detailSalesOrder_LL_cali.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_cali);
-            dto.setNumAtCard(numAtCard + "LL26");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
-        /**** 9.2. Solo llantas de cali con (**) ****/
-        if (detailSalesOrder_LL_cali_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
-            dto.setNumAtCard(numAtCard + "LL26D");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali con (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
-
-        /**** 9.3. Solo llantas de cartagena ****/
-        if (detailSalesOrder_LL_cart.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
-            dto.setNumAtCard(numAtCard + "LL05");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
-
-        /**** 9.4. Solo llantas de cartagena con (**) ****/
-        if (detailSalesOrder_LL_cart_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
-            dto.setNumAtCard(numAtCard + "LL05D");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena con (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
         /**** 9.5. Solo repuestos con (**) ****/
-        if (detailSalesOrder_REP_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
-            dto.setNumAtCard(numAtCard + "RD");
-            /**** 9.5.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
-                res = sortOutItemsOnlyParts(dto, ocrCode);
-            } else {
-                res = salesOrderEJB.createSalesOrder(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
+        if (orderCompleted) {
+            if (detailSalesOrder_REP_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
+                dto.setNumAtCard(numAtCard + "RD");
+                /**** 9.5.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrder(dto);
+                    if (res.getCode() < 0) {
+                        ResponseDTO response = createOrderTemporary(dto, 0);
 
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
-                    res = response;
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
                 }
             }
+        } else {
+            return Response.ok(res).build();
         }
         /**** 9.6. Solo repuestos ****/
-        if (detailSalesOrder_REP.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_REP);
-            dto.setNumAtCard(numAtCard + "R");
-            /**** 9.6.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-            if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
-                res = sortOutItemsOnlyParts(dto, ocrCode);
-            } else {
+        if (orderCompleted) {
+            if (detailSalesOrder_REP.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP);
+                dto.setNumAtCard(numAtCard + "R");
+                /**** 9.6.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrder(dto);
+                    if (res.getCode() < 0) {
+                        ResponseDTO response = createOrderTemporary(dto, 0);
+
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.7. Solo lubricantes con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LU_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
+                dto.setNumAtCard(numAtCard + "LUD");
+
                 res = salesOrderEJB.createSalesOrder(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
@@ -996,87 +960,188 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items REPUESTOS sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.9. Solo llantas sin (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_link.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link);
+                dto.setNumAtCard(numAtCard + "LLK");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
                     res = response;
                 }
             }
-        }
-        //TODO: crear ordenes separadas para lubricantes solo para MotoZone
-        /*if (dto.getCompanyName().contains("VARROC")) {*/
-        /**** 9.7. Solo lubricantes con (**) ****/
-        if (detailSalesOrder_LU_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
-            dto.setNumAtCard(numAtCard + "LUD");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes con (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
-        /**** 9.8. Solo lubricantes ****/
-        if (detailSalesOrder_LU.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LU);
-            dto.setNumAtCard(numAtCard + "LU");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
-        }
-        /**** 9.9. Solo llantas sin (**) ****/
-        if (detailSalesOrder_LL_link.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_link);
-            dto.setNumAtCard(numAtCard + "LLK");
-
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
-
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas sin (**). Orden Temp={0}", response.getContent());
-                res = response;
-            }
+        } else {
+            return Response.ok(res).build();
         }
         /**** 9.10. Solo llantas con (**) ****/
-        if (detailSalesOrder_LL_link_desc.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
-            dto.setNumAtCard(numAtCard + "LLKD");
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_link_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
+                dto.setNumAtCard(numAtCard + "LLKD");
 
-            res = salesOrderEJB.createSalesOrder(dto);
-            if (res.getCode() < 0) {
-                ResponseDTO response = createOrderTemporary(dto, 0);
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
 
-                gson = new Gson();
-                json = gson.toJson(dto);
-                CONSOLE.log(Level.INFO, json);
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
-                res = response;
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
             }
+        } else {
+            return Response.ok(res).build();
         }
-        //}
+        /**** 9.2. Solo llantas de cali con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cali_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
+                dto.setNumAtCard(numAtCard + "LL26D");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.4. Solo llantas de cartagena con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cart_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
+                dto.setNumAtCard(numAtCard + "LL05D");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.8. Solo lubricantes ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LU.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LU);
+                dto.setNumAtCard(numAtCard + "LU");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo lubricantes sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.Crear ordenes separadas por regla de negocio ****/
+        /**** 9.1. Solo llantas de cali ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cali.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cali);
+                dto.setNumAtCard(numAtCard + "LL26");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cali sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.3. Solo llantas de cartagena ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cart.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
+                dto.setNumAtCard(numAtCard + "LL05");
+
+                res = salesOrderEJB.createSalesOrder(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo llantas de cartagena sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
         //TODO: crear orden temporal, si no clasifico bien los articulos
         if (res.getContent() == null) {
             ResponseDTO response = createOrderTemporary(dto, 0);
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items. Orden Temp={0}", response.getContent());
             res = response;
+            orderCompleted = false;
         }
         CONSOLE.log(Level.INFO, "Retornando ordenes creadas para la empresa [{0}]", dto.getCompanyName());
         return Response.ok(res).build();
@@ -1220,61 +1285,73 @@ public class AppREST {
         }
 
         /**** 10.Iniciar creación de pedido 30Modula****/
-        if (itemsMDL.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(itemsMDL);
-            dto.setNumAtCard(dto.getNumAtCard() + "M");
-            dto.setSerialMDL(serial);
-            /**** 10.1.Crear orden para el almacén 30-MODULA****/
-            res = salesOrderEJB.createSalesOrder(dto);
+        if (orderCompleted) {
+            if (itemsMDL.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(itemsMDL);
+                dto.setNumAtCard(dto.getNumAtCard() + "M");
+                dto.setSerialMDL(serial);
+                /**** 10.1.Crear orden para el almacén 30-MODULA****/
+                res = salesOrderEJB.createSalesOrder(dto);
 
-            if (res.getCode() == 0) {
-                if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
-                    /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
-                    OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
-                    orderModulaDTO.setDocNum(res.getContent().toString());
-                    orderModulaDTO.setType("P");
+                if (res.getCode() == 0) {
+                    if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
+                        /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
+                        OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
+                        orderModulaDTO.setDocNum(res.getContent().toString());
+                        orderModulaDTO.setType("P");
 
-                    List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
-                    for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
-                        OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
-                        detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                        detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                        details.add(detailModulaDTO);
+                        List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
+                        for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
+                            OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
+                            detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                            detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                            details.add(detailModulaDTO);
+                        }
+                        orderModulaDTO.setDetail(details);
+
+                        String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
+                        if (resMDL == null || resMDL.isEmpty()) {
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
+                            return new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.");
+                        }
                     }
-                    orderModulaDTO.setDetail(details);
-
-                    String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
-                    if (resMDL == null || resMDL.isEmpty()) {
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
-                        return new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.");
-                    }
+                    orderCompleted = true;
+                } else {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
+                    /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                    orderCompleted = false;
+                    return createOrderTemporary(dto, 0);
                 }
-            } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
-                /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                return createOrderTemporary(dto, 0);
-            }
-        }
-
-        /**** 11.Iniciar creación de pedido 01CEDI ****/
-        if (itemsSAP.size() > 0) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(itemsSAP);
-            dto.setNumAtCard(dto.getNumAtCard() + "S");
-            dto.setSerialMDL(serial);
-            /**** 11.1.Crear orden para el almacén 01-CEDI****/
-            res = salesOrderEJB.createSalesOrder(dto);
-
-            if (res.getCode() == 0) {
-                /**** 11.1.1.Retornando el nro de documento creado****/
-                return res;
-            } else {
-                /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                return createOrderTemporary(dto, 0);
             }
         } else {
-            /**** 11.2.Retornando el nro de documento creado****/
+            return res;
+        }
+
+        if (orderCompleted) {
+            /**** 11.Iniciar creación de pedido 01CEDI ****/
+            if (itemsSAP.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(itemsSAP);
+                dto.setNumAtCard(dto.getNumAtCard() + "S");
+                dto.setSerialMDL(serial);
+                /**** 11.1.Crear orden para el almacén 01-CEDI****/
+                res = salesOrderEJB.createSalesOrder(dto);
+
+                if (res.getCode() == 0) {
+                    /**** 11.1.1.Retornando el nro de documento creado****/
+                    orderCompleted = true;
+                    return res;
+                } else {
+                    /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                    orderCompleted = false;
+                    return createOrderTemporary(dto, 0);
+                }
+            } else {
+                /**** 11.2.Retornando el nro de documento creado****/
+                return res;
+            }
+        } else {
             return res;
         }
     }
