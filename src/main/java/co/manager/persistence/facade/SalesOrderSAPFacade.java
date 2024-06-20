@@ -265,9 +265,9 @@ public class SalesOrderSAPFacade {
         sb.append(" cast(t.\"Name\" as varchar)as transpInvoice,cast(f.\"U_UBIC1\" as varchar)as guiaInvoice,cast(f.\"U_SEPARADOR\" as varchar)as statusInvoice, ");
         sb.append(" cast(t.\"U_URL\" as varchar)as urlTracking ");
         sb.append("from ORDR o ");
-        sb.append("inner join ODLN e on o.\"DocNum\"=e.\"U_NUNFAC\" ");
-        sb.append("inner join OINV f on f.\"U_NUNFAC\"=cast(e.\"DocNum\" as varchar) ");
-        sb.append("inner join \"@TRANSP\" t on t.\"Code\"=f.\"U_TRANSP\" ");
+        sb.append("left join ODLN e on o.\"DocNum\"=e.\"U_NUNFAC\" ");
+        sb.append("left join OINV f on f.\"U_NUNFAC\"=cast(e.\"DocNum\" as varchar) ");
+        sb.append("left join \"@TRANSP\" t on t.\"Code\"=f.\"U_TRANSP\" ");
         sb.append("where o.\"DocNum\"=");
         sb.append(docNum);
         try {

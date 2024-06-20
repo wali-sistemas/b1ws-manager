@@ -1061,6 +1061,9 @@ public class PedBoxREST {
             detail.setGroup((String) obj[1]);
         }
 
+        //TODO: consultar bodega por default que tiene asigando el asesor para llantas
+        Object [] whsCodeDefaultTire = salesPersonSAPFacade.getWhsCodeDefaultBySeller(dto.getSlpCode().toString(), dto.getCompanyName(), false);
+
         Gson gson = new Gson();
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
@@ -1095,6 +1098,7 @@ public class PedBoxREST {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
+                        detail.setWhsCode((String) whsCodeDefaultTire[0]);
                         if (detail.getWhsCode().equals("05")) {
                             if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
@@ -1740,46 +1744,48 @@ public class PedBoxREST {
         }
         /**** 10.Iniciar creación de pedido 30Modula****/
         if (orderCompleted) {
-            dto.setDetailSalesOrder(new ArrayList<>());
-            dto.setDetailSalesOrder(itemsMDL);
-            dto.setNumAtCard(dto.getNumAtCard() + "M");
-            dto.setSerialMDL(serial);
-            /**** 10.1.Crear orden para el almacén 30-MODULA****/
-            res = salesOrderEJB.createSalesOrder(dto);
+            /**** 11.Iniciar creación de pedido 30Modula ****/
+            if (itemsMDL.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(itemsMDL);
+                dto.setNumAtCard(dto.getNumAtCard() + "M");
+                dto.setSerialMDL(serial);
+                /**** 10.1.Crear orden para el almacén 30-MODULA****/
+                res = salesOrderEJB.createSalesOrder(dto);
 
-            if (res.getCode() == 0) {
-                if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
-                    /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
-                    OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
-                    orderModulaDTO.setDocNum(res.getContent().toString());
-                    orderModulaDTO.setType("P");
+                if (res.getCode() == 0) {
+                    if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
+                        /**** 10.1..1.Se construye DTO para envia solicitud a wms-modula de tipo deposito estado=P****/
+                        OrderModulaDTO orderModulaDTO = new OrderModulaDTO();
+                        orderModulaDTO.setDocNum(res.getContent().toString());
+                        orderModulaDTO.setType("P");
 
-                    List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
-                    for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
-                        OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
-                        detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
-                        detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
-                        details.add(detailModulaDTO);
+                        List<OrderModulaDTO.DetailModulaDTO> details = new ArrayList<>();
+                        for (DetailSalesOrderDTO detailSalesOrderDTO : itemsMDL) {
+                            OrderModulaDTO.DetailModulaDTO detailModulaDTO = new OrderModulaDTO.DetailModulaDTO();
+                            detailModulaDTO.setItemCode(detailSalesOrderDTO.getItemCode());
+                            detailModulaDTO.setQuantity(detailSalesOrderDTO.getQuantity());
+                            details.add(detailModulaDTO);
+                        }
+                        orderModulaDTO.setDetail(details);
+
+                        String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
+                        if (resMDL == null || resMDL.isEmpty()) {
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
+                            return new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.");
+                        }
                     }
-                    orderModulaDTO.setDetail(details);
-
-                    String resMDL = orderModulaEJB.addOrdine(orderModulaDTO, "Orden de Venta");
-                    if (resMDL == null || resMDL.isEmpty()) {
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error depositando orden de venta en modula");
-                        return new ResponseDTO(-1, "Ocurrio un error depositando orden de venta en modula.");
-                    }
+                    orderCompleted = true;
+                } else {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
+                    /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
+                    orderCompleted = false;
+                    return createOrderTemporary(dto, 0);
                 }
-                orderCompleted = true;
-            } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
-                /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
-                orderCompleted = false;
-                return createOrderTemporary(dto, 0);
             }
         } else {
             return res;
         }
-
         if (orderCompleted) {
             /**** 11.Iniciar creación de pedido 01CEDI ****/
             if (itemsSAP.size() > 0) {
