@@ -1368,7 +1368,7 @@ public class AppREST {
         return detail;
     }
 
-    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum) {
+    private ResponseDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum/*, String msjError*/) {
         /****Registrar pedido en tablas temporales****/
         OrderPedbox order = new OrderPedbox();
         OrderDetailPedbox detail = new OrderDetailPedbox();
@@ -1406,5 +1406,6 @@ public class AppREST {
         }
         CONSOLE.log(Level.INFO, "Se creo la orden temporal satisfactoriamente. idOrden={0} en la empresa {1}", new Object[]{order.getIdOrder(), dto.getCompanyName()});
         return new ResponseDTO(0, order.getIdOrder());
+        //return new ResponseDTO(0, order.getIdOrder() + "-" + msjError);
     }
 }
