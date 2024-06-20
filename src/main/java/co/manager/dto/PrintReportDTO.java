@@ -1,6 +1,6 @@
 package co.manager.dto;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author jguisao

@@ -1,5 +1,6 @@
 package co.manager.hanaws.client.order;
 
+import co.manager.hanaws.dto.ResponseServiceLayerDTO;
 import co.manager.hanaws.dto.order.OrderDTO;
 import co.manager.hanaws.dto.order.OrderRestDTO;
 
@@ -8,6 +9,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author jguisao
@@ -30,4 +32,17 @@ public class OrderClient {
         return webTarget.path("Orders").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), OrderRestDTO.class);
     }
+
+    /*public Object addOrder2(OrderDTO dto, String sessionId) {
+        Response response = webTarget.path("Orders")
+                .request(MediaType.APPLICATION_JSON)
+                .cookie("B1SESSION", sessionId)
+                .post(Entity.entity(dto, MediaType.APPLICATION_JSON));
+
+        if (response.getStatus() == 200) {
+            return response.readEntity(OrderRestDTO.class);
+        } else {
+            return response.readEntity(ResponseServiceLayerDTO.class);
+        }
+    }*/
 }
