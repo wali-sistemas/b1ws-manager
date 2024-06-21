@@ -948,7 +948,7 @@ public class PedBoxREST {
         dto.setStatusOrder((String) obj[2]);
         dto.setDocDueDateOrder(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
         dto.setInvoice((String) obj[4]);
-        dto.setDocDateInvoice(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[5]));
+        dto.setDocDateInvoice(obj[5] != null ? new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[5]) : null);
         dto.setTransport((String) obj[6]);
         dto.setGuia((String) obj[7]);
         dto.setStatusInvoice((String) obj[8]);
