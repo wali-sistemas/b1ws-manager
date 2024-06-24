@@ -952,7 +952,7 @@ public class PedBoxREST {
         dto.setTransport((String) obj[6]);
         dto.setGuia((String) obj[7]);
         dto.setStatusInvoice((String) obj[8]);
-        dto.setUrlTracking((String) obj[9] + obj[7]);
+        dto.setUrlTracking((String) obj[9]);
 
         return Response.ok(dto).build();
     }

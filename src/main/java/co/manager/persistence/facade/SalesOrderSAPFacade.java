@@ -263,7 +263,7 @@ public class SalesOrderSAPFacade {
         sb.append("select cast(o.\"DocNum\" as varchar)as orders,cast(o.\"DocDate\" as date)as docDateOrder,cast(o.\"U_SEPARADOR\" as varchar)as statusOrder, ");
         sb.append(" cast(o.\"DocDueDate\" as date)as docDueDateOrder,cast(f.\"DocNum\" as varchar)as invoice,cast(f.\"DocDate\" as date)as docDateInvoice, ");
         sb.append(" cast(t.\"Name\" as varchar)as transpInvoice,cast(f.\"U_UBIC1\" as varchar)as guiaInvoice,cast(f.\"U_SEPARADOR\" as varchar)as statusInvoice, ");
-        sb.append(" cast(t.\"U_URL\" as varchar)as urlTracking ");
+        sb.append(" ifnull(cast(concat(t.\"U_URL\",f.\"U_UBIC1\") as varchar),'')as urlTracking ");
         sb.append("from ORDR o ");
         sb.append("left join ODLN e on o.\"DocNum\"=e.\"U_NUNFAC\" ");
         sb.append("left join OINV f on f.\"U_NUNFAC\"=cast(e.\"DocNum\" as varchar) ");
