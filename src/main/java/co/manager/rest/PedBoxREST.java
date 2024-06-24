@@ -1061,8 +1061,13 @@ public class PedBoxREST {
             detail.setGroup((String) obj[1]);
         }
 
-        //TODO: consultar bodega por default que tiene asigando el asesor para llantas
-        Object [] whsCodeDefaultTire = salesPersonSAPFacade.getWhsCodeDefaultBySeller(dto.getSlpCode().toString(), dto.getCompanyName(), false);
+        Object[] whsCodeDefaultTire;
+        //TODO: si la orden es de Extranet, consultar bodega por default que tiene asigando el asesor para las llantas
+        if (dto.getNumAtCard().substring(0, 1).equals("E")) {
+            whsCodeDefaultTire = salesPersonSAPFacade.getWhsCodeDefaultBySeller(dto.getSlpCode().toString(), dto.getCompanyName(), false);
+        } else {
+            whsCodeDefaultTire = new Object[]{dto.getDetailSalesOrder().get(0).getWhsCode()};
+        }
 
         Gson gson = new Gson();
         String json = gson.toJson(dto);
