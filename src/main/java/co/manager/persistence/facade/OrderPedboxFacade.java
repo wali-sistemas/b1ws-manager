@@ -46,7 +46,8 @@ public class OrderPedboxFacade {
         Predicate predYear = cb.equal(cb.function("YEAR", Integer.class, root.get(OrderPedbox_.docDate)), year);
         Predicate predMonth = cb.equal(cb.function("MONTH", Integer.class, root.get(OrderPedbox_.docDate)), month);
         Predicate predDay = cb.equal(cb.function("DAY", Integer.class, root.get(OrderPedbox_.docDate)), day);
-        cq.where(cb.and(predSlpCode, predStatus, predYear, predMonth, predDay));
+        Predicate predCompanyName = cb.equal(root.get(OrderPedbox_.companyName), companyName);
+        cq.where(cb.and(predSlpCode, predStatus, predYear, predMonth, predDay, predCompanyName));
         try {
             return em.createQuery(cq).getResultList();
         } catch (NoResultException ex) {
