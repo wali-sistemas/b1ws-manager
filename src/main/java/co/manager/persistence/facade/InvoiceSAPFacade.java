@@ -102,7 +102,7 @@ public class InvoiceSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\" as varchar(100))as fv ");
         sb.append("from OINV ");
-        sb.append("where \"DocType\"<>'S' and \"DocNum\" not in(1442,221,238) and \"DocStatus\"='O' and year(\"DocDate\")=year(current_date) and \"CardCode\"='C900998242' and cast(\"DocNum\" as varchar(100)) not in(");
+        sb.append("where \"DocType\"<>'S' and \"DocNum\" not in(1442,221,238,308) and \"DocStatus\"='O' and year(\"DocDate\")=year(current_date) and \"CardCode\"='C900998242' and cast(\"DocNum\" as varchar(100)) not in(");
         sb.append(" select cast(\"NumAtCard\" as varchar(100))as fv ");
         sb.append(" from \"VELEZ\".OPCH ");
         sb.append(" where year(\"DocDate\")=year(current_date) and \"CardCode\"=");
