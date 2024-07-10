@@ -835,7 +835,7 @@ public class AppREST {
 
         /**** 8. Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
         if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("REDPLAS")) {
-            res = salesOrderEJB.createSalesOrder(dto);
+            res = salesOrderEJB.createSalesOrderByApp(dto);
             if (res.getCode() == 0) {
                 return Response.ok(res).build();
             } else {
@@ -900,7 +900,7 @@ public class AppREST {
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
-                    res = salesOrderEJB.createSalesOrder(dto);
+                    res = salesOrderEJB.createSalesOrderByApp(dto);
                     if (res.getCode() < 0) {
                         ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -928,7 +928,7 @@ public class AppREST {
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
-                    res = salesOrderEJB.createSalesOrder(dto);
+                    res = salesOrderEJB.createSalesOrderByApp(dto);
                     if (res.getCode() < 0) {
                         ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -953,7 +953,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
                 dto.setNumAtCard(numAtCard + "LUD");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -977,7 +977,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_link);
                 dto.setNumAtCard(numAtCard + "LLK");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -998,7 +998,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
                 dto.setNumAtCard(numAtCard + "LLKD");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1022,7 +1022,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
                 dto.setNumAtCard(numAtCard + "LL26D");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1046,7 +1046,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
                 dto.setNumAtCard(numAtCard + "LL05D");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1070,7 +1070,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LU);
                 dto.setNumAtCard(numAtCard + "LU");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1095,7 +1095,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cali);
                 dto.setNumAtCard(numAtCard + "LL26");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1119,7 +1119,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
                 dto.setNumAtCard(numAtCard + "LL05");
 
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
                     ResponseDTO response = createOrderTemporary(dto, 0);
 
@@ -1292,7 +1292,7 @@ public class AppREST {
                 dto.setNumAtCard(dto.getNumAtCard() + "M");
                 dto.setSerialMDL(serial);
                 /**** 10.1.Crear orden para el almacén 30-MODULA****/
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
 
                 if (res.getCode() == 0) {
                     if (dto.getStatus().equals("APROBADO") && dto.getConfirmed().equals("Y")) {
@@ -1336,7 +1336,7 @@ public class AppREST {
                 dto.setNumAtCard(dto.getNumAtCard() + "S");
                 dto.setSerialMDL(serial);
                 /**** 11.1.Crear orden para el almacén 01-CEDI****/
-                res = salesOrderEJB.createSalesOrder(dto);
+                res = salesOrderEJB.createSalesOrderByApp(dto);
 
                 if (res.getCode() == 0) {
                     /**** 11.1.1.Retornando el nro de documento creado****/
@@ -1406,6 +1406,5 @@ public class AppREST {
         }
         CONSOLE.log(Level.INFO, "Se creo la orden temporal satisfactoriamente. idOrden={0} en la empresa {1}", new Object[]{order.getIdOrder(), dto.getCompanyName()});
         return new ResponseDTO(0, order.getIdOrder());
-        //return new ResponseDTO(0, order.getIdOrder() + "-" + msjError);
     }
 }

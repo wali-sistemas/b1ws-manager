@@ -33,16 +33,16 @@ public class OrderClient {
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), OrderRestDTO.class);
     }
 
-    /*public Object addOrder2(OrderDTO dto, String sessionId) {
+    public Object addOrderByExtranet(OrderDTO dto, String sessionId) {
         Response response = webTarget.path("Orders")
                 .request(MediaType.APPLICATION_JSON)
                 .cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON));
 
-        if (response.getStatus() == 200) {
+        if (response.getStatus() == 200 || response.getStatus() == 201) {
             return response.readEntity(OrderRestDTO.class);
         } else {
             return response.readEntity(ResponseServiceLayerDTO.class);
         }
-    }*/
+    }
 }

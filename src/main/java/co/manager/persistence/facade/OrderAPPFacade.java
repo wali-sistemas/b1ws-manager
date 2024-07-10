@@ -86,4 +86,30 @@ public class OrderAPPFacade {
         }
         return false;
     }
+
+    public List<Object[]> listOutStockItems(Long idOrden, String numAtCard, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(d.itemCode as varchar(20))as itemCode,cast(d.qtyAPP as int)as qtyOrder, ");
+        if (numAtCard.charAt(numAtCard.length() - 1) == 'M') {
+            sb.append(" case when d.qtyMDL<0 then 0 else cast(d.qtyMDL as int) end as qtyMDL ");
+        } else {
+            sb.append(" case when d.qtySAP<0 then 0 else cast(d.qtySAP as int) end as qtySAP ");
+        }
+        sb.append("from order_pedbox e ");
+        sb.append("inner join order_detail_pedbox d on e.idOrder=d.idOrder ");
+        sb.append("where e.companyName='IGB' and e.idOrder=");
+        sb.append(idOrden);
+        if (numAtCard.charAt(numAtCard.length() - 1) == 'M') {
+            sb.append(" and d.qtyAPP>d.qtyMDL ");
+        } else {
+            sb.append(" and d.qtyAPP>d.qtySAP ");
+        }
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los items agotados para el idOrder=" + idOrden + " en " + companyName, e);
+        }
+        return new ArrayList<>();
+    }
 }
