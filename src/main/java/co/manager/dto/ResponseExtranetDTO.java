@@ -8,6 +8,7 @@ import java.util.List;
 public class ResponseExtranetDTO {
     private int code;
     private Object content;
+    private long orderTemp;
     private String message;
     private List<OutStockItems> outStockItems;
 
@@ -19,9 +20,10 @@ public class ResponseExtranetDTO {
         this.content = content;
     }
 
-    public ResponseExtranetDTO(int code, Object content, String message, List<OutStockItems> outStockItems) {
+    public ResponseExtranetDTO(int code, Object content, long orderTemp, String message, List<OutStockItems> outStockItems) {
         this.code = code;
         this.content = content;
+        this.orderTemp = orderTemp;
         this.message = message;
         this.outStockItems = outStockItems;
     }
@@ -40,6 +42,14 @@ public class ResponseExtranetDTO {
 
     public void setContent(Object content) {
         this.content = content;
+    }
+
+    public long getOrderTemp() {
+        return orderTemp;
+    }
+
+    public void setOrderTemp(long orderTemp) {
+        this.orderTemp = orderTemp;
     }
 
     public String getMessage() {
