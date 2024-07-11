@@ -976,7 +976,7 @@ public class PedBoxREST {
             Integer docNum = salesOrderSAPFacade.getDocNumOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
             if (docNum != 0) {
                 CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
-                return Response.ok(new ResponseExtranetDTO(0, docNum, "La orden ya existe en SAP", null)).build();
+                return Response.ok(new ResponseExtranetDTO(0, docNum, 0, "La orden ya existe en SAP", null)).build();
             }
         }
         //TODO: Campo DocTotal para la creación de pedidos de motorepuestos.com no lo estan llenando falta en la integración con el AWS
@@ -1712,7 +1712,7 @@ public class PedBoxREST {
             outStockItem.setQtyCurrent((Integer) obj[2]);
             outStockItems.add(outStockItem);
         }
-        return new ResponseExtranetDTO(0, order.getIdOrder(), message, outStockItems);
+        return new ResponseExtranetDTO(0, 0, order.getIdOrder(), message, outStockItems);
     }
 
     private DetailSalesOrderDTO setDetailOrder(DetailSalesOrderDTO detail, String ocrCode) {

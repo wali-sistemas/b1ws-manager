@@ -239,13 +239,13 @@ public class SalesOrderEJB {
 
                 if (docNum == 0) {
                     CONSOLE.log(Level.WARNING, "Ocurrió un error al crear la orden. Resetear el sesión ID.");
-                    return new ResponseExtranetDTO(-1, docNum, msjError, null);
+                    return new ResponseExtranetDTO(-1, 0, docNum, msjError, null);
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo la orden satisfactoriamente. DocNum={0}", docNum);
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden ", e);
-                return new ResponseExtranetDTO(-1, 0, msjError + "-" + e.getMessage(), null);
+                return new ResponseExtranetDTO(-1, 0, 0, msjError + "-" + e.getMessage(), null);
             }
         }
         //3. Logout
