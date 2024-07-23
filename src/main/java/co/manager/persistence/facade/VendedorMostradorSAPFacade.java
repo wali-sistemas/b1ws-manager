@@ -60,6 +60,8 @@ public class VendedorMostradorSAPFacade {
         sb.append(dto.getDireccion().toUpperCase());
         sb.append("','");
         sb.append(dto.getCodConcepto());
+        sb.append("','");
+        sb.append("N");
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
