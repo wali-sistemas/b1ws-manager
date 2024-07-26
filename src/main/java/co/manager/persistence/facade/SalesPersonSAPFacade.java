@@ -157,7 +157,7 @@ public class SalesPersonSAPFacade {
     public List<Object[]> getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(a.\"SlpCode\" as varchar(10))as Asesor,cast(year(p.\"U_ANO_PRES\")as int)as Ano,cast(p.\"U_MES_PRES\" as varchar(2))as Mes, ");
-        sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones)-sum(t.asientos),0)as VentasNetas, ");
+        sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones)-sum(t.asientos)-sum(t.ordenes),0)as VentasNetas, ");
         sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
         sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")='");
         sb.append(year);
@@ -171,7 +171,7 @@ public class SalesPersonSAPFacade {
         sb.append(" cast(a.\"SlpName\" as varchar(50))as NomAsesor,cast(a.\"Email\" as varchar(50))as correo,cast(a.\"U_CEDULA\" as varchar(20))as cedula,cast(a.\"Telephone\" as varchar(3))as whsDefTire ");
         sb.append("from  \"@PRES_ZONA_VEND\" p ");
         sb.append("inner join OSLP a on p.\"U_VEND_PRES\"=a.\"SlpName\" ");
-        sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100))as numeric(18,2))as Ventas,0 as Devoluciones,0 as Asientos ");
+        sb.append("left  join (select cast(f.\"SlpCode\" as varchar(10))as Asesor,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100))as numeric(18,2))as Ventas,0 as Devoluciones,0 as Asientos,0 as Ordenes ");
         sb.append("from  OINV f ");
         sb.append("inner join INV1 d on d.\"DocEntry\"=f.\"DocEntry\" ");
         sb.append("where d.\"TaxOnly\"='N' and f.\"DocNum\" not in(select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='FV') and year(f.\"DocDate\")='");
@@ -184,7 +184,7 @@ public class SalesPersonSAPFacade {
         }
         sb.append("' group by year(f.\"DocDate\"),month(f.\"DocDate\"),f.\"SlpCode\" ");
         sb.append("union all ");
-        sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100)) as numeric(18,2))as Devoluciones,0 as Asientos ");
+        sb.append("  select cast(n.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100)) as numeric(18,2))as Devoluciones,0 as Asientos,0 as Ordenes ");
         sb.append("  from  ORIN n ");
         sb.append("  inner join RIN1 d on d.\"DocEntry\" = n.\"DocEntry\" ");
         sb.append("  where d.\"TaxOnly\"='N' and n.\"DocNum\" not in(select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='NC') and year(n.\"DocDate\")='");
@@ -197,7 +197,20 @@ public class SalesPersonSAPFacade {
         }
         sb.append("' group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\" ");
         sb.append("union all ");
-        sb.append(" select cast(f.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,cast(sum(f.\"DocTotal\") as numeric(18,0))as Asientos ");
+        sb.append("  select cast(o.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,0 as Asientos,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(o.\"DiscPrcnt\")/100)) as numeric(18,2))as Ordenes ");
+        sb.append("  from  ORDR o ");
+        sb.append("  inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
+        sb.append("  where o.\"U_SEPARADOR\" in ('APROBADO','PREPAGO','ANALIZADO','REVISAR') and o.\"DocStatus\"='O' and year(o.\"DocDate\")='");
+        sb.append(year);
+        sb.append("' and month(o.\"DocDate\")='");
+        sb.append(month);
+        if (!slpCode.equals("0")) {
+            sb.append("' and o.\"SlpCode\"='");
+            sb.append(slpCode);
+        }
+        sb.append(" group by year(o.\"DocDate\"),month(o.\"DocDate\"),o.\"SlpCode\" ");
+        sb.append("union all ");
+        sb.append(" select cast(f.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,cast(sum(f.\"DocTotal\") as numeric(18,0))as Asientos,0 as Ordenes ");
         sb.append(" from( ");
         sb.append("  select distinct e.\"TransId\", ");
         sb.append("   (select max(v.\"SlpCode\") ");
