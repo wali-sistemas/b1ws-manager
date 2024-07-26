@@ -214,7 +214,7 @@ public class SalesPersonSAPFacade {
         } else {
             sb.append("('41350520','41750540','41750525','41750530') ");
         }
-        sb.append("    and e.\"TransId\" not in (select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='AS') ");
+        sb.append("    and e.\"TransId\" not in (select \"Code\" from \"@DOC_EXCLU\" where \"U_TIPO\"='AS') and e.\"DocSeries\" in ('18','20') ");
         sb.append(" )as f ");
         sb.append(" where year(f.\"TaxDate\")='");
         sb.append(year);
