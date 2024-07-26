@@ -208,7 +208,7 @@ public class SalesPersonSAPFacade {
             sb.append("' and o.\"SlpCode\"='");
             sb.append(slpCode);
         }
-        sb.append(" group by year(o.\"DocDate\"),month(o.\"DocDate\"),o.\"SlpCode\" ");
+        sb.append("' group by year(o.\"DocDate\"),month(o.\"DocDate\"),o.\"SlpCode\" ");
         sb.append("union all ");
         sb.append(" select cast(f.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,cast(sum(f.\"DocTotal\") as numeric(18,0))as Asientos,0 as Ordenes ");
         sb.append(" from( ");
