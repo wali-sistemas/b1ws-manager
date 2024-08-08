@@ -157,7 +157,7 @@ public class SalesPersonSAPFacade {
     public List<Object[]> getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(a.\"SlpCode\" as varchar(10))as Asesor,cast(year(p.\"U_ANO_PRES\")as int)as Ano,cast(p.\"U_MES_PRES\" as varchar(2))as Mes, ");
-        sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones)-sum(t.asientos)-sum(t.ordenes),0)as VentasNetas, ");
+        sb.append(" ifnull(sum(t.Ventas)-sum(t.Devoluciones)-sum(t.asientos),0)as VentasNetas, ");
         sb.append("cast(p.\"U_VALOR_PRES\" as numeric(18,0))as Presupuesto, ");
         sb.append(" ifnull((select sum(cast(\"DocTotal\"-\"VatSum\"-\"TotalExpns\"+\"WTSum\" as numeric(18,2)))as Pendiente from ORDR where \"DocStatus\"='O' and year(\"DocDate\")='");
         sb.append(year);
@@ -196,19 +196,6 @@ public class SalesPersonSAPFacade {
             sb.append(slpCode);
         }
         sb.append("' group by year(n.\"DocDate\"),month(n.\"DocDate\"),n.\"SlpCode\" ");
-        sb.append("union all ");
-        sb.append("  select cast(o.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,0 as Asientos,cast(sum(d.\"LineTotal\"-(d.\"LineTotal\"*(o.\"DiscPrcnt\")/100)) as numeric(18,2))as Ordenes ");
-        sb.append("  from  ORDR o ");
-        sb.append("  inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
-        sb.append("  where o.\"U_SEPARADOR\" in ('APROBADO','PREPAGO','ANALIZADO','REVISAR') and o.\"DocStatus\"='O' and year(o.\"DocDate\")='");
-        sb.append(year);
-        sb.append("' and month(o.\"DocDate\")='");
-        sb.append(month);
-        if (!slpCode.equals("0")) {
-            sb.append("' and o.\"SlpCode\"='");
-            sb.append(slpCode);
-        }
-        sb.append("' group by year(o.\"DocDate\"),month(o.\"DocDate\"),o.\"SlpCode\" ");
         sb.append("union all ");
         sb.append(" select cast(f.\"SlpCode\" as varchar(10))as Asesor,0 as Ventas,0 as Devoluciones,cast(sum(f.\"DocTotal\") as numeric(18,0))as Asientos,0 as Ordenes ");
         sb.append(" from( ");

@@ -90,13 +90,11 @@ public class PurchaseInvoicesEJB {
                     documentLine.setWarehouseCode("01");
                     documentLine.setPrice((BigDecimal) obj[3]);
 
-                    //TODO: validar que si el grupo es 41-LUBRICANTES debe ser IVADEXCL
-                    if (companyName.contains("IGB")) {
-                        documentLine.setTaxCode("IVAD01");
-                    } else if (!obj[7].equals("41")) {
-                        documentLine.setTaxCode("IVAD01");
-                    } else {
+                    //TODO: validar que si la marca es 54-REPSOL debe ser IVADEXCL
+                    if (obj[7].equals("54")) {
                         documentLine.setTaxCode("IVADEXCL");
+                    } else {
+                        documentLine.setTaxCode("IVAD01");
                     }
 
                     documentLines.add(documentLine);

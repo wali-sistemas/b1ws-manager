@@ -431,6 +431,7 @@ public class AppREST {
                 dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj[3]));
                 dto.setDocTotal(new BigDecimal((Double) obj[4]));
                 dto.setComments((String) obj[5]);
+                dto.setStatus("CONTROL SISTEMAS");
                 dto.setCardName(businessPartnerSAPFacade.getCustomerName(dto.getCardCode(), companyname, false));
 
                 ordersAppDTO.add(dto);
@@ -516,6 +517,35 @@ public class AppREST {
                                       @QueryParam("status") String status,
                                       @PathParam("companyname") String companyname) {
         return Response.ok(orderAPPFacade.updateStatusOrderSaves(idOrder, status, docNum, companyname, false)).build();
+    }
+
+    @GET
+    @Path("marked-days-saved-order/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSavedOrderByMarkedDays(@PathParam("companyname") String companyname,
+                                              @QueryParam("slpcode") String slpCode) {
+        List<Object> objects = orderAPPFacade.listSavedOrderByMarkedDays(slpCode, companyname, false);
+
+        List<String> results = new ArrayList<>();
+        for (Object obj : objects) {
+            results.add(new SimpleDateFormat("yyyy-MM-dd").format((Date) obj));
+        }
+        return Response.ok(results).build();
+    }
+
+    @GET
+    @Path("report-saved-order/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getSavedOrdersReport(@PathParam("companyname") String companyName,
+                                         @QueryParam("slpcode") String slpCode) {
+        Object obj = orderAPPFacade.getSavedOrdersReportBySeller(slpCode, companyName, false);
+        if (obj != null) {
+            return Response.ok(new ResponseDTO(0, obj)).build();
+        } else {
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error obteniendo el reporte de ordenes guardadas para el asesor " + slpCode)).build();
+        }
     }
 
     @GET
