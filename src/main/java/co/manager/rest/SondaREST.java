@@ -1,9 +1,6 @@
 package co.manager.rest;
 
-import co.manager.dto.DetailSalesOrderDTO;
-import co.manager.dto.MailMessageDTO;
-import co.manager.dto.ResponseDTO;
-import co.manager.dto.SalesOrderDTO;
+import co.manager.dto.*;
 import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.EmailManager;
 import co.manager.ejb.ItemEJB;
@@ -359,7 +356,7 @@ public class SondaREST {
             dto.setDetailSalesOrder(items);
 
             //Invocando el servicio de creacion de orden de venta.
-            ResponseDTO res = (ResponseDTO) pedBoxREST.createOrderSale(dto).getEntity();
+            ResponseExtranetDTO res = (ResponseExtranetDTO) pedBoxREST.createOrderSale(dto).getEntity();
             if (res.getCode() == 0) {
                 orders.add(res.getContent().toString());
                 try {

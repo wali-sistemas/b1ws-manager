@@ -46,7 +46,7 @@ public class IncomingPaymentEJB {
     }
 
     public ResponseDTO createIncomingPaymentsService(IncomingPaymentDTO dto) {
-        long docEntry = 0l;
+        long docNum = 0l;
         //1. Login
         String sessionId = null;
         try {
@@ -97,9 +97,9 @@ public class IncomingPaymentEJB {
                 String json = gson.toJson(payment);
                 CONSOLE.log(Level.INFO, json);
                 PaymentRestDTO res = service.addPayment(payment, sessionId);
-                docEntry = res.getDocEntry();
+                docNum = res.getDocNum();
 
-                if (docEntry <= 0L) {
+                if (docNum <= 0L) {
                     CONSOLE.log(Level.WARNING, "Ocurrio un problema al crear el pago recibido");
                     return new ResponseDTO(-1, "Ocurrio un problema al crear el pago recibido.");
                 } else {
@@ -122,7 +122,7 @@ public class IncomingPaymentEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        return new ResponseDTO(0, docEntry);
+        return new ResponseDTO(0, docNum);
     }
 
     public ResponseDTO createIncomingPaymentAccountCalidosoService(IncomingPaymentDTO dto) {

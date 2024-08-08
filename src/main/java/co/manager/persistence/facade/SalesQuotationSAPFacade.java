@@ -29,7 +29,7 @@ public class SalesQuotationSAPFacade {
         sb.append("select cast(\"CardCode\" as varchar(20))as CardCode, ");
         sb.append(" cast(\"Comments\" as varchar(1000))as Comments,cast(\"U_TRANSP\" as varchar(5))as Transp, ");
         sb.append(" cast(\"ShipToCode\" as varchar(100))as ShipToCode,cast(\"PayToCode\" as varchar(100))as PayToCode, ");
-        sb.append(" cast(\"SlpCode\" as int)as SlpCode,cast(\"DiscPrcnt\" as numeric(18,0))as DiscPrcnt, ");
+        sb.append(" cast(\"SlpCode\" as int)as SlpCode,cast(ifnull(\"DiscPrcnt\",0) as numeric(18,0))as DiscPrcnt, ");
         sb.append(" cast(\"DocEntry\" as int)as DocEntry,cast(\"DocNum\" as int)as DocNum, ");
         sb.append(" cast(\"DocTotal\" as numeric(18,0))as DocTotal ");
         sb.append("from OQUT ");

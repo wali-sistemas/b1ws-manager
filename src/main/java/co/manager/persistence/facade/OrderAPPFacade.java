@@ -112,4 +112,41 @@ public class OrderAPPFacade {
         }
         return new ArrayList<>();
     }
+
+    public List<Object> listSavedOrderByMarkedDays(String slpCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(docDate as datetime)as docDate ");
+        sb.append("from order_app ");
+        sb.append("where status='G' and companyName='");
+        sb.append(companyName);
+        sb.append("' and slpCode=");
+        sb.append(slpCode);
+        sb.append("order by docDate asc");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes guardadas marcadas por dias del asesor " + slpCode, e);
+        }
+        return new ArrayList<>();
+    }
+
+    public Object[] getSavedOrdersReportBySeller(String slpCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(count(idOrder)as int)as nroPedG,cast(sum(docTotal)as numeric(18,2))as totalPedG ");
+        sb.append("from order_app ");
+        sb.append("where companyName='");
+        sb.append(companyName);
+        sb.append("' and status='G' and year(docDate)=year(GETDATE()) and slpCode=");
+        sb.append(slpCode);
+        sb.append(" group by slpCode ");
+        sb.append("order by sum(docTotal) desc ");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el reporte de ordenes guardadas para el asesor " + slpCode + " en " + companyName, e);
+        }
+        return null;
+    }
 }

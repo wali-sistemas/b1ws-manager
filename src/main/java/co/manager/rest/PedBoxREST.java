@@ -1586,7 +1586,7 @@ public class PedBoxREST {
 
         if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), false)) {
             CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Lo sentimos. Ya existe un registro con ese id de pago en " + dto.getCompanyName())).build();
+            return Response.ok(new ResponseDTO(-2, "Lo sentimos. Ya existe un registro con ese id de pago en " + dto.getCompanyName())).build();
         }
         //registrar en tabla temporal el pago recibido por placeToPayF
         String idPago = (new SimpleDateFormat("yyyyMMdd-HHmmssSSS-").format(new Date())) + dto.getCardCode();
