@@ -18,6 +18,14 @@
             <property name="hibernate.globally_quoted_identifiers" value="true"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="MTZNOVAWEBPU" transaction-type="JTA">
+        <jta-data-source>java:/MTZNOVAWEBDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="IGBNOVAWEBNUBEPU" transaction-type="JTA">
         <jta-data-source>java:/IGBNOVAWEBNUBEDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -34,8 +42,40 @@
             <property name="hibernate.globally_quoted_identifiers" value="true"/>
         </properties>
     </persistence-unit>
-    <persistence-unit name="MTZNOVAWEBPU" transaction-type="JTA">
-        <jta-data-source>java:/MTZNOVAWEBDS</jta-data-source>
+    <persistence-unit name="DIGNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/DIGNOVAWEBNUBEDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="INVNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/INVNOVAWEBNUBEDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="MOTNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/MOTNOVAWEBNUBEDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="VILNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/VILNOVAWEBNUBEDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="WALNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/WALNOVAWEBNUBEDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
