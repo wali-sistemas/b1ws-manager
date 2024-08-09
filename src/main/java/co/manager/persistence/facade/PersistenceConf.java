@@ -51,9 +51,9 @@ public class PersistenceConf {
             switch (companyName) {
                 case "IGB_NOVAWEB":
                     return emIGBNOVAWEBNUBEPU;
-                case "MOTOZONE_NOVAWEB":
+                case "MTZ_NOVAWEB":
                     return emMTZNOVAWEBNUBEPU;
-                case "DIGITAL_NOVAWEB":
+                case "DSM_NOVAWEB":
                     return emDIGNOVAWEBNUBEPU;
                 case "INVERSUR_NOVAWEB":
                     return emINVNOVAWEBNUBEPU;
