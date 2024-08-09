@@ -33,16 +33,36 @@ public class PersistenceConf {
     private EntityManager emIGBNOVAWEBNUBEPU;
     @PersistenceContext(unitName = "MTZNOVAWEBNUBEPU")
     private EntityManager emMTZNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "DIGNOVAWEBNUBEPU")
+    private EntityManager emDIGNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "INVNOVAWEBNUBEPU")
+    private EntityManager emINVNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "MOTNOVAWEBNUBEPU")
+    private EntityManager emMOTNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "VILNOVAWEBNUBEPU")
+    private EntityManager emVILNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "WALNOVAWEBNUBEPU")
+    private EntityManager emWALNOVAWEBNUBEPU;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
             return emWMS;
         } else if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_NOVAWEB)) {
             switch (companyName) {
-                case "IGB":
+                case "IGB_NOVAWEB":
                     return emIGBNOVAWEBNUBEPU;
-                case "VARROC":
+                case "MOTOZONE_NOVAWEB":
                     return emMTZNOVAWEBNUBEPU;
+                case "DIGITAL_NOVAWEB":
+                    return emDIGNOVAWEBNUBEPU;
+                case "INVERSUR_NOVAWEB":
+                    return emINVNOVAWEBNUBEPU;
+                case "MOTOREPUESTOS_NOVAWEB":
+                    return emMOTNOVAWEBNUBEPU;
+                case "VILNA_NOVAWEB":
+                    return emVILNOVAWEBNUBEPU;
+                case "WALI_NOVAWEB":
+                    return emWALNOVAWEBNUBEPU;
                 default:
                     return null;
             }

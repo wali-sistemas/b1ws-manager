@@ -307,12 +307,12 @@ public class EmployeeREST {
     }
 
     @GET
-    @Path("validate-employee-existence")
+    @Path("validate-employee-existence/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response validateEmployeeExistenceNovaWeb(@QueryParam("id") String emplId,
+    public Response validateEmployeeExistenceNovaWeb(@PathParam("companyname") String companyName,
+                                                     @QueryParam("id") String emplId,
                                                      @QueryParam("birthdate") String birthdate,
-                                                     @HeaderParam("X-Company-Name") String companyName,
                                                      @HeaderParam("X-Pruebas") boolean pruebas) {
         if (companyName == null || companyName.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al validar el empleado. Campo companyName es obligatorio");
@@ -321,13 +321,13 @@ public class EmployeeREST {
         return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistenceNovaWeb(emplId, birthdate, companyName, pruebas))).build();
     }
 
-    @GET
-    @Path("find-employee-novaweb/{cardcode}")
+    /*@GET
+    @Path("find-employee-novaweb/{companyname}/{cardcode}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response findEmployeeNovaWeb(@PathParam("cardcode") String cardCode,
-                                        @HeaderParam("X-Company-Name") String companyName,
+                                        @PathParam("companyname") String companyName,
                                         @HeaderParam("X-Pruebas") boolean pruebas) {
         return Response.ok(employeeFacade.findEmployeeNovaWeb(cardCode, companyName, pruebas)).build();
-    }
+    }*/
 }

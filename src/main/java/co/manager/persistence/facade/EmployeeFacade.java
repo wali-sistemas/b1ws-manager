@@ -146,7 +146,7 @@ public class EmployeeFacade {
         return false;
     }
 
-    public Object[] findEmployeeNovaWeb(String empId, String companyName, boolean testing) {
+    /*public Object[] findEmployeeNovaWeb(String empId, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select top 1 cast(rtrim(ltrim(e.cod_emp)) as varchar)as cedula,cast(e.nom_emp as varchar)as nombre,cast(e.ap1_emp as varchar)as apell1, ");
         sb.append(" cast(e.ap2_emp as varchar)as apell2,cast(e.fec_ing as date)as ingreso,cast(c.nom_car as varchar)as nomCar,cast(e_mail_alt as varchar)as jefe ");
@@ -162,5 +162,5 @@ public class EmployeeFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al encontrar el empleado " + empId + " en novaweb de la empresa " + companyName, e);
         }
         return null;
-    }
+    }*/
 }
