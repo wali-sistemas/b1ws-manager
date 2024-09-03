@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 @WebFilter("/res/*")
 public class HeaderDecorationFilter implements Filter {
     private static final Logger CONSOLE = Logger.getLogger(HeaderDecorationFilter.class.getSimpleName());
-    private static final String ALLOWED_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, X-Company-Name, Authorization, X-Employee, X-Warehouse-Code, X-Pruebas";
+    private static final String ALLOWED_HEADERS = "Origin, X-Requested-With, Content-Type, Accept, X-Company-Name, Authorization, X-Employee, X-Warehouse-Code, X-Pruebas, X-TOKEN";
     private static final String ALLOWED_METHODS = "GET, OPTIONS, POST, PUT, DELETE";
 
     @Inject
