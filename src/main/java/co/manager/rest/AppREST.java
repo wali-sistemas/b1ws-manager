@@ -710,6 +710,41 @@ public class AppREST {
         return Response.ok(new ResponseDTO(0, salesPersonSAPFacade.addLoginVersionApp(slpCode, version, companyName, false))).build();
     }
 
+    @GET
+    @Path("find-order-extranet-inprogress/{companyname}/{slpcode}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findOrderExtranetInProgressBySeller(@PathParam("companyname") String companyName,
+                                                        @PathParam("slpcode") String slpCode) {
+        Object[] obj = salesOrderSAPFacade.getOrderExtranetInProgressBySeller(slpCode, companyName, false);
+        if (obj == null) {
+            CONSOLE.log(Level.WARNING, "No se encontraron ordenes de extranet en progreso para el asesor {0} en la empresa {1}", new Object[]{slpCode, companyName});
+            return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes de extranet en progreso para el asesor " + slpCode + " en la empresa " + companyName)).build();
+        }
+
+        NotificationOrderExtranetDTO dto = new NotificationOrderExtranetDTO();
+        dto.setDocNum((String) obj[0]);
+        dto.setDocDate(new SimpleDateFormat("yyyy-MM-dd").format(obj[1]));
+        dto.setDocTotal((BigDecimal) obj[2]);
+        dto.setCardCode((String) obj[3]);
+        dto.setCardName((String) obj[4]);
+
+        return Response.ok(new ResponseDTO(0, dto)).build();
+    }
+
+    @PUT
+    @Path("update-status-order-extranet/{companyname}/{docnum}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response updateStatusNotificationOrderExtranet(@PathParam("companyname") String companyName,
+                                                          @PathParam("docnum") String docNum) {
+        try {
+            return Response.ok(new ResponseDTO(0, salesOrderSAPFacade.updateStatusOrderExtranetInprogress(docNum, "NOTIFICADO APP", companyName, false))).build();
+        } catch (Exception e) {
+            return Response.ok(new ResponseDTO(-1, false)).build();
+        }
+    }
+
     @POST
     @Path("create-record-geo-location")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
