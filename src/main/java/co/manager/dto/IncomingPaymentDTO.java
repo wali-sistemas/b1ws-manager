@@ -28,12 +28,13 @@ public class IncomingPaymentDTO {
     private BigDecimal cashSum;
     private BigDecimal transferSum;
     private String status;
+    private String franchise;
     private List<IncomingPaymentInvoiceDTO> incomingPaymentInvoices;
 
     public IncomingPaymentDTO() {
     }
 
-    public IncomingPaymentDTO(Integer idPayment, Long docEntry, Long docNum, Long series, Date docDate, String transferDate, Date taxDate, String docType, String cardCode, String docCurrency, String transferAccount, String transferReference, String journalRemarks, String companyName, BigDecimal cashSum, BigDecimal transferSum, String status, List<IncomingPaymentInvoiceDTO> incomingPaymentInvoices) {
+    public IncomingPaymentDTO(Integer idPayment, Long docEntry, Long docNum, Long series, Date docDate, String transferDate, Date taxDate, String docType, String cardCode, String docCurrency, String transferAccount, String transferReference, String journalRemarks, String companyName, BigDecimal cashSum, BigDecimal transferSum, String status, String franchise, List<IncomingPaymentInvoiceDTO> incomingPaymentInvoices) {
         this.idPayment = idPayment;
         this.docEntry = docEntry;
         this.docNum = docNum;
@@ -51,6 +52,7 @@ public class IncomingPaymentDTO {
         this.cashSum = cashSum;
         this.transferSum = transferSum;
         this.status = status;
+        this.franchise = franchise;
         this.incomingPaymentInvoices = incomingPaymentInvoices;
     }
 
@@ -190,6 +192,14 @@ public class IncomingPaymentDTO {
         this.status = status;
     }
 
+    public String getFranchise() {
+        return franchise;
+    }
+
+    public void setFranchise(String franchise) {
+        this.franchise = franchise;
+    }
+
     public List<IncomingPaymentInvoiceDTO> getIncomingPaymentInvoices() {
         return incomingPaymentInvoices;
     }
@@ -206,7 +216,7 @@ public class IncomingPaymentDTO {
                 ", docNum=" + docNum +
                 ", series=" + series +
                 ", docDate=" + docDate +
-                ", transferDate=" + transferDate +
+                ", transferDate='" + transferDate + '\'' +
                 ", taxDate=" + taxDate +
                 ", docType='" + docType + '\'' +
                 ", cardCode='" + cardCode + '\'' +
@@ -218,6 +228,7 @@ public class IncomingPaymentDTO {
                 ", cashSum=" + cashSum +
                 ", transferSum=" + transferSum +
                 ", status='" + status + '\'' +
+                ", franchise='" + franchise + '\'' +
                 ", incomingPaymentInvoices=" + incomingPaymentInvoices +
                 '}';
     }

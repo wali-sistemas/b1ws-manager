@@ -145,7 +145,7 @@ public class SalesOrderSAPFacade {
         sb.append(cardCode);
         sb.append("' order by cast(o.\"DocDate\" as date) desc ");
         try {
-            return persistenceConf.chooseSchema(companyName,pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar el historico de ordenes con detalle para el cliente " + cardCode + " en " + companyName, e);
@@ -277,5 +277,39 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el detalle de seguimineto de la factura " + docNum + " en " + companyName, e);
         }
         return null;
+    }
+
+    public Object[] getOrderExtranetInProgressBySeller(String slpCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"DocNum\" as varchar)as docNum,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
+        sb.append(" cast(\"CardCode\" as varchar)as cardCode,cast(\"CardName\" as varchar)as cardName ");
+        sb.append("from ORDR ");
+        sb.append("where \"U_ESTADO_PED\"='NOTIFICAR APP' and \"NumAtCard\" like '%E' and \"DocStatus\"='O' and \"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(" limit 1");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo la orden creada desde la extranet para " + companyName, e);
+        }
+        return null;
+    }
+
+    public boolean updateStatusOrderExtranetInprogress(String docNum, String status, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update ORDR set \"U_ESTADO_PED\"='");
+        sb.append(status);
+        sb.append("' where \"DocNum\"=");
+        sb.append(docNum);
+        try {
+            int res = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+            if (res == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el estado de la orden extranet #" + docNum + " en " + companyName);
+        }
+        return false;
     }
 }

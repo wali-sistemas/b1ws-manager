@@ -1099,7 +1099,7 @@ public class PedBoxREST {
                 return Response.ok(res).build();
             } else {
                 /**** 9.1.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app ****/
-                return Response.ok(createOrderTemporary(dto, 0, res.getMessage())).build();
+                return Response.ok(createOrderTemporary(dto, res.getOrderTemp(), res.getMessage())).build();
             }
         } else {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
@@ -1165,7 +1165,7 @@ public class PedBoxREST {
                         dto.setDetailSalesOrder(new ArrayList<>());
                         dto.setDetailSalesOrder(detailSalesOrderWS);
                         dto.setNumAtCard(numAtCard);
-                        ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                        ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                         gson = new Gson();
                         json = gson.toJson(dto);
@@ -1198,7 +1198,7 @@ public class PedBoxREST {
                         dto.setDetailSalesOrder(new ArrayList<>());
                         dto.setDetailSalesOrder(detailSalesOrderWS);
                         dto.setNumAtCard(numAtCard);
-                        ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                        ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                         gson = new Gson();
                         json = gson.toJson(dto);
@@ -1227,7 +1227,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1255,7 +1255,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1283,7 +1283,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1311,7 +1311,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1339,7 +1339,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1368,7 +1368,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1396,7 +1396,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1424,7 +1424,7 @@ public class PedBoxREST {
                     dto.setDetailSalesOrder(new ArrayList<>());
                     dto.setDetailSalesOrder(detailSalesOrderWS);
                     dto.setNumAtCard(numAtCard);
-                    ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
 
                     gson = new Gson();
                     json = gson.toJson(dto);
@@ -1443,7 +1443,7 @@ public class PedBoxREST {
         }
         /**** 10.9.Crear orden temporal, si no clasifico bien los articulos ****/
         if (res.getContent() == null) {
-            ResponseExtranetDTO response = createOrderTemporary(dto, 0, res.getMessage());
+            ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items. Orden Temp={0}", response.getContent());
             res = response;
             orderCompleted = false;
@@ -1630,6 +1630,10 @@ public class PedBoxREST {
             }
         }
 
+        if (dto.getFranchise().contains("PSE")) {
+
+        }
+
         if (dto.getCompanyName().contains("VARROC")) {
             return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
         } else {
@@ -1665,12 +1669,12 @@ public class PedBoxREST {
         return Response.ok(list).build();
     }
 
-    private ResponseExtranetDTO createOrderTemporary(SalesOrderDTO dto, Integer docNum, String message) {
+    private ResponseExtranetDTO createOrderTemporary(SalesOrderDTO dto, Long docNum, String message) {
         /**** 7.3. Registrar pedido en tablas temporales****/
         OrderPedbox order = new OrderPedbox();
         OrderDetailPedbox detail = new OrderDetailPedbox();
 
-        order.setDocNum(docNum);
+        order.setDocNum(docNum.intValue());
         order.setDocDate(new Date());
         order.setCardCode(dto.getCardCode());
         order.setNumAtCard(dto.getNumAtCard());
@@ -1712,7 +1716,7 @@ public class PedBoxREST {
             outStockItem.setQtyCurrent((Integer) obj[2]);
             outStockItems.add(outStockItem);
         }
-        return new ResponseExtranetDTO(0, 0, order.getIdOrder(), message, outStockItems);
+        return new ResponseExtranetDTO(0, order.getIdOrder(), 0, message, outStockItems);
     }
 
     private DetailSalesOrderDTO setDetailOrder(DetailSalesOrderDTO detail, String ocrCode) {
@@ -1839,7 +1843,7 @@ public class PedBoxREST {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la orden de venta en SAP de la bodega 30 Modula");
                     /**** 10.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
                     orderCompleted = false;
-                    return createOrderTemporary(dto, 0, res.getMessage());
+                    return createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
                 }
             }
         } else {
@@ -1862,7 +1866,7 @@ public class PedBoxREST {
                 } else {
                     /**** 11.1.2.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a PEDBOX****/
                     orderCompleted = false;
-                    return createOrderTemporary(dto, 0, res.getMessage());
+                    return createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
                 }
             } else {
                 /**** 11.2.Retornando el nro de documento creado****/
