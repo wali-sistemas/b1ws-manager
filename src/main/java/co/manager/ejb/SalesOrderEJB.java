@@ -187,6 +187,7 @@ public class SalesOrderEJB {
                 order.setPayToCode(dto.getPayToCode());
                 order.setDiscountPercent(dto.getDiscountPercent());
                 order.setUserialMDL(dto.getSerialMDL());
+                order.setUestadoPed("NOTIFICAR APP");
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     order.setDocDate(date2);
