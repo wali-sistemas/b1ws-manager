@@ -284,7 +284,7 @@ public class SalesOrderSAPFacade {
         sb.append("select cast(\"DocNum\" as varchar)as docNum,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
         sb.append(" cast(\"CardCode\" as varchar)as cardCode,cast(\"CardName\" as varchar)as cardName ");
         sb.append("from ORDR ");
-        sb.append("where \"U_ESTADO_PED\"='NOTIFICAR APP' and \"NumAtCard\" like '%E' and \"DocStatus\"='O' and \"SlpCode\"=");
+        sb.append("where \"U_ESTADO_PED\"='NOTIFICAR APP' and \"NumAtCard\" like 'E%' and \"DocStatus\"='O' and \"SlpCode\"=");
         sb.append(slpCode);
         sb.append(" limit 1");
         try {
