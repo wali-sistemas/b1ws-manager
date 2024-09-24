@@ -1105,18 +1105,27 @@ public class PedBoxREST {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
-                        detail.setWhsCode((String) whsCodeDefaultTire[0]);
-                        if (detail.getWhsCode().equals("05")) {
+                        if (detail.getItemCode().substring(0, 1).equals("U")) {
                             if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_cart.add(setDetailOrder(detail, ocrCode));
                             }
-                        } else if (detail.getWhsCode().equals("26")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
-                            } else {
-                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                        } else {
+                            //TODO: setear bodega de llantas por default
+                            detail.setWhsCode((String) whsCodeDefaultTire[0]);
+                            if (detail.getWhsCode().equals("05")) {
+                                if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                    detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
+                                } else {
+                                    detailSalesOrder_LL_cart.add(setDetailOrder(detail, ocrCode));
+                                }
+                            } else if (detail.getWhsCode().equals("26")) {
+                                if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                    detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
+                                } else {
+                                    detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                                }
                             }
                         }
                     } else {
@@ -1128,10 +1137,18 @@ public class PedBoxREST {
                     }
                 } else {
                     if (detail.getGroup().equals("LLANTAS")) {
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
-                        } else {
-                            detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getWhsCode().equals("13")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("26")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                            }
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
@@ -1630,9 +1647,9 @@ public class PedBoxREST {
             }
         }
 
-        if (dto.getFranchise().contains("PSE")) {
+        /*if (dto.getFranchise().contains("PSE")) {
 
-        }
+        }*/
 
         if (dto.getCompanyName().contains("VARROC")) {
             return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();

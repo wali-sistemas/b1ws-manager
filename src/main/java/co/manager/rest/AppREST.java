@@ -718,7 +718,6 @@ public class AppREST {
                                                         @PathParam("slpcode") String slpCode) {
         Object[] obj = salesOrderSAPFacade.getOrderExtranetInProgressBySeller(slpCode, companyName, false);
         if (obj == null) {
-            CONSOLE.log(Level.WARNING, "No se encontraron ordenes de extranet en progreso para el asesor {0} en la empresa {1}", new Object[]{slpCode, companyName});
             return Response.ok(new ResponseDTO(-1, "No se encontraron ordenes de extranet en progreso para el asesor " + slpCode + " en la empresa " + companyName)).build();
         }
 
@@ -933,10 +932,18 @@ public class AppREST {
                     }
                 } else {
                     if (detail.getGroup().equals("LLANTAS")) {
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
-                        } else {
-                            detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getWhsCode().equals("13")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("26")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                            }
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
                         if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
