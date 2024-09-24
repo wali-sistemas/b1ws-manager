@@ -1106,6 +1106,7 @@ public class PedBoxREST {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
                         if (detail.getItemCode().substring(0, 1).equals("U")) {
+                            detail.setWhsCode("05");
                             if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
                             } else {
