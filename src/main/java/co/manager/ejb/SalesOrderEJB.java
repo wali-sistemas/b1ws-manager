@@ -337,7 +337,7 @@ public class SalesOrderEJB {
                 OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense gasto = new OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense();
                 List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> gastos = new ArrayList<>();
                 gasto.setExpenseCode(2l);
-                gasto.setTaxCode("IVAV01");
+                gasto.setTaxCode(incomeAccountCustomer[0].toString());
                 gasto.setLineTotal(new BigDecimal(dto.getShippingPrice()).setScale(0, RoundingMode.CEILING));
                 gastos.add(gasto);
                 order.setDocumentAdditionalExpenses(gastos);
