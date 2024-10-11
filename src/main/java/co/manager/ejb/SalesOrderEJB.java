@@ -290,11 +290,10 @@ public class SalesOrderEJB {
                 order.setUseparador(dto.getStatus());
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
+                order.setDiscountPercent(dto.getDiscountPercent());
                 if (dto.getCoupon() > 0) {
                     Double porcCoupon = (dto.getCoupon() / dto.getDocTotal()) * 100;
                     order.setDiscountPercent(dto.getDiscountPercent() + porcCoupon);
-                } else {
-                    order.setDiscountPercent(dto.getDiscountPercent());
                 }
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
