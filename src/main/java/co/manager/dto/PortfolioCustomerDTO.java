@@ -159,6 +159,8 @@ public class PortfolioCustomerDTO {
         private BigDecimal iva;
         private BigDecimal subtotal;
         private BigDecimal discount;
+        private BigDecimal totalBruto;
+        private String activeCalc;
 
         public DetailPortfolioCustomerDTO() {
         }
@@ -259,6 +261,22 @@ public class PortfolioCustomerDTO {
             this.discount = discount;
         }
 
+        public BigDecimal getTotalBruto() {
+            return totalBruto;
+        }
+
+        public void setTotalBruto(BigDecimal totalBruto) {
+            this.totalBruto = totalBruto;
+        }
+
+        public String getActiveCalc() {
+            return activeCalc;
+        }
+
+        public void setActiveCalc(String activeCalc) {
+            this.activeCalc = activeCalc;
+        }
+
         @Override
         public String toString() {
             return "DetailPortfolioCustomerDTO{" +
@@ -274,6 +292,8 @@ public class PortfolioCustomerDTO {
                     ", iva=" + iva +
                     ", subtotal=" + subtotal +
                     ", discount=" + discount +
+                    ", totalBruto=" + totalBruto +
+                    ", activeCalc='" + activeCalc + '\'' +
                     '}';
         }
     }

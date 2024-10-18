@@ -93,7 +93,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setPriceListNum(dto.getPriceList() == null ? 1 : Long.valueOf(dto.getPriceList()));
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartner.setSalesPersonCode("05");
-                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMail().toUpperCase());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMail().toUpperCase());
                     businessPartner.setDebitorAccount("11100520");
                 } else {
                     businessPartner.setSalesPersonCode("22");
@@ -251,7 +251,7 @@ public class BusinessPartnerEJB {
                     businessPartner.setUbpcotdc("13");
                     businessPartner.setUbpcotp("01");
                     businessPartner.setSalesPersonCode("05");
-                    businessPartner.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE());
+                    businessPartner.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMailFE());
                     businessPartner.setDebitorAccount("11100520");
                 } else {
                     businessPartner.setBilltoDefault(dto.getIdAddress());
@@ -401,7 +401,7 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setContactEmployees(contactEmployees);
 
                 if (dto.getCompanyName().contains("VELEZ")) {
-                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("directorcomercial@motorepuestos.co;" + dto.getMailFE());
+                    businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMailFE());
                 } else {
                     businessPartnersRestDTO.setBilltoDefault(dto.getIdAddress());
                     businessPartnersRestDTO.setSalesPersonCode(Long.valueOf(dto.getSlpCode()));
