@@ -655,6 +655,8 @@ public class AppREST {
                     dto2.setDocDateCutoff(new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
                     dto2.setExpiredDays((Integer) obj[9]);
                     dto2.setUrlFE((String) obj[15]);
+                    dto2.setTotalBruto((BigDecimal) obj[18]);
+                    dto2.setActiveCalc((String) obj[19]);
                     customerDetailPortfolio.add(dto2);
                 }
             }

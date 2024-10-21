@@ -332,14 +332,16 @@ public class SalesOrderEJB {
                     listDet.add(orderLine);
                 }
                 order.setDocumentLines(listDet);
-                /*** Agregando gastos de flete a la orden de venta***/
-                OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense gasto = new OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense();
-                List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> gastos = new ArrayList<>();
-                gasto.setExpenseCode(2l);
-                gasto.setTaxCode(incomeAccountCustomer[0].toString());
-                gasto.setLineTotal(new BigDecimal(dto.getShippingPrice()).setScale(0, RoundingMode.CEILING));
-                gastos.add(gasto);
-                order.setDocumentAdditionalExpenses(gastos);
+                /*** Agregando gastos de flete a la orden de venta, solo para motorepuestos***/
+                if (dto.getCompanyName().contains("VELEZ")) {
+                    OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense gasto = new OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense();
+                    List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> gastos = new ArrayList<>();
+                    gasto.setExpenseCode(2l);
+                    gasto.setTaxCode(incomeAccountCustomer[0].toString());
+                    gasto.setLineTotal(new BigDecimal(dto.getShippingPrice()/1.19).setScale(0, RoundingMode.CEILING));
+                    gastos.add(gasto);
+                    order.setDocumentAdditionalExpenses(gastos);
+                }
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
