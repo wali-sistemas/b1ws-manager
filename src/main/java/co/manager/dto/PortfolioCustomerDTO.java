@@ -161,6 +161,7 @@ public class PortfolioCustomerDTO {
         private BigDecimal discount;
         private BigDecimal totalBruto;
         private String activeCalc;
+        private String comment;
 
         public DetailPortfolioCustomerDTO() {
         }
@@ -277,6 +278,14 @@ public class PortfolioCustomerDTO {
             this.activeCalc = activeCalc;
         }
 
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
         @Override
         public String toString() {
             return "DetailPortfolioCustomerDTO{" +
@@ -294,6 +303,7 @@ public class PortfolioCustomerDTO {
                     ", discount=" + discount +
                     ", totalBruto=" + totalBruto +
                     ", activeCalc='" + activeCalc + '\'' +
+                    ", comment='" + comment + '\'' +
                     '}';
         }
     }
