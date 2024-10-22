@@ -109,14 +109,15 @@ public class BusinessPartnerSAPFacade {
         sb.append("select t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos*-1 as diasVenc, ");
         sb.append(" cast(a.\"SlpName\" as varchar(50))as vendedor,cast(c.\"PymntGroup\" as varchar(20))as condicionPago,case when t.cupo < 0 then 0 else t.cupo end as cupo,t.uPromDiasPago, ");
         sb.append(" t.fechaUltComp,t.urlFacture,cast(count(t.docNum) OVER(partition by t.cardCode)as int)as totalDoc,cast(t.emailFE as varchar(254))as emailFE,t.totalBruto, ");
-        sb.append(" case when (t.valorDocumento-t.valorSaldo) > 0 or t.discPrcnt > 0 then 'N' else 'Y' end as activeCalc ");
+        sb.append(" case when (t.valorDocumento-t.valorSaldo) > 0 or t.discPrcnt > 0 then 'N' else 'Y' end as activeCalc,t.comments ");
         sb.append("from ( ");
         sb.append(" select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(40))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("  'Factura'as tipoDoc,cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("  cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, ");
         sb.append("  cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
         sb.append("  (select max(cast(v.\"DocDate\" as date)) from OINV v where v.\"CardCode\" = f.\"CardCode\")as fechaUltComp,cast(f.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,s.\"SlpCode\",s.\"GroupNum\", ");
-        sb.append("  s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE,cast((f.\"DocTotal\"-f.\"VatSum\"+f.\"DiscSum\"-f.\"TotalExpns\"+f.\"WTSum\")as numeric(18,0))as totalBruto,cast(f.\"DiscPrcnt\" as int)as discPrcnt ");
+        sb.append("  s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE,cast((f.\"DocTotal\"-f.\"VatSum\"+f.\"DiscSum\"-f.\"TotalExpns\"+f.\"WTSum\")as numeric(18,0))as totalBruto,cast(f.\"DiscPrcnt\" as int)as discPrcnt, ");
+        sb.append("  cast(f.\"Comments\" as varchar(254))as comments ");
         sb.append(" from  OINV f ");
         sb.append(" inner join OCRD s ON f.\"CardCode\" = s.\"CardCode\" ");
         sb.append(" where f.\"DocStatus\" = 'O' union all ");
@@ -125,7 +126,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("  cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, ");
         sb.append("  cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
         sb.append("  null as fechaUltComp,cast(n.\"U_addInFE_LinkFE\" as varchar(1000))as urlFacture,s.\"SlpCode\",s.\"GroupNum\",s.\"U_addInFaElectronica_email_contacto_FE\" as emailFE, ");
-        sb.append("  cast((n.\"DocTotal\"-n.\"VatSum\"+n.\"DiscSum\"-n.\"TotalExpns\"+n.\"WTSum\")as numeric(18,0))as totalBruto,cast(n.\"DiscPrcnt\" as int)as discPrcnt ");
+        sb.append("  cast((n.\"DocTotal\"-n.\"VatSum\"+n.\"DiscSum\"-n.\"TotalExpns\"+n.\"WTSum\")as numeric(18,0))as totalBruto,cast(n.\"DiscPrcnt\" as int)as discPrcnt,'' as comments ");
         sb.append(" from  ORIN n ");
         sb.append(" inner join OCRD s ON n.\"CardCode\" = s.\"CardCode\" ");
         sb.append(" where n.\"DocStatus\" = 'O' ");
@@ -139,7 +140,7 @@ public class BusinessPartnerSAPFacade {
             sb.append(cardCode);
             sb.append("' ");
         }
-        sb.append(" group by t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos,a.\"SlpName\",c.\"PymntGroup\",t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture,t.emailFE,t.totalBruto,t.discPrcnt ");
+        sb.append(" group by t.cardCode,t.cardName,t.nit,t.tipoDoc,t.docNum,t.fechaEmision,t.fechaVencimiento,t.valorSaldo,t.valorDocumento,t.diasVencidos,a.\"SlpName\",c.\"PymntGroup\",t.cupo,t.uPromDiasPago,t.fechaUltComp,t.urlFacture,t.emailFE,t.totalBruto,t.discPrcnt,t.comments ");
         sb.append("order by 2 asc");
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
