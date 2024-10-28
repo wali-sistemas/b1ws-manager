@@ -311,8 +311,11 @@ public class SalesOrderEJB {
                     OrderDTO.DocumentLines.DocumentLine orderLine = new OrderDTO.DocumentLines.DocumentLine();
                     orderLine.setItemCode(line.getItemCode());
                     orderLine.setQuantity(line.getQuantity().doubleValue());
-                    orderLine.setPrice(line.getPrice().doubleValue());
-                    orderLine.setUnitPrice(line.getPrice().doubleValue());
+                    if (dto.getCompanyName().contains("VELEZ")) {
+                        orderLine.setPrice(line.getPrice().doubleValue());
+                        orderLine.setUnitPrice(line.getPrice().doubleValue());
+                        orderLine.setWarehouseCode("01");
+                    }
                     orderLine.setWarehouseCode(line.getWhsCode());
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());
@@ -338,7 +341,7 @@ public class SalesOrderEJB {
                     List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> gastos = new ArrayList<>();
                     gasto.setExpenseCode(2l);
                     gasto.setTaxCode(incomeAccountCustomer[0].toString());
-                    gasto.setLineTotal(new BigDecimal(dto.getShippingPrice()/1.19).setScale(0, RoundingMode.CEILING));
+                    gasto.setLineTotal(new BigDecimal(dto.getShippingPrice() / 1.19).setScale(0, RoundingMode.CEILING));
                     gastos.add(gasto);
                     order.setDocumentAdditionalExpenses(gastos);
                 }
