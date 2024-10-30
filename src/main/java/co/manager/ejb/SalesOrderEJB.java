@@ -315,8 +315,9 @@ public class SalesOrderEJB {
                         orderLine.setPrice(line.getPrice().doubleValue());
                         orderLine.setUnitPrice(line.getPrice().doubleValue());
                         orderLine.setWarehouseCode("01");
+                    } else {
+                        orderLine.setWarehouseCode(line.getWhsCode());
                     }
-                    orderLine.setWarehouseCode(line.getWhsCode());
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());
                     orderLine.setBaseEntry(line.getBaseEntry());
