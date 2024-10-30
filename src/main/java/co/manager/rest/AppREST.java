@@ -1051,6 +1051,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_link);
                 dto.setNumAtCard(numAtCard + "LLK");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1072,6 +1073,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
                 dto.setNumAtCard(numAtCard + "LLKD");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1096,6 +1098,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
                 dto.setNumAtCard(numAtCard + "LL26D");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1120,6 +1123,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
                 dto.setNumAtCard(numAtCard + "LL05D");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1169,6 +1173,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cali);
                 dto.setNumAtCard(numAtCard + "LL26");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1193,6 +1198,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
                 dto.setNumAtCard(numAtCard + "LL05");
+                dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
