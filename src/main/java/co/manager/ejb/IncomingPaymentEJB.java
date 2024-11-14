@@ -73,7 +73,7 @@ public class IncomingPaymentEJB {
                     payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 }
                 if (dto.getCompanyName().contains("REDPLAS")) {
-                    payment.setTransferAccount("01718668691");//Cuenta corriente Bancolombia
+                    payment.setTransferAccount("11100501");//Banco de Bancolombia
                     payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 }
                 payment.setTransferReference(dto.getTransferReference());
