@@ -36,7 +36,7 @@ public class RedimeProductoSAPFacade {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los productos activos para redimir en los calidosos.", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los productos activos para redimir en el programa de fidelización. ", e);
         }
         return new ArrayList<>();
     }

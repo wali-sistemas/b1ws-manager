@@ -38,7 +38,7 @@ public class ConceptoSAPFacade {
             return listConcepts;
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar los programas activos en los calidosos. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar los programas activos en el programa de fidelización. ", e);
         }
         return null;
     }
@@ -61,7 +61,7 @@ public class ConceptoSAPFacade {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los numeros de regitros en los calidosos. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al obtener los numeros de regitros en el programa de fidelización. ", e);
         }
         return new ArrayList<>();
     }

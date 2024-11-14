@@ -71,7 +71,7 @@ public class VendedorMostradorSAPFacade {
         }
     }
 
-    public List<Object[]> listDataLoginCalidoso(String companyName, boolean testing) {
+    public List<Object[]> listDataLoginLoyaltyProgram(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(v.\"U_Documento\" as varchar(20))as id,case when v.\"U_Concepto\"='01' then 'Vendedor de Mostrador' else 'Mecánico' end as Programa,cast(v.\"U_Correo\" as varchar(100))as mail, ");
         sb.append(" cast(v.\"U_Celular\" as varchar(50))as celular,cast(v.\"U_Nombres\" ||' '|| v.\"U_Apellidos\" as varchar(100))as Nombres ");
@@ -87,7 +87,7 @@ public class VendedorMostradorSAPFacade {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los datos para login en los calidosos. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los datos para login en el programa de fidelizacion. ", e);
         }
         return new ArrayList<>();
     }

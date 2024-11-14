@@ -1630,7 +1630,11 @@ public class PedBoxREST {
         entityEnc.setuTransferReference(dto.getTransferReference());
         entityEnc.setuCashSum(dto.getCashSum());
         entityEnc.setuStatus(dto.getStatus());
-        entityEnc.setuPasarela("PlaceToPay");
+        if (dto.getCompanyName().contains("REDPLAS")) {
+            entityEnc.setuPasarela("WOMPI");
+        } else {
+            entityEnc.setuPasarela("PlaceToPay");
+        }
         entityEnc.setuCreateDate(new Date());
         entityEnc.setuDocNum("0");
 
@@ -1661,12 +1665,12 @@ public class PedBoxREST {
             }
         }
 
-        /*if (dto.getFranchise().contains("PSE")) {
-
-        }*/
-
-        if (dto.getCompanyName().contains("VARROC")) {
-            return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
+        if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("REDPLAS")) {
+            if (dto.getFranchise().equals("PSE")) {
+                return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
+            } else {
+                return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
+            }
         } else {
             CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
             return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();

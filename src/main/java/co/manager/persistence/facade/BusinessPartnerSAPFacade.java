@@ -351,7 +351,7 @@ public class BusinessPartnerSAPFacade {
         return false;
     }
 
-    public List<ClientCalidosoDTO> listClientCalidosos(String companyName, boolean pruebas) {
+    public List<ClientCalidosoDTO> listClientLoyaltyProgram(String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"CardCode\" as varchar(20))as CardCode,cast(\"CardName\" as varchar(100))as CardName,cast(\"LicTradNum\" as varchar(20))as LicTradNum ");
         sb.append("from OCRD ");
@@ -371,12 +371,12 @@ public class BusinessPartnerSAPFacade {
 
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes activos en los calidosos. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los clientes activos en el programa de fidelización. ", e);
         }
         return new ArrayList<>();
     }
 
-    public List<Object[]> listHistoryPointsCalidosos(String cardCode, String companyName, boolean testing) {
+    public List<Object[]> listHistoryPointsLoyaltyProgram(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select * from (");
         sb.append("select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(t.\"DocNum\" as int)as \"DocNum\",cast(t.\"TypeDoc\" as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(t.\"DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\", ");
@@ -504,7 +504,7 @@ public class BusinessPartnerSAPFacade {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los puntos para el participante " + cardCode, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los puntos para el participante " + cardCode + " en el programa de fidelizacion. ", e);
         }
         return new ArrayList<>();
     }
