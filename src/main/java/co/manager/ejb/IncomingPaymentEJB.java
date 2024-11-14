@@ -68,9 +68,15 @@ public class IncomingPaymentEJB {
                 payment.setDocType("C");
                 payment.setCardCode(dto.getCardCode());
                 payment.setDocCurrency("$");
-                payment.setTransferAccount("11100518");//Banco de Bogota fiducia solo motozone
+                if (dto.getCompanyName().contains("VARROC")) {
+                    payment.setTransferAccount("11100518");//Banco de Bogota fiducia
+                    payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
+                }
+                if (dto.getCompanyName().contains("REDPLAS")) {
+                    payment.setTransferAccount("01718668691");//Cuenta corriente Bancolombia
+                    payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
+                }
                 payment.setTransferReference(dto.getTransferReference());
-                payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
                 payment.setTransferSum(dto.getCashSum());
 
                 try {
@@ -125,7 +131,7 @@ public class IncomingPaymentEJB {
         return new ResponseDTO(0, docNum);
     }
 
-    public ResponseDTO createIncomingPaymentAccountCalidosoService(IncomingPaymentDTO dto) {
+    public ResponseDTO createIncomingPaymentAccountLoyaltyProgramService(IncomingPaymentDTO dto) {
         long docEntry = 0l;
         //1. Login
         String sessionId = null;
@@ -151,7 +157,7 @@ public class IncomingPaymentEJB {
                 payment.setTransferAccount("52356085");//Cuenta de fidelización
                 payment.setTransferSum(dto.getTransferSum());
                 payment.setTransferReference(dto.getTransferReference());
-                payment.setJournalRemarks("Redención de puntos Los Calidosos - " + dto.getCardCode());
+                payment.setJournalRemarks("Redención de puntos Programa de Fidelización - " + dto.getCardCode());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());

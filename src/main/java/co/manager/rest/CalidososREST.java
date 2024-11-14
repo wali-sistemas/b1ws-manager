@@ -68,7 +68,7 @@ public class CalidososREST {
     public Response listActiveClients(@QueryParam("companyname") String companyName,
                                       @HeaderParam("X-TOKEN") String token) {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
-            return Response.ok(businessPartnerSAPFacade.listClientCalidosos(companyName == null ? "IGB" : companyName, false)).build();
+            return Response.ok(businessPartnerSAPFacade.listClientLoyaltyProgram(companyName == null ? "IGB" : companyName, false)).build();
         } else {
             CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
             return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
@@ -119,7 +119,7 @@ public class CalidososREST {
                                                @HeaderParam("X-TOKEN") String token) {
         CONSOLE.log(Level.INFO, "Listando historial de puntos por clientes en el programa de fidelizacion");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
-            List<Object[]> objects = businessPartnerSAPFacade.listHistoryPointsCalidosos(cardCode, companyName == null ? "IGB" : companyName, false);
+            List<Object[]> objects = businessPartnerSAPFacade.listHistoryPointsLoyaltyProgram(cardCode, companyName == null ? "IGB" : companyName, false);
 
             if (objects.size() <= 0) {
                 CONSOLE.log(Level.WARNING, "No se encontro historico de puntos en el programa de fidelizacion para {0}", cardCode);
@@ -174,7 +174,7 @@ public class CalidososREST {
                                  @HeaderParam("X-TOKEN") String token) {
         CONSOLE.log(Level.INFO, "Iniciando servicio de listando datos para login en el programa de fidelizacion");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
-            List<Object[]> objs = vendedorMostradorSAPFacade.listDataLoginCalidoso(companyName == null ? "IGB" : companyName, false);
+            List<Object[]> objs = vendedorMostradorSAPFacade.listDataLoginLoyaltyProgram(companyName == null ? "IGB" : companyName, false);
             List<LoginCalidosoDTO> data = new ArrayList<>();
 
             for (Object[] obj : objs) {
@@ -278,7 +278,7 @@ public class CalidososREST {
     public Response listMechanicsByClient(@QueryParam("cardCode") String cardCode,
                                           @QueryParam("companyname") String companyName,
                                           @HeaderParam("X-TOKEN") String token) {
-        CONSOLE.log(Level.INFO, "Iniciando listando de mecanicos por cliente en el programa de fidelizacion");
+        CONSOLE.log(Level.INFO, "Iniciando listado de mecanicos por cliente en el programa de fidelizacion");
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             List<Object[]> objects = vendedorMostradorSAPFacade.listMechanicsByClient(cardCode, companyName == null ? "IGB" : companyName, false);
             List<ClientMechanicDTO> clientMechanicDTO = new ArrayList<>();
@@ -345,8 +345,8 @@ public class CalidososREST {
                 CONSOLE.log(Level.WARNING, "Campo [Celular] es obligatorio para participar en el programa de fidelizacion");
                 return Response.ok(new ResponseDTO(-2, "Campo Celular es obligatorio para participar en el programa de fidelizacion.")).build();
             } else if (dto.getAceptoTermino() <= 0 || dto.getAceptoTratamientoDatos() <= 0) {
-                CONSOLE.log(Level.WARNING, "Debe aceptar terminos de condiciones para participar en los calidoso");
-                return Response.ok(new ResponseDTO(-2, "Debe aceptar terminos de condiciones para participar en los calidoso.")).build();
+                CONSOLE.log(Level.WARNING, "Debe aceptar terminos de condiciones para participar en el programa de fidelizacion");
+                return Response.ok(new ResponseDTO(-2, "Debe aceptar terminos de condiciones para participar en el programa de fidelización.")).build();
             } else if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
                 CONSOLE.log(Level.WARNING, "Campo [Sucursal] es obligatorio para participar en el programa de fidelizacion");
                 return Response.ok(new ResponseDTO(-2, "Campo [Sucursal] es obligatorio para participar en el programa de fidelizacion.")).build();
@@ -437,7 +437,7 @@ public class CalidososREST {
                     incomingPaymentDTO.setTransferReference("ABONO PROGRAMA FIDELIZACION");
                     incomingPaymentDTO.setCompanyName(dto.getEmpresa() == null ? "IGB" : dto.getEmpresa());
 
-                    ResponseDTO res = incomingPaymentEJB.createIncomingPaymentAccountCalidosoService(incomingPaymentDTO);
+                    ResponseDTO res = incomingPaymentEJB.createIncomingPaymentAccountLoyaltyProgramService(incomingPaymentDTO);
                     if (res.getCode() < 0) {
                         return Response.ok(res).build();
                     } else {
