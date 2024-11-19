@@ -1666,7 +1666,7 @@ public class PedBoxREST {
         }
 
         if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("REDPLAS")) {
-            if (dto.getFranchise().equals("PSE")) {
+            if (dto.getFranchise().equals("PSE") || dto.getFranchise().equals("BANCOLOMBIA_QR") || dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
                 return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
             } else {
                 return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
