@@ -1632,6 +1632,9 @@ public class PedBoxREST {
         entityEnc.setuStatus(dto.getStatus());
         if (dto.getCompanyName().contains("REDPLAS")) {
             entityEnc.setuPasarela("WOMPI");
+            if (!dto.getFranchise().equals("PSE") || !dto.getFranchise().equals("BANCOLOMBIA_QR") || !dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
+                entityEnc.setuStatus("WAIT");
+            }
         } else {
             entityEnc.setuPasarela("PlaceToPay");
         }
