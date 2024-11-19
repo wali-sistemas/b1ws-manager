@@ -74,7 +74,7 @@ public class IncomingPaymentEJB {
                 }
                 if (dto.getCompanyName().contains("REDPLAS")) {
                     payment.setTransferAccount("11100501");//Banco de Bancolombia
-                    payment.setJournalRemarks("Pagos recibidos Extranet - " + dto.getCardCode());
+                    payment.setJournalRemarks("Pagos recibidos Micrositio WOMPI - " + dto.getCardCode());
                 }
                 payment.setTransferReference(dto.getTransferReference());
                 payment.setTransferSum(dto.getCashSum());
