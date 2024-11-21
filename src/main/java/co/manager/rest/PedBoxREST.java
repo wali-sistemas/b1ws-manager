@@ -1592,7 +1592,7 @@ public class PedBoxREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createIncomingPayments(IncomingPaymentDTO dto) {
-        CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por placeToPay");
+        CONSOLE.log(Level.INFO, "Validando campos obligatorios para la creacion de pago recibido por pasarela de pago");
         if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el pago. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo companyName es obligatorio.")).build();
@@ -1669,7 +1669,7 @@ public class PedBoxREST {
         }
 
         if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("REDPLAS")) {
-            if (dto.getFranchise().equals("PSE") || dto.getFranchise().equals("BANCOLOMBIA_QR") || dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
+            if (dto.getFranchise().contains("PSE") || dto.getFranchise().equals("BANCOLOMBIA_QR") || dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
                 return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
             } else {
                 return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
