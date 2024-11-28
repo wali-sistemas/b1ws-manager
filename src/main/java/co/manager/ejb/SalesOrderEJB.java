@@ -290,11 +290,6 @@ public class SalesOrderEJB {
                 order.setUseparador(dto.getStatus());
                 order.setShipToCode(dto.getShipToCode());
                 order.setPayToCode(dto.getPayToCode());
-                order.setDiscountPercent(dto.getDiscountPercent());
-                if (dto.getCoupon() > 0) {
-                    Double porcCoupon = (dto.getCoupon() / dto.getDocTotal()) * 100;
-                    order.setDiscountPercent(dto.getDiscountPercent() + porcCoupon);
-                }
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                     order.setDocDate(date2);
@@ -305,10 +300,12 @@ public class SalesOrderEJB {
                 /*** Consultando la cuenta de ingreso en ventas por cliente***/
                 Object[] incomeAccountCustomer = businessPartnerSAPFacade.getIncomeAccountByCustomer(dto.getCardCode(), dto.getCompanyName(), false);
 
+                Double docTotalSinIva = 0.0;
                 List<DetailSalesB2CorderDTO> lines = dto.getDetailSalesOrder();
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
                 for (DetailSalesB2CorderDTO line : lines) {
                     OrderDTO.DocumentLines.DocumentLine orderLine = new OrderDTO.DocumentLines.DocumentLine();
+                    docTotalSinIva += line.getPrice();
                     orderLine.setItemCode(line.getItemCode());
                     orderLine.setQuantity(line.getQuantity().doubleValue());
                     if (dto.getCompanyName().contains("VELEZ")) {
@@ -336,6 +333,11 @@ public class SalesOrderEJB {
                     listDet.add(orderLine);
                 }
                 order.setDocumentLines(listDet);
+                /*** Validar descuento***/
+                if (dto.getCoupon() > 0) {
+                    Double porcCoupon = (dto.getCoupon() / docTotalSinIva) * 100;
+                    order.setDiscountPercent(porcCoupon);
+                }
                 /*** Agregando gastos de flete a la orden de venta, solo para motorepuestos***/
                 if (dto.getCompanyName().contains("VELEZ")) {
                     OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense gasto = new OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense();
