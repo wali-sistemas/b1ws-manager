@@ -334,7 +334,9 @@ public class SalesOrderEJB {
                 }
                 order.setDocumentLines(listDet);
                 /*** Validar descuento***/
-                if (dto.getCoupon() > 0) {
+                if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+                    order.setDiscountPercent(dto.getDiscountPercent());
+                } else if (dto.getCoupon() > 0) {
                     Double porcCoupon = (dto.getCoupon() / docTotalSinIva) * 100;
                     order.setDiscountPercent(porcCoupon);
                 }
@@ -378,6 +380,15 @@ public class SalesOrderEJB {
             }
         }
         return new ResponseDTO(0, docNum);
+    }
+
+    public static void main(String[] args) {
+        double cupon = 9529.411765;
+        double subTotalsinIva = 134118.0;
+
+        System.out.println((cupon / subTotalsinIva) * 100);
+
+
     }
 
     private String getPropertyValue(String propertyName, String companyName) {
