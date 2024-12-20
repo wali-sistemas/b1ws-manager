@@ -305,7 +305,7 @@ public class SalesOrderEJB {
                 List<OrderDTO.DocumentLines.DocumentLine> listDet = new ArrayList<>();
                 for (DetailSalesB2CorderDTO line : lines) {
                     OrderDTO.DocumentLines.DocumentLine orderLine = new OrderDTO.DocumentLines.DocumentLine();
-                    docTotalSinIva += line.getPrice();
+                    docTotalSinIva += line.getPrice() * line.getQuantity();
                     orderLine.setItemCode(line.getItemCode());
                     orderLine.setQuantity(line.getQuantity().doubleValue());
                     if (dto.getCompanyName().contains("VELEZ")) {
@@ -337,8 +337,8 @@ public class SalesOrderEJB {
                 if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
                     order.setDiscountPercent(dto.getDiscountPercent());
                 } else if (dto.getCoupon() > 0) {
-                    Double porcCoupon = (dto.getCoupon() / docTotalSinIva) * 100;
-                    order.setDiscountPercent(porcCoupon);
+                    Double porcCoupon = ((Math.round(dto.getCoupon()) / docTotalSinIva) * 100);
+                    order.setDiscountPercent((double) Math.round(porcCoupon));
                 }
                 /*** Agregando gastos de flete a la orden de venta, solo para motorepuestos***/
                 if (dto.getCompanyName().contains("VELEZ")) {
@@ -346,7 +346,7 @@ public class SalesOrderEJB {
                     List<OrderDTO.DocumentAdditionalExpenses.DocumentAdditionalExpense> gastos = new ArrayList<>();
                     gasto.setExpenseCode(2l);
                     gasto.setTaxCode(incomeAccountCustomer[0].toString());
-                    gasto.setLineTotal(new BigDecimal(dto.getShippingPrice() / 1.19).setScale(0, RoundingMode.CEILING));
+                    gasto.setLineTotal(new BigDecimal(dto.getShippingPrice() / 1.19));
                     gastos.add(gasto);
                     order.setDocumentAdditionalExpenses(gastos);
                 }
@@ -382,14 +382,15 @@ public class SalesOrderEJB {
         return new ResponseDTO(0, docNum);
     }
 
-    public static void main(String[] args) {
-        double cupon = 9529.411765;
-        double subTotalsinIva = 134118.0;
+    /*public static void main(String[] args) {
+        double cupon = 5386.554621;
+        double subTotalsinIva = 107730;
 
-        System.out.println((cupon / subTotalsinIva) * 100);
+        System.out.println(Math.round(cupon));
+        System.out.println(Math.round((Math.round(cupon) / subTotalsinIva) * 100));
 
-
-    }
+//5387
+    }*/
 
     private String getPropertyValue(String propertyName, String companyName) {
         return IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(propertyName), companyName);
