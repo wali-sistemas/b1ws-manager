@@ -76,6 +76,10 @@ public class IncomingPaymentEJB {
                     payment.setTransferAccount("11100501");//Banco de Bancolombia
                     payment.setJournalRemarks("Pagos recibidos Micrositio WOMPI - " + dto.getCardCode());
                 }
+                if (dto.getCompanyName().contains("IGB")) {
+                    payment.setTransferAccount("11100518");//Banco de Bogota
+                    payment.setJournalRemarks("Pago recibido PSE - Extranet");
+                }
                 payment.setTransferReference(dto.getTransferReference());
                 payment.setTransferSum(dto.getCashSum());
 

@@ -120,8 +120,11 @@ public class RedimePuntosSAPFacade {
         sb.append(" select cast(p.\"U_CardCode\" as varchar(50))as \"CardCode\",cast(sum(p.\"U_Point\")as numeric(18,0))*-1 as \"PtsDisp\", ");
         sb.append("  case when v.\"U_Concepto\"='01' then (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='01' and \"U_Activo\"='Y') else (select cast(\"Name\" as varchar(50)) from \"@REDENCION_CONCEPTOS\" where \"Code\"='05' and \"U_Activo\"='Y')end as \"Programa\" ");
         sb.append(" from \"@REDENCION_PUNTOS\" p ");
-        /*sb.append(" inner join \"@REDENCION_VENDMOSTR\" v on p.\"U_CardCode\"=v.\"U_Documento\" ");*/
-        sb.append(" inner join (select distinct \"U_Concepto\",\"U_Documento\",\"U_Activo\" from VARROC.\"@REDENCION_VENDMOSTR\") v on p.\"U_CardCode\"=v.\"U_Documento\" ");
+        if (companyName.contains("IGB")) {
+            sb.append(" inner join \"@REDENCION_VENDMOSTR\" v on p.\"U_CardCode\"=v.\"U_Documento\" ");
+        } else {
+            sb.append(" inner join (select distinct \"U_Concepto\",\"U_Documento\",\"U_Activo\" from VARROC.\"@REDENCION_VENDMOSTR\") v on p.\"U_CardCode\"=v.\"U_Documento\" ");
+        }
         sb.append(" where v.\"U_Activo\"='S' ");
         sb.append(" group by p.\"U_CardCode\",v.\"U_Concepto\" ");
         sb.append(" order by 3");
