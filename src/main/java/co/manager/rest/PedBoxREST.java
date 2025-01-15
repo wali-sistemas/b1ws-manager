@@ -1613,6 +1613,9 @@ public class PedBoxREST {
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el pago. Campo detailSalesOrder es obligatorio.")).build();
         }
         CONSOLE.log(Level.INFO, "Iniciando creacion de pago recibido para la empresa {0}", dto.getCompanyName());
+
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, dto.toString());
 
         if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), false)) {
@@ -1668,12 +1671,8 @@ public class PedBoxREST {
             }
         }
 
-        if (dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("REDPLAS")) {
-            if (dto.getFranchise().contains("PSE") || dto.getFranchise().equals("BANCOLOMBIA_QR") || dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
-                return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
-            } else {
-                return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
-            }
+        if (dto.getFranchise().contains("PSE") || dto.getFranchise().equals("BANCOLOMBIA_QR") || dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
+            return Response.ok(incomingPaymentEJB.createIncomingPaymentsService(dto)).build();
         } else {
             CONSOLE.log(Level.INFO, "Finalizando creacion de pago recibido #{0} para la empresa {1}", new Object[]{entityEnc.getuIdPago(), dto.getCompanyName()});
             return Response.ok(new ResponseDTO(0, entityEnc.getuIdPago())).build();
