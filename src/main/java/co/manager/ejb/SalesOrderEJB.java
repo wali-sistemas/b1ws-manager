@@ -313,7 +313,11 @@ public class SalesOrderEJB {
                         orderLine.setUnitPrice(line.getPrice().doubleValue());
                         orderLine.setWarehouseCode("01");
                     } else {
-                        orderLine.setWarehouseCode(line.getWhsCode());
+                        if (line.getWhsCode().equals("00")) {
+                            orderLine.setWarehouseCode("01");
+                        } else {
+                            orderLine.setWarehouseCode(line.getWhsCode());
+                        }
                     }
                     orderLine.setBaseLine(line.getBaseLine());
                     orderLine.setBaseType(line.getBaseType());

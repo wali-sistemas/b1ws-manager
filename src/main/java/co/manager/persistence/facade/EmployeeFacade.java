@@ -43,7 +43,7 @@ public class EmployeeFacade {
         sb.append(" cast(c.userAssign as varchar)as userAssign,cast(c.userFinish as varchar)as userFinish,cast(a.type as varchar)as type, ");
         sb.append(" cast(a.brand as varchar)as brand,cast(a.reference as varchar)as referencia,cast(a.serial as varchar)as serial, ");
         sb.append(" cast(a.company as varchar)as companyPurchase,cast(a.datePurchase as varchar)as datePurchase,cast(a.ccosto as int)as ccAsset, ");
-        sb.append(" cast(a.status as varchar)as statusAsset,cast(a.comment as varchar)as comment,cast(a.pictureAssetUrl as varchar(max))as pictAsset ");
+        sb.append(" cast(a.status as varchar)as statusAsset,cast(a.comment as varchar(max))as comment,cast(a.pictureAssetUrl as varchar(max))as pictAsset ");
         sb.append("from asset_master_data a ");
         sb.append("left join custody_detail c on c.idAsset=a.idAsset ");
         sb.append("left join employee e on e.cardCode=c.cardCode ");
