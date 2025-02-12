@@ -176,7 +176,7 @@ public class SalesOrderSAPFacade {
     public List<Object[]> listOrdersForValidateTransport(String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(o.\"DocNum\" as int)as DocNum, cast(m.\"U_COD_TRA\" as varchar(2))as U_COD_TRA ");
+        sb.append("select cast(o.\"DocNum\" as int)as DocNum, cast(m.\"U_COD_TRA\" as varchar(4))as U_COD_TRA ");
         sb.append("from  ORDR o ");
         sb.append("inner join RDR12 d on o.\"DocEntry\"=d.\"DocEntry\" ");
         sb.append("inner join \"@TRANSP\" t on o.\"U_TRANSP\"=t.\"Code\" ");
