@@ -332,23 +332,24 @@ public class BusinessPartnerSAPFacade {
         return new ArrayList<>();
     }
 
-    public boolean findCustomer(String cardCode, String companyName, boolean pruebas) {
+    public Object[] findCustomer(String cardCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"CardCode\" as varchar(20))as CardCode from OCRD where \"CardCode\" = '");
+        sb.append("select cast(\"CardCode\" as varchar(20))as CardCode, cast(\"validFor\" as varchar)as active from OCRD where \"CardCode\" = '");
         sb.append(cardCode);
         sb.append("'");
         try {
-            if (em.createNativeQuery(sb.toString()).getSingleResult().equals(cardCode)) {
-                return true;
+            Object[] res = (Object[]) em.createNativeQuery(sb.toString()).getSingleResult();
+            if (res[0].equals(cardCode)) {
+                return new Object[]{true, res[1].toString()};
             } else {
-                return false;
+                return new Object[]{false, null};
             }
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el cliente [" + cardCode + "] en [" + companyName + ']', e);
         }
-        return false;
+        return new Object[]{false, null};
     }
 
     public List<ClientCalidosoDTO> listClientLoyaltyProgram(String companyName, boolean pruebas) {
@@ -549,7 +550,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(" else '' end as AcctCode ");
         sb.append("from OCRD s ");
         sb.append("inner join CRD1 d on s.\"CardCode\"=d.\"CardCode\" and s.\"ShipToDef\"=d.\"Address\" ");
-        sb.append("where \"AdresType\"='S' and s.\"CardCode\"='");
+        sb.append("where d.\"AdresType\"='S' and s.\"CardCode\"='");
         sb.append(cardCode);
         sb.append("'");
         try {
@@ -630,6 +631,30 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el nombre del cliente para el cardCode=" + cardCode + " en " + companyName, e);
         }
         return "";
+    }
+
+    public Object[] getCustomerDataOncretid(String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(sn.\"CardCode\" as varchar(20))as cardCode,cast(sn.\"CardName\" as varchar(100))as cardName, ");
+        sb.append(" cast(td.\"U_TicpoDocICA\" as varchar(5))as typDoc,cast(sn.\"U_BPCO_Nombre\" as varchar(100))as firstName, ");
+        sb.append(" cast(sn.\"U_BPCO_1Apellido\" as varchar(50))as firstlastName,cast(sn.\"U_BPCO_2Apellido\" as varchar(50))as middlelastName, ");
+        sb.append(" cast(sn.\"Phone2\" as varchar(15))as cellular,cast(sn.\"E_Mail\" as varchar(100))as email,");
+        sb.append(" cast(ct.\"BirthDate\" as varchar(8)) as birthDate,null as gender,null as expDocDate,null as placeExp,null as age, ");
+        sb.append(" cast(dr.\"Street\" as varchar(100))as address,cast(dr.\"City\" as varchar(100))as city,cast(dp.\"Name\" as varchar(100))as state ");
+        sb.append("from OCRD sn ");
+        sb.append("inner join \"CRD1\" dr on dr.\"CardCode\"=sn.\"CardCode\" and sn.\"ShipToDef\"=dr.\"Address\" ");
+        sb.append("inner join \"OCST\" dp on dp.\"Country\"='CO' and dp.\"Code\"=dr.\"State\" ");
+        sb.append("inner join \"@BPCO_TD\" td on td.\"Code\"=sn.\"U_BPCO_TDC\" ");
+        sb.append("left join (select \"CardCode\",\"Name\",\"FirstName\",\"MiddleName\",\"LastName\",\"Position\",\"Tel1\",\"BirthDate\" from OCPR)as ct on ct.\"CardCode\"=sn.\"CardCode\" and ct.\"Name\"=sn.\"CntctPrsn\" ");
+        sb.append("where dr.\"AdresType\"='B' and sn.\"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo los datos del cliente [oncredit]. ", e);
+        }
+        return null;
     }
 
     public Object[] getCustomerData(String cardCode, String companyName, boolean testing) {

@@ -658,6 +658,7 @@ public class AppREST {
                     dto2.setTotalBruto((BigDecimal) obj[18]);
                     dto2.setActiveCalc((String) obj[19]);
                     dto2.setComment((String) obj[20]);
+                    dto2.setDiscApplied(0);
                     customerDetailPortfolio.add(dto2);
                 }
             }

@@ -1,6 +1,7 @@
 package co.manager.ejb;
 
 import co.manager.dto.BusinessPartnerDTO;
+import co.manager.dto.CustomerOncreditDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
 import co.manager.hanaws.client.udo.FeResFisSnClient;
@@ -166,6 +167,117 @@ public class BusinessPartnerEJB {
             }
         }
         return new ResponseDTO(0, cardCode);
+    }
+
+    public ResponseDTO createBusinessPartnerFromOncredit(CustomerOncreditDTO dto, int digit) {
+        String cardCode = "";
+        //1. Login
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(dto.getCompanyName());
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
+                businessPartner.setCardCode("C" + dto.getDocId());
+                businessPartner.setCardName((dto.getFirstlastName() + " " + dto.getMiddlelastName() + " " + dto.getFirstName()).toUpperCase());
+                businessPartner.setCardType("C");
+                businessPartner.setFederalTaxID(dto.getDocId().replace("C", "") + "-" + digit);
+                businessPartner.setGroupCode(100l);
+                businessPartner.setPhone1(dto.getCellular());
+                businessPartner.setPhone2(dto.getCellular());
+                businessPartner.setCellular(dto.getCellular());
+                businessPartner.setEmailAddress(dto.getEmail().toUpperCase());
+                businessPartner.setUmanejo("DIA");
+                businessPartner.setUdocFormEntFE(1l);
+                businessPartner.setUcelularFE(dto.getCellular());
+                businessPartner.setUbpcortc("RS");
+                businessPartner.setUbpcotdc("13");
+                businessPartner.setUbpcotp("01");
+                businessPartner.setUbpcocs("05001");
+                businessPartner.setUbpcoCity("05001");
+                businessPartner.setUbpcoNombre(dto.getFirstName().toUpperCase());
+                businessPartner.setUbpco1Apellido(dto.getFirstlastName().toUpperCase());
+                businessPartner.setUbpco2Apellido(dto.getMiddlelastName().toUpperCase());
+                businessPartner.setUbpcoAddress("CALLE 98 SUR N 48 225");
+                businessPartner.setUbpvtper("PNRE");
+                businessPartner.setUtrasp("03");
+                businessPartner.setPriceListNum(1l);
+                businessPartner.setSalesPersonCode("22");
+                businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getEmail().toUpperCase());
+                businessPartner.setDebitorAccount("13050505");
+                businessPartner.setBilltoDefault("DIR ONCREDIT");
+
+                try {
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    businessPartner.setUfeccrea(date2);
+                } catch (Exception e) {
+                }
+
+                List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
+                    address.setAddressName("DIR ONCREDIT");
+                    address.setStreet("CALLE 98 SUR N 48 225");
+                    address.setCity("MEDELLÍN");
+                    address.setBlock("05001");
+                    address.setState("05");
+                    address.setCountry("CO");
+
+                    if (i == 0) {
+                        address.setAddressType("bo_BillTo");
+                    } else {
+                        address.setAddressType("bo_ShipTo");
+                        address.setTaxCode("IVAG19");
+                    }
+
+                    address.setBpCode(dto.getDocId());
+                    address.setRowNum(0l);
+                    address.setUmunicipio("05001");
+                    address.setUlatitud("0123456789");
+                    address.setUlongitud("0123456789");
+                    addresses.add(address);
+                }
+                businessPartner.setBpAddresses(addresses);
+
+                CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
+                Gson gson = new Gson();
+                String json = gson.toJson(businessPartner);
+                CONSOLE.log(Level.INFO, json);
+                BusinessPartnersRestDTO res = service.addBusinessPartnerFromWali(businessPartner, sessionId);
+                cardCode = res.getCardCode();
+
+                if (cardCode.isEmpty()) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
+                    return new ResponseDTO(-1, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
+                } else {
+                    CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente");
+                    //agregar las resposabilidades fiscales al socio de negocio
+                    addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, "Cliente creado exitosamente. " + cardCode);
     }
 
     public ResponseDTO createBusinessPartnerFromWali(BusinessPartnerDTO dto) {

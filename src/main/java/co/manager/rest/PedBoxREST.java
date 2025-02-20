@@ -1559,7 +1559,8 @@ public class PedBoxREST {
 
         if (dto.getTypeTransaction().equals("add")) {
             //Validar si ya existe el cliente en SAP.
-            if (businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false)) {
+            Object[] res = businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false);
+            if ((Boolean) res[0]) {
                 CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
                 return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
             }
@@ -1635,7 +1636,7 @@ public class PedBoxREST {
         entityEnc.setuStatus(dto.getStatus());
         if (dto.getCompanyName().contains("REDPLAS")) {
             entityEnc.setuPasarela("WOMPI");
-            if (!dto.getFranchise().contains("PSE") && !dto.getFranchise().equals("BANCOLOMBIA_QR") && !dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
+            if (!dto.getFranchise().toUpperCase().contains("PSE".toUpperCase()) && !dto.getFranchise().equals("BANCOLOMBIA_QR") && !dto.getFranchise().equals("BANCOLOMBIA_TRANSFER")) {
                 entityEnc.setuStatus("WAIT");
             }
         } else {
