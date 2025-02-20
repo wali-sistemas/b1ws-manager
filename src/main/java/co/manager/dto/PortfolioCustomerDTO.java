@@ -162,6 +162,7 @@ public class PortfolioCustomerDTO {
         private BigDecimal totalBruto;
         private String activeCalc;
         private String comment;
+        private Integer discApplied;
 
         public DetailPortfolioCustomerDTO() {
         }
@@ -286,6 +287,14 @@ public class PortfolioCustomerDTO {
             this.comment = comment;
         }
 
+        public Integer getDiscApplied() {
+            return discApplied;
+        }
+
+        public void setDiscApplied(Integer discApplied) {
+            this.discApplied = discApplied;
+        }
+
         @Override
         public String toString() {
             return "DetailPortfolioCustomerDTO{" +
@@ -304,6 +313,7 @@ public class PortfolioCustomerDTO {
                     ", totalBruto=" + totalBruto +
                     ", activeCalc='" + activeCalc + '\'' +
                     ", comment='" + comment + '\'' +
+                    ", discApplied=" + discApplied +
                     '}';
         }
     }

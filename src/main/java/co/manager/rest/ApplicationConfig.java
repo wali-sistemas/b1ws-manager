@@ -35,5 +35,6 @@ public class ApplicationConfig extends Application {
         resources.add(ModulaREST.class);
         resources.add(AppREST.class);
         resources.add(EmployeeREST.class);
+        resources.add(OncreditREST.class);
     }
 }
