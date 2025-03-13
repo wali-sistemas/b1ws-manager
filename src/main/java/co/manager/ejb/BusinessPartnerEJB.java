@@ -187,10 +187,10 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             try {
                 BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
-                businessPartner.setCardCode("C" + dto.getDocId());
-                businessPartner.setCardName((dto.getFirstlastName() + " " + dto.getMiddlelastName() + " " + dto.getFirstName()).toUpperCase());
+                businessPartner.setCardCode("C" + dto.getCardCode());
+                businessPartner.setCardName((dto.getLastName1() + " " + dto.getLastName2() + " " + dto.getFirstName()).toUpperCase());
                 businessPartner.setCardType("C");
-                businessPartner.setFederalTaxID(dto.getDocId().replace("C", "") + "-" + digit);
+                businessPartner.setFederalTaxID(dto.getCardCode().replace("C", "") + "-" + digit);
                 businessPartner.setGroupCode(100l);
                 businessPartner.setPhone1(dto.getCellular());
                 businessPartner.setPhone2(dto.getCellular());
@@ -205,8 +205,8 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcocs("05001");
                 businessPartner.setUbpcoCity("05001");
                 businessPartner.setUbpcoNombre(dto.getFirstName().toUpperCase());
-                businessPartner.setUbpco1Apellido(dto.getFirstlastName().toUpperCase());
-                businessPartner.setUbpco2Apellido(dto.getMiddlelastName().toUpperCase());
+                businessPartner.setUbpco1Apellido(dto.getLastName1().toUpperCase());
+                businessPartner.setUbpco2Apellido(dto.getLastName2().toUpperCase());
                 businessPartner.setUbpcoAddress("CALLE 98 SUR N 48 225");
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setUtrasp("03");
@@ -239,7 +239,7 @@ public class BusinessPartnerEJB {
                         address.setTaxCode("IVAG19");
                     }
 
-                    address.setBpCode(dto.getDocId());
+                    address.setBpCode(dto.getDocIdent());
                     address.setRowNum(0l);
                     address.setUmunicipio("05001");
                     address.setUlatitud("0123456789");
@@ -247,6 +247,22 @@ public class BusinessPartnerEJB {
                     addresses.add(address);
                 }
                 businessPartner.setBpAddresses(addresses);
+                if (dto.getCustomerContactPersons() != null) {
+                    //Agregar co-deudor al cliente
+                    List<BusinessPartnersDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
+                    for (int i = 0; i < 1; i++) {
+                        BusinessPartnersDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersDTO.ContactEmployees.ContactEmployee();
+                        contactEmployee.setName(dto.getCustomerContactPersons().getDocIdent());
+                        contactEmployee.setFirstName(dto.getCustomerContactPersons().getFirstName());
+                        contactEmployee.setLastName(dto.getCustomerContactPersons().getLastName());
+                        contactEmployee.setMobilePhone(dto.getCustomerContactPersons().getCellular());
+                        contactEmployee.setEmail(dto.getCustomerContactPersons().getEmail());
+                        contactEmployee.setTitle(dto.getCustomerContactPersons().getIdTypeDoc());
+
+                        contactEmployees.add(contactEmployee);
+                    }
+                    businessPartner.setContactEmployees(contactEmployees);
+                }
 
                 CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
@@ -259,12 +275,12 @@ public class BusinessPartnerEJB {
                     CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
                     return new ResponseDTO(-1, "Ocurrió un problema al crear el socio de negocio. Resetear el sesión ID.");
                 } else {
-                    CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente");
+                    CONSOLE.log(Level.INFO, "Se creo el socio de negocios satisfactoriamente.");
                     //agregar las resposabilidades fiscales al socio de negocio
                     addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
                 }
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio. ", e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
