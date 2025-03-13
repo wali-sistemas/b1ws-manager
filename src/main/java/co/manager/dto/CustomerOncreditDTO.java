@@ -161,6 +161,14 @@ public class CustomerOncreditDTO {
     public void setMunic(String munic) {
         this.munic = munic;
     }
+  
+    public CustomerContactPersons getCustomerContactPersons() {
+        return customerContactPersons;
+    }
+
+    public void setCustomerContactPersons(CustomerContactPersons customerContactPersons) {
+        this.customerContactPersons = customerContactPersons;
+    }
 
     public static class CustomerContactPersons {
         public String idTypeDoc;
@@ -238,14 +246,6 @@ public class CustomerOncreditDTO {
         public void setEmail(String email) {
             this.email = email;
         }
-    }
-
-    public CustomerContactPersons getCustomerContactPersons() {
-        return customerContactPersons;
-    }
-
-    public void setCustomerContactPersons(CustomerContactPersons customerContactPersons) {
-        this.customerContactPersons = customerContactPersons;
     }
 
     @Override

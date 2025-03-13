@@ -247,6 +247,7 @@ public class BusinessPartnerEJB {
                     addresses.add(address);
                 }
                 businessPartner.setBpAddresses(addresses);
+
                 if (dto.getCustomerContactPersons() != null) {
                     //Agregar co-deudor al cliente
                     List<BusinessPartnersDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
@@ -280,7 +281,7 @@ public class BusinessPartnerEJB {
                     addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
                 }
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio. ", e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el socio de negocio ", e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
