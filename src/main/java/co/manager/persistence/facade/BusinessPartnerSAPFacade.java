@@ -633,20 +633,25 @@ public class BusinessPartnerSAPFacade {
         return "";
     }
 
-    public Object[] getCustomerDataOncretid(String cardCode, String companyName, boolean testing) {
+    public Object[] getCustomerDataOncredit(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(sn.\"CardCode\" as varchar(20))as cardCode,cast(sn.\"CardName\" as varchar(100))as cardName, ");
-        sb.append(" cast(td.\"U_TicpoDocICA\" as varchar(5))as typDoc,cast(sn.\"U_BPCO_Nombre\" as varchar(100))as firstName, ");
-        sb.append(" cast(sn.\"U_BPCO_1Apellido\" as varchar(50))as firstlastName,cast(sn.\"U_BPCO_2Apellido\" as varchar(50))as middlelastName, ");
-        sb.append(" cast(sn.\"Phone2\" as varchar(15))as cellular,cast(sn.\"E_Mail\" as varchar(100))as email,");
-        sb.append(" cast(ct.\"BirthDate\" as varchar(8)) as birthDate,null as gender,null as expDocDate,null as placeExp,null as age, ");
-        sb.append(" cast(dr.\"Street\" as varchar(100))as address,cast(dr.\"City\" as varchar(100))as city,cast(dp.\"Name\" as varchar(100))as state ");
-        sb.append("from OCRD sn ");
-        sb.append("inner join \"CRD1\" dr on dr.\"CardCode\"=sn.\"CardCode\" and sn.\"ShipToDef\"=dr.\"Address\" ");
-        sb.append("inner join \"OCST\" dp on dp.\"Country\"='CO' and dp.\"Code\"=dr.\"State\" ");
-        sb.append("inner join \"@BPCO_TD\" td on td.\"Code\"=sn.\"U_BPCO_TDC\" ");
-        sb.append("left join (select \"CardCode\",\"Name\",\"FirstName\",\"MiddleName\",\"LastName\",\"Position\",\"Tel1\",\"BirthDate\" from OCPR)as ct on ct.\"CardCode\"=sn.\"CardCode\" and ct.\"Name\"=sn.\"CntctPrsn\" ");
-        sb.append("where dr.\"AdresType\"='B' and sn.\"CardCode\"='");
+        sb.append("select cast(t.\"U_TicpoDocICA\" as varchar(2))as idTypeDocCL,cast(t.\"Name\" as varchar(50))as typeDocCL, ");
+        sb.append(" cast(c.\"LicTradNum\" as varchar(20))as docIdentCL,case when c.\"GroupNum\"=-1 then 'SI' else 'NO' end as clAntg, ");
+        sb.append(" cast(c.\"CardName\" as varchar(100))as cardNameCL,cast(c.\"U_BPCO_Nombre\" as varchar(100))as firstNameCL, ");
+        sb.append(" cast(c.\"U_BPCO_1Apellido\" as varchar(50))as lastName1CL,cast(c.\"U_BPCO_2Apellido\" as varchar(50))as lastName2CL, ");
+        sb.append(" cast(c.\"Phone2\" as varchar(15))as cellularCL,cast(c.\"E_Mail\" as varchar(50))as emailCL,cast(d.\"Block\" as varchar(50))as codCityCL, ");
+        sb.append(" cast(d.\"Street\" as varchar(100))as AddressCL,cast(d.\"City\" as varchar(100))as cityCL,cast(s.\"Name\" as varchar(100))as departCL, ");
+        sb.append(" cast(m.\"Name\" as varchar(100))as municCL,cast(p.\"Title\" as varchar(2))as idTypeDocCD,cast(p.\"Name\" as varchar(50))as docIdentCD, ");
+        sb.append(" cast(p.\"FirstName\" as varchar(100))as firstNameCD,cast(p.\"MiddleName\" as varchar(100))as middleNameCD, ");
+        sb.append(" cast(p.\"LastName\" as varchar(100))as LastNameCD,cast(p.\"Address\" as varchar(100))as addressCD,");
+        sb.append(" cast(p.\"Cellolar\" as varchar(15))as cellularCD,cast(p.\"E_MailL\" as varchar(100))as emailCD ");
+        sb.append("from OCRD c ");
+        sb.append("inner join CRD1 d on d.\"CardCode\"=c.\"CardCode\" and d.\"Address\"=\"BillToDef\" ");
+        sb.append("inner join OCST s on s.\"Code\"=d.\"State\" ");
+        sb.append("inner join \"@BPCO_MU\" m on m.\"Code\"=d.\"U_Municipio\" ");
+        sb.append("inner join \"@BPCO_TD\" t on t.\"Code\"=c.\"U_BPCO_TDC\" ");
+        sb.append("left  join \"OCPR\" p on p.\"CardCode\"=c.\"CardCode\" and c.\"CntctPrsn\"=p.\"Name\" and \"Active\"='Y' ");
+        sb.append("where d.\"AdresType\"='B' and c.\"CardCode\"='");
         sb.append(cardCode);
         sb.append("'");
         try {

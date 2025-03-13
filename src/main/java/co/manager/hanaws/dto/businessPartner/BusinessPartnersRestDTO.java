@@ -3323,6 +3323,8 @@ public class BusinessPartnersRestDTO implements Serializable {
             protected String connectedAddressName;
             @JsonProperty("ConnectedAddressType")
             protected String connectedAddressType;
+            @JsonProperty("ForeignCountry")
+            protected String foreignCountry;
             @JsonProperty("ContactEmployeeBlockSendingMarketingContents")
             protected List<Object> contactEmployeeBlockSendingMarketingContents;
 
@@ -3580,6 +3582,14 @@ public class BusinessPartnersRestDTO implements Serializable {
 
             public void setConnectedAddressType(String connectedAddressType) {
                 this.connectedAddressType = connectedAddressType;
+            }
+
+            public String getForeignCountry() {
+                return foreignCountry;
+            }
+
+            public void setForeignCountry(String foreignCountry) {
+                this.foreignCountry = foreignCountry;
             }
 
             public List<Object> getContactEmployeeBlockSendingMarketingContents() {
