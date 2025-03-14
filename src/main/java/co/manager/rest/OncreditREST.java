@@ -97,7 +97,7 @@ public class OncreditREST {
             }
         } else {
             CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
-            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+            return Response.ok(new ResponseDTO(-4, "Token invalido para consumir servicio.")).build();
         }
     }
 
@@ -111,7 +111,7 @@ public class OncreditREST {
         if (token.equals(managerApplicationBean.obtenerValorPropiedad(Constants.TOKEN_CALIDOSOS)) || token.isEmpty() || token == null) {
             if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo cardCode es obligatorio", dto.getCompanyName());
-                return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo cardCode es obligatorio.")).build();
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo cardCode es obligatorio.")).build();
             } else if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo companyName es obligatorio");
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo empresa es obligatorio.")).build();
@@ -129,37 +129,37 @@ public class OncreditREST {
                 //Verificar los datos obligatorios para registrar un nuevo cliente.
                 if (dto.getTypeDoc() == null || dto.getTypeDoc().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo typeDoc es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo tipo de documento es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo tipo de documento es obligatorio.")).build();
                 } else if (dto.getFirstName() == null || dto.getFirstName().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo firstName es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo nombre es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo nombre es obligatorio.")).build();
                 } else if (dto.getLastName1() == null || dto.getLastName1().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo lastName1 es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo primer apellido es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo primer apellido es obligatorio.")).build();
                 } else if (dto.getLastName2() == null || dto.getLastName2().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo lastName2 es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo segundo apellido es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo segundo apellido es obligatorio.")).build();
                 } else if (dto.getCellular() == null || dto.getCellular().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo cellular es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo número de celular es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo número de celular es obligatorio.")).build();
                 } else if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo email es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo correo electrónico es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo correo electrónico es obligatorio.")).build();
                 } else if (dto.getCodCity() == null || dto.getCodCity().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo codCity es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo código DANE ciudad es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo código DANE ciudad es obligatorio.")).build();
                 } else if (dto.getAddress() == null || dto.getAddress().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo address es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo dirección es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo dirección es obligatorio.")).build();
                 } else if (dto.getCity() == null || dto.getCity().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo city es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo nombre de ciudad es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo nombre de ciudad es obligatorio.")).build();
                 } else if (dto.getDepart() == null || dto.getDepart().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo depart es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo nombre de departamento es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo nombre de departamento es obligatorio.")).build();
                 } else if (dto.getMunic() == null || dto.getMunic().isEmpty()) {
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo munic es obligatorio", dto.getCompanyName());
-                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo nombre de municipio es obligatorio.")).build();
+                    return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo nombre de municipio es obligatorio.")).build();
                 }
                 CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en " + dto.getCompanyName(), dto.toString());
 
@@ -171,7 +171,7 @@ public class OncreditREST {
             }
         } else {
             CONSOLE.log(Level.WARNING, "Token invalido para consumir servicio");
-            return Response.ok(new ResponseDTO(-3, "Token invalido para consumir servicio.")).build();
+            return Response.ok(new ResponseDTO(-4, "Token invalido para consumir servicio.")).build();
         }
     }
 }
