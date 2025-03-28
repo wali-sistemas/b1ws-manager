@@ -103,6 +103,8 @@ public class BusinessPartnersDTO implements Serializable {
     protected List<BusinessPartnersDTO.BPAddresses.BPAddress> bpAddresses;
     @JsonProperty("ContactEmployees")
     protected List<BusinessPartnersDTO.ContactEmployees.ContactEmployee> contactEmployees;
+    @JsonProperty("BPWithholdingTaxCollection")
+    protected List<BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxCollection;
 
     public BusinessPartnersDTO() {
     }
@@ -465,6 +467,14 @@ public class BusinessPartnersDTO implements Serializable {
 
     public void setContactEmployees(List<ContactEmployees.ContactEmployee> contactEmployees) {
         this.contactEmployees = contactEmployees;
+    }
+
+    public List<BPWithholdingTaxCollection.BPWithholdingTax> getBpWithholdingTaxCollection() {
+        return bpWithholdingTaxCollection;
+    }
+
+    public void setBpWithholdingTaxCollection(List<BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxCollection) {
+        this.bpWithholdingTaxCollection = bpWithholdingTaxCollection;
     }
 
     public String getFreeText() {
@@ -861,6 +871,31 @@ public class BusinessPartnersDTO implements Serializable {
 
             public void setEmailGroupCode(String emailGroupCode) {
                 this.emailGroupCode = emailGroupCode;
+            }
+        }
+    }
+
+    public static class BPWithholdingTaxCollection {
+        public static class BPWithholdingTax {
+            @JsonProperty("WTCode")
+            protected String wtCode;
+            @JsonProperty("BPCode")
+            protected String bpCode;
+
+            public String getWtCode() {
+                return wtCode;
+            }
+
+            public void setWtCode(String wtCode) {
+                this.wtCode = wtCode;
+            }
+
+            public String getBpCode() {
+                return bpCode;
+            }
+
+            public void setBpCode(String bpCode) {
+                this.bpCode = bpCode;
             }
         }
     }

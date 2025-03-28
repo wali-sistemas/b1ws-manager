@@ -3,6 +3,7 @@ package co.manager.hanaws.client.businessPartners;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersWithholdingTaxDTO;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -46,6 +47,11 @@ public class BusinessPartnersClient {
 
     public Response updateBusinessPartner(BusinessPartnersRestDTO dto, String cardCode, String sessionId) {
         return webTarget.path("BusinessPartners('" + cardCode + "')").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
-                .put(Entity.entity(dto, MediaType.APPLICATION_JSON));
+                .method("PATCH", Entity.entity(dto, MediaType.APPLICATION_JSON));
+    }
+
+    public Response updateBPWithholdingTaxCollection(BusinessPartnersWithholdingTaxDTO dto, String cardCode, String sessionId) {
+        return webTarget.path("BusinessPartners('" + cardCode + "')").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+                .method("PATCH", Entity.entity(dto, MediaType.APPLICATION_JSON));
     }
 }

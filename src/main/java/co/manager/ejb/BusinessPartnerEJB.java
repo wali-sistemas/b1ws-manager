@@ -8,8 +8,10 @@ import co.manager.hanaws.client.udo.FeResFisSnClient;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
+import co.manager.hanaws.dto.businessPartner.BusinessPartnersWithholdingTaxDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnDTO;
 import co.manager.hanaws.dto.udo.FeResFisSnRestDTO;
+import co.manager.persistence.facade.BusinessPartnerSAPFacade;
 import co.manager.persistence.facade.CitySAPFacade;
 import co.manager.util.Constants;
 import com.google.gson.Gson;
@@ -39,6 +41,8 @@ public class BusinessPartnerEJB {
     private SessionManager sessionManager;
     @EJB
     private CitySAPFacade citySAPFacade;
+    @EJB
+    private BusinessPartnerSAPFacade businessPartnerSAPFacade;
 
     @PostConstruct
     private void initialize() {
@@ -317,7 +321,7 @@ public class BusinessPartnerEJB {
                 BusinessPartnersDTO businessPartner = new BusinessPartnersDTO();
                 businessPartner.setCardCode(dto.getCardCode());
                 businessPartner.setCardName(dto.getCardName());
-                businessPartner.setCardType("C");
+                businessPartner.setCardType("cCustomer");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setProperties4(dto.getDocumentRut());
                 businessPartner.setProperties13(dto.getAcceptHabeasData());
@@ -425,6 +429,16 @@ public class BusinessPartnerEJB {
                 }
                 businessPartner.setBpAddresses(addresses);
 
+                List<BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxes = new ArrayList<>();
+                for (BusinessPartnerDTO.WithholdingTax obj : dto.getWithholdingTax()) {
+                    BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax bpWithholdingTax = new BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax();
+                    bpWithholdingTax.setWtCode(obj.getWtCode());
+                    bpWithholdingTax.setBpCode(dto.getCardCode());
+
+                    bpWithholdingTaxes.add(bpWithholdingTax);
+                }
+                businessPartner.setBpWithholdingTaxCollection(bpWithholdingTaxes);
+
                 CONSOLE.log(Level.INFO, "Iniciando creacion de socio de negocio para {0}", dto.getCompanyName());
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
@@ -477,17 +491,31 @@ public class BusinessPartnerEJB {
         //2. Procesar documento
         if (sessionId != null) {
             try {
-                //TODO: obtener todo el object para setear los valor a modificar
+                //Reiniciar los códigos de retenciones de impuestos para aplicar actualizaciones.
+                BusinessPartnersWithholdingTaxDTO businessPartnersWithholdingTaxDTO = new BusinessPartnersWithholdingTaxDTO();
+                List<BusinessPartnersWithholdingTaxDTO.BPWithholdingTaxCollection.BPWithholdingTax> businessPartnersWithholdingTaxes = new ArrayList<>();
+                BusinessPartnersWithholdingTaxDTO.BPWithholdingTaxCollection.BPWithholdingTax businessPartnersWithholdingTax = new BusinessPartnersWithholdingTaxDTO.BPWithholdingTaxCollection.BPWithholdingTax();
+                businessPartnersWithholdingTax.setWtCode("");
+                businessPartnersWithholdingTax.setBpCode("");
+                businessPartnersWithholdingTaxes.add(businessPartnersWithholdingTax);
+                businessPartnersWithholdingTaxDTO.setBpWithholdingTaxCollection(businessPartnersWithholdingTaxes);
+
+                try {
+                    service.updateBPWithholdingTaxCollection(businessPartnersWithholdingTaxDTO, dto.getCardCode(), sessionId);
+                } catch (Exception e) {
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al vaciar los codigos de retencion del socio de negocio " + dto.getCardCode() + " en " + dto.getCompanyName(), e);
+                }
+                //Obtener el objeto completo para asignar los valores que se van a modificar
                 BusinessPartnersRestDTO businessPartnersRestDTO = service.getBusinessPartner(dto.getCardCode(), sessionId);
 
                 businessPartnersRestDTO.setCardCode(dto.getCardCode());
                 businessPartnersRestDTO.setCardName(dto.getCardName());
-                businessPartnersRestDTO.setCardType("C");
+                businessPartnersRestDTO.setCardType(businessPartnersRestDTO.getCardType());
+                businessPartnersRestDTO.setGroupCode(Long.valueOf(dto.getGrupo()));
                 businessPartnersRestDTO.setFederalTaxID(dto.getLicTradNum());
                 businessPartnersRestDTO.setProperties4(dto.getDocumentRut());
                 businessPartnersRestDTO.setProperties13(dto.getAcceptHabeasData());
                 businessPartnersRestDTO.setProperties15(dto.getFidelity());
-                businessPartnersRestDTO.setGroupCode(Long.valueOf(dto.getGrupo()));
                 businessPartnersRestDTO.setPhone1(dto.getPhone());
                 businessPartnersRestDTO.setPhone2(dto.getCellular());
                 businessPartnersRestDTO.setCellular(dto.getCellular());
@@ -515,43 +543,37 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setPriceListNum(Long.valueOf(dto.getPriceList()));
                 businessPartnersRestDTO.setUtrasp(dto.getTransp());
 
-                List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
-                for (int i = 0; i < 1; i++) {
-                    BusinessPartnersRestDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersRestDTO.ContactEmployees.ContactEmployee();
-                    contactEmployee.setName(dto.getContactPerson());
-                    contactEmployee.setFirstName(dto.getNameContactPerson());
-                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson());
-                    contactEmployee.setLastName(dto.getLastNameContactPerson());
-                    contactEmployee.setPosition(dto.getOccupationContactPerson());
-                    contactEmployee.setPhone1(dto.getPhoneContactPerson());
-                    contactEmployee.setDateOfBirth(dto.getDateContactPerson());
-                    contactEmployees.add(contactEmployee);
-                }
-                businessPartnersRestDTO.setContactEmployees(contactEmployees);
-
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMailFE());
                 } else {
-                    businessPartnersRestDTO.setBilltoDefault(dto.getIdAddress());
                     businessPartnersRestDTO.setSalesPersonCode(Long.valueOf(dto.getSlpCode()));
                     businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE());
                 }
-                //TODO: pendiente la modificación de direcciones
+                //Asignación de códigos para impuestos de retención
+                List<BusinessPartnersRestDTO.BPWithholdingTaxCollection.BPWithholdingTax>
+                        bpWithholdingTaxes = new ArrayList<>();
+                for (BusinessPartnerDTO.WithholdingTax obj : dto.getWithholdingTax()) {
+                    BusinessPartnersRestDTO.BPWithholdingTaxCollection.BPWithholdingTax bpWithholdingTax = new BusinessPartnersRestDTO.BPWithholdingTaxCollection.BPWithholdingTax();
+                    bpWithholdingTax.setWtCode(obj.getWtCode());
+                    bpWithholdingTax.setBpCode(dto.getCardCode());
 
-                CONSOLE.log(Level.INFO, "Iniciando actualizacion de socio de negocio para {0}", dto.getCompanyName());
+                    bpWithholdingTaxes.add(bpWithholdingTax);
+                }
+                businessPartnersRestDTO.setBpWithholdingTaxCollection(bpWithholdingTaxes);
+
+                CONSOLE.log(Level.INFO, "Actualizando información del socio de negocio {0} para {1}", new Object[]{dto.getCardCode(), dto.getCompanyName()});
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartnersRestDTO);
                 CONSOLE.log(Level.INFO, json);
                 try {
                     service.updateBusinessPartner(businessPartnersRestDTO, dto.getCardCode(), sessionId);
                 } catch (Exception e) {
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actulizando el socio de negocio " + dto.getCardCode(), e);
-                    return new ResponseDTO(-1, "Ocurrio un error actulizando el socio de negocio " + dto.getCardCode());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el socio de negocio " + dto.getCardCode() + " en " + dto.getCompanyName(), e);
+                    return new ResponseDTO(-1, "Ocurrio un error actualizando el socio de negocio " + dto.getCardCode());
                 }
-                //TODO: pendiente la modificación de responsabilidad fiscal
-
+                //TODO: pendiente la modificación de responsabilidad fiscal, direcciones, persona de contacto
             } catch (Exception e) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el socio de negocio " + dto.getCardCode(), e);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el socio de negocio " + dto.getCardCode() + " en " + dto.getCompanyName(), e);
                 return new ResponseDTO(-1, e.getMessage());
             }
         }
@@ -564,8 +586,8 @@ public class BusinessPartnerEJB {
                 CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
             }
         }
-        CONSOLE.log(Level.INFO, "Socio de negocio actualizado con éxito " + dto.getCardCode());
-        return new ResponseDTO(0, "Socio de negocio actualizado con éxito " + dto.getCardCode());
+        CONSOLE.log(Level.INFO, "Socio de negocio [" + dto.getCardCode() + "] actualizado con exito en " + dto.getCompanyName());
+        return new ResponseDTO(0, "Socio de negocio [" + dto.getCardCode() + "] actualizado con exito.");
     }
 
     private void addRespFisSN(String cardCode, String cardName, String codeResFis, String descResFis, String sessionId, String companyName) {
