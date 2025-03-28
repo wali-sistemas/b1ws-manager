@@ -3,6 +3,7 @@ package co.manager.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author jguisao
@@ -33,7 +34,7 @@ public class BusinessPartnerDTO {
     private String companyName;
     private String transp;
     private String priceList;
-    //contacto
+    //Contacto
     private String contactPerson;
     private String nameContactPerson;
     private String secondNamecontactPerson;
@@ -66,7 +67,8 @@ public class BusinessPartnerDTO {
     private String taxType;
     private Double creditLimit;
     private Double comiteLimit;
-    //responsabilidad fiscal
+    private List<WithholdingTax> withholdingTax;
+    //Responsabilidad fiscal
     private String codeResFis;
     private String descResFis;
 
@@ -513,6 +515,26 @@ public class BusinessPartnerDTO {
         this.descResFis = descResFis;
     }
 
+    public List<WithholdingTax> getWithholdingTax() {
+        return withholdingTax;
+    }
+
+    public void setWithholdingTax(List<WithholdingTax> withholdingTax) {
+        this.withholdingTax = withholdingTax;
+    }
+
+    public static class WithholdingTax {
+        protected String wtCode;
+
+        public String getWtCode() {
+            return wtCode;
+        }
+
+        public void setWtCode(String wtCode) {
+            this.wtCode = wtCode;
+        }
+    }
+
     @Override
     public String toString() {
         return "BusinessPartnerDTO{" +
@@ -530,6 +552,8 @@ public class BusinessPartnerDTO {
                 ", grupo='" + grupo + '\'' +
                 ", acceptHabeasData='" + acceptHabeasData + '\'' +
                 ", companyName='" + companyName + '\'' +
+                ", transp='" + transp + '\'' +
+                ", priceList='" + priceList + '\'' +
                 ", contactPerson='" + contactPerson + '\'' +
                 ", nameContactPerson='" + nameContactPerson + '\'' +
                 ", secondNamecontactPerson='" + secondNamecontactPerson + '\'' +
@@ -559,6 +583,7 @@ public class BusinessPartnerDTO {
                 ", taxType='" + taxType + '\'' +
                 ", creditLimit=" + creditLimit +
                 ", comiteLimit=" + comiteLimit +
+                ", withholdingTax=" + withholdingTax +
                 ", codeResFis='" + codeResFis + '\'' +
                 ", descResFis='" + descResFis + '\'' +
                 '}';
