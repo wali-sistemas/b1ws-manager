@@ -82,6 +82,14 @@
             <property name="hibernate.globally_quoted_identifiers" value="true"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="FPBNOVAWEBNUBEPU" transaction-type="JTA">
+        <jta-data-source>java:/FPBNOVAWEBNUBEDS</jta-data-source>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+            <property name="hibernate.globally_quoted_identifiers" value="true"/>
+        </properties>
+    </persistence-unit>
     <persistence-unit name="HANAIGBPU" transaction-type="JTA">
         <jta-data-source>java:/HANAIGBDS</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
