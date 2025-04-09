@@ -182,7 +182,7 @@ public class MotorepuestoREST {
         Object[] res = businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false);
         if ((Boolean) res[0]) {
             CONSOLE.log(Level.INFO, "El cliente ya existe en SAP con el id {0}", "C" + dto.getDocument());
-            return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
+            return Response.ok(new ResponseDTO(1, "C" + dto.getDocument())).build();
         }
 
         CONSOLE.log(Level.INFO, "Iniciando creacion de cliente en " + dto.getCompanyName(), dto.toString());
