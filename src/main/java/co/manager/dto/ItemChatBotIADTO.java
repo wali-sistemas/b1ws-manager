@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class ItemChatBotIADTO {
     public String itemCode;
     public String itemName;
+    public Integer stockFull;
     public Integer stockWhMed;
     public Integer stockWhCart;
     public Integer stockWhCal;
@@ -49,6 +50,14 @@ public class ItemChatBotIADTO {
 
     public void setItemName(String itemName) {
         this.itemName = itemName;
+    }
+
+    public Integer getStockFull() {
+        return stockFull;
+    }
+
+    public void setStockFull(Integer stockFull) {
+        this.stockFull = stockFull;
     }
 
     public Integer getStockWhMed() {
@@ -239,6 +248,8 @@ public class ItemChatBotIADTO {
     public String toString() {
         return "ItemChatBotIADTO{" +
                 "itemCode='" + itemCode + '\'' +
+                ", itemName='" + itemName + '\'' +
+                ", stockFull=" + stockFull +
                 ", stockWhMed=" + stockWhMed +
                 ", stockWhCart=" + stockWhCart +
                 ", stockWhCal=" + stockWhCal +
