@@ -928,10 +928,11 @@ public class PedBoxREST {
         dto.setQryGroup4((String) obj[41]);
         dto.setQryGroup15((String) obj[42]);
         dto.setWtliable((String) obj[43]);
-        dto.setRetAUT3((String) obj[44]);
-        dto.setRetAUT4((String) obj[45]);
+        dto.setWtAUT3((String) obj[44]);
+        dto.setWtAUT4((String) obj[45]);
         dto.setUproFid((String) obj[46]);
         dto.setListNum((Integer) obj[47]);
+        dto.setTypeSell((String) obj[48]);
 
         return Response.ok(new ResponseDTO(0, dto)).build();
     }

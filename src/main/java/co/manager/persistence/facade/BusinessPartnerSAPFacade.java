@@ -674,8 +674,8 @@ public class BusinessPartnerSAPFacade {
         sb.append(" cast(s.\"U_BPCO_TDC\" as int)as uBPCOTDC,cast(s.\"U_BPCO_TP\" as varchar(5))as uBPCOTP,cast(s.\"U_BPCO_RTC\" as varchar(2))as uBPCORTC,cast(s.\"U_BPCO_City\" as varchar(10))as uBPCOCity,cast(s.\"U_BPCO_Address\" as varchar(100))as uBPCOAddress, ");
         sb.append(" cast(s.\"U_addInFaElectronica_email_contacto_FE\" as varchar(100))as uEmailFE,cast(s.\"U_REGIONAL\" as varchar(50))as uRegional,cast(s.\"GroupNum\" as int)as groupNum,cast(s.\"Discount\" as int)as discount,cast(s.\"VatStatus\" as varchar(1))as vatStatus, ");
         sb.append(" cast(s.\"CreditLine\" as numeric(18,2))as creditLine,cast(s.\"CreateDate\" as date)as createDate,cast(s.\"U_TRASP\" as varchar(4))as uTrasp,cast(s.\"QryGroup4\" as varchar(1))as qryGroup4,cast(s.\"QryGroup15\" as varchar(1))as qryGroup15,cast(s.\"WTLiable\" as varchar(1))as wTLiable, ");
-        sb.append(" (select cast(a.\"WTCode\" as varchar(10)) from CRD4 a where a.\"WTCode\" like '%AUT3%' and a.\"CardCode\"=s.\"CardCode\")as AUT3,(select cast(a.\"WTCode\" as varchar(10)) from CRD4 a where a.\"WTCode\" like '%AUT4%' and a.\"CardCode\"=s.\"CardCode\")as AUT4, ");
-        sb.append(" cast(s.\"U_PRO_FIDELIZACION\" as varchar(2))as uProFid,cast(s.\"ListNum\" as int)as listNum ");
+        sb.append(" cast(ifnull((select 'Y' from CRD4 where \"CardCode\"=s.\"CardCode\" and \"WTCode\"='AUT3'),'N')as varchar(1))as AUT3,cast(ifnull((select 'Y' from CRD4 where \"CardCode\"=s.\"CardCode\" and \"WTCode\"='AUT4'),'N')as varchar(1))as AUT4, ");
+        sb.append(" cast(s.\"U_PRO_FIDELIZACION\" as varchar(2))as uProFid,cast(s.\"ListNum\" as int)as listNum,cast(s.\"U_Tipo_Negocio\" as varchar(20))as typeSell ");
         sb.append("from OCRD s ");
         sb.append("inner join \"CRD1\" a on a.\"CardCode\"=s.\"CardCode\" and a.\"Address\"=s.\"BillToDef\" and a.\"AdresType\"='B' ");
         sb.append("left join (select \"CardCode\",\"Name\",\"FirstName\",\"MiddleName\",\"LastName\",\"Position\",\"Tel1\",\"BirthDate\" from OCPR)as c on c.\"CardCode\"=s.\"CardCode\" and c.\"Name\"=s.\"CntctPrsn\" ");

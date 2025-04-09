@@ -356,6 +356,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUproFidelizacion(dto.getDistributo());
                 businessPartner.setPriceListNum(Long.valueOf(dto.getPriceList()));
                 businessPartner.setFreeText(dto.getComment());
+                businessPartner.setUtipoNegocio(dto.getTypeSell());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -542,6 +543,7 @@ public class BusinessPartnerEJB {
                 businessPartnersRestDTO.setUproFidelizacion(dto.getDistributo());
                 businessPartnersRestDTO.setPriceListNum(Long.valueOf(dto.getPriceList()));
                 businessPartnersRestDTO.setUtrasp(dto.getTransp());
+                businessPartnersRestDTO.setUtipoNegocio(dto.getTypeSell());
 
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMailFE());

@@ -541,6 +541,8 @@ public class BusinessPartnersRestDTO implements Serializable {
     protected String ufeccrea;
     @JsonProperty("U_TRASP")
     protected String utrasp;
+    @JsonProperty("U_Tipo_Negocio")
+    protected String utipoNegocio;
     @JsonProperty("U_TIEMPO_TRA")
     protected Long utiempotra;
     @JsonProperty("U_PROM_DIAS_PAGO")
@@ -2718,6 +2720,14 @@ public class BusinessPartnersRestDTO implements Serializable {
 
     public void setUtrasp(String utrasp) {
         this.utrasp = utrasp;
+    }
+
+    public String getUtipoNegocio() {
+        return utipoNegocio;
+    }
+
+    public void setUtipoNegocio(String utipoNegocio) {
+        this.utipoNegocio = utipoNegocio;
     }
 
     public Long getUtiempotra() {

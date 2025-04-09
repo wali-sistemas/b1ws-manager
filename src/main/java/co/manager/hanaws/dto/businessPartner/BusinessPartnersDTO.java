@@ -67,6 +67,8 @@ public class BusinessPartnersDTO implements Serializable {
     protected String ubpvtper;
     @JsonProperty("U_TRASP")
     protected String utrasp;
+    @JsonProperty("U_Tipo_Negocio")
+    protected String utipoNegocio;
     @JsonProperty("DebitorAccount")
     protected String debitorAccount;
     @JsonProperty("SalesPersonCode")
@@ -331,6 +333,14 @@ public class BusinessPartnersDTO implements Serializable {
 
     public void setUtrasp(String utrasp) {
         this.utrasp = utrasp;
+    }
+
+    public String getUtipoNegocio() {
+        return utipoNegocio;
+    }
+
+    public void setUtipoNegocio(String utipoNegocio) {
+        this.utipoNegocio = utipoNegocio;
     }
 
     public String getDebitorAccount() {

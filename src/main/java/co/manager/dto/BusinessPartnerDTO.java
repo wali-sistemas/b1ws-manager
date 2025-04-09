@@ -61,6 +61,7 @@ public class BusinessPartnerDTO {
     private String addressMM;
     private String regional;
     private String mailFE;
+    private String typeSell;
     //Impustos & finanzas
     private String paymentCondition;
     private Double discount;
@@ -451,6 +452,14 @@ public class BusinessPartnerDTO {
         this.mailFE = mailFE;
     }
 
+    public String getTypeSell() {
+        return typeSell;
+    }
+
+    public void setTypeSell(String typeSell) {
+        this.typeSell = typeSell;
+    }
+
     public String getPaymentCondition() {
         return paymentCondition;
     }
@@ -578,6 +587,7 @@ public class BusinessPartnerDTO {
                 ", addressMM='" + addressMM + '\'' +
                 ", regional='" + regional + '\'' +
                 ", mailFE='" + mailFE + '\'' +
+                ", typeSell='" + typeSell + '\'' +
                 ", paymentCondition='" + paymentCondition + '\'' +
                 ", discount=" + discount +
                 ", taxType='" + taxType + '\'' +

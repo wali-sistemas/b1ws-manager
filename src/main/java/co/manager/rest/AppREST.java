@@ -91,12 +91,12 @@ public class AppREST {
 
         List<Object[]> objs = salesPersonSAPFacade.validateLoginApp(user, pass, companyName, false);
         if (objs.size() == 0) {
-            CONSOLE.log(Level.WARNING, "Datos errados para iniciar sesion. User[0] Pass[1] Company[3]", new Object[]{user, pass, companyName});
+            CONSOLE.log(Level.WARNING, "Datos errados para iniciar sesion. User[{0}] Pass[{1}] Company[{3}]", new Object[]{user, pass, companyName});
             return Response.ok(new ResponseDTO(-1, "Datos errados para iniciar sesión")).build();
         }
 
         if (objs == null) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando datos para iniciar sesion. User[0] Pass[1] Company[3]", new Object[]{user, pass, companyName});
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando datos para iniciar sesion. User[{0}] Pass[{1}] Company[{3}]", new Object[]{user, pass, companyName});
             return Response.ok(new ResponseDTO(-2, "Ocurrio un error validando datos para iniciar sesión.")).build();
         }
 
@@ -900,6 +900,8 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_LR_med_desc = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_bog = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_bog_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog_desc = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
@@ -929,6 +931,12 @@ public class AppREST {
                                 detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("35")) {
+                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_bog_desc.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_bog.add(setDetailOrder(detail, ocrCode));
                             }
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES") && detail.getItemCode().substring(0,2).equals("LR")) {
@@ -1212,7 +1220,32 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.10. Solo lubricantes ****/
+        /**** 9.10. Solo llantas de bogotá con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_bog_desc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
+                dto.setNumAtCard(numAtCard + "LL35D");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.11. Solo lubricantes ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1236,7 +1269,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.11. Solo lubricantes REVO Medellín****/
+        /**** 9.12. Solo lubricantes REVO Medellín****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1261,7 +1294,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.12. Solo lubricantes REVO Bogotá****/
+        /**** 9.13. Solo lubricantes REVO Bogotá****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1286,7 +1319,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.13. Solo llantas de cali ****/
+        /**** 9.14. Solo llantas de cali ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1311,7 +1344,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.14. Solo llantas de cartagena ****/
+        /**** 9.15. Solo llantas de cartagena ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1327,6 +1360,31 @@ public class AppREST {
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cartagena sin (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.16. Solo llantas de bogotá ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_bog.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
+                dto.setNumAtCard(numAtCard + "LL35");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá sin (**). Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {

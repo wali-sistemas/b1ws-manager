@@ -51,10 +51,11 @@ public class CustomerDataDTO {
     private String qryGroup4;
     private String qryGroup15;
     private String wtliable;
-    private String retAUT3;
-    private String retAUT4;
     private String uproFid;
     private Integer listNum;
+    private String typeSell;
+    private String wtAUT3;
+    private String wtAUT4;
 
     public CustomerDataDTO() {
     }
@@ -411,22 +412,6 @@ public class CustomerDataDTO {
         this.wtliable = wtliable;
     }
 
-    public String getRetAUT3() {
-        return retAUT3;
-    }
-
-    public void setRetAUT3(String retAUT3) {
-        this.retAUT3 = retAUT3;
-    }
-
-    public String getRetAUT4() {
-        return retAUT4;
-    }
-
-    public void setRetAUT4(String retAUT4) {
-        this.retAUT4 = retAUT4;
-    }
-
     public String getUproFid() {
         return uproFid;
     }
@@ -443,6 +428,30 @@ public class CustomerDataDTO {
         this.listNum = listNum;
     }
 
+    public String getTypeSell() {
+        return typeSell;
+    }
+
+    public void setTypeSell(String typeSell) {
+        this.typeSell = typeSell;
+    }
+
+    public String getWtAUT3() {
+        return wtAUT3;
+    }
+
+    public void setWtAUT3(String wtAUT3) {
+        this.wtAUT3 = wtAUT3;
+    }
+
+    public String getWtAUT4() {
+        return wtAUT4;
+    }
+
+    public void setWtAUT4(String wtAUT4) {
+        this.wtAUT4 = wtAUT4;
+    }
+
     @Override
     public String toString() {
         return "CustomerDataDTO{" +
@@ -450,7 +459,7 @@ public class CustomerDataDTO {
                 ", cardType='" + cardType + '\'' +
                 ", cardName='" + cardName + '\'' +
                 ", licTradNum='" + licTradNum + '\'' +
-                ", groupCode='" + groupCode + '\'' +
+                ", groupCode=" + groupCode +
                 ", phone1='" + phone1 + '\'' +
                 ", phone2='" + phone2 + '\'' +
                 ", email='" + email + '\'' +
@@ -474,7 +483,7 @@ public class CustomerDataDTO {
                 ", ubpcoNombre='" + ubpcoNombre + '\'' +
                 ", ubpco1Apellido='" + ubpco1Apellido + '\'' +
                 ", ubpco2Apellido='" + ubpco2Apellido + '\'' +
-                ", ubpcoTDC='" + ubpcoTDC + '\'' +
+                ", ubpcoTDC=" + ubpcoTDC +
                 ", ubpcoTP='" + ubpcoTP + '\'' +
                 ", ubpcoRTC='" + ubpcoRTC + '\'' +
                 ", ubpcoCity='" + ubpcoCity + '\'' +
@@ -490,10 +499,11 @@ public class CustomerDataDTO {
                 ", qryGroup4='" + qryGroup4 + '\'' +
                 ", qryGroup15='" + qryGroup15 + '\'' +
                 ", wtliable='" + wtliable + '\'' +
-                ", retAUT3='" + retAUT3 + '\'' +
-                ", retAUT4='" + retAUT4 + '\'' +
                 ", uproFid='" + uproFid + '\'' +
                 ", listNum=" + listNum +
+                ", typeSell='" + typeSell + '\'' +
+                ", wtAUT3='" + wtAUT3 + '\'' +
+                ", wtAUT4='" + wtAUT4 + '\'' +
                 '}';
     }
 }
