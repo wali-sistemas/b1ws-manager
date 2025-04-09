@@ -1224,7 +1224,7 @@ public class AppREST {
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_desc.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
+                dto.setDetailSalesOrder(detailSalesOrder_LL_bog_desc);
                 dto.setNumAtCard(numAtCard + "LL35D");
                 dto.setSerialMDL("");
 
@@ -1373,7 +1373,7 @@ public class AppREST {
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_cart);
+                dto.setDetailSalesOrder(detailSalesOrder_LL_bog);
                 dto.setNumAtCard(numAtCard + "LL35");
                 dto.setSerialMDL("");
 
