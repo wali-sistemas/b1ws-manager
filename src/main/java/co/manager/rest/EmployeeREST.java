@@ -10,6 +10,7 @@ import co.manager.persistence.entity.Employee;
 import co.manager.persistence.facade.AssetMasterDataFacade;
 import co.manager.persistence.facade.CustodyDetailFacade;
 import co.manager.persistence.facade.EmployeeFacade;
+import co.manager.persistence.facade.StatementFEMPROFacade;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -38,6 +39,8 @@ public class EmployeeREST {
     private AssetMasterDataFacade assetMasterDataFacade;
     @EJB
     private CustodyDetailFacade custodyDetailFacade;
+    @EJB
+    private StatementFEMPROFacade statementFEMPROFacade;
 
     @GET
     @Path("list-custody")
@@ -321,13 +324,12 @@ public class EmployeeREST {
         return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistenceNovaWeb(emplId, birthdate, companyName, pruebas))).build();
     }
 
-    /*@GET
-    @Path("find-employee-novaweb/{companyname}/{cardcode}")
+    @GET
+    @Path("femprobien/find-data-employee/{cardcode}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response findEmployeeNovaWeb(@PathParam("cardcode") String cardCode,
-                                        @PathParam("companyname") String companyName,
-                                        @HeaderParam("X-Pruebas") boolean pruebas) {
-        return Response.ok(employeeFacade.findEmployeeNovaWeb(cardCode, companyName, pruebas)).build();
-    }*/
+    public Response findDataEmployeeFemprobienNovaWeb(@PathParam("cardcode") String cardCode,
+                                                      @HeaderParam("X-Pruebas") boolean pruebas) {
+        return Response.ok(new ResponseDTO(0, statementFEMPROFacade.findDataEmployee(cardCode, pruebas))).build();
+    }
 }
