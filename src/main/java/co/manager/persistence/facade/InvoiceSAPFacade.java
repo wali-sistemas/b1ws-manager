@@ -102,7 +102,7 @@ public class InvoiceSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\" as varchar(100))as fv ");
         sb.append("from OINV ");
-        sb.append("where \"DocType\"<>'S' and \"DocNum\" not in(1442,221,238,308) and \"DocStatus\"='O' and year(\"DocDate\")=year(current_date) and \"CardCode\"='C900998242' and cast(\"DocNum\" as varchar(100)) not in(");
+        sb.append("where \"DocType\"<>'S' and \"DocNum\" not in(1442,221,238,308,362) and \"DocStatus\"='O' and year(\"DocDate\")=year(current_date) and \"CardCode\"='C900998242' and cast(\"DocNum\" as varchar(100)) not in(");
         sb.append(" select cast(\"NumAtCard\" as varchar(100))as fv ");
         sb.append(" from \"VELEZ\".OPCH ");
         sb.append(" where year(\"DocDate\")=year(current_date) and \"CardCode\"=");
@@ -111,7 +111,7 @@ public class InvoiceSAPFacade {
         } else {
             sb.append("'P900255414'");
         }
-        sb.append(")");
+        sb.append(" and \"NumAtCard\" is not null)");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (Exception e) {

@@ -81,6 +81,13 @@ public class ReportREST implements Serializable {
                         "customer" + File.separator + dto.getDocumento() + ".jrxml");
                 rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
                 break;
+            case "associatedForm":
+                rutaArchivo = appBean.obtenerValorPropiedad("url.archivo");
+                reportName = dto.getId() + ".pdf";
+                report = JasperCompileManager.compileReportToFile(appBean.obtenerValorPropiedad("url.jasper") + dto.getCompanyName() + File.separator +
+                        "employee" + File.separator + dto.getDocumento() + ".jrxml");
+                rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
+                break;
             default:
                 reportName = "";
                 break;
@@ -89,6 +96,7 @@ public class ReportREST implements Serializable {
         //Se crea la coneccion con la base de datos
         String cn = null;
         InitialContext initialContext = new InitialContext();
+        //Origen: S=SAP W=WALI N=NOMINA
         if (dto.getOrigen().equals("S")) {
             switch (dto.getCompanyName()) {
                 case "IGB":
@@ -113,8 +121,40 @@ public class ReportREST implements Serializable {
                     cn = "";
                     break;
             }
-        } else {
+        } else if (dto.getOrigen().equals("N")) {
+            switch (dto.getCompanyName()) {
+                case "IGB_NOVAWEB":
+                    cn = "java:/IGBNOVAWEBNUBEDS";
+                    break;
+                case "MTZ_NOVAWEB":
+                    cn = "java:/MTZNOVAWEBNUBEDS";
+                    break;
+                case "VILNA_NOVAWEB":
+                    cn = "java:/VILNOVAWEBNUBEDS";
+                    break;
+                case "WALI_NOVAWEB":
+                    cn = "java:/WALNOVAWEBNUBEDS";
+                    break;
+                case "DSM_NOVAWEB":
+                    cn = "java:/DIGNOVAWEBNUBEDS";
+                    break;
+                case "INVERSUR_NOVAWEB":
+                    cn = "java:/INVNOVAWEBNUBEDS";
+                    break;
+                case "MOTOREPUESTOS_NOVAWEB":
+                    cn = "java:/MOTNOVAWEBNUBEDS";
+                    break;
+                case "FEMPROBN_NOVAWEB":
+                    cn = "java:/FPBNOVAWEBNUBEDS";
+                    break;
+                default:
+                    cn = "";
+                    break;
+            }
+        } else if (dto.getOrigen().equals("W")) {
             cn = "java:/WMSDS";
+        } else {
+            cn = "java:/MySQLDS";
         }
         DataSource dataSource = (DataSource) initialContext.lookup(cn);
         Connection connection = dataSource.getConnection();

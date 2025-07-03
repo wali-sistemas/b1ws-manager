@@ -563,11 +563,11 @@ public class SondaREST {
         return Response.ok(new ResponseDTO(-1, "Finalizando sincronizacion automatica de facturas de compras.")).build();
     }
 
-    private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, List<String[]> adjuntos, Map<String, String> params) {
+    private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, String adjunto, Map<String, String> params) {
         MailMessageDTO dtoMail = new MailMessageDTO();
         dtoMail.setTemplateName(template);
         dtoMail.setParams(params);
-        dtoMail.setAttachments(adjuntos);
+        dtoMail.setUrlAttachment(adjunto);
         dtoMail.setFrom(from);
         dtoMail.setSubject(subject);
         dtoMail.addToAddress(toAddress + ',' + ccAddress);

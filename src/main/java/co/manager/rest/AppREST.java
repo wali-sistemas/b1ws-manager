@@ -166,6 +166,7 @@ public class AppREST {
                     dto.setExcent((String) obj[18]);
                     dto.setBalance((BigDecimal) obj[25]);
                     dto.setCupo((BigDecimal) obj[26]);
+                    dto.setPoints((BigDecimal) obj[27]);
                     //Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((String) obj[20]);
@@ -199,7 +200,9 @@ public class AppREST {
         } else if (companyname.equals("REDPLAS")) {
             objects = itemSAPFacade.getListItemsBySellerRedPlas(slpCode, companyname, false);
         } else {
-            objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
+            objects = itemSAPFacade.getListItemsExtranet(companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            //TODO: Se usaba cuando definimos bodegas de llantas por default
+            //objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
         }
 
         if (objects == null || objects.size() <= 0) {
@@ -798,6 +801,11 @@ public class AppREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
+
+        /*if (!dto.getCardCode().equals("C900998242")) {
+            //TODO: restablecer numAtCard
+            dto.setNumAtCard(dto.getNumAtCard().substring(0, dto.getNumAtCard().length()-1));
+        }*/
 
         ResponseDTO res = new ResponseDTO();
         /**** 1. Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/

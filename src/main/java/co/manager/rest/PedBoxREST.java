@@ -170,7 +170,9 @@ public class PedBoxREST {
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
             objects = itemSAPFacade.getListItemsExtranet(companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else {
-            objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
+            objects = itemSAPFacade.getListItemsExtranet(companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            //TODO: Se usaba cuando definimos bodegas de llantas por default
+            //objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
         }
 
         if (objects == null || objects.size() <= 0) {
@@ -1067,7 +1069,8 @@ public class PedBoxREST {
         Object[] whsCodeDefaultTire;
         //TODO: si la orden es de Extranet, consultar bodega por default que tiene asigando el asesor para las llantas
         if (dto.getNumAtCard().substring(0, 1).equals("E")) {
-            whsCodeDefaultTire = salesPersonSAPFacade.getWhsCodeDefaultBySeller(dto.getSlpCode().toString(), dto.getCompanyName(), false);
+            //whsCodeDefaultTire = salesPersonSAPFacade.getWhsCodeDefaultBySeller(dto.getSlpCode().toString(), dto.getCompanyName(), false);
+            whsCodeDefaultTire = new Object[]{"26"};
         } else {
             whsCodeDefaultTire = new Object[]{dto.getDetailSalesOrder().get(0).getWhsCode()};
         }
@@ -1675,7 +1678,7 @@ public class PedBoxREST {
 
         Gson gson = new Gson();
         String json = gson.toJson(dto);
-        CONSOLE.log(Level.INFO, dto.toString());
+        CONSOLE.log(Level.INFO, json);
 
         if (pagoPasarelaSAPFacade.comfirmPayment(dto.getIdPayment(), dto.getCompanyName(), false)) {
             CONSOLE.log(Level.WARNING, "Lo sentimos. Ya existe un registro con ese id de pago en {0}", dto.getCompanyName());
@@ -1752,7 +1755,7 @@ public class PedBoxREST {
         if (slpCode != null) {
             for (String item : dto.getItems()) {
                 StockShoppingCartRestDTO stockShoppingCartRestDTO = new StockShoppingCartRestDTO();
-                Object[] obj = itemSAPFacade.listItemsShoppingCart(slpCode, item, dto.getCompanyName(), false);
+                Object[] obj = itemSAPFacade.listItemsShoppingCart(item, dto.getCompanyName(), false);
 
                 if (obj != null) {
                     stockShoppingCartRestDTO.setItemCode((String) obj[0]);

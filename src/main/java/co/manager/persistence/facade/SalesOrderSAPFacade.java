@@ -105,6 +105,14 @@ public class SalesOrderSAPFacade {
         sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" like '");
         sb.append(numAtCard);
         sb.append("%' limit 1");
+        /*sb.append("select STRING_AGG(cast(t.DocNum as int), ', ' order by cast(t.DocNum as int) asc)as orders ");
+        sb.append("from ( ");
+        sb.append(" select cast(o.\"DocNum\" as int)as DocNum ");
+        sb.append(" from ORDR o ");
+        sb.append(" where o.\"NumAtCard\" like '");
+        sb.append(numAtCard);
+        sb.append("%' ");
+        sb.append(")as t");*/
         try {
             return (Integer) em.createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {

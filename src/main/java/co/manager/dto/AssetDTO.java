@@ -1,7 +1,8 @@
 package co.manager.dto;
 
-import java.util.Date;
-
+/**
+ * @author jguisao
+ */
 public class AssetDTO {
     private String idAsset;
     private String type;

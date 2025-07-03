@@ -19,7 +19,7 @@ public class StatementFEMPROFacade {
     @EJB
     private PersistenceConf persistenceConf;
 
-    public Object[] findDataEmployee(String empId, boolean testing) {
+    public Object[] findDataEmployee(String empId, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(documento as varchar(20))as doc,cast(nombre as varchar(100))as nom,cast(correo as varchar(50))as email ");
         sb.append("from estado_cuenta ");
@@ -27,7 +27,7 @@ public class StatementFEMPROFacade {
         sb.append(empId);
         sb.append("'");
         try {
-            return (Object[]) persistenceConf.chooseSchema("FEMPROBN_NOVAWEB", testing, DB_TYPE_NOVAWEB).createNativeQuery(sb.toString()).getSingleResult();
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del empleado [" + empId + "] en el fondo. ", e);

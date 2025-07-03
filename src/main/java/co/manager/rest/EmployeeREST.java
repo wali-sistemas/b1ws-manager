@@ -1,27 +1,24 @@
 package co.manager.rest;
 
-import co.manager.dto.AssetDTO;
-import co.manager.dto.EmployeeCustodyDTO;
-import co.manager.dto.EmployeeDTO;
-import co.manager.dto.ResponseDTO;
+import co.manager.dto.*;
+import co.manager.ejb.EmailManager;
 import co.manager.persistence.entity.AssetMasterData;
+import co.manager.persistence.entity.AssociatedFEMPRO;
 import co.manager.persistence.entity.CustodyDetail;
 import co.manager.persistence.entity.Employee;
-import co.manager.persistence.facade.AssetMasterDataFacade;
-import co.manager.persistence.facade.CustodyDetailFacade;
-import co.manager.persistence.facade.EmployeeFacade;
-import co.manager.persistence.facade.StatementFEMPROFacade;
+import co.manager.persistence.facade.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +38,12 @@ public class EmployeeREST {
     private CustodyDetailFacade custodyDetailFacade;
     @EJB
     private StatementFEMPROFacade statementFEMPROFacade;
+    @EJB
+    private AssociatedFEMPROFacade associatedFEMPROFacade;
+    @EJB
+    private ReportREST reportREST;
+    @Inject
+    private EmailManager emailManager;
 
     @GET
     @Path("list-custody")
@@ -330,6 +333,120 @@ public class EmployeeREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response findDataEmployeeFemprobienNovaWeb(@PathParam("cardcode") String cardCode,
                                                       @HeaderParam("X-Pruebas") boolean pruebas) {
-        return Response.ok(new ResponseDTO(0, statementFEMPROFacade.findDataEmployee(cardCode, pruebas))).build();
+        return Response.ok(new ResponseDTO(0, statementFEMPROFacade.findDataEmployee(cardCode, "FEMPROBN_NOVAWEB", pruebas))).build();
+    }
+
+    @GET
+    @Path("femprobien/load-associated-requests")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response loadAssociatedRequests(@QueryParam("status") String status,
+                                           @HeaderParam("X-Pruebas") boolean pruebas) {
+        List<AssociatedFEMPRO> res = associatedFEMPROFacade.listAssociatedRequestsByStatus(status, "FEMPROBN_NOVAWEB", pruebas);
+        return Response.ok(new ResponseDTO(0, res)).build();
+    }
+
+    @POST
+    @Path("femprobien/add-associated")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addAssociated(AssociatedFemproDTO dto) throws ParseException {
+        CONSOLE.log(Level.INFO, "Iniciando creacion de afiliado al femprobien");
+
+        if (dto.getCode() == null || dto.getCode().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al creando el asociado. Campo code es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al creando el asociado. Campo code es obligatorio")).build();
+        } else if (dto.getName() == null || dto.getName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al creando el asociado. Campo name es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al creando el asociado. Campo name es obligatorio")).build();
+        } else if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al creando el asociado. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al creando el asociado. Campo companyName es obligatorio")).build();
+        }
+
+        AssociatedFEMPRO entity = new AssociatedFEMPRO();
+        entity.setCodAso(dto.getCode());
+        entity.setNomAso(dto.getName());
+        entity.setAp1Aso(dto.getApell1());
+        entity.setAp2Aso(dto.getApell2());
+        entity.setFecNac(dto.getBirthdate());
+        entity.setFecIng(dto.getDateIngr());
+        entity.setNomEmp(dto.getCompanyName());
+        entity.setNomCar(dto.getJobTitle());
+        entity.setSalBas(dto.getSalary());
+        entity.setIngPre(dto.getIngresPrest());
+        entity.setIngNoPre(dto.getIngresNoPrest());
+        entity.setFecAfi(dto.getDateAfil());
+        entity.setFecRet(dto.getDateRet());
+        entity.setEstAso(dto.getStatus());
+        entity.setDirRes(dto.getAddress());
+        entity.setNomBar(dto.getLocality());
+        entity.setTelCel(dto.getPhone());
+        entity.setEmail(dto.getEmail());
+        entity.setEstCivil(dto.getStatusCivil());
+        entity.setCtaBan(dto.getAccountBanc());
+        entity.setCtaTipo(dto.getTypeAccount());
+        entity.setFdoBan(dto.getFdoBanc());
+        entity.setApMes(dto.getApMonth());
+        entity.setApPer1(dto.isApPeriod1());
+        entity.setApPer2(dto.isApPeriod2());
+        entity.setCodBen1(dto.getCodeBenef1());
+        entity.setNomBen1(dto.getNameBenef1());
+        entity.setParBen1(dto.getParentBenef1());
+        entity.setCodBen2(dto.getCodeBenef2());
+        entity.setNomBen2(dto.getNameBenef2());
+        entity.setParBen2(dto.getParentBenef2());
+
+        try {
+            associatedFEMPROFacade.create(entity, "FEMPROBN_NOVAWEB", false);
+            CONSOLE.log(Level.INFO, "El asociado ha sido creado exitosamente. Generando formulario de afiliacion.");
+            //Generar reporte de afiliación
+            PrintReportDTO printReportDTO = new PrintReportDTO();
+            printReportDTO.setId(entity.getCodAso());
+            printReportDTO.setCopias(0);
+            printReportDTO.setDocumento("associatedForm");
+            printReportDTO.setCompanyName("FEMPROBN_NOVAWEB");
+            printReportDTO.setOrigen("N");
+            printReportDTO.setFiltro(null);
+            printReportDTO.setFiltroSec(null);
+            printReportDTO.setImprimir(false);
+
+            ResponseDTO res = reportREST.generateReport(printReportDTO);
+            String UrlAttachment = "https://wali.igbcolombia.com/api/shared/FEMPROBN_NOVAWEB/associatedForm/" + dto.getCode() + ".pdf";
+
+            //Notificar por email la afiliacion
+            Map<String, String> params = new HashMap<>();
+            params.put("cardName", entity.getNomAso() + ' ' + entity.getAp1Aso());
+            params.put("cardCode", entity.getCodAso());
+            params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getFecAfi()));
+            params.put("comment", "Pendiente por revisar");
+            params.put("status", "NUEVO");
+
+            sendEmail("NotificationAssociatedFemprobien", "Femprobien <soporte@igbcolombia.com>", "Nuevo asociado - Femprobien", "sistemas5@igbcolombia.com",
+                    "sistemas5@igbcolombia.com", "sistemas5@igbcolombia.com", UrlAttachment, params);
+
+            return Response.ok(new ResponseDTO(Integer.parseInt(entity.getCodAso()), UrlAttachment)).build();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el asosciado al fondo de empleados ", e);
+            return Response.ok(new ResponseDTO(-1, entity)).build();
+        }
+    }
+
+    private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, String urlAdjunto, Map<String, String> params) {
+        MailMessageDTO dtoMail = new MailMessageDTO();
+        dtoMail.setTemplateName(template);
+        dtoMail.setParams(params);
+        dtoMail.setUrlAttachment(urlAdjunto);
+        dtoMail.setFrom(from);
+        dtoMail.setSubject(subject);
+        dtoMail.addToAddress(toAddress);
+        dtoMail.addBccAddress(bccAddress);
+        dtoMail.addBccAddress(ccAddress);
+        try {
+            emailManager.sendEmailwithAttachment(dtoMail);
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al enviar la notificacion", e);
+        }
     }
 }

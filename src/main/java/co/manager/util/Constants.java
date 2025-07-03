@@ -21,6 +21,8 @@ public class Constants {
     public static final String MODULAWS_URL = "http://192.168.10.102:3001/api/";
     public static final String TOKEN_CALIDOSOS = "token.calidosos";
     public static final String BREAKER_MODULA = "breaker.modula";
+    public static final String OPEN_AI_URL = "https://api.openai.com/";
+    public static final String OPEN_AI_APIKEY = "apikey-openai";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }

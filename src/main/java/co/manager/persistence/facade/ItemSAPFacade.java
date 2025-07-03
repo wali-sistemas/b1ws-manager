@@ -68,10 +68,10 @@ public class ItemSAPFacade {
         sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26','32'");
+            sb.append("'01','30','05','26','32','35'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32'");
+            sb.append("'01','05','26','32','35'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -82,15 +82,15 @@ public class ItemSAPFacade {
         sb.append("  then (it.\"OnHand\"-it.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26','32'");
+            sb.append("'01','30','05','26','32','35'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32'");
+            sb.append("'01','05','26','32','35'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26','32'");
+            sb.append("'13','26','32','35'");
         }
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock,cast(it.\"PicturName\" as varchar)as PicturName, ");
@@ -100,28 +100,24 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
         sb.append(" from OITM it ");
         sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=");
-
         if (companyName.contains("IGB")) {
             sb.append(4);
         } else {
             sb.append(1);
         }
-
         sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in(");
-
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26','32'");
+            sb.append("'01','30','05','26','32','35'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32'");
+            sb.append("'01','05','26','32','35'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
             //Filtro bodegas de solo ventas para MOTOZONE
-            sb.append("'13','26','32'");
+            sb.append("'13','26','32','35'");
         }
-
         sb.append(") left join \"@MARCAS\" mar on mar.\"Code\" = it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
         sb.append(" left join \"@GRUPOS\" gru on gru.\"Code\" = it.\"U_Grupo\" ");
         sb.append(" left join \"@SUBGRUPOS\" sub on sub.\"Code\" = it.\"U_Subgrupo\" ");
@@ -148,10 +144,9 @@ public class ItemSAPFacade {
     }
 
     //TODO: solo aplica para IGB y MOTOREPUESTO
-    public Object[] listItemsShoppingCart(String slpCode, String itemCode, String companyName, boolean pruebas) {
+    public Object[] listItemsShoppingCart(String itemCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
         sb.append("select r.Producto,sum(r.Stock)as Stock ");
-
         if (companyName.equals("VELEZ")) {
             sb.append(",cast(prMrto.\"Price\" as decimal(18,0))as Precio ");
         } else {
@@ -162,7 +157,6 @@ public class ItemSAPFacade {
         sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','30') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','30') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
-
         if (companyName.equals("IGB")) {
             sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
             sb.append(" from OITM it ");
@@ -174,10 +168,9 @@ public class ItemSAPFacade {
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append("union all ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
-        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('05','26','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('05','26','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
-
         if (companyName.equals("IGB")) {
             sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
             sb.append(" from OITM it ");
@@ -185,28 +178,9 @@ public class ItemSAPFacade {
         } else {
             sb.append(" from OITM it ");
         }
-        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='05' ");
-        sb.append(" inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
-        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"<>'96' ");
-        sb.append("union all ");
-        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
-        sb.append("  cast(case when(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('05','26') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('05','26') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
-
-        if (companyName.equals("IGB")) {
-            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
-            sb.append(" from OITM it ");
-            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
-        } else {
-            sb.append(" from OITM it ");
-        }
-        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('05','26') ");
-        sb.append(" inner join OSLP ase on inv.\"WhsCode\" = ase.\"Telephone\" ");
-        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and it.\"U_Marca\"='96' and ase.\"SlpCode\"=");
-        sb.append(slpCode);
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('05','26','35') ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(")as r ");
-
         if (companyName.equals("VELEZ")) {
             sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
             sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
@@ -214,7 +188,6 @@ public class ItemSAPFacade {
         sb.append("where /*r.Stock>0 and*/ r.Producto='");
         sb.append(itemCode);
         sb.append("' group by r.Producto ");
-
         if (companyName.equals("VELEZ")) {
             sb.append(",prMrto.\"Price\"");
         } else {
@@ -999,6 +972,15 @@ public class ItemSAPFacade {
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los ítems que pertenecen al catálogo de la empresa" + companyName, e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> getResultOfItemChatBotIA(StringBuilder queryIA,String slpCode, String companyName, boolean testing) {
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(queryIA.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del query generado por OpenAI para el asesor " + slpCode + " en " + companyName, e);
         }
         return new ArrayList<>();
     }

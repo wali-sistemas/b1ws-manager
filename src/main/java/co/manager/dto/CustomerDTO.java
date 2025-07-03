@@ -27,6 +27,7 @@ public class CustomerDTO {
     private String condition;
     private String excent;
     private BigDecimal cupo;
+    private BigDecimal points;
     private BigDecimal balance;
     private List<CustomerAddressesDTO> addresses;
 
@@ -218,6 +219,14 @@ public class CustomerDTO {
         this.cupo = cupo;
     }
 
+    public BigDecimal getPoints() {
+        return points;
+    }
+
+    public void setPoints(BigDecimal points) {
+        this.points = points;
+    }
+
     public BigDecimal getBalance() {
         return balance;
     }
@@ -257,6 +266,7 @@ public class CustomerDTO {
                 ", condition='" + condition + '\'' +
                 ", excent='" + excent + '\'' +
                 ", cupo=" + cupo +
+                ", points=" + points +
                 ", balance=" + balance +
                 ", addresses=" + addresses +
                 '}';

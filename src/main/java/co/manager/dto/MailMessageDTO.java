@@ -15,14 +15,13 @@ public class MailMessageDTO {
     private List<String> to;
     private List<String> cc;
     private List<String> bcc;
-    private List<String[]> attachments;
+    private String urlAttachment;
     private Map<String, String> params;
 
     public MailMessageDTO() {
         to = new ArrayList<>();
         cc = new ArrayList<>();
         bcc = new ArrayList<>();
-        attachments = new ArrayList<>();
         params = new HashMap<>();
     }
 
@@ -78,12 +77,12 @@ public class MailMessageDTO {
         this.subject = subject;
     }
 
-    public List<String[]> getAttachments() {
-        return attachments;
+    public String getUrlAttachment() {
+        return urlAttachment;
     }
 
-    public void setAttachments(List<String[]> attachments) {
-        this.attachments = attachments;
+    public void setUrlAttachment(String urlAttachment) {
+        this.urlAttachment = urlAttachment;
     }
 
     public Map<String, String> getParams() {
@@ -139,13 +138,13 @@ public class MailMessageDTO {
     public String toString() {
         return "MailMessageDTO{" +
                 "templateName='" + templateName + '\'' +
-                ", params=" + params +
-                ", attachments=" + attachments +
+                ", subject='" + subject + '\'' +
                 ", from='" + from + '\'' +
                 ", to=" + to +
                 ", cc=" + cc +
                 ", bcc=" + bcc +
-                ", subject='" + subject + '\'' +
+                ", urlAttachment='" + urlAttachment + '\'' +
+                ", params=" + params +
                 '}';
     }
 }
