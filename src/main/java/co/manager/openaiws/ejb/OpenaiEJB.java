@@ -47,7 +47,10 @@ public class OpenaiEJB {
         messages.add(messageDTO);
 
         FormDataDTO formDataDTO = new FormDataDTO();
-        formDataDTO.setModel("gpt-4");
+        //formDataDTO.setModel("gpt-4");
+        //formDataDTO.setModel("gpt-4-turbo");
+        //formDataDTO.setModel("gpt-3.5-turbo-0125");
+        formDataDTO.setModel("gpt-4o");
         formDataDTO.setMessages(messages);
         formDataDTO.setTemperature(0.2);
 

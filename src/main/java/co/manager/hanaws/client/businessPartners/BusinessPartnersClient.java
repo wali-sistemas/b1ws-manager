@@ -1,9 +1,12 @@
 package co.manager.hanaws.client.businessPartners;
 
+import co.manager.hanaws.dto.ResponseServiceLayerDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersWithholdingTaxDTO;
+import co.manager.hanaws.dto.order.OrderDTO;
+import co.manager.hanaws.dto.order.OrderRestDTO;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -38,6 +41,17 @@ public class BusinessPartnersClient {
     public BusinessPartnersRestDTO addBusinessPartnerFromWali(BusinessPartnersDTO dto, String sessionId) {
         return webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
                 .post(Entity.entity(dto, MediaType.APPLICATION_JSON), BusinessPartnersRestDTO.class);
+    }
+
+    public Object addBusinessPartnerFromWali2(BusinessPartnersDTO dto, String sessionId) {
+        Response response = webTarget.path("BusinessPartners").request(MediaType.APPLICATION_JSON).cookie("B1SESSION", sessionId)
+                .post(Entity.entity(dto, MediaType.APPLICATION_JSON));
+
+        if (response.getStatus() == 200 || response.getStatus() == 201) {
+            return response.readEntity(BusinessPartnersRestDTO.class);
+        } else {
+            return response.readEntity(ResponseServiceLayerDTO.class);
+        }
     }
 
     public BusinessPartnersRestDTO addBusinessPartnerFromEcommerce(BusinessPartnersEcommerceDTO dto, String sessionId) {

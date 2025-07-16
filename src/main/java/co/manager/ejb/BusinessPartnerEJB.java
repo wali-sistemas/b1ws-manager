@@ -126,7 +126,6 @@ public class BusinessPartnerEJB {
                         address.setAddressType("bo_BillTo");
                     } else {
                         address.setAddressType("bo_ShipTo");
-                        //address.setTaxCode(taxCodeMotorepuesto);
                         if (dto.getCompanyName().contains("VELEZ")) {
                             address.setTaxCode("IVAV01");
                         } else {
@@ -145,6 +144,7 @@ public class BusinessPartnerEJB {
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
+
                 BusinessPartnersRestDTO res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 
@@ -219,6 +219,8 @@ public class BusinessPartnerEJB {
                 businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getEmail().toUpperCase());
                 businessPartner.setDebitorAccount("13050505");
                 businessPartner.setBilltoDefault("DIR ONCREDIT");
+                businessPartner.setUoncredit("Y");
+                businessPartner.setUtipoNegocio("1");
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -231,8 +233,8 @@ public class BusinessPartnerEJB {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
                     address.setAddressName("DIR ONCREDIT");
                     address.setStreet("CALLE 98 SUR N 48 225");
-                    address.setCity("MEDELLÍN");
-                    address.setBlock("05001");
+                    address.setCity("LA ESTRELLA");
+                    address.setBlock("05380");
                     address.setState("05");
                     address.setCountry("CO");
 
@@ -243,9 +245,9 @@ public class BusinessPartnerEJB {
                         address.setTaxCode("IVAG19");
                     }
 
-                    address.setBpCode(dto.getDocIdent());
+                    address.setBpCode(businessPartner.getCardCode());
                     address.setRowNum(0l);
-                    address.setUmunicipio("05001");
+                    address.setUmunicipio("05380");
                     address.setUlatitud("0123456789");
                     address.setUlongitud("0123456789");
                     addresses.add(address);
@@ -273,6 +275,7 @@ public class BusinessPartnerEJB {
                 Gson gson = new Gson();
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
+
                 BusinessPartnersRestDTO res = service.addBusinessPartnerFromWali(businessPartner, sessionId);
                 cardCode = res.getCardCode();
 

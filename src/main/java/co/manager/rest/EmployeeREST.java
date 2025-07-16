@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -51,7 +50,7 @@ public class EmployeeREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response getCustodyByEmployeeOrAsset(@QueryParam("filtre") String filtre,
                                                 @HeaderParam("X-Company-Name") String companyName,
-                                                @HeaderParam("X-Pruebas") boolean pruebas) {
+                                                @HeaderParam("X-Pruebas") boolean testing) {
         CONSOLE.log(Level.INFO, "Listando custodias por empleado o por activo en {0}", new Object[]{companyName});
 
         String cardCode = null;
@@ -65,7 +64,7 @@ public class EmployeeREST {
             idAsset = filtre.toLowerCase();
         }
 
-        List<Object[]> objs = employeeFacade.listCustodyByEmpleeOrAsset(cardCode, idAsset, cardName, companyName, pruebas);
+        List<Object[]> objs = employeeFacade.listCustodyByEmpleeOrAsset(cardCode, idAsset, cardName, companyName, testing);
         if (objs.isEmpty()) {
             CONSOLE.log(Level.WARNING, "No se encontraron custodias para mostrar");
             return Response.ok(new ResponseDTO(-1, "No se encontraron custodias para mostrar")).build();
@@ -109,8 +108,8 @@ public class EmployeeREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response findEmployee(@PathParam("cardcode") String cardCode,
                                  @HeaderParam("X-Company-Name") String companyName,
-                                 @HeaderParam("X-Pruebas") boolean pruebas) {
-        Object[] obj = employeeFacade.findEmployee(cardCode, companyName, pruebas);
+                                 @HeaderParam("X-Pruebas") boolean testing) {
+        Object[] obj = employeeFacade.findEmployee(cardCode, companyName, testing);
 
         if (obj != null) {
             EmployeeDTO dto = new EmployeeDTO();
@@ -131,8 +130,8 @@ public class EmployeeREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response listEmployeeActive(@HeaderParam("X-Company-Name") String companyName,
-                                       @HeaderParam("X-Pruebas") boolean pruebas) {
-        return Response.ok(employeeFacade.listEmployeeActives(companyName, pruebas)).build();
+                                       @HeaderParam("X-Pruebas") boolean testing) {
+        return Response.ok(employeeFacade.listEmployeeActives(companyName, testing)).build();
     }
 
     @POST
@@ -143,7 +142,7 @@ public class EmployeeREST {
     public Response addOrRefreshEmployee(EmployeeDTO dto,
                                          @QueryParam("bottonAction") String bottonAction,
                                          @HeaderParam("X-Company-Name") String companyName,
-                                         @HeaderParam("X-Pruebas") boolean pruebas) {
+                                         @HeaderParam("X-Pruebas") boolean testing) {
         CONSOLE.log(Level.INFO, "Inciando creacion o actualizacion de empleado para el modulo de custodia");
 
         if (dto.getCardCode() == null || dto.getCardCode().isEmpty()) {
@@ -176,9 +175,9 @@ public class EmployeeREST {
 
         try {
             if (bottonAction.equals("Crear")) {
-                employeeFacade.create(entity, companyName, pruebas);
+                employeeFacade.create(entity, companyName, testing);
             } else {
-                employeeFacade.updateEmployee(entity, companyName, pruebas);
+                employeeFacade.updateEmployee(entity, companyName, testing);
             }
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error creando o actulizando el empleado ", e);
@@ -193,8 +192,8 @@ public class EmployeeREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response findAsset(@PathParam("id") String idAsset,
                               @HeaderParam("X-Company-Name") String companyName,
-                              @HeaderParam("X-Pruebas") boolean pruebas) {
-        Object[] obj = assetMasterDataFacade.findAsset(idAsset, companyName, pruebas);
+                              @HeaderParam("X-Pruebas") boolean testing) {
+        Object[] obj = assetMasterDataFacade.findAsset(idAsset, companyName, testing);
         if (obj != null) {
             AssetDTO assetDTO = new AssetDTO();
             assetDTO.setIdAsset((String) obj[0]);
@@ -229,7 +228,7 @@ public class EmployeeREST {
                                       @QueryParam("bottonAction") String bottonAction,
                                       @HeaderParam("X-Company-Name") String companyName,
                                       @HeaderParam("X-Employee") String employee,
-                                      @HeaderParam("X-Pruebas") boolean pruebas) {
+                                      @HeaderParam("X-Pruebas") boolean testing) {
         CONSOLE.log(Level.INFO, "Inciando creacion o actualizacion del activo fijo para el modulo de custodia");
 
         if (dto.getIdAsset() == null || dto.getIdAsset().isEmpty()) {
@@ -273,7 +272,7 @@ public class EmployeeREST {
 
         try {
             if (bottonAction.equals("Crear")) {
-                assetMasterDataFacade.create(entity, companyName, pruebas);
+                assetMasterDataFacade.create(entity, companyName, testing);
                 if (dto.getEmployeeDTO().getCardCode() != null || !dto.getEmployeeDTO().getCardCode().isEmpty()) {
                     CustodyDetail entityCustody = new CustodyDetail();
                     entityCustody.setIdAsset(new AssetMasterData(dto.getIdAsset()));
@@ -281,16 +280,16 @@ public class EmployeeREST {
                     entityCustody.setDateAssign(new Date());
                     entityCustody.setStatus("Y");
                     entityCustody.setUserAssign(employee);
-                    custodyDetailFacade.create(entityCustody, companyName, pruebas);
+                    custodyDetailFacade.create(entityCustody, companyName, testing);
                 }
             } else {
-                assetMasterDataFacade.updateAsset(entity, companyName, pruebas);
+                assetMasterDataFacade.updateAsset(entity, companyName, testing);
                 if (dto.getEmployeeDTO().getCardCode() != null || !dto.getEmployeeDTO().getCardCode().isEmpty()) {
 
-                    List<String> ids = custodyDetailFacade.listCustodyDetailByAsset(dto.getIdAsset(), companyName, pruebas);
+                    List<String> ids = custodyDetailFacade.listCustodyDetailByAsset(dto.getIdAsset(), companyName, testing);
                     if (!ids.isEmpty()) {
                         for (String id : ids) {
-                            custodyDetailFacade.updateCustodyDetailByAsset(id, "N", employee, companyName, pruebas);
+                            custodyDetailFacade.updateCustodyDetailByAsset(id, "N", employee, companyName, testing);
                         }
                     }
 
@@ -302,7 +301,7 @@ public class EmployeeREST {
                     entityCustody.setStatus("Y");
                     entityCustody.setUserAssign(employee);
                     entityCustody.setUserFinish(null);
-                    custodyDetailFacade.create(entityCustody, companyName, pruebas);
+                    custodyDetailFacade.create(entityCustody, companyName, testing);
                 }
             }
         } catch (Exception e) {
@@ -319,12 +318,12 @@ public class EmployeeREST {
     public Response validateEmployeeExistenceNovaWeb(@PathParam("companyname") String companyName,
                                                      @QueryParam("id") String emplId,
                                                      @QueryParam("birthdate") String birthdate,
-                                                     @HeaderParam("X-Pruebas") boolean pruebas) {
+                                                     @HeaderParam("X-Pruebas") boolean testing) {
         if (companyName == null || companyName.isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al validar el empleado. Campo companyName es obligatorio");
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al validar el empleado. Campo companyName es obligatorio.")).build();
         }
-        return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistenceNovaWeb(emplId, birthdate, companyName, pruebas))).build();
+        return Response.ok(new ResponseDTO(0, employeeFacade.validateEmployeeExistenceNovaWeb(emplId, birthdate, companyName, testing))).build();
     }
 
     @GET
@@ -332,8 +331,8 @@ public class EmployeeREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response findDataEmployeeFemprobienNovaWeb(@PathParam("cardcode") String cardCode,
-                                                      @HeaderParam("X-Pruebas") boolean pruebas) {
-        return Response.ok(new ResponseDTO(0, statementFEMPROFacade.findDataEmployee(cardCode, "FEMPROBN_NOVAWEB", pruebas))).build();
+                                                      @HeaderParam("X-Pruebas") boolean testing) {
+        return Response.ok(new ResponseDTO(0, statementFEMPROFacade.findDataEmployee(cardCode, "FEMPROBN_NOVAWEB", testing))).build();
     }
 
     @GET
@@ -341,9 +340,33 @@ public class EmployeeREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response loadAssociatedRequests(@QueryParam("status") String status,
-                                           @HeaderParam("X-Pruebas") boolean pruebas) {
-        List<AssociatedFEMPRO> res = associatedFEMPROFacade.listAssociatedRequestsByStatus(status, "FEMPROBN_NOVAWEB", pruebas);
+                                           @HeaderParam("X-Pruebas") boolean testing) {
+        List<AssociatedFEMPRO> res = associatedFEMPROFacade.listAssociatedRequestsByStatus(status, "FEMPROBN_NOVAWEB", testing);
         return Response.ok(new ResponseDTO(0, res)).build();
+    }
+
+    @GET
+    @Path("femprobien/validate-associated-existence")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response validateEmployeeExistence(@QueryParam("cardcode") String cardCode,
+                                              @HeaderParam("X-Pruebas") boolean testing) {
+        return Response.ok(new ResponseDTO(0, associatedFEMPROFacade.getAssociatedByCode(cardCode, "FEMPROBN_NOVAWEB", testing))).build();
+    }
+
+    @PATCH
+    @Path("femprobien/update-status-requests")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response updateRequestStatus(@QueryParam("cardcode") String cardCode,
+                                        @QueryParam("status") String status,
+                                        @HeaderParam("X-Pruebas") boolean testing) {
+        try {
+            associatedFEMPROFacade.updateStatusRequestsByAssociated(cardCode, status, "FEMPROBN_NOVAWEB", testing);
+            return Response.ok(new ResponseDTO(0, "Actualización de éxitosa.")).build();
+        } catch (Exception e) {
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error actualizando el estado de la solitud.")).build();
+        }
     }
 
     @POST
@@ -351,7 +374,8 @@ public class EmployeeREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response addAssociated(AssociatedFemproDTO dto) throws ParseException {
+    public Response addAssociated(AssociatedFemproDTO dto,
+                                  @HeaderParam("X-Pruebas") boolean testing) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de afiliado al femprobien");
 
         if (dto.getCode() == null || dto.getCode().isEmpty()) {
@@ -399,7 +423,7 @@ public class EmployeeREST {
         entity.setParBen2(dto.getParentBenef2());
 
         try {
-            associatedFEMPROFacade.create(entity, "FEMPROBN_NOVAWEB", false);
+            associatedFEMPROFacade.create(entity, "FEMPROBN_NOVAWEB", testing);
             CONSOLE.log(Level.INFO, "El asociado ha sido creado exitosamente. Generando formulario de afiliacion.");
             //Generar reporte de afiliación
             PrintReportDTO printReportDTO = new PrintReportDTO();
@@ -413,22 +437,27 @@ public class EmployeeREST {
             printReportDTO.setImprimir(false);
 
             ResponseDTO res = reportREST.generateReport(printReportDTO);
-            String UrlAttachment = "https://wali.igbcolombia.com/api/shared/FEMPROBN_NOVAWEB/associatedForm/" + dto.getCode() + ".pdf";
+            if (res.getCode() == 0) {
+                String UrlAttachment = "https://wali.igbcolombia.com/api/shared/FEMPROBN_NOVAWEB/associatedForm/" + dto.getCode() + ".pdf";
 
-            //Notificar por email la afiliacion
-            Map<String, String> params = new HashMap<>();
-            params.put("cardName", entity.getNomAso() + ' ' + entity.getAp1Aso());
-            params.put("cardCode", entity.getCodAso());
-            params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getFecAfi()));
-            params.put("comment", "Pendiente por revisar");
-            params.put("status", "NUEVO");
+                //Notificar por email la afiliacion
+                Map<String, String> params = new HashMap<>();
+                params.put("cardName", entity.getNomAso() + ' ' + entity.getAp1Aso());
+                params.put("cardCode", entity.getCodAso());
+                params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(entity.getFecAfi()));
+                params.put("comment", "Pendiente por revisar");
+                params.put("status", "NUEVO");
 
-            sendEmail("NotificationAssociatedFemprobien", "Femprobien <soporte@igbcolombia.com>", "Nuevo asociado - Femprobien", "sistemas5@igbcolombia.com",
-                    "sistemas5@igbcolombia.com", "sistemas5@igbcolombia.com", UrlAttachment, params);
+                sendEmail("NotificationAssociatedFemprobien", "Femprobien <soporte@igbcolombia.com>", "Nuevo asociado - Femprobien", "sistemas5@igbcolombia.com",
+                        "sistemas5@igbcolombia.com", "sistemas5@igbcolombia.com", UrlAttachment, params);
 
-            return Response.ok(new ResponseDTO(Integer.parseInt(entity.getCodAso()), UrlAttachment)).build();
+                return Response.ok(new ResponseDTO(Integer.parseInt(entity.getCodAso()), UrlAttachment)).build();
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error generando el formato del asociado " + entity.getCodAso());
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error generando el formato del asociado " + entity.getCodAso())).build();
+            }
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el asosciado al fondo de empleados ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error creando el asociado al fondo de empleados ", e);
             return Response.ok(new ResponseDTO(-1, entity)).build();
         }
     }

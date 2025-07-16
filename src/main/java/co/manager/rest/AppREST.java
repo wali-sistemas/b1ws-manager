@@ -892,24 +892,44 @@ public class AppREST {
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        /**** 7. Separación de items para crear ordenes independientes - Llantas - (**) - Repuestos ****/
+        /**** 7. Separación de items para crear ordenes independientes - Llantas - (*) - (**) - Repuestos - combos ****/
         List<DetailSalesOrderDTO> detailSalesOrderWS = dto.getDetailSalesOrder();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_REP_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_REP_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_REP_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_REP_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LU = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LU_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LU_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LU_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LU_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_cali = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cali_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_cart = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_link = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_med = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LR_med_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_med_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_med_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_med_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_bog = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LR_bog_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_bog_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_bog_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LR_bog_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_bog = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog_desc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_bog_combo = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_med = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_med_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_med_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_med_combo = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseDTO();
@@ -929,41 +949,75 @@ public class AppREST {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
                         if (detail.getWhsCode().equals("05")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_cart_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cart_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_cart_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_cart_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_cart.add(setDetailOrder(detail, ocrCode));
                             }
                         } else if (detail.getWhsCode().equals("26")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cali_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_cali_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_cali_two_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                             }
                         } else if (detail.getWhsCode().equals("35")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_bog_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_bog_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_bog_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_bog_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_bog.add(setDetailOrder(detail, ocrCode));
                             }
+                        } else if (detail.getWhsCode().equals("45")) {
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_med_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_med_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_med_combo.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_med.add(setDetailOrder(detail, ocrCode));
+                            }
                         }
-                    } else if (detail.getGroup().equals("LUBRICANTES") && detail.getItemCode().substring(0,2).equals("LR")) {
+                    } else if (detail.getGroup().equals("LUBRICANTES") && detail.getItemCode().substring(0, 2).equals("LR")) {
                         if (detail.getWhsCode().equals("35")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LR_bog_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LR_bog_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LR_bog_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LR_bog_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LR_bog.add(setDetailOrder(detail, ocrCode));
                             }
                         } else {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LR_med_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LR_med_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LR_med_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LR_med_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LR_med.add(setDetailOrder(detail, ocrCode));
                             }
                         }
                     } else {
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_REP_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                            detailSalesOrder_REP_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                            detailSalesOrder_REP_combo.add(setDetailOrder(detail, ocrCode));
                         } else {
                             detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
                         }
@@ -971,28 +1025,44 @@ public class AppREST {
                 } else {
                     if (detail.getGroup().equals("LLANTAS")) {
                         if (detail.getWhsCode().equals("13")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_link_desc.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_link_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_link_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_link_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
                             }
                         } else if (detail.getWhsCode().equals("26")) {
-                            if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_cali_desc.add(setDetailOrder(detail, ocrCode));
-                            } else {
-                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_cali_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_cali_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_cali_combo.add(setDetailOrder(detail, ocrCode));
                             }
+                        } else {
+                            detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_LU_desc.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_LU_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                            detailSalesOrder_LU_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                            detailSalesOrder_LU_combo.add(setDetailOrder(detail, ocrCode));
                         } else {
                             detailSalesOrder_LU.add(setDetailOrder(detail, ocrCode));
                         }
                     } else {
                         detail.setWhsCode("32");
-                        if (detail.getItemName().substring(0, 4).equals("(**)") || detail.getItemName().substring(0, 3).equals("(*)")) {
-                            detailSalesOrder_REP_desc.add(setDetailOrder(detail, ocrCode));
+                        if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                            detailSalesOrder_REP_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                            detailSalesOrder_REP_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                        } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                            detailSalesOrder_REP_combo.add(setDetailOrder(detail, ocrCode));
                         } else {
                             detailSalesOrder_REP.add(setDetailOrder(detail, ocrCode));
                         }
@@ -1001,13 +1071,13 @@ public class AppREST {
             }
         }
         /**** 9.Crear ordenes separadas por regla de negocio ****/
-        /**** 9.1. Solo repuestos con (**) ****/
+        /**** 9.1. Solo repuestos con (*) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_REP_desc.size() > 0) {
+            if (detailSalesOrder_REP_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_REP_desc);
-                dto.setNumAtCard(numAtCard + "RD");
-                /**** 9.5.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                dto.setDetailSalesOrder(detailSalesOrder_REP_one_asterisk);
+                dto.setNumAtCard(numAtCard + "RD1");
+                /**** 9.1.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
@@ -1018,7 +1088,7 @@ public class AppREST {
                         gson = new Gson();
                         json = gson.toJson(dto);
                         CONSOLE.log(Level.INFO, json);
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos sin (**). Orden Temp={0}", response.getContent());
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos con (*). Orden Temp={0}", response.getContent());
                         res = response;
                         orderCompleted = false;
                     } else {
@@ -1029,13 +1099,69 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.2. Solo repuestos ****/
+        /**** 9.2. Solo repuestos con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_REP_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP_two_asterisk);
+                dto.setNumAtCard(numAtCard + "RD2");
+                /**** 9.2.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrderByApp(dto);
+                    if (res.getCode() < 0) {
+                        ResponseDTO response = createOrderTemporary(dto, 0);
+
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos con (**). Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.3. Solo repuestos con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_REP_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP_combo);
+                dto.setNumAtCard(numAtCard + "RDC");
+                /**** 9.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrderByApp(dto);
+                    if (res.getCode() < 0) {
+                        ResponseDTO response = createOrderTemporary(dto, 0);
+
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos con (combo). Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.4. Solo repuestos ****/
         if (orderCompleted) {
             if (detailSalesOrder_REP.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_REP);
                 dto.setNumAtCard(numAtCard + "R");
-                /**** 9.6.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                /**** 9.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
@@ -1046,7 +1172,7 @@ public class AppREST {
                         gson = new Gson();
                         json = gson.toJson(dto);
                         CONSOLE.log(Level.INFO, json);
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos sin (**). Orden Temp={0}", response.getContent());
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos. Orden Temp={0}", response.getContent());
                         res = response;
                         orderCompleted = false;
                     } else {
@@ -1057,12 +1183,36 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.3. Solo lubricantes con (**) ****/
+        /**** 9.5. Solo lubricantes con (*) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LU_desc.size() > 0) {
+            if (detailSalesOrder_LU_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LU_desc);
-                dto.setNumAtCard(numAtCard + "LU13D");
+                dto.setDetailSalesOrder(detailSalesOrder_LU_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LU13D1");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.6. Solo lubricantes con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LU_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LU_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LU13D2");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
                 if (res.getCode() < 0) {
@@ -1081,12 +1231,61 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.4. Solo lubricantes REVO Medellín con (**) ****/
+        /**** 9.7. Solo lubricantes con (combo) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LR_med_desc.size() > 0) {
+            if (detailSalesOrder_LU_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LR_med_desc);
-                dto.setNumAtCard(numAtCard + "LR01D");
+                dto.setDetailSalesOrder(detailSalesOrder_LU_combo);
+                dto.setNumAtCard(numAtCard + "LU13DC");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.8. Solo lubricantes REVO Medellín con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LR_med_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LR_med_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LR01D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes Revo Medellin con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.9. Solo lubricantes REVO Medellín con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LR_med_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LR_med_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LR01D2");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1106,12 +1305,62 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.5. Solo lubricantes REVO Bogotá con (**) ****/
+        /**** 9.10. Solo lubricantes REVO Medellín con (combo) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LR_bog_desc.size() > 0) {
+            if (detailSalesOrder_LR_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LR_bog_desc);
-                dto.setNumAtCard(numAtCard + "LR35D");
+                dto.setDetailSalesOrder(detailSalesOrder_LR_med_combo);
+                dto.setNumAtCard(numAtCard + "LR01DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes Revo Medellin con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.11. Solo lubricantes REVO Bogotá con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LR_bog_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LR_bog_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LR35D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes Revo Bogota con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.12. Solo lubricantes REVO Bogotá con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LR_bog_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LR_bog_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LR35D2");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1131,7 +1380,98 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.6. Solo llantas sin (**) ****/
+        /**** 9.13. Solo lubricantes REVO Bogotá con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LR_bog_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LR_bog_combo);
+                dto.setNumAtCard(numAtCard + "LR35DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes Revo Bogota con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.14. Solo llantas link con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_link_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL13D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.15. Solo llantas link con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_link_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL13D2");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.16. Solo llantas link con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_link_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_link_combo);
+                dto.setNumAtCard(numAtCard + "LL13DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.17. Solo llantas link ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_link.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1146,19 +1486,19 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link. Orden Temp={0}", response.getContent());
                     res = response;
                 }
             }
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.7. Solo llantas con (**) ****/
+        /**** 9.18. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LL_link_desc.size() > 0) {
+            if (detailSalesOrder_LL_cali_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link_desc);
-                dto.setNumAtCard(numAtCard + "LL13D");
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cali_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL26D1");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1168,7 +1508,7 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas con (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cali con (*). Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
@@ -1178,12 +1518,12 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.8. Solo llantas de cali con (**) ****/
+        /**** 9.19. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LL_cali_desc.size() > 0) {
+            if (detailSalesOrder_LL_cali_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_cali_desc);
-                dto.setNumAtCard(numAtCard + "LL26D");
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cali_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL26D2");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1203,12 +1543,62 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.9. Solo llantas de cartagena con (**) ****/
+        /**** 9.20. Solo llantas de cali con (combo) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LL_cart_desc.size() > 0) {
+            if (detailSalesOrder_LL_cali_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_desc);
-                dto.setNumAtCard(numAtCard + "LL05D");
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cali_combo);
+                dto.setNumAtCard(numAtCard + "LL26DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cali con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.21. Solo llantas de cartagena con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cart_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL05D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cartagena con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.22. Solo llantas de cartagena con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_cart_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL05D2");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1228,12 +1618,62 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.10. Solo llantas de bogotá con (**) ****/
+        /**** 9.23. Solo llantas de cartagena con (combo) ****/
         if (orderCompleted) {
-            if (detailSalesOrder_LL_bog_desc.size() > 0) {
+            if (detailSalesOrder_LL_cart_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_bog_desc);
-                dto.setNumAtCard(numAtCard + "LL35D");
+                dto.setDetailSalesOrder(detailSalesOrder_LL_cart_combo);
+                dto.setNumAtCard(numAtCard + "LL05DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cartagena con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.24. Solo llantas de bogotá con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_bog_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_bog_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL35D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.25. Solo llantas de bogotá con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_bog_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_bog_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL35D2");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1253,7 +1693,107 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.11. Solo lubricantes ****/
+        /**** 9.26. Solo llantas de bogotá con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_bog_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_bog_combo);
+                dto.setNumAtCard(numAtCard + "LL35DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.27. Solo llantas de medellín con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_med_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_med_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.28. Solo llantas de medellín con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_med_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_med_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.29. Solo llantas de medellín con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_med_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_med_combo);
+                dto.setNumAtCard(numAtCard + "LL45DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.30. Solo lubricantes ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1267,7 +1807,7 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo Lubricantes. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
@@ -1277,7 +1817,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.12. Solo lubricantes REVO Medellín****/
+        /**** 9.31. Solo lubricantes REVO Medellín****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1302,7 +1842,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.13. Solo lubricantes REVO Bogotá****/
+        /**** 9.32. Solo lubricantes REVO Bogotá****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1327,7 +1867,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.14. Solo llantas de cali ****/
+        /**** 9.33. Solo llantas de cali ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1342,7 +1882,7 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cali sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cali. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
@@ -1352,7 +1892,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.15. Solo llantas de cartagena ****/
+        /**** 9.34. Solo llantas de cartagena ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1367,7 +1907,7 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cartagena sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Cartagena. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
@@ -1377,7 +1917,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.16. Solo llantas de bogotá ****/
+        /**** 9.35. Solo llantas de bogotá ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1392,7 +1932,32 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá sin (**). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bogotá. Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.36. Solo llantas de medellín ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_med.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_med);
+                dto.setNumAtCard(numAtCard + "LL45");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
