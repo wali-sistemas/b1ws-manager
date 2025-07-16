@@ -28,7 +28,13 @@ public class PurchaseOrderFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as varchar(20))as DocNum,cast(o.\"DocDate\" as date)as DocDate, ");
         sb.append(" cast(o.\"U_DOC_TRANSP\" as varchar(50))as BL,cast(s.\"SlpName\" as varchar(100))as SlpName, ");
-        sb.append(" cast(o.\"Comments\" as varchar(100))as Coment,'REPUESTOS' as Linea, ");
+        sb.append(" cast(o.\"Comments\" as varchar(100))as Coment, ");
+        sb.append(" cast((select max(g.\"Name\") ");
+        sb.append("  from POR1 d ");
+        sb.append("  inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("  inner join \"@CATEGORIA\" g on g.\"Code\"=a.\"U_CATEGORIA\" ");
+        sb.append("  where d.\"DocEntry\"=o.\"DocEntry\" ");
+        sb.append(" )as varchar(50))as Linea, ");
         sb.append(" cast(s.\"Email\" as varchar(100))as mail ");
         sb.append("from OPOR o ");
         sb.append("inner join OSLP s ON s.\"SlpCode\" = o.\"SlpCode\" ");

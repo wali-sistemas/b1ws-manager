@@ -69,6 +69,8 @@ public class BusinessPartnersDTO implements Serializable {
     protected String utrasp;
     @JsonProperty("U_Tipo_Negocio")
     protected String utipoNegocio;
+    @JsonProperty("U_ONCREDIT")
+    protected String uoncredit;
     @JsonProperty("DebitorAccount")
     protected String debitorAccount;
     @JsonProperty("SalesPersonCode")
@@ -343,6 +345,14 @@ public class BusinessPartnersDTO implements Serializable {
         this.utipoNegocio = utipoNegocio;
     }
 
+    public String getUoncredit() {
+        return uoncredit;
+    }
+
+    public void setUoncredit(String uoncredit) {
+        this.uoncredit = uoncredit;
+    }
+
     public String getDebitorAccount() {
         return debitorAccount;
     }
@@ -463,6 +473,14 @@ public class BusinessPartnersDTO implements Serializable {
         this.priceListNum = priceListNum;
     }
 
+    public String getFreeText() {
+        return freeText;
+    }
+
+    public void setFreeText(String freeText) {
+        this.freeText = freeText;
+    }
+
     public List<BPAddresses.BPAddress> getBpAddresses() {
         return bpAddresses;
     }
@@ -485,14 +503,6 @@ public class BusinessPartnersDTO implements Serializable {
 
     public void setBpWithholdingTaxCollection(List<BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxCollection) {
         this.bpWithholdingTaxCollection = bpWithholdingTaxCollection;
-    }
-
-    public String getFreeText() {
-        return freeText;
-    }
-
-    public void setFreeText(String freeText) {
-        this.freeText = freeText;
     }
 
     public static class BPAddresses {

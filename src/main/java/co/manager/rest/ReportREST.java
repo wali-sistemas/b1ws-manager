@@ -37,7 +37,7 @@ public class ReportREST implements Serializable {
     private ManagerApplicationBean appBean;
 
     @POST
-    @Path("generate-report/")
+    @Path("generate-report")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public ResponseDTO generateReport(PrintReportDTO dto) throws Exception {
@@ -82,6 +82,13 @@ public class ReportREST implements Serializable {
                 rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
                 break;
             case "associatedForm":
+                rutaArchivo = appBean.obtenerValorPropiedad("url.archivo");
+                reportName = dto.getId() + ".pdf";
+                report = JasperCompileManager.compileReportToFile(appBean.obtenerValorPropiedad("url.jasper") + dto.getCompanyName() + File.separator +
+                        "employee" + File.separator + dto.getDocumento() + ".jrxml");
+                rutaArchivo = rutaArchivo + dto.getCompanyName() + File.separator + dto.getDocumento() + File.separator + reportName;
+                break;
+            case "accountStatement":
                 rutaArchivo = appBean.obtenerValorPropiedad("url.archivo");
                 reportName = dto.getId() + ".pdf";
                 report = JasperCompileManager.compileReportToFile(appBean.obtenerValorPropiedad("url.jasper") + dto.getCompanyName() + File.separator +
