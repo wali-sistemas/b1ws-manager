@@ -43,13 +43,10 @@ public class OpenaiEJB {
         List<FormDataDTO.Message> messages = new ArrayList<>();
         FormDataDTO.Message messageDTO = new FormDataDTO.Message();
         messageDTO.setRole(dto.getRol());
-        messageDTO.setContent(itemPrompt.createItemQuery(dto.getMessage()));
+        messageDTO.setContent(dto.getCompanyName().contains("IGB") ? itemPrompt.createItemQueryIGB(dto.getMessage()) : itemPrompt.createItemQueryMTZ(dto.getMessage()));
         messages.add(messageDTO);
 
         FormDataDTO formDataDTO = new FormDataDTO();
-        //formDataDTO.setModel("gpt-4");
-        //formDataDTO.setModel("gpt-4-turbo");
-        //formDataDTO.setModel("gpt-3.5-turbo-0125");
         formDataDTO.setModel("gpt-4o");
         formDataDTO.setMessages(messages);
         formDataDTO.setTemperature(0.2);

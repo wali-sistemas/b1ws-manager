@@ -350,8 +350,9 @@ public class EmployeeREST {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response validateEmployeeExistence(@QueryParam("cardcode") String cardCode,
+                                              @QueryParam("birthdate") String birthdate,
                                               @HeaderParam("X-Pruebas") boolean testing) {
-        return Response.ok(new ResponseDTO(0, associatedFEMPROFacade.getAssociatedByCode(cardCode, "FEMPROBN_NOVAWEB", testing))).build();
+        return Response.ok(new ResponseDTO(0, associatedFEMPROFacade.getAssociatedByCode(cardCode, birthdate,"FEMPROBN_NOVAWEB", testing))).build();
     }
 
     @PATCH

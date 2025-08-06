@@ -1240,9 +1240,9 @@ public class PedBoxREST {
                                 detailSalesOrder_LL_cali_two_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
                                 detailSalesOrder_LL_cali_combo.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                             }
-                        } else {
-                            detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
                         if (detail.getItemName().substring(0, 3).equals("(*)")) {

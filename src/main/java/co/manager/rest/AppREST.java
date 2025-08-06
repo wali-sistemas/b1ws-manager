@@ -19,6 +19,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
@@ -258,21 +259,22 @@ public class AppREST {
         CONSOLE.log(Level.INFO, "Listando stock actual para el item [{0}] en la empresa [{1}]", new Object[]{itemCode, companyname});
         List<StockCurrentDTO> stockCurrentDTO = new ArrayList<>();
         List<Object[]> objects;
-        //seteando sucursal se maneja como integer.
-        String sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
 
-        if (slpCode.equals("0") || slpCode.isEmpty()) {
-            objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
-        } else {
-            //Consultar las bodegas por defecto asignadas al asesor
-            Object[] whsCodeDefaultSale = salesPersonSAPFacade.getWhsCodeDefaultBySeller(slpCode, companyname, false);
-            if (whsCodeDefaultSale != null) {
-                objects = itemSAPFacade.getStockWarehouseCurrentBySeller(itemCode.trim(), whsCodeDefaultSale[0].toString() + "," + whsCodeDefaultSale[1].toString() + "," + whsCodeDefaultSale[2].toString() + "," + whsCodeDefaultSale[3].toString(), companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+        String sucursal = "";
+        if (!itemCode.equals("0") || !itemCode.isEmpty()) {
+            if (whsCode.equals("0") || whsCode.isEmpty()) {
+                //seteando sucursal se maneja como integer.
+                sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
             } else {
-                objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+                if (itemCode.substring(0, 2).equals("LR") && whsCode.equals("45")) {
+                    sucursal = "01";
+                } else {
+                    sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
+                }
             }
         }
 
+        objects = itemSAPFacade.getStockWarehouseCurrent(itemCode.trim(), sucursal, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar el stock actual para el item [{0}] en [{1}]", new Object[]{itemCode, companyname});
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al consultar el stock actual para el item [" + itemCode + "] en " + companyname)).build();
@@ -738,6 +740,36 @@ public class AppREST {
         return Response.ok(new ResponseDTO(0, dto)).build();
     }
 
+    @GET
+    @Path("list-budget-brand/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findSalesBudgetByBrandAndSeller(@PathParam("companyname") String companyName,
+                                                    @QueryParam("slpcode") String slpCode) {
+        List<Object[]> objs = salesPersonSAPFacade.getSalesBudgetByBrandAndSeller(slpCode, companyName, false);
+        if (objs.isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "No se encontro presupuesto de marcas para mostrar del asesor " + slpCode + " en " + companyName);
+            return Response.ok(new ResponseDTO(-1, "No se encontro presupuesto de marcas para mostrar del asesor.")).build();
+        }
+
+        List<SalesBudgetBrandDTO> list = new ArrayList<>();
+        for (Object[] obj : objs) {
+            SalesBudgetBrandDTO dto = new SalesBudgetBrandDTO();
+            dto.setBrand((String) obj[0]);
+            dto.setBudget((BigDecimal) obj[1]);
+            dto.setSale((BigDecimal) obj[2]);
+
+            if (dto.getBudget().compareTo(BigDecimal.ZERO) > 0) {
+                dto.setPercent(Math.max(dto.getSale().multiply(new BigDecimal("100")).divide(dto.getBudget(), 0, RoundingMode.HALF_UP).intValue(), 0));
+            } else {
+                dto.setPercent(0);
+            }
+
+            list.add(dto);
+        }
+        return Response.ok(new ResponseDTO(0, list)).build();
+    }
+
     @PUT
     @Path("update-status-order-extranet/{companyname}/{docnum}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -886,6 +918,13 @@ public class AppREST {
 
         if (dto.getShipToCode().equals("Elija un destino")) {
             dto.setShipToCode(shipToCodeDefault);
+        }
+
+        //TODO: asignar bodega 01 a la 45 cuando sea solo lubricante
+        for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
+            if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("45")) {
+                detail.setWhsCode("01");
+            }
         }
 
         Gson gson = new Gson();
@@ -1041,9 +1080,9 @@ public class AppREST {
                                 detailSalesOrder_LL_cali_two_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
                                 detailSalesOrder_LL_cali_combo.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                             }
-                        } else {
-                            detailSalesOrder_LL_cali.add(setDetailOrder(detail, ocrCode));
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES")) {
                         if (detail.getItemName().substring(0, 3).equals("(*)")) {
