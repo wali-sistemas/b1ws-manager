@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -318,27 +319,6 @@ public class SalesPersonSAPFacade {
         return null;
     }
 
-    public Object[] getWhsCodeDefaultBySeller(String slpCode, String companyName, boolean testing) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(ifnull(\"Telephone\",'01') as varchar(3))as whsCodeDefTire,'01' as WhsCodeDefLub/*,'32' as WhsCodeDefPart*/ ");
-        if (companyName.contains("VARROC")) {
-            sb.append(",'32' as WhsCodeDefPart,cast(ifnull(\"Memo\",'26') as varchar(3)) as whsCodeDefTireCali ");
-        } else {
-            sb.append(",'00' as WhsCodeDefPart,'00' as whsCodeDefTireCali ");
-        }
-        sb.append("from OSLP ");
-        sb.append("where \"SlpCode\"='");
-        sb.append(slpCode);
-        sb.append("'");
-        try {
-            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las bodegas por defecto asignadas al asesor " + slpCode + " en " + companyName, e);
-        }
-        return null;
-    }
-
     public boolean addLoginVersionApp(String slpCode, String version, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("update OSLP set \"U_VERSION\"='");
@@ -358,5 +338,46 @@ public class SalesPersonSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error registrando la version para el asesor " + slpCode + " en " + companyName, e);
         }
         return false;
+    }
+
+    public List<Object[]> getSalesBudgetByBrandAndSeller(String slpCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(m.U_MARCA_PRES as varchar(50))as Marca,cast(U_CANT_PRES as numeric(18,2))as Presupuesto, ");
+        sb.append(" cast(ifnull((");
+        sb.append("  select sum(t.TOTAL)as Vendido ");
+        sb.append("  from ( ");
+        sb.append("   select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100)) as Total,s.\"SlpName\" ");
+        sb.append("   from OINV f ");
+        sb.append("   inner join INV1 d on f.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("   inner join OSLP s on f.\"SlpCode\"=s.\"SlpCode\" ");
+        sb.append("   inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("   inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
+        sb.append("   where f.\"DocType\"='I' and month(f.\"DocDate\")=month(current_date) and year(f.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append("  union all ");
+        sb.append("   select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100))*-1 as Total,s.\"SlpName\" ");
+        sb.append("   from ORIN n ");
+        sb.append("   inner join RIN1 d on n.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("   inner join OSLP s on n.\"SlpCode\"=s.\"SlpCode\" ");
+        sb.append("   inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("   inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
+        sb.append("   where n.\"DocType\"='I' and month(n.\"DocDate\")=month(current_date) and year(n.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append("  )as t ");
+        sb.append("  where t.\"SlpName\"=m.U_VEND_PRES and t.MARCA=m.U_MARCA_PRES ");
+        sb.append("  group by t.\"SlpName\",t.MARCA ");
+        sb.append(" ),0)as numeric(18,2))as Vendido ");
+        sb.append("from \"@PRES_MARCA\" m ");
+        sb.append("inner join \"OSLP\" s on s.\"SlpName\"=m.\"U_VEND_PRES\" ");
+        sb.append("where m.\"U_ANO_PRES\"=year(current_date) and m.\"U_MES_PRES\"=month(current_date) and s.\"SlpCode\"=");
+        sb.append(slpCode);
+        sb.append(" order by 1,2 ");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo el presupuesto de venta por marca del asesor " + slpCode + " en " + companyName, e);
+        }
+        return new ArrayList<>();
     }
 }

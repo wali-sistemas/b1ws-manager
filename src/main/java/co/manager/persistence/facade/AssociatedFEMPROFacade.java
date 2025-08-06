@@ -9,7 +9,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,12 +41,19 @@ public class AssociatedFEMPROFacade {
         return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB).find(AssociatedFEMPRO.class, idAssociated);
     }
 
-    public AssociatedFEMPRO getAssociatedByCode(String codeAssociated, String companyName, boolean testing) {
+    public AssociatedFEMPRO getAssociatedByCode(String codeAssociated, String birthdate, String companyName, boolean testing) {
         EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_NOVAWEB);
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<AssociatedFEMPRO> cq = cb.createQuery(AssociatedFEMPRO.class);
         Root<AssociatedFEMPRO> root = cq.from(AssociatedFEMPRO.class);
-        cq.where(cb.equal(root.get(AssociatedFEMPRO_.codAso), codeAssociated));
+
+        Date birthdateAsDate = null;
+        try {
+            birthdateAsDate = new SimpleDateFormat("yyyy-MM-dd").parse(birthdate);
+        } catch (ParseException e) {
+        }
+
+        cq.where(cb.and(cb.equal(root.get(AssociatedFEMPRO_.codAso), codeAssociated), cb.equal(root.get(AssociatedFEMPRO_.fecNac), birthdateAsDate)));
         try {
             return em.createQuery(cq).getSingleResult();
         } catch (NoResultException ex) {
