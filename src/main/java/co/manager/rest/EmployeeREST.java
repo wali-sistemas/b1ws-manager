@@ -449,8 +449,8 @@ public class EmployeeREST {
                 params.put("comment", "Pendiente por revisar");
                 params.put("status", "NUEVO");
 
-                sendEmail("NotificationAssociatedFemprobien", "Femprobien <soporte@igbcolombia.com>", "Nuevo asociado - Femprobien", "sistemas5@igbcolombia.com",
-                        "sistemas5@igbcolombia.com", "sistemas5@igbcolombia.com", UrlAttachment, params);
+                sendEmail("NotificationAssociatedFemprobien", "Femprobien <soporte@igbcolombia.com>", "Nuevo asociado - Femprobien", "administracion@femprobien.com",
+                        "administracion@femprobien.com", "administracion@femprobien.com", UrlAttachment, params);
 
                 return Response.ok(new ResponseDTO(Integer.parseInt(entity.getCodAso()), UrlAttachment)).build();
             } else {
