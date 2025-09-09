@@ -13,6 +13,7 @@ public class SalesBudgetBrandDTO {
     private BigDecimal budget;
     private BigDecimal sale;
     private Integer percent;
+    private String result;
 
     public SalesBudgetBrandDTO() {
     }
@@ -49,6 +50,14 @@ public class SalesBudgetBrandDTO {
         this.percent = percent;
     }
 
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
     @Override
     public String toString() {
         return "SalesBudgetBrandDTO{" +
@@ -56,6 +65,7 @@ public class SalesBudgetBrandDTO {
                 ", budget=" + budget +
                 ", sale=" + sale +
                 ", percent=" + percent +
+                ", result='" + result + '\'' +
                 '}';
     }
 }

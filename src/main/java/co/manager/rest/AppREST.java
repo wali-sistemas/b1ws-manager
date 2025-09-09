@@ -60,6 +60,8 @@ public class AppREST {
     private OrderDetailAPPFacade orderDetailAPPFacade;
     @EJB
     private HistoryGeoLocationSAPFacade historyGeoLocationSAPFacade;
+    @EJB
+    private ItemSoldOutAPPFacade itemSoldOutAPPFacade;
 
     @GET
     @Path("active-companies")
@@ -758,6 +760,7 @@ public class AppREST {
             dto.setBrand((String) obj[0]);
             dto.setBudget((BigDecimal) obj[1]);
             dto.setSale((BigDecimal) obj[2]);
+            dto.setResult((String) obj[3]);
 
             if (dto.getBudget().compareTo(BigDecimal.ZERO) > 0) {
                 dto.setPercent(Math.max(dto.getSale().multiply(new BigDecimal("100")).divide(dto.getBudget(), 0, RoundingMode.HALF_UP).intValue(), 0));
@@ -781,6 +784,31 @@ public class AppREST {
         } catch (Exception e) {
             return Response.ok(new ResponseDTO(-1, false)).build();
         }
+    }
+
+    @POST
+    @Path("add-item-sold-out")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response addItemSoldOut(ItemSoldOutAppDTO dto) {
+        ItemSoldOutAPP entity = new ItemSoldOutAPP();
+
+        entity.setItemCode(dto.getItemCode());
+        entity.setItemName(dto.getItemName());
+        entity.setQtySoldOut(dto.getQuantity());
+        entity.setDocDate(new Date());
+        entity.setSlpCode(dto.getSlpCode());
+        entity.setCompanyName(dto.getCompanyName());
+        entity.setOrigen(dto.getOrigen());
+        entity.setWhsName(dto.getWhsName());
+
+        try {
+            itemSoldOutAPPFacade.create(entity, entity.getCompanyName(), false);
+        } catch (Exception e) {
+            return Response.ok(false).build();
+        }
+        return Response.ok(true).build();
     }
 
     @POST

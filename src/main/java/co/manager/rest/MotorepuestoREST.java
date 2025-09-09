@@ -60,9 +60,9 @@ public class MotorepuestoREST {
     @Path("items")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listItemMaster() {
+    public Response listItemMaster(@QueryParam("date") String updateDate) {
         CONSOLE.log(Level.INFO, "Iniciando servicio item master de motorepuesto.");
-        List<Object[]> objects = itemSAPFacade.listItemMasterMotorepuesto();
+        List<Object[]> objects = itemSAPFacade.listItemMasterMotorepuesto(updateDate);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el item master de motorepuesto.");
@@ -99,11 +99,13 @@ public class MotorepuestoREST {
             dto.setParent(obj[23] != null ? true : false);
             dto.setItemParent((String) obj[23]);
             dto.setItemNameParent((String) obj[24]);
-            dto.setNomWeb((String) obj[25]);
-            dto.setPriceVenta((BigDecimal) obj[26]);
-            dto.setPricePromo((BigDecimal) obj[27]);
-            dto.setDescripcionLarga((String) obj[28]);
-            dto.setUltimasOfertas((String) obj[29]);
+            dto.setLastUpdateDate((String) obj[25]);
+            dto.setLastUpdateTime((String) obj[26]);
+            dto.setNomWeb((String) obj[27]);
+            dto.setPriceVenta((BigDecimal) obj[28]);
+            dto.setPricePromo((BigDecimal) obj[29]);
+            dto.setDescripcionLarga((String) obj[30]);
+            dto.setUltimasOfertas((String) obj[31]);
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");

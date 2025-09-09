@@ -342,26 +342,28 @@ public class SalesPersonSAPFacade {
 
     public List<Object[]> getSalesBudgetByBrandAndSeller(String slpCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(m.U_MARCA_PRES as varchar(50))as Marca,cast(U_CANT_PRES as numeric(18,2))as Presupuesto, ");
-        sb.append(" cast(ifnull((");
-        sb.append("  select sum(t.TOTAL)as Vendido ");
-        sb.append("  from ( ");
-        sb.append("   select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100)) as Total,s.\"SlpName\" ");
-        sb.append("   from OINV f ");
-        sb.append("   inner join INV1 d on f.\"DocEntry\"=d.\"DocEntry\" ");
-        sb.append("   inner join OSLP s on f.\"SlpCode\"=s.\"SlpCode\" ");
-        sb.append("   inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
-        sb.append("   inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
-        sb.append("   where f.\"DocType\"='I' and month(f.\"DocDate\")=month(current_date) and year(f.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append("select *,concat(concat(cast(cast(round(\"PRESUPUESTO\"/1000000,0)as int)as varchar(5)),'M - '),concat(cast(cast(floor(\"VENDIDO\"/1000000)as int)as varchar(5)),'M'))as result ");
+        sb.append("from (");
+        sb.append(" select cast(m.U_MARCA_PRES as varchar(50))as Marca,cast(U_CANT_PRES as numeric(18,2))as Presupuesto, ");
+        sb.append("  cast(ifnull((");
+        sb.append("   select sum(t.TOTAL)as Vendido ");
+        sb.append("   from ( ");
+        sb.append("    select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(f.\"DiscPrcnt\")/100)) as Total,s.\"SlpName\" ");
+        sb.append("    from OINV f ");
+        sb.append("    inner join INV1 d on f.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("    inner join OSLP s on f.\"SlpCode\"=s.\"SlpCode\" ");
+        sb.append("    inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("    inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
+        sb.append("    where f.\"DocType\"='I' and month(f.\"DocDate\")=month(current_date) and year(f.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
         sb.append(slpCode);
         sb.append("  union all ");
-        sb.append("   select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100))*-1 as Total,s.\"SlpName\" ");
-        sb.append("   from ORIN n ");
-        sb.append("   inner join RIN1 d on n.\"DocEntry\"=d.\"DocEntry\" ");
-        sb.append("   inner join OSLP s on n.\"SlpCode\"=s.\"SlpCode\" ");
-        sb.append("   inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
-        sb.append("   inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
-        sb.append("   where n.\"DocType\"='I' and month(n.\"DocDate\")=month(current_date) and year(n.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append("    select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100))*-1 as Total,s.\"SlpName\" ");
+        sb.append("    from ORIN n ");
+        sb.append("    inner join RIN1 d on n.\"DocEntry\"=d.\"DocEntry\" ");
+        sb.append("    inner join OSLP s on n.\"SlpCode\"=s.\"SlpCode\" ");
+        sb.append("    inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
+        sb.append("    inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
+        sb.append("    where n.\"DocType\"='I' and month(n.\"DocDate\")=month(current_date) and year(n.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
         sb.append(slpCode);
         sb.append("  )as t ");
         sb.append("  where t.\"SlpName\"=m.U_VEND_PRES and t.MARCA=m.U_MARCA_PRES ");
@@ -371,6 +373,10 @@ public class SalesPersonSAPFacade {
         sb.append("inner join \"OSLP\" s on s.\"SlpName\"=m.\"U_VEND_PRES\" ");
         sb.append("where m.\"U_ANO_PRES\"=year(current_date) and m.\"U_MES_PRES\"=month(current_date) and s.\"SlpCode\"=");
         sb.append(slpCode);
+        sb.append(")as m ");
+        if (companyName.contains("IGB")) {
+            sb.append(" where m.\"MARCA\"<>'ELF' ");
+        }
         sb.append(" order by 1,2 ");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
