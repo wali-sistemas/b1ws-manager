@@ -5,7 +5,6 @@ import co.manager.hanaws.dto.login.LoginDTO;
 import co.manager.hanaws.dto.login.LoginRestDTO;
 import co.manager.util.Constants;
 import co.manager.util.IGBUtils;
-import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
@@ -15,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author dbotero
+ * @author jguisao
  */
 @Stateless
 public class SessionManager implements Serializable {
@@ -40,10 +39,6 @@ public class SessionManager implements Serializable {
             LoginDTO dto = new LoginDTO(IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_DATABASE), companyName),
                     IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_PASSWORD), companyName),
                     IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(Constants.B1WS_COMPANY_USERNAME), companyName));
-
-            Gson gson = new Gson();
-            String json = gson.toJson(dto);
-            CONSOLE.log(Level.INFO, json);
 
             LoginRestDTO res = service.getSessionId(dto);
             return res.getSessionId();
