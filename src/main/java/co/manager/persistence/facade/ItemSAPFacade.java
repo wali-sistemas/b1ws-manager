@@ -457,7 +457,11 @@ public class ItemSAPFacade {
         }
         sb.append(" union all ");
         //SANBARTOLOME IGB - MTZ
-        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('01' as varchar(20))as Bodega,cast(case when (");
+        if (companyName.contains("IGB")) {
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast('01' as varchar(20))as Bodega,cast(case when (");
+        } else {
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+        }
         sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
         sb.append("  from OBIN ub ");
         sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
