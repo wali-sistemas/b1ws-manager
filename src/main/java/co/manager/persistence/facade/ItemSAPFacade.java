@@ -68,10 +68,10 @@ public class ItemSAPFacade {
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','30','05','26','32','35','45'");
+            sb.append("'01','30','05','26','32','35','45','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32','35','45'");
+            sb.append("'01','05','26','32','35','45','55'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -81,9 +81,9 @@ public class ItemSAPFacade {
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then ((select ifnull(sum(\"OnHand\"),0) from OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
-            sb.append("'01','30','05','26','32','35','45'");
+            sb.append("'01','30','05','26','32','35','45','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            sb.append("'01','05','26','32','35','45'");
+            sb.append("'01','05','26','32','35','45','55'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -91,9 +91,9 @@ public class ItemSAPFacade {
         }
         sb.append("))-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
-            sb.append("'01','30','05','26','32','35','45'");
+            sb.append("'01','30','05','26','32','35','45','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            sb.append("'01','05','26','32','35','45'");
+            sb.append("'01','05','26','32','35','45','55'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -102,9 +102,9 @@ public class ItemSAPFacade {
         sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else ((select ifnull(sum(\"OnHand\"),0) from OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
-            sb.append("'01','30','05','26','32','35','45'");
+            sb.append("'01','30','05','26','32','35','45','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            sb.append("'01','05','26','32','35','45'");
+            sb.append("'01','05','26','32','35','45','55'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -124,9 +124,9 @@ public class ItemSAPFacade {
         }
         sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
-            sb.append("'01','30','05','26','32','35','45'");
+            sb.append("'01','30','05','26','32','35','45','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
-            sb.append("'01','05','26','32','35','45'");
+            sb.append("'01','05','26','32','35','45','55'");
         } else if (companyName.contains("REDPLAS")) {
             sb.append("01");
         } else {
@@ -236,6 +236,20 @@ public class ItemSAPFacade {
             sb.append(" from OITM it ");
         }
         sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='45' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='55' ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append("union all ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
@@ -423,6 +437,22 @@ public class ItemSAPFacade {
                 sb.append("'");
             }
             sb.append(" union all ");
+            //COTA LUBRICANTE REVO IGB
+            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+            sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
+            sb.append("  from OBIN ub ");
+            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+            sb.append("  where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+            sb.append("   (select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+            sb.append(" from OITM oi ");
+            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+            sb.append(" where it.\"WhsCode\"='55' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+            if (!itemCode.equals("0")) {
+                sb.append("and oi.\"ItemCode\"='");
+                sb.append(itemCode);
+                sb.append("'");
+            }
+            sb.append(" union all ");
             //ALMAVIVA IGB - SOLO LLANTAS
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
             sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
@@ -514,10 +544,10 @@ public class ItemSAPFacade {
         sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas from( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
         sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");
-        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append("  then((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26','35','45') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
-        sb.append("  sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append("  else((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26','35','45') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)end as Stock, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26','35','45','55') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
+        sb.append("  sum(de.\"OnHandQty\") from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else((select SUM(s.\"OnHand\") from OITW s where s.\"WhsCode\" in('01','05','26','35','45','55') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)end as Stock, ");
         sb.append("  cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,cast(it.\"U_SUBMARCA\" as varchar(50))as SubMarca, ");
         sb.append("  cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append("  cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
