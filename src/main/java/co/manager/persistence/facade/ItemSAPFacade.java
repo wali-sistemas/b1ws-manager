@@ -511,7 +511,7 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.*,cast(itMrto.\"ItemName\" as varchar(100))as NombreWeb,cast(prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast(prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
-        sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA\" as varchar(1000))as DescripcionLarga,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas from(");
+        sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas from( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
         sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");

@@ -105,7 +105,8 @@ public class MotorepuestoREST {
             dto.setPriceVenta((BigDecimal) obj[28]);
             dto.setPricePromo((BigDecimal) obj[29]);
             dto.setDescripcionLarga((String) obj[30]);
-            dto.setUltimasOfertas((String) obj[31]);
+            dto.setDescripcionCorta((String) obj[31]);
+            dto.setUltimasOfertas((String) obj[32]);
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");

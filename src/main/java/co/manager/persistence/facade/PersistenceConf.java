@@ -45,16 +45,14 @@ public class PersistenceConf {
     private EntityManager emWALNOVAWEBNUBEPU;
     @PersistenceContext(unitName = "FPBNOVAWEBNUBEPU")
     private EntityManager emFPBNOVAWEBNUBEPU;
+    @PersistenceContext(unitName = "MODULANOVAWEBNUBEPU")
+    private EntityManager emMODULANOVAWEBNUBEPU;
 
     public EntityManager chooseSchema(String companyName, boolean testing, String dbType) {
         if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_WALI)) {
             return emWMS;
         } else if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_NOVAWEB)) {
             switch (companyName) {
-                case "IGB_NOVAWEB":
-                    return emIGBNOVAWEBNUBEPU;
-                case "MTZ_NOVAWEB":
-                    return emMTZNOVAWEBNUBEPU;
                 case "DSM_NOVAWEB":
                     return emDIGNOVAWEBNUBEPU;
                 case "INVERSUR_NOVAWEB":
@@ -67,6 +65,8 @@ public class PersistenceConf {
                     return emWALNOVAWEBNUBEPU;
                 case "FEMPROBN_NOVAWEB":
                     return emFPBNOVAWEBNUBEPU;
+                case "MODULA_NOVAWEB":
+                    return emMODULANOVAWEBNUBEPU;
                 default:
                     return null;
             }
