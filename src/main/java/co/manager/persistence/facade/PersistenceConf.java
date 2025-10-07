@@ -53,6 +53,10 @@ public class PersistenceConf {
             return emWMS;
         } else if (dbType.equalsIgnoreCase(Constants.DATABASE_TYPE_NOVAWEB)) {
             switch (companyName) {
+                case "IGB_NOVAWEB":
+                    return emIGBNOVAWEBNUBEPU;
+                case "MTZ_NOVAWEB":
+                    return emMTZNOVAWEBNUBEPU;
                 case "DSM_NOVAWEB":
                     return emDIGNOVAWEBNUBEPU;
                 case "INVERSUR_NOVAWEB":
