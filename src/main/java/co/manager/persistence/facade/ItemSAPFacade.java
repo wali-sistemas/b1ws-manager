@@ -143,7 +143,7 @@ public class ItemSAPFacade {
         sb.append(" left join \"@CATEGORIA\" c on c.\"Code\" = it.\"U_CATEGORIA\" ");
         sb.append(" left join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
-        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' and mar.\"Code\" not in ('45','61') ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(")as t where t.Stock>0 ");
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
@@ -541,7 +541,8 @@ public class ItemSAPFacade {
         EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.*,cast(itMrto.\"ItemName\" as varchar(100))as NombreWeb,cast(prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast(prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
-        sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas ");
+        sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas, ");
+        sb.append(" cast(\"QryGroup3\" as varchar(1))as hotSale,cast(\"SLength1\" as double)as longitud,cast(\"SWidth1\" as double)as ancho,cast(\"SHeight1\" as double)as altura,cast(\"SVolume\" as double)as volumen,cast(\"SWeight1\" as double)as peso ");
         sb.append("from( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
         sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");

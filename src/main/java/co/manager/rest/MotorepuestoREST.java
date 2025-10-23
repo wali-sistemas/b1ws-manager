@@ -107,6 +107,13 @@ public class MotorepuestoREST {
             dto.setDescripcionLarga((String) obj[30]);
             dto.setDescripcionCorta((String) obj[31]);
             dto.setUltimasOfertas((String) obj[32]);
+            dto.setHotSale((String) obj[33]);
+            dto.setLongitud((Double) obj[34]);
+            dto.setAncho((Double) obj[35]);
+            dto.setAltura((Double) obj[36]);
+            dto.setVolumen((Double) obj[37]);
+            dto.setPeso((Double) obj[38]);
+
             items.add(dto);
         }
         CONSOLE.log(Level.INFO, "Retornando el item master de motorepuesto.");

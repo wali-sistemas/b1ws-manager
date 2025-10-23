@@ -44,11 +44,17 @@ public class ItemMotorepuestoDTO {
     private String ultimasOfertas;
     private String lastUpdateDate;
     private String lastUpdateTime;
+    private String hotSale;
+    private Double longitud;
+    private Double ancho;
+    private Double altura;
+    private Double volumen;
+    private Double peso;
 
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo, String descripcionLarga, String descripcionCorta, String ultimasOfertas, String lastUpdateDate, String lastUpdateTime) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo, String descripcionLarga, String descripcionCorta, String ultimasOfertas, String lastUpdateDate, String lastUpdateTime, String hotSale, Double longitud, Double ancho, Double altura, Double volumen, Double peso) {
         this.itemCode = itemCode;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
@@ -84,6 +90,12 @@ public class ItemMotorepuestoDTO {
         this.ultimasOfertas = ultimasOfertas;
         this.lastUpdateDate = lastUpdateDate;
         this.lastUpdateTime = lastUpdateTime;
+        this.hotSale = hotSale;
+        this.longitud = longitud;
+        this.ancho = ancho;
+        this.altura = altura;
+        this.volumen = volumen;
+        this.peso = peso;
     }
 
     public String getItemCode() {
@@ -366,6 +378,54 @@ public class ItemMotorepuestoDTO {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    public String getHotSale() {
+        return hotSale;
+    }
+
+    public void setHotSale(String hotSale) {
+        this.hotSale = hotSale;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public Double getAncho() {
+        return ancho;
+    }
+
+    public void setAncho(Double ancho) {
+        this.ancho = ancho;
+    }
+
+    public Double getAltura() {
+        return altura;
+    }
+
+    public void setAltura(Double altura) {
+        this.altura = altura;
+    }
+
+    public Double getVolumen() {
+        return volumen;
+    }
+
+    public void setVolumen(Double volumen) {
+        this.volumen = volumen;
+    }
+
+    public Double getPeso() {
+        return peso;
+    }
+
+    public void setPeso(Double peso) {
+        this.peso = peso;
+    }
+
     @Override
     public String toString() {
         return "ItemMotorepuestoDTO{" +
@@ -404,6 +464,12 @@ public class ItemMotorepuestoDTO {
                 ", ultimasOfertas='" + ultimasOfertas + '\'' +
                 ", lastUpdateDate='" + lastUpdateDate + '\'' +
                 ", lastUpdateTime='" + lastUpdateTime + '\'' +
+                ", hotSale='" + hotSale + '\'' +
+                ", longitud=" + longitud +
+                ", ancho=" + ancho +
+                ", altura=" + altura +
+                ", volumen=" + volumen +
+                ", peso=" + peso +
                 '}';
     }
 }
