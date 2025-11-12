@@ -56,7 +56,7 @@ public class ItemSAPFacade {
         }
     }
 
-    public List<Object[]> getListItemsExtranet(String companyName, String statusModula, boolean pruebas) {
+    public List<Object[]> getListItemsExtranet(String slpCode, String companyName, String statusModula, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
@@ -117,8 +117,10 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
         sb.append(" from OITM it ");
         sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=");
-        if (companyName.contains("IGB")) {
+        if (companyName.contains("IGB") && !slpCode.equals("267")) {
             sb.append(4);
+        } else if (slpCode.equals("267")) {
+            sb.append(8);
         } else {
             sb.append(1);
         }
@@ -145,6 +147,9 @@ public class ItemSAPFacade {
         sb.append(" left join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(")as t where t.Stock>0 ");
+        if (slpCode.equals("267")) {
+            sb.append(" and t.Precio>0 ");
+        }
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
         sb.append("order by Producto ASC");

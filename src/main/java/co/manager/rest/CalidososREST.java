@@ -368,10 +368,16 @@ public class CalidososREST {
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);
 
+            //Validar que no exista como distribuidor
+            if (businessPartnerSAPFacade.validateDistributorInProgram(dto.getCardCode(), dto.getEmpresa() == null ? "IGB" : dto.getEmpresa(), false)) {
+                CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya existe como distribuidor en el programa de fidelizacion", dto.getDocumento());
+                return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya existe como Distribuidor en el programa de fidelización.")).build();
+            }
+
             //Validar que no se duplique un vendedor mostrador
             if (vendedorMostradorSAPFacade.validateVendMostrador("C" + dto.getDocumento(), dto.getEmpresa() == null ? "IGB" : dto.getEmpresa(), false)) {
                 CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya exite en el programa de fidelizacion", dto.getDocumento());
-                return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya exite en el programa de fidelizacion.")).build();
+                return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya exite en el programa de fidelización.")).build();
             }
 
             try {

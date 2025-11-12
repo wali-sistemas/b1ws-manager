@@ -48,8 +48,8 @@ public class BusinessPartnerSAPFacade {
         sb.append(" cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
         sb.append(" cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County,case when sn.\"ShipToDef\" = cr.\"Address\" then 1 else 2 end ShipDef, ");
         sb.append(" cast(sn.\"Balance\" as numeric(18,2))as saldo,cast(sn.\"CreditLine\" as numeric(18,2))as cupo, ");
-        sb.append(" cast(0 as numeric(18,2))as ptsPrograma ");
-        /*sb.append(" cast(ifnull((select sum(\"PtsDisp\")as \"PtsDisp\" from(select * from(");
+        sb.append(" cast(0 as numeric(18,2))as ptsPrograma, ");
+        sb.append(" cast(ifnull((select sum(\"PtsDisp\")as \"PtsDisp\" from(select * from(");
         sb.append(" select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(sum(t.\"PtsDisp\")as int)as \"PtsDisp\" ");
         sb.append(" from (");
         sb.append("  select e.\"CardCode\",case when m.\"U_Puntos\">0 then cast((sum(d.\"LineTotal\"-(d.\"LineTotal\"*(e.\"DiscPrcnt\")/100))*c.\"U_PorcPuntos\")*m.\"U_Puntos\" as numeric(18,0)) ");
@@ -132,8 +132,8 @@ public class BusinessPartnerSAPFacade {
         sb.append("where \"U_CardCode\"=sn.\"CardCode\" ");
         sb.append("group by \"U_CardCode\",\"U_Programa\" ");
         sb.append(") as r ");
-        sb.append("group by r.\"CardCode\",r.\"Programa\"");
-        sb.append("),0)as numeric(18,2))as ptsPrograma ");*/
+        sb.append("group by r.\"CardCode\" ");
+        sb.append("),0)as numeric(18,2))as ptsPrograma ");
         sb.append("from   OCRD sn ");
         sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
@@ -778,5 +778,26 @@ public class BusinessPartnerSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo los datos del cliente " + cardCode + " en " + companyName, e);
         }
         return null;
+    }
+
+    public boolean validateDistributorInProgram(String cardCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ifnull(cast(\"U_PRO_FIDELIZACION\" as int),0)as program ");
+        sb.append("from OCRD ");
+        sb.append("where \"CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            int res = (int) persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+            if (res == 1 || res == 2) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NoResultException ex) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al validar la existencia del distribuidor. ", e);
+        }
+        return false;
     }
 }
