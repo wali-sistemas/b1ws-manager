@@ -542,19 +542,22 @@ public class ItemSAPFacade {
         return null;
     }
 
-    public List<Object[]> listItemMasterMotorepuesto(String updateDate) {
+    public List<Object[]> listItemMasterMotorepuesto(String updateDate, String active) {
         EntityManager em = persistenceConf.chooseSchema("IGB", false, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.*,cast(itMrto.\"ItemName\" as varchar(100))as NombreWeb,cast(prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast(prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
+        sb.append("select t.Producto,t.Presentacion,t.PorcentajeIva,t.Bodega,case when t.Stock < 0 then 0 else t.Stock end as Stock,t.PicturName,t.Categoria,t.Marca,t.SubMarca,t.Grupo,t.SubGrupo,t.ModeloMoto, ");
+        sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.ColorCadena,t.PasoCadena,t.Viscosidad,t.Base,t.TipoArticulo,t.Keywords,t.ArticuloPadre,t.DescripPadre,t.fechaModificacion, ");
+        sb.append(" t.horaModificacion,t.marcaMoto,t.motoAplica, ");
+        sb.append(" cast(itMrto.\"ItemName\" as varchar(10000))as NombreWeb, cast((prMrto.\"Price\"*(t.PorcentajeIva/100))+prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast((prMrto2.\"Price\"*(t.PorcentajeIva/100))+prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
         sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas, ");
-        sb.append(" cast(\"QryGroup3\" as varchar(1))as hotSale,cast(\"SLength1\" as double)as longitud,cast(\"SWidth1\" as double)as ancho,cast(\"SHeight1\" as double)as altura,cast(\"SVolume\" as double)as volumen,cast(\"SWeight1\" as double)as peso ");
+        sb.append(" cast(\"QryGroup3\" as varchar(1))as hotSale,cast(\"SLength1\" as double)as longitud,cast(\"SWidth1\" as double)as ancho,cast(\"SHeight1\" as double)as altura,cast(\"SVolume\" as double)as volumen,round(cast(\"SWeight1\" as double),2)as peso ");
         sb.append("from( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
-        sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");
-        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0" );
-        sb.append("  then((select SUM(s.\"OnHand\") from \"IGB\".OITW s where s.\"WhsCode\" in('01','05','26','35','45','55') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
-        sb.append("  sum(de.\"OnHandQty\") from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is not null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append("  else((select SUM(s.\"OnHand\") from \"IGB\".OITW s where s.\"WhsCode\" in('01','05','26','35','45','55') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)end as Stock, ");
+        sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega, ");
+        sb.append(" cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','32','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then ((select ifnull(sum(\"OnHand\"),0) from \"IGB\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('01','05','26','32','35','45','55'))-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','32','35','45','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else ((select ifnull(sum(\"OnHand\"),0) from \"IGB\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('01','05','26','32','35','45','55'))-it.\"IsCommited\") ");
+        sb.append(" end as int)as Stock, ");
         sb.append("  cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,cast(it.\"U_SUBMARCA\" as varchar(50))as SubMarca, ");
         sb.append("  cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append("  cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
@@ -562,7 +565,8 @@ public class ItemSAPFacade {
         sb.append("  cast(it.\"U_COLOR_CADENA\" as varchar(50))as ColorCadena,cast(it.\"U_PASO_CADENA\" as varchar(50))as PasoCadena,null as Viscosidad,null as Base, ");
         sb.append("  cast(it.\"U_TIPO\" as varchar(15))as TipoArticulo,cast(it.\"U_KEYWORDS\" as varchar(1000))as Keywords, ");
         sb.append("  cast(it.\"U_ARTICULO\" as varchar(20))as ArticuloPadre,'' as DescripPadre, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion, ");
+        sb.append("  cast(mm.\"Name\" as varchar(20))as marcaMoto,cast(it2.\"U_MOTO\" as varchar(1000))as motoAplica ");
         sb.append(" from \"IGB\".OITM it ");
         sb.append(" left join \"VELEZ\".\"OITM\" it2 on it2.\"ItemCode\"=it.\"ItemCode\" ");
         sb.append(" left join \"VELEZ\".\"@MARCAS\" mar on mar.\"Code\"=it2.\"U_Marca\" and it2.\"U_Marca\"<>'' ");
@@ -576,14 +580,15 @@ public class ItemSAPFacade {
         sb.append(" left join \"VELEZ\".\"@CATEGORIA\" c on c.\"Code\"=it2.\"U_CATEGORIA\" ");
         sb.append(" left join \"IGB\".\"@VISCOSIDAD\" vis on vis.\"Code\"=it2.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"IGB\".\"@BASE\" bs on bs.\"Code\"=it2.\"U_BASE\" ");
+        sb.append(" left join \"VELEZ\".\"@MARCA_MOTO\" mm on mm.\"Name\"=it2.\"U_MARCA_MOTO\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"QryGroup2\"='Y' ");
         sb.append("UNION ALL ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
-        sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");
+        sb.append("  cast(19 as int)as PorcentajeIva,cast(it.\"DfltWH\" as varchar(50))as Bodega, ");
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('13','26','32','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append("  then((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('13','26','32','35') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
-        sb.append("  sum(de.\"OnHandQty\") from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('13','26','32','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append("  else((select SUM(s.\"OnHand\") from \"VARROC\".OITW s where s.\"WhsCode\" in('13','26','32','35') and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)end as Stock, ");
+        sb.append("   then ((select ifnull(sum(\"OnHand\"),0) from \"VARROC\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('13','26','32','35'))-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('13','26','32','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else ((select ifnull(sum(\"OnHand\"),0) from \"VARROC\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('13','26','32','35'))-it.\"IsCommited\") ");
+        sb.append("  end as int)as Stock, ");
         sb.append("  cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,cast(mar.\"Name\" as varchar(50))as SubMarca, ");
         sb.append("  cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append("  cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
@@ -591,7 +596,8 @@ public class ItemSAPFacade {
         sb.append("  null as ColorCadena,null as PasoCadena,cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base, ");
         sb.append("  cast(it.\"U_TIPO\" as varchar(15))as TipoArticulo,cast(it.\"U_KEYWORDS\" as varchar(1000))as Keywords, ");
         sb.append("  cast(it.\"U_ARTICULO\" as varchar(20))as ArticuloPadre,'' as DescripPadre, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion, ");
+        sb.append("  cast(mm.\"Name\" as varchar(20))as marcaMoto,cast(it2.\"U_MOTO\" as varchar(1000))as motoAplica ");
         sb.append(" from \"VARROC\".OITM it ");
         sb.append(" left join \"VELEZ\".\"OITM\" it2 on it2.\"ItemCode\"=it.\"ItemCode\" ");
         sb.append(" left join \"VELEZ\".\"@MARCAS\" mar on mar.\"Code\"=it2.\"U_Marca\" and it2.\"U_Marca\"<>'' ");
@@ -605,14 +611,15 @@ public class ItemSAPFacade {
         sb.append(" left join \"VELEZ\".\"@CATEGORIA\" c on c.\"Code\"=it2.\"U_CATEGORIA\" ");
         sb.append(" left join \"VARROC\".\"@VISCOSIDAD\" vis on vis.\"Code\"=it2.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"VARROC\".\"@BASE\" bs on bs.\"Code\"=it2.\"U_BASE\" ");
+        sb.append(" left join \"VELEZ\".\"@MARCA_MOTO\" mm on mm.\"Name\"=it2.\"U_MARCA_MOTO\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"QryGroup2\"='Y' ");
         sb.append("UNION ALL ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto,cast(ifnull(it.\"InvntryUom\",'NULL')as varchar(15))as Presentacion, ");
-        sb.append("  cast(19 as int)as PorcentajeIva,cast(ifnull(it.\"DfltWH\",'01')as varchar(50))as Bodega,case when it.\"validFor\"='N' then 0 else ");
+        sb.append("  cast(19 as int)as PorcentajeIva,cast(ifnull(it.\"DfltWH\",'01')as varchar(50))as Bodega, ");
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"VELEZ\".OBIN ub inner join \"VELEZ\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
-        sb.append("  then((select SUM(s.\"OnHand\") from \"VELEZ\".OITW s where s.\"WhsCode\"='01' and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\"-(select ");
-        sb.append("  sum(de.\"OnHandQty\") from \"VELEZ\".OBIN ub inner join \"VELEZ\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
-        sb.append("  else((select SUM(s.\"OnHand\") from \"VELEZ\".OITW s where s.\"WhsCode\"='01' and s.\"ItemCode\"=it.\"ItemCode\")-it.\"IsCommited\") end as int)end as Stock, ");
+        sb.append("   then ((select ifnull(sum(\"OnHand\"),0) from \"VELEZ\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\"='01')-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"VELEZ\".OBIN ub inner join \"VELEZ\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("   else ((select ifnull(sum(\"OnHand\"),0) from \"VELEZ\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\"='01')-it.\"IsCommited\") ");
+        sb.append("  end as int)as Stock, ");
         sb.append("  cast(it.\"PicturName\" as varchar)as PicturName,cast(c.\"Name\" as varchar(100))as Categoria,cast(mar.\"Name\" as varchar(50))as Marca,cast(it.\"U_SUBMARCA\" as varchar(50))as SubMarca, ");
         sb.append("  cast(gru.\"Name\" as varchar(50))as Grupo,cast(sub.\"Name\" as varchar(50))as SubGrupo, ");
         sb.append("  cast(it.\"U_Aplicacion\" as varchar(1000))as ModeloMoto,cast(tll.\"Name\" as varchar(50))as TipoLlanta,cast(anc.\"Name\" as varchar(50))as AnchoLlanta, ");
@@ -620,7 +627,8 @@ public class ItemSAPFacade {
         sb.append("  null as ColorCadena,null as PasoCadena,cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base, ");
         sb.append("  cast(it.\"U_TIPO\" as varchar(15))as TipoArticulo,cast(it.\"U_KEYWORDS\" as varchar(1000))as Keywords, ");
         sb.append("  cast(it.\"U_ARTICULO\" as varchar(20))as ArticuloPadre,'' as DescripPadre, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion, ");
+        sb.append("  cast(mm.\"Name\" as varchar(20))as marcaMoto,cast(it.\"U_MOTO\" as varchar(1000))as motoAplica ");
         sb.append(" from \"VELEZ\".OITM it ");
         sb.append(" left join \"VELEZ\".\"@MARCAS\" mar on mar.\"Code\"=it.\"U_Marca\" and it.\"U_Marca\"<>'' ");
         sb.append(" left join \"VELEZ\".\"@GRUPOS\" gru on gru.\"Code\"=it.\"U_Grupo\" ");
@@ -633,13 +641,19 @@ public class ItemSAPFacade {
         sb.append(" left join \"VELEZ\".\"@CATEGORIA\" c on c.\"Code\"=it.\"U_CATEGORIA\" ");
         sb.append(" left join \"VELEZ\".\"@VISCOSIDAD\" vis on vis.\"Code\"=it.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"VELEZ\".\"@BASE\" bs on bs.\"Code\"=it.\"U_BASE\" ");
+        sb.append(" left join \"VELEZ\".\"@MARCA_MOTO\" mm on mm.\"Name\"=it.\"U_MARCA_MOTO\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"CardCode\" not in ('P900255414', 'P811011909') ");
         sb.append(")as t ");
-        sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=t.Producto and itMrto.\"validFor\"='Y' ");
+        sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=t.Producto ");
         sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
         sb.append("inner join \"VELEZ\".ITM1 prMrto2 on prMrto2.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto2.\"PriceList\"=2 ");
+        if (active != null) {
+            sb.append("where itMrto.\"validFor\"='N' ");
+        } else {
+            sb.append("where itMrto.\"validFor\"='Y' ");
+        }
         if (updateDate != null) {
-            sb.append("where TO_NVARCHAR(itMrto.\"UpdateDate\", 'YYYY-MM-DD')='");
+            sb.append(" and TO_NVARCHAR(itMrto.\"UpdateDate\", 'YYYY-MM-DD')='");
             sb.append(updateDate);
             sb.append("' or TO_NVARCHAR(t.FECHAMODIFICACION, 'YYYY-MM-DD')='");
             sb.append(updateDate);

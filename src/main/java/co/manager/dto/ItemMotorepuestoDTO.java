@@ -50,11 +50,13 @@ public class ItemMotorepuestoDTO {
     private Double altura;
     private Double volumen;
     private Double peso;
+    private String motMarca;
+    private String motApplication;
 
     public ItemMotorepuestoDTO() {
     }
 
-    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo, String descripcionLarga, String descripcionCorta, String ultimasOfertas, String lastUpdateDate, String lastUpdateTime, String hotSale, Double longitud, Double ancho, Double altura, Double volumen, Double peso) {
+    public ItemMotorepuestoDTO(String itemCode, String nomWeb, String presentation, Integer iva, String whsCode, Integer stock, String pictureUrl, String category, String marca, String pictureMarcaUrl, String subMarca, String grupo, String subgrupo, String modeloMoto, String tipoLlanta, String anchoLlanta, String perfilLlanta, String rinLlanta, String talla, String colorCadena, String pasoCadena, String viscosidad, String base, boolean parent, String itemParent, String itemNameParent, String itemType, String keyword, BigDecimal priceVenta, BigDecimal pricePromo, String descripcionLarga, String descripcionCorta, String ultimasOfertas, String lastUpdateDate, String lastUpdateTime, String hotSale, Double longitud, Double ancho, Double altura, Double volumen, Double peso, String motMarca, String motApplication) {
         this.itemCode = itemCode;
         this.nomWeb = nomWeb;
         this.presentation = presentation;
@@ -96,6 +98,8 @@ public class ItemMotorepuestoDTO {
         this.altura = altura;
         this.volumen = volumen;
         this.peso = peso;
+        this.motMarca = motMarca;
+        this.motApplication = motApplication;
     }
 
     public String getItemCode() {
@@ -426,6 +430,22 @@ public class ItemMotorepuestoDTO {
         this.peso = peso;
     }
 
+    public String getMotMarca() {
+        return motMarca;
+    }
+
+    public void setMotMarca(String motMarca) {
+        this.motMarca = motMarca;
+    }
+
+    public String getMotApplication() {
+        return motApplication;
+    }
+
+    public void setMotApplication(String motApplication) {
+        this.motApplication = motApplication;
+    }
+
     @Override
     public String toString() {
         return "ItemMotorepuestoDTO{" +
@@ -470,6 +490,8 @@ public class ItemMotorepuestoDTO {
                 ", altura=" + altura +
                 ", volumen=" + volumen +
                 ", peso=" + peso +
+                ", motMarca='" + motMarca + '\'' +
+                ", motApplication='" + motApplication + '\'' +
                 '}';
     }
 }

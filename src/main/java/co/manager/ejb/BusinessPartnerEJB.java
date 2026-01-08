@@ -221,6 +221,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setBilltoDefault("DIR ONCREDIT");
                 businessPartner.setUoncredit("Y");
                 businessPartner.setUtipoNegocio("1");
+                businessPartner.setCreditLimit(dto.getCupo() == null ? 0 : dto.getCupo());
 
                 try {
                     String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());

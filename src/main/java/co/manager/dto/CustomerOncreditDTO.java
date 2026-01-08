@@ -21,6 +21,7 @@ public class CustomerOncreditDTO {
     public String city;
     public String depart;
     public String munic;
+    public Double cupo;
     public CustomerContactPersons customerContactPersons;
 
     public CustomerOncreditDTO() {
@@ -161,7 +162,15 @@ public class CustomerOncreditDTO {
     public void setMunic(String munic) {
         this.munic = munic;
     }
-  
+
+    public Double getCupo() {
+        return cupo;
+    }
+
+    public void setCupo(Double cupo) {
+        this.cupo = cupo;
+    }
+
     public CustomerContactPersons getCustomerContactPersons() {
         return customerContactPersons;
     }
@@ -268,6 +277,7 @@ public class CustomerOncreditDTO {
                 ", city='" + city + '\'' +
                 ", depart='" + depart + '\'' +
                 ", munic='" + munic + '\'' +
+                ", cupo=" + cupo +
                 ", customerContactPersons=" + customerContactPersons +
                 '}';
     }

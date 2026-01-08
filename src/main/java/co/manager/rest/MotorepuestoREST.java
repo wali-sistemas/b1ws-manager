@@ -60,9 +60,10 @@ public class MotorepuestoREST {
     @Path("items")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response listItemMaster(@QueryParam("date") String updateDate) {
+    public Response listItemMaster(@QueryParam("date") String updateDate,
+                                   @QueryParam("active") String active) {
         CONSOLE.log(Level.INFO, "Iniciando servicio item master de motorepuesto.");
-        List<Object[]> objects = itemSAPFacade.listItemMasterMotorepuesto(updateDate);
+        List<Object[]> objects = itemSAPFacade.listItemMasterMotorepuesto(updateDate, active);
 
         if (objects == null || objects.size() <= 0) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el item master de motorepuesto.");
@@ -101,18 +102,20 @@ public class MotorepuestoREST {
             dto.setItemNameParent((String) obj[24]);
             dto.setLastUpdateDate((String) obj[25]);
             dto.setLastUpdateTime((String) obj[26]);
-            dto.setNomWeb((String) obj[27]);
-            dto.setPriceVenta((BigDecimal) obj[28]);
-            dto.setPricePromo((BigDecimal) obj[29]);
-            dto.setDescripcionLarga((String) obj[30]);
-            dto.setDescripcionCorta((String) obj[31]);
-            dto.setUltimasOfertas((String) obj[32]);
-            dto.setHotSale((String) obj[33]);
-            dto.setLongitud((Double) obj[34]);
-            dto.setAncho((Double) obj[35]);
-            dto.setAltura((Double) obj[36]);
-            dto.setVolumen((Double) obj[37]);
-            dto.setPeso((Double) obj[38]);
+            dto.setMotMarca((String) obj[27]);
+            dto.setMotApplication((String) obj[28]);
+            dto.setNomWeb((String) obj[29]);
+            dto.setPriceVenta((BigDecimal) obj[30]);
+            dto.setPricePromo((BigDecimal) obj[31]);
+            dto.setDescripcionLarga((String) obj[32]);
+            dto.setDescripcionCorta((String) obj[33]);
+            dto.setUltimasOfertas((String) obj[34]);
+            dto.setHotSale((String) obj[35]);
+            dto.setLongitud((Double) obj[36]);
+            dto.setAncho((Double) obj[37]);
+            dto.setAltura((Double) obj[38]);
+            dto.setVolumen((Double) obj[39]);
+            dto.setPeso((Double) obj[40]);
 
             items.add(dto);
         }
@@ -268,6 +271,15 @@ public class MotorepuestoREST {
         }
         if (dto.getShipToCode().equals("0")) {
             dto.setShipToCode(shipToCodeDefault);
+        }
+
+        //TODO: Valores seteados analizar despues de desplegar y estabilizar
+        dto.setIdTransport("35");
+        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+            dto.setCardCode("C900998242");
+            dto.setSlpCode(Long.valueOf(22));
+        } else {
+            dto.setSlpCode(Long.valueOf(5));
         }
 
         Gson gson = new Gson();

@@ -369,7 +369,7 @@ public class CalidososREST {
             CONSOLE.log(Level.INFO, json);
 
             //Validar que no exista como distribuidor
-            if (businessPartnerSAPFacade.validateDistributorInProgram(dto.getCardCode(), dto.getEmpresa() == null ? "IGB" : dto.getEmpresa(), false)) {
+            if (businessPartnerSAPFacade.validateDistributorInProgram("C" + dto.getDocumento(), dto.getEmpresa() == null ? "IGB" : dto.getEmpresa(), false)) {
                 CONSOLE.log(Level.WARNING, "El vendedor mostrador [{0}] ya existe como distribuidor en el programa de fidelizacion", dto.getDocumento());
                 return Response.ok(new ResponseDTO(-1, "El vendedor mostrador [" + dto.getDocumento() + "] ya existe como Distribuidor en el programa de fidelización.")).build();
             }

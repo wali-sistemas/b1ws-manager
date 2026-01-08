@@ -113,7 +113,7 @@ public class ModulaREST {
                 return Response.ok(true).build();
             }
         }
-        return Response.ok(false).build();
+        return Response.ok(true).build();
     }
 
     @POST

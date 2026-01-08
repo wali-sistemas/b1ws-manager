@@ -144,7 +144,7 @@ public class RedimePuntosSAPFacade {
             sb.append(cardCode);
             sb.append("' ");
         }
-        sb.append("group by \"U_CardCode\" ");
+        sb.append("group by \"U_CardCode\",\"U_Programa\" ");
         sb.append(") as r ");
         sb.append("group by r.\"CardCode\",r.\"Programa\"");
         sb.append("order by r.\"CardCode\",r.\"Programa\" ASC ");

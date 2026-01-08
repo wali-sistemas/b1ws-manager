@@ -197,9 +197,9 @@ public class AppREST {
 
         List<Object[]> objects = new ArrayList<>();
         if (slpCode == null) {
-            objects = itemSAPFacade.getListItemsExtranet(null, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
-            objects = itemSAPFacade.getListItemsExtranet(null, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else if (companyname.equals("REDPLAS")) {
             objects = itemSAPFacade.getListItemsBySellerRedPlas(slpCode, companyname, false);
         } else {

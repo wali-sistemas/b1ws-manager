@@ -166,9 +166,9 @@ public class PedBoxREST {
         List<Object[]> objects = new ArrayList<>();
 
         if (slpCode == null) {
-            objects = itemSAPFacade.getListItemsExtranet(null, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
-            objects = itemSAPFacade.getListItemsExtranet(null, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
         } else {
             objects = itemSAPFacade.getListItemsExtranet(slpCode, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
             //TODO: Se usaba cuando definimos bodegas de llantas por default
@@ -2214,12 +2214,6 @@ public class PedBoxREST {
         } else if (dto.getTypeDoc() == null || dto.getTypeDoc().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo typeDoc es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo typeDoc es obligatorio.")).build();
-        } else if (dto.getFirstname() == null || dto.getFirstname().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo firstname es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo firstname es obligatorio.")).build();
-        } else if (dto.getLastname1() == null || dto.getLastname1().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo lastname1 es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo lastname1 es obligatorio.")).build();
         } else if (dto.getPhone() == null || dto.getPhone().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo phone es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + " .Campo phone es obligatorio.")).build();

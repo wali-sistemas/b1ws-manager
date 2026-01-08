@@ -48,7 +48,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(" cast(ifnull(upper(cr.\"Street\"),'') as varchar(100)) as Address, cast(ifnull(upper(cr.\"City\"),'') as varchar(50)) as City, ");
         sb.append(" cast(ifnull(upper(cs.\"Name\"),'') as varchar(50)) as County,case when sn.\"ShipToDef\" = cr.\"Address\" then 1 else 2 end ShipDef, ");
         sb.append(" cast(sn.\"Balance\" as numeric(18,2))as saldo,cast(sn.\"CreditLine\" as numeric(18,2))as cupo, ");
-        sb.append(" cast(0 as numeric(18,2))as ptsPrograma, ");
+        /*sb.append(" cast(0 as numeric(18,2))as ptsPrograma ");*/
         sb.append(" cast(ifnull((select sum(\"PtsDisp\")as \"PtsDisp\" from(select * from(");
         sb.append(" select cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"Programa\" as varchar(50))as \"Programa\",cast(sum(t.\"PtsDisp\")as int)as \"PtsDisp\" ");
         sb.append(" from (");

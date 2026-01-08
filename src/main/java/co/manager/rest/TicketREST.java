@@ -131,7 +131,8 @@ public class TicketREST {
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response assignTicket(@QueryParam("username") String username, TicketDTO dto) {
+    public Response assignTicket(TicketDTO dto,
+                                 @QueryParam("username") String username) {
         boolean resp = ticketTIFacade.assignTicket(dto.getIdTicket(), dto.getEmpSet().toLowerCase(), dto.getPriority(), "ASIGNADO");
 
         if (!resp) {
