@@ -33,7 +33,7 @@ public class WarehouseSAPFacade {
 
         if (companyName.equals("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32','35','45','55') ");
+            sb.append("'01','05','26','32','35','60','55') ");
             sb.append("union all ");
             sb.append("select '00' as Bodega,'VENTAS PERDIDAS' as Descripcion,2 as type ");
             sb.append("from dummy ");
