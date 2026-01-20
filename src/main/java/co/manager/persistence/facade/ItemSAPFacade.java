@@ -146,7 +146,7 @@ public class ItemSAPFacade {
         sb.append(" left join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
-        sb.append(")as t where t.Stock>0 ");
+        sb.append(")as t /*where t.Stock>0*/ ");
         if (slpCode.equals("267")) {
             sb.append(" and t.Precio>0 ");
         }
@@ -458,7 +458,7 @@ public class ItemSAPFacade {
                 sb.append("'");
             }
             sb.append(" union all ");
-            //ALMAVIVA IGB - SOLO LLANTAS
+            //FLEXILOGISTICA MEDELLIN IGB - SOLO LLANTAS
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
             sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
             sb.append("  from OBIN ub ");

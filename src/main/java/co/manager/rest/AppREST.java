@@ -223,7 +223,7 @@ public class AppREST {
             dto.setPrice((BigDecimal) obj[3]);
             dto.setIva((Integer) obj[4]);
             dto.setWhsCode((String) obj[5]);
-            dto.setStock((Integer) obj[6]);
+            dto.setStock((Integer) obj[6] < 0 ? 0 : (Integer) obj[6]);
             dto.setDiscountItem(0);
             dto.setDiscountPorc(0);
             dto.setPictureUrl("http://wali.igbcolombia.com:8080/shared/images/mtz/" + obj[7]);
