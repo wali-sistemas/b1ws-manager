@@ -148,7 +148,7 @@ public class ItemSAPFacade {
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(")as t /*where t.Stock>0*/ ");
         if (slpCode.equals("267")) {
-            sb.append(" and t.Precio>0 ");
+            sb.append(" where t.Precio>0 ");
         }
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
