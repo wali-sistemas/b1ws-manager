@@ -222,7 +222,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(")as t ");
         sb.append("inner join OSLP a ON a.\"SlpCode\" = t.\"SlpCode\" ");
         sb.append("inner join OCTG c ON c.\"GroupNum\" = t.\"GroupNum\" ");
-        sb.append("where t.\"SlpCode\"=");
+        sb.append("where t.tipoDoc='Factura' and t.\"SlpCode\"=");
         sb.append(slpCode);
         if (cardCode != null) {
             sb.append(" and t.cardCode='");
