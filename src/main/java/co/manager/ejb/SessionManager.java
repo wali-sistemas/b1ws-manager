@@ -43,7 +43,7 @@ public class SessionManager implements Serializable {
             LoginRestDTO res = service.getSessionId(dto);
             return res.getSessionId();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server. ", e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer. ", e);
             return null;
         }
     }
@@ -53,10 +53,10 @@ public class SessionManager implements Serializable {
         try {
             //pendiente duda para cerrar sessionId
             //service.closeSessionId(sessionId);
-            CONSOLE.log(Level.INFO, "Sesion [{0}] DI Server finalizada con exito", sessionId);
+            CONSOLE.log(Level.INFO, "Sesion [{0}] ServiceLayer finalizada con exito", sessionId);
             return "success";
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al finalizar la sesion en el DI Server " + sessionId, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al finalizar la sesion en el ServiceLayer " + sessionId, e);
             return "error";
         }
     }

@@ -1069,7 +1069,7 @@ public class PedBoxREST {
             if (dto.getNumAtCard().substring(0, 1).equals("E")) {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
-                        detail.setWhsCode("26");
+                        detail.setWhsCode("60");
                     } else if ((detail.getItemCode().substring(0, 1).equals("U") || detail.getItemCode().substring(0, 2).equals("PW")) && detail.getGroup().equals("LLANTAS")) {
                         detail.setWhsCode("05");
                     } else {
@@ -1177,7 +1177,7 @@ public class PedBoxREST {
                             } else {
                                 detailSalesOrder_LL_bog.add(setDetailOrder(detail, ocrCode));
                             }
-                        } else if (detail.getWhsCode().equals("45")) {
+                        } else if (detail.getWhsCode().equals("60")) {
                             if (detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_med_one_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
@@ -1922,7 +1922,7 @@ public class PedBoxREST {
             if (detailSalesOrder_LL_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_one_asterisk);
-                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setNumAtCard(numAtCard + "LL60D1");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByExtranet(dto);
@@ -1947,7 +1947,7 @@ public class PedBoxREST {
             if (detailSalesOrder_LL_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_two_asterisk);
-                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setNumAtCard(numAtCard + "LL60D1");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByExtranet(dto);
@@ -1972,7 +1972,7 @@ public class PedBoxREST {
             if (detailSalesOrder_LL_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_combo);
-                dto.setNumAtCard(numAtCard + "LL45DC");
+                dto.setNumAtCard(numAtCard + "LL60DC");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByExtranet(dto);
@@ -2146,7 +2146,7 @@ public class PedBoxREST {
             if (detailSalesOrder_LL_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med);
-                dto.setNumAtCard(numAtCard + "LL45");
+                dto.setNumAtCard(numAtCard + "LL60");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByExtranet(dto);

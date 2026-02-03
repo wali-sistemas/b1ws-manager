@@ -1,6 +1,8 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
+import co.manager.ejb.BasicFunctions;
+import co.manager.ejb.BusinessPartnerEJB;
 import co.manager.ejb.ManagerApplicationBean;
 import co.manager.ejb.SalesOrderEJB;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
@@ -62,6 +64,10 @@ public class AppREST {
     private HistoryGeoLocationSAPFacade historyGeoLocationSAPFacade;
     @EJB
     private ItemSoldOutAPPFacade itemSoldOutAPPFacade;
+    @EJB
+    private BusinessPartnerEJB businessPartnerEJB;
+    @EJB
+    private BasicFunctions basicFunctions;
 
     @GET
     @Path("active-companies")
@@ -268,7 +274,7 @@ public class AppREST {
                 //seteando sucursal se maneja como integer.
                 sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
             } else {
-                if (itemCode.substring(0, 2).equals("LR") && whsCode.equals("45")) {
+                if (itemCode.substring(0, 2).equals("LR") && whsCode.equals("60")) {
                     sucursal = "01";
                 } else {
                     sucursal = whsCode.trim().length() <= 1 && !whsCode.equals("0") ? "0" + whsCode.trim() : whsCode.trim();
@@ -948,9 +954,9 @@ public class AppREST {
             dto.setShipToCode(shipToCodeDefault);
         }
 
-        //TODO: asignar bodega 01 a la 45 cuando sea solo lubricante
+        //TODO: asignar bodega 01 a la 60 cuando sea solo lubricante
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
-            if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("45")) {
+            if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("60")) {
                 detail.setWhsCode("01");
             }
         }
@@ -1045,7 +1051,7 @@ public class AppREST {
                             } else {
                                 detailSalesOrder_LL_bog.add(setDetailOrder(detail, ocrCode));
                             }
-                        } else if (detail.getWhsCode().equals("45")) {
+                        } else if (detail.getWhsCode().equals("60")) {
                             if (detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_med_one_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
@@ -1790,7 +1796,7 @@ public class AppREST {
             if (detailSalesOrder_LL_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_one_asterisk);
-                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setNumAtCard(numAtCard + "LL60D1");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1815,7 +1821,7 @@ public class AppREST {
             if (detailSalesOrder_LL_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_two_asterisk);
-                dto.setNumAtCard(numAtCard + "LL45D1");
+                dto.setNumAtCard(numAtCard + "LL60D1");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1840,7 +1846,7 @@ public class AppREST {
             if (detailSalesOrder_LL_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med_combo);
-                dto.setNumAtCard(numAtCard + "LL45DC");
+                dto.setNumAtCard(numAtCard + "LL60DC");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -2014,7 +2020,7 @@ public class AppREST {
             if (detailSalesOrder_LL_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_LL_med);
-                dto.setNumAtCard(numAtCard + "LL45");
+                dto.setNumAtCard(numAtCard + "LL60");
                 dto.setSerialMDL("");
 
                 res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -2105,6 +2111,57 @@ public class AppREST {
             }
         }
         return Response.ok(new ResponseDTO(0, order.getIdOrder())).build();
+    }
+
+    @POST
+    @Path("create-customer-lead")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response createCustomerLead(CustomerLeadDTO dto) {
+        if (dto.getCompanyName() == null || dto.getCompanyName().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente. Campo companyName es obligatorio");
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente. Campo companyName es obligatorio.")).build();
+        } else if (dto.getDocument() == null || dto.getDocument().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo documento es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo documento es obligatorio.")).build();
+        } else if (dto.getCellular() == null || dto.getCellular().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo cellular es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo cellular es obligatorio.")).build();
+        } else if (dto.getMail() == null || dto.getMail().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo mail es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo mail es obligatorio.")).build();
+        } else if (dto.getDepartament() == null || dto.getDepartament().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo departamento es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo departamento es obligatorio.")).build();
+        } else if (dto.getCity() == null || dto.getCity().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo ciudad es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo ciudad es obligatorio.")).build();
+        } else if (dto.getAddress() == null || dto.getAddress().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo address es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo address es obligatorio.")).build();
+        } else if (dto.getCellular().length() > 10) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo cellular excede el tamaño permitido", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo cellular es obligatorio.")).build();
+        }
+
+        //Validar si ya existe el cliente en SAP.
+        Object[] res = businessPartnerSAPFacade.findCustomer("C" + dto.getDocument(), dto.getCompanyName(), false);
+        if ((Boolean) res[0]) {
+            CONSOLE.log(Level.INFO, "El cliente ya existe con el id {0}", "C" + dto.getDocument());
+            return Response.ok(new ResponseDTO(0, "C" + dto.getDocument())).build();
+        }
+
+        CONSOLE.log(Level.INFO, "Iniciando creacion del prospecto de cliente en " + dto.getCompanyName(), dto.toString());
+
+        int digito = basicFunctions.getDigitoDian(dto.getDocument());
+        dto.setLicTradNum(dto.getDocument() + "-" + digito);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
+        return Response.ok(businessPartnerEJB.createCustomerLead(dto)).build();
     }
 
     private ResponseDTO sortOutItemsOnlyParts(SalesOrderDTO dto, String ocrCode) {

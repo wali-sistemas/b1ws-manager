@@ -1,6 +1,7 @@
 package co.manager.ejb;
 
 import co.manager.dto.BusinessPartnerDTO;
+import co.manager.dto.CustomerLeadDTO;
 import co.manager.dto.CustomerOncreditDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
@@ -60,10 +61,10 @@ public class BusinessPartnerEJB {
         try {
             sessionId = sessionManager.login(dto.getCompanyName());
             if (sessionId != null) {
-                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
             } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
-                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
             }
         } catch (Exception ignored) {
         }
@@ -165,9 +166,9 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
             } else {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
             }
         }
         return new ResponseDTO(0, cardCode);
@@ -180,10 +181,10 @@ public class BusinessPartnerEJB {
         try {
             sessionId = sessionManager.login(dto.getCompanyName());
             if (sessionId != null) {
-                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
             } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
-                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
             }
         } catch (Exception ignored) {
         }
@@ -297,9 +298,9 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
             } else {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
             }
         }
         return new ResponseDTO(0, "Cliente creado exitosamente. " + cardCode);
@@ -312,10 +313,10 @@ public class BusinessPartnerEJB {
         try {
             sessionId = sessionManager.login(dto.getCompanyName());
             if (sessionId != null) {
-                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
             } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
-                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
             }
         } catch (Exception ignored) {
         }
@@ -472,9 +473,110 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
             } else {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
+            }
+        }
+        return new ResponseDTO(0, cardCode);
+    }
+
+    public ResponseDTO createCustomerLead(CustomerLeadDTO dto) {
+        String cardCode = "";
+        //1. Login
+        String sessionId = null;
+        try {
+            sessionId = sessionManager.login(dto.getCompanyName());
+            if (sessionId != null) {
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
+            } else {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+            }
+        } catch (Exception ignored) {
+        }
+        //2. Procesar documento
+        if (sessionId != null) {
+            try {
+                BusinessPartnersEcommerceDTO businessPartner = new BusinessPartnersEcommerceDTO();
+                businessPartner.setCardCode("L" + dto.getDocument());
+                businessPartner.setCardName(dto.getCardName().toUpperCase());
+                businessPartner.setCardType("L");
+                businessPartner.setFederalTaxID(dto.getLicTradNum());
+                businessPartner.setGroupCode(100l);
+                businessPartner.setCellular(dto.getCellular());
+                businessPartner.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartner.setUmanejo("DIA");
+                businessPartner.setUdocFormEntFE(1l);
+                businessPartner.setUcelularFE(dto.getCellular());
+                businessPartner.setUbpcortc("RS");
+                businessPartner.setUbpcotdc("13");
+                businessPartner.setUbpcotp("01");
+                //businessPartner.setUbpcocs(dto.getCodMunicipio());
+                //businessPartner.setUbpcoCity(dto.getCodMunicipio());
+                businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
+                businessPartner.setUbpvtper("PNRE");
+                businessPartner.setSalesPersonCode("22");
+                businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
+                businessPartner.setDebitorAccount("13050505");
+                businessPartner.setBilltoDefault("WALI SALES");
+
+                try {
+                    String date2 = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                    businessPartner.setUfeccrea(date2);
+                } catch (Exception e) {
+                }
+
+                List<BusinessPartnersEcommerceDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    BusinessPartnersEcommerceDTO.BPAddresses.BPAddress address = new BusinessPartnersEcommerceDTO.BPAddresses.BPAddress();
+                    address.setAddressName("WALI SALES");
+                    address.setStreet(dto.getAddress().toUpperCase());
+                    address.setCity(dto.getDepartament() + " (" + dto.getCity() + ")");
+                    address.setState("05");
+                    address.setCountry("CO");
+
+                    if (i == 0) {
+                        address.setAddressType("bo_BillTo");
+                    } else {
+                        address.setAddressType("bo_ShipTo");
+                        address.setTaxCode("IVAG19");
+                    }
+
+                    address.setBpCode("L" + dto.getDocument());
+                    address.setRowNum(0l);
+                    addresses.add(address);
+                }
+                businessPartner.setBpAddresses(addresses);
+
+                CONSOLE.log(Level.INFO, "Iniciando creacion del prospecto de cliente para {0}", dto.getCompanyName());
+                Gson gson = new Gson();
+                String json = gson.toJson(businessPartner);
+                CONSOLE.log(Level.INFO, json);
+
+                BusinessPartnersRestDTO res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
+                cardCode = res.getCardCode();
+
+                if (cardCode.isEmpty()) {
+                    CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el prospecto de cliente. Resetear el sesión ID.");
+                    return new ResponseDTO(-1, "Ocurrió un problema al crear el prospecto de cliente. Resetear el sesión ID.");
+                } else {
+                    CONSOLE.log(Level.INFO, "Se creo el prospecto de cliente satisfactoriamente");
+                    //agregar las resposabilidades fiscales al socio de negocio
+                    addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el prospecto de cliente ", e);
+                return new ResponseDTO(-1, e.getMessage());
+            }
+        }
+        //3. Logout
+        if (sessionId != null) {
+            String resp = sessionManager.logout(sessionId);
+            if (resp.equals("error")) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
+            } else {
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
             }
         }
         return new ResponseDTO(0, cardCode);
@@ -486,10 +588,10 @@ public class BusinessPartnerEJB {
         try {
             sessionId = sessionManager.login(dto.getCompanyName());
             if (sessionId != null) {
-                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
             } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
-                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
             }
         } catch (Exception ignored) {
         }
@@ -587,9 +689,9 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
             } else {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
             }
         }
         CONSOLE.log(Level.INFO, "Socio de negocio [" + dto.getCardCode() + "] actualizado con exito en " + dto.getCompanyName());
@@ -655,10 +757,10 @@ public class BusinessPartnerEJB {
         try {
             sessionId = sessionManager.login(companyName);
             if (sessionId != null) {
-                CONSOLE.log(Level.INFO, "Se inicio sesion en DI Server satisfactoriamente. SessionID={0}", sessionId);
+                CONSOLE.log(Level.INFO, "Se inicio sesion en ServiceLayer satisfactoriamente. SessionID={0}", sessionId);
             } else {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el DI Server.");
-                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el DI Server.");
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
+                return new ResponseDTO(-1, "Ocurrio un error al iniciar sesion en el ServiceLayer.");
             }
         } catch (Exception ignored) {
         }
@@ -678,9 +780,9 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             String resp = sessionManager.logout(sessionId);
             if (resp.equals("error")) {
-                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de DI Server", sessionId);
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error al cerrar la sesion [{0}] de ServiceLayer", sessionId);
             } else {
-                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de DI Server correctamente", sessionId);
+                CONSOLE.log(Level.INFO, "Se cerro la sesion [{0}] de ServiceLayer correctamente", sessionId);
             }
         }
         return new ResponseDTO(0, "Registro de responsabilidades fiscales exitoso.");

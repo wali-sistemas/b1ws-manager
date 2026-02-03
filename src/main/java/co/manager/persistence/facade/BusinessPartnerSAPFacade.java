@@ -138,7 +138,7 @@ public class BusinessPartnerSAPFacade {
         sb.append("inner  join CRD1 cr on cr.\"CardCode\" = sn.\"CardCode\" ");
         sb.append("inner  join OCTG oc on sn.\"GroupNum\" = oc.\"GroupNum\" ");
         sb.append("inner  join OCST cs on cs.\"Code\" = cr.\"State\" ");
-        sb.append("where  sn.\"CardType\" = 'C' and sn.\"frozenFor\" = 'N' and cs.\"Country\" = 'CO' and sn.\"SlpCode\" <> -1 ");
+        sb.append("where  sn.\"CardType\" in ('C','L') and sn.\"frozenFor\" = 'N' and cs.\"Country\" = 'CO' and sn.\"SlpCode\" <> -1 ");
         sb.append("       and cr.\"AdresType\" = 'S' ");
         if (!slpCode.equals("81")) {
             sb.append(" and sn.\"SlpCode\" =");
