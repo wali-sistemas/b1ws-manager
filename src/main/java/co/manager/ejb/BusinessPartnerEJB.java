@@ -503,7 +503,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setCardName(dto.getCardName().toUpperCase());
                 businessPartner.setCardType("L");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
-                businessPartner.setGroupCode(100l);
+                businessPartner.setGroupCode(dto.getCompanyName().contains("IGB") ? 100L : 1L);
                 businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setUmanejo("DIA");
@@ -516,7 +516,7 @@ public class BusinessPartnerEJB {
                 //businessPartner.setUbpcoCity(dto.getCodMunicipio());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
-                businessPartner.setSalesPersonCode("22");
+                businessPartner.setSalesPersonCode(dto.getSlpCode());
                 businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
                 businessPartner.setDebitorAccount("13050505");
                 businessPartner.setBilltoDefault("WALI SALES");
