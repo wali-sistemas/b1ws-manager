@@ -285,7 +285,7 @@ public class SalesOrderEJB {
                 order.setSalesPersonCode(dto.getSlpCode());
                 order.setNumAtCard(dto.getNumAtCard());
                 order.setJournalMemo("Pedidos de cliente - " + dto.getCardCode());
-                order.setUtransp(dto.getIdTransport());
+                order.setUtransp("35");
                 order.setConfirmed(dto.getConfirmed());
                 order.setUseparador(dto.getStatus());
                 order.setShipToCode(dto.getShipToCode());

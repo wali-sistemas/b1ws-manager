@@ -115,7 +115,7 @@ public class AppREST {
             dto.setSlpCode((String) obj[0]);
             dto.setSlpName((String) obj[1]);
             dto.setPassWord((String) obj[2]);
-            dto.setAppVersion("12.5");
+            dto.setAppVersion("12.6");
             dto.setCompanyName(companyName);
 
             data.add(dto);
