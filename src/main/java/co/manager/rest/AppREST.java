@@ -907,6 +907,7 @@ public class AppREST {
         if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
+            dto.setDiscountPercent(20.0);
         } else if (dto.getCompanyName().contains("VELEZ")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
@@ -2134,6 +2135,9 @@ public class AppREST {
         } else if (dto.getDepartament() == null || dto.getDepartament().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo departamento es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo departamento es obligatorio.")).build();
+        } else if (dto.getMunicipio() == null || dto.getMunicipio().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo municipio es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo municipio es obligatorio.")).build();
         } else if (dto.getCity() == null || dto.getCity().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo ciudad es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo ciudad es obligatorio.")).build();

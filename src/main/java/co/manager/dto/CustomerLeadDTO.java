@@ -28,6 +28,7 @@ public class CustomerLeadDTO {
     //Ubicación
     private String address;
     private String departament;
+    private String municipio;
     private String city;
 
     public CustomerLeadDTO() {
@@ -169,6 +170,14 @@ public class CustomerLeadDTO {
         this.departament = departament;
     }
 
+    public String getMunicipio() {
+        return municipio;
+    }
+
+    public void setMunicipio(String municipio) {
+        this.municipio = municipio;
+    }
+
     public String getCity() {
         return city;
     }
@@ -189,6 +198,7 @@ public class CustomerLeadDTO {
                 ", companyName='" + companyName + '\'' +
                 ", address='" + address + '\'' +
                 ", departament='" + departament + '\'' +
+                ", municipio='" + municipio + '\'' +
                 ", city='" + city + '\'' +
                 '}';
     }

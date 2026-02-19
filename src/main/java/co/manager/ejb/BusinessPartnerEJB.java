@@ -368,7 +368,7 @@ public class BusinessPartnerEJB {
                     businessPartner.setUfeccrea(date2);
                 } catch (Exception e) {
                 }
-
+                //Contacto
                 List<BusinessPartnersDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
                 for (int i = 0; i < 1; i++) {
                     BusinessPartnersDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersDTO.ContactEmployees.ContactEmployee();
@@ -398,7 +398,7 @@ public class BusinessPartnerEJB {
                     businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE());
                     businessPartner.setDebitorAccount("13050505");
                 }
-
+                //Direccion
                 List<BusinessPartnersDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
                 for (int i = 0; i < 2; i++) {
                     BusinessPartnersDTO.BPAddresses.BPAddress address = new BusinessPartnersDTO.BPAddresses.BPAddress();
@@ -434,7 +434,7 @@ public class BusinessPartnerEJB {
                     addresses.add(address);
                 }
                 businessPartner.setBpAddresses(addresses);
-
+                //Impuestos
                 List<BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax> bpWithholdingTaxes = new ArrayList<>();
                 for (BusinessPartnerDTO.WithholdingTax obj : dto.getWithholdingTax()) {
                     BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax bpWithholdingTax = new BusinessPartnersDTO.BPWithholdingTaxCollection.BPWithholdingTax();
@@ -504,16 +504,19 @@ public class BusinessPartnerEJB {
                 businessPartner.setCardType("L");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setGroupCode(dto.getCompanyName().contains("IGB") ? 100L : 1L);
-                businessPartner.setCellular(dto.getCellular());
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setUmanejo("DIA");
                 businessPartner.setUdocFormEntFE(1l);
+                businessPartner.setPhone1(dto.getCellular());
+                businessPartner.setPhone2(dto.getCellular());
+                businessPartner.setCellular(dto.getCellular());
                 businessPartner.setUcelularFE(dto.getCellular());
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
                 businessPartner.setUbpcotp("01");
-                //businessPartner.setUbpcocs(dto.getCodMunicipio());
-                //businessPartner.setUbpcoCity(dto.getCodMunicipio());
+                businessPartner.setUtrasp("03");
+                businessPartner.setUbpcocs(dto.getMunicipio());
+                businessPartner.setUbpcoCity(dto.getCity());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setSalesPersonCode(dto.getSlpCode());
@@ -526,14 +529,15 @@ public class BusinessPartnerEJB {
                     businessPartner.setUfeccrea(date2);
                 } catch (Exception e) {
                 }
-
+                //Direccion
                 List<BusinessPartnersEcommerceDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
                 for (int i = 0; i < 2; i++) {
                     BusinessPartnersEcommerceDTO.BPAddresses.BPAddress address = new BusinessPartnersEcommerceDTO.BPAddresses.BPAddress();
                     address.setAddressName("WALI SALES");
                     address.setStreet(dto.getAddress().toUpperCase());
-                    address.setCity(dto.getDepartament() + " (" + dto.getCity() + ")");
-                    address.setState("05");
+                    address.setCity(dto.getCity());
+                    address.setState(dto.getDepartament());
+                    address.setUmunicipio(dto.getMunicipio());
                     address.setCountry("CO");
 
                     if (i == 0) {
@@ -615,9 +619,9 @@ public class BusinessPartnerEJB {
                 //Obtener el objeto completo para asignar los valores que se van a modificar
                 BusinessPartnersRestDTO businessPartnersRestDTO = service.getBusinessPartner(dto.getCardCode(), sessionId);
 
-                businessPartnersRestDTO.setCardCode(dto.getCardCode());
+                businessPartnersRestDTO.setCardCode(dto.getCardCode().replace("L", "C"));
                 businessPartnersRestDTO.setCardName(dto.getCardName());
-                businessPartnersRestDTO.setCardType(businessPartnersRestDTO.getCardType());
+                businessPartnersRestDTO.setCardType("C");
                 businessPartnersRestDTO.setGroupCode(Long.valueOf(dto.getGrupo()));
                 businessPartnersRestDTO.setFederalTaxID(dto.getLicTradNum());
                 businessPartnersRestDTO.setProperties4(dto.getDocumentRut());
@@ -657,7 +661,7 @@ public class BusinessPartnerEJB {
                     businessPartnersRestDTO.setSalesPersonCode(Long.valueOf(dto.getSlpCode()));
                     businessPartnersRestDTO.setUaddInFaElectronicaEmailContactoFE(dto.getMailFE());
                 }
-                //Asignación de códigos para impuestos de retención
+                //Impuestos
                 List<BusinessPartnersRestDTO.BPWithholdingTaxCollection.BPWithholdingTax>
                         bpWithholdingTaxes = new ArrayList<>();
                 for (BusinessPartnerDTO.WithholdingTax obj : dto.getWithholdingTax()) {
@@ -668,6 +672,42 @@ public class BusinessPartnerEJB {
                     bpWithholdingTaxes.add(bpWithholdingTax);
                 }
                 businessPartnersRestDTO.setBpWithholdingTaxCollection(bpWithholdingTaxes);
+                //Contacto
+                List<BusinessPartnersRestDTO.ContactEmployees.ContactEmployee> contactEmployees = new ArrayList<>();
+                for (int i = 0; i < 1; i++) {
+                    BusinessPartnersRestDTO.ContactEmployees.ContactEmployee contactEmployee = new BusinessPartnersRestDTO.ContactEmployees.ContactEmployee();
+                    contactEmployee.setName(dto.getContactPerson());
+                    contactEmployee.setFirstName(dto.getNameContactPerson());
+                    contactEmployee.setMiddleName(dto.getSecondNamecontactPerson());
+                    contactEmployee.setLastName(dto.getLastNameContactPerson());
+                    contactEmployee.setPosition(dto.getOccupationContactPerson());
+                    contactEmployee.setPhone1(dto.getPhoneContactPerson());
+                    contactEmployee.setDateOfBirth(dto.getDateContactPerson());
+                    contactEmployees.add(contactEmployee);
+                }
+                businessPartnersRestDTO.setContactEmployees(contactEmployees);
+                //Direccion
+                List<BusinessPartnersRestDTO.BPAddresses.BPAddress> addresses = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    BusinessPartnersRestDTO.BPAddresses.BPAddress address = new BusinessPartnersRestDTO.BPAddresses.BPAddress();
+                    address.setAddressName("WALI SALES");
+                    address.setStreet(dto.getAddress().toUpperCase());
+                    address.setCity(dto.getCodeCity());
+                    address.setState("05");
+                    address.setCountry("CO");
+
+                    if (i == 0) {
+                        address.setAddressType("bo_BillTo");
+                    } else {
+                        address.setAddressType("bo_ShipTo");
+                        address.setTaxCode("IVAG19");
+                    }
+
+                    address.setBpCode("C" + dto.getDocument());
+                    address.setRowNum(0l);
+                    addresses.add(address);
+                }
+                businessPartnersRestDTO.setBpAddresses(addresses);
 
                 CONSOLE.log(Level.INFO, "Actualizando información del socio de negocio {0} para {1}", new Object[]{dto.getCardCode(), dto.getCompanyName()});
                 Gson gson = new Gson();
@@ -680,6 +720,9 @@ public class BusinessPartnerEJB {
                     return new ResponseDTO(-1, "Ocurrio un error actualizando el socio de negocio " + dto.getCardCode());
                 }
                 //TODO: pendiente la modificación de responsabilidad fiscal, direcciones, persona de contacto
+                //agregar las resposabilidades fiscales al socio de negocio
+
+                addRespFisSN(businessPartnersRestDTO.getCardCode(), businessPartnersRestDTO.getCardName(), dto.getCodeResFis(), dto.getDescResFis(), sessionId, dto.getCompanyName());
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error actualizando el socio de negocio " + dto.getCardCode() + " en " + dto.getCompanyName(), e);
                 return new ResponseDTO(-1, e.getMessage());

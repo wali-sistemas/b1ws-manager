@@ -82,8 +82,9 @@ public class PedBoxREST {
     @Path("list-municipios/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getMunicipios(@PathParam("companyname") String companyname) {
-        List<Object[]> objects = citySAPFacade.listMunicipios(companyname, false);
+    public Response getMunicipios(@PathParam("companyname") String companyname,
+                                  @QueryParam("departamento") String codDepart) {
+        List<Object[]> objects = citySAPFacade.listMunicipios(codDepart, companyname, false);
         List<CityDTO> municipios = new ArrayList<>();
 
         for (Object[] obj : objects) {
@@ -2259,6 +2260,9 @@ public class PedBoxREST {
             CONSOLE.log(Level.INFO, json);
             return Response.ok(businessPartnerEJB.createBusinessPartnerFromWali(dto)).build();
         } else {
+            if (dto.getCardType().equals('L')) {
+                dto.setCardCode("L" + dto.getDocument());
+            }
             Gson gson = new Gson();
             String json = gson.toJson(dto);
             CONSOLE.log(Level.INFO, json);

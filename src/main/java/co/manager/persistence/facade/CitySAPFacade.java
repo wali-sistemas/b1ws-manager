@@ -21,10 +21,14 @@ public class CitySAPFacade {
     @EJB
     private PersistenceConf persistenceConf;
 
-    public List<Object[]> listMunicipios(String companyName, boolean testing) {
+    public List<Object[]> listMunicipios(String codeDepartment, String companyName, boolean testing) {
         EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"Code\" as varchar(20))as Code,cast(\"Name\" as varchar(100))as Municipio from \"@BPCO_MU\"");
+        if (codeDepartment != null) {
+            sb.append(" where subString(\"Code\", 0, 2)=");
+            sb.append(codeDepartment);
+        }
         try {
             return em.createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {

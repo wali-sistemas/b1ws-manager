@@ -278,6 +278,7 @@ public class MotorepuestoREST {
         if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
             dto.setCardCode("C900998242");
             dto.setSlpCode(Long.valueOf(22));
+            dto.setDiscountPercent(20.0);
         } else {
             dto.setSlpCode(Long.valueOf(5));
         }

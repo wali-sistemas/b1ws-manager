@@ -200,7 +200,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(" t.fechaUltComp,t.urlFacture,cast(count(t.docNum) OVER(partition by t.cardCode)as int)as totalDoc,cast(t.emailFE as varchar(254))as emailFE,t.totalBruto, ");
         sb.append(" case when (t.valorDocumento-t.valorSaldo) > 0 or t.discPrcnt > 0 then 'N' else 'Y' end as activeCalc,t.comments ");
         sb.append("from ( ");
-        sb.append(" select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(f.\"CardName\" as varchar(40))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
+        sb.append(" select cast(f.\"CardCode\" as varchar(20))as cardCode, cast(s.\"CardName\" as varchar(240))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("  'Factura'as tipoDoc,cast(f.\"DocNum\" as int)as docNum,cast(f.\"DocDate\" as date)as fechaEmision,cast(f.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("  cast((f.\"DocTotal\"-f.\"PaidToDate\")as numeric(18,0))as valorSaldo,cast(f.\"DocTotal\" as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,f.\"DocDueDate\")as diasVencidos, ");
         sb.append("  cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
@@ -210,7 +210,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(" from  OINV f ");
         sb.append(" inner join OCRD s ON f.\"CardCode\" = s.\"CardCode\" ");
         sb.append(" where f.\"DocStatus\" = 'O' union all ");
-        sb.append(" select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(n.\"CardName\" as varchar(100))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
+        sb.append(" select cast(n.\"CardCode\" as varchar(20))as cardCode,cast(s.\"CardName\" as varchar(240))as cardName,cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("  'Nota Crédito'as tipoDoc,cast(n.\"DocNum\" as int)as docNum,cast(n.\"DocDate\" as date)as fechaEmision,cast(n.\"DocDueDate\" as date)as fechaVencimiento, ");
         sb.append("  cast((n.\"DocTotal\"-n.\"PaidToDate\")*-1 as numeric(18,0))as valorSaldo,cast(n.\"DocTotal\"*-1 as numeric(18,0))as valorDocumento,DAYS_BETWEEN(current_date,n.\"DocDueDate\")as diasVencidos, ");
         sb.append("  cast(((s.\"CreditLine\")-s.\"Balance\"-s.\"OrdersBal\")as numeric(18,0))as cupo,cast(s.\"U_PROM_DIAS_PAGO\" as int)as uPromDiasPago, ");
@@ -222,7 +222,7 @@ public class BusinessPartnerSAPFacade {
         sb.append(")as t ");
         sb.append("inner join OSLP a ON a.\"SlpCode\" = t.\"SlpCode\" ");
         sb.append("inner join OCTG c ON c.\"GroupNum\" = t.\"GroupNum\" ");
-        sb.append("where t.tipoDoc='Factura' and t.\"SlpCode\"=");
+        sb.append("where t.\"SlpCode\"=");
         sb.append(slpCode);
         if (cardCode != null) {
             sb.append(" and t.cardCode='");

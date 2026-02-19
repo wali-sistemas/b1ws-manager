@@ -17,7 +17,7 @@ public class BusinessPartnerDTO {
     private static String aut4 = "Y";
     private static String subject = "Y";
     private static String distributo = "02";
-    private static Character cardType = 'C';
+    private Character cardType;
     private String typeTransaction;
     private String document;
     private String cardCode;
@@ -148,12 +148,12 @@ public class BusinessPartnerDTO {
         this.priceList = priceList;
     }
 
-    public static Character getCardType() {
+    public Character getCardType() {
         return cardType;
     }
 
-    public static void setCardType(Character cardType) {
-        BusinessPartnerDTO.cardType = cardType;
+    public void setCardType(Character cardType) {
+        this.cardType = cardType;
     }
 
     public String getDocument() {
@@ -547,7 +547,8 @@ public class BusinessPartnerDTO {
     @Override
     public String toString() {
         return "BusinessPartnerDTO{" +
-                "typeTransaction='" + typeTransaction + '\'' +
+                "cardType=" + cardType +
+                ", typeTransaction='" + typeTransaction + '\'' +
                 ", document='" + document + '\'' +
                 ", cardCode='" + cardCode + '\'' +
                 ", cardName='" + cardName + '\'' +
