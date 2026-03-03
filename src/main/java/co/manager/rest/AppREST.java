@@ -115,7 +115,7 @@ public class AppREST {
             dto.setSlpCode((String) obj[0]);
             dto.setSlpName((String) obj[1]);
             dto.setPassWord((String) obj[2]);
-            dto.setAppVersion("12.6");
+            dto.setAppVersion("12.7");
             dto.setCompanyName(companyName);
 
             data.add(dto);
@@ -176,6 +176,7 @@ public class AppREST {
                     dto.setBalance((BigDecimal) obj[25]);
                     dto.setCupo((BigDecimal) obj[26]);
                     dto.setPoints((BigDecimal) obj[27]);
+                    dto.setRegion((String) obj[28]);
                     //Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((String) obj[20]);
@@ -915,6 +916,7 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
+        //TODO: Por instrucción del area comercia y cartera, todos las ordenes ingresan con estado REVISAR
         /*if (dto.getCompanyName().contains("IGB")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");

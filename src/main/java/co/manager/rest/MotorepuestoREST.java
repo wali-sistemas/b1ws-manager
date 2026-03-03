@@ -307,6 +307,83 @@ public class MotorepuestoREST {
         return Response.ok(businessPartnerEJB.createBusinessPartnerFromEcommerce(dto)).build();
     }
 
+    @GET
+    @Path("stock-current")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getStockCurrent(@QueryParam("date") String updateDate,
+                                    @QueryParam("active") String active) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio de stock para motorepuesto.");
+        List<Object[]> objects = itemSAPFacade.listStockCurrentMotorepuesto(updateDate, active, null);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos para mostrar.");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
+        }
+
+        List<StockCurrentEcommerceDTO> stockCurrentDTO = new ArrayList<>();
+        for (Object[] obj : objects) {
+            StockCurrentEcommerceDTO dto = new StockCurrentEcommerceDTO();
+            dto.setItemCode((String) obj[0]);
+            dto.setStock((Integer) obj[1] < 0 ? 0 : (Integer) obj[1]);
+
+            stockCurrentDTO.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el stock de motorepuesto.");
+        return Response.ok(new ResponseDTO(0, stockCurrentDTO)).build();
+    }
+
+    @GET
+    @Path("price")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response getPrice(@QueryParam("date") String updateDate,
+                             @QueryParam("active") String active) {
+        CONSOLE.log(Level.INFO, "Iniciando servicio de precio para motorepuesto.");
+        List<Object[]> objects = itemSAPFacade.listPriceMotorepuesto(updateDate, active);
+
+        if (objects == null || objects.size() <= 0) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos para mostrar.");
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos para mostrar.")).build();
+        }
+
+        List<PriceEcommerceDTO> priceDTO = new ArrayList<>();
+        for (Object[] obj : objects) {
+            PriceEcommerceDTO dto = new PriceEcommerceDTO();
+            dto.setItemCode((String) obj[0]);
+            dto.setPriceVenta((BigDecimal) obj[1]);
+
+            priceDTO.add(dto);
+        }
+        CONSOLE.log(Level.INFO, "Retornando el precio de motorepuesto.");
+        return Response.ok(new ResponseDTO(0, priceDTO)).build();
+    }
+
+    @POST
+    @Path("shopping-cart")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response validateStockShoppingCart(StockShoppingCartDTO dto) {
+        CONSOLE.log(Level.INFO, "Validando carrito de compras del cliente ", dto.getCardCode());
+
+        List<StockCurrentEcommerceDTO> items = new ArrayList<>();
+
+        for (String item : dto.getItems()) {
+            StockCurrentEcommerceDTO stockCurrentEcommerceDTO = new StockCurrentEcommerceDTO();
+            List<Object[]> obj = itemSAPFacade.listStockCurrentMotorepuesto(null, null, item);
+
+            if (obj != null) {
+                stockCurrentEcommerceDTO.setItemCode((String) obj.get(0)[0]);
+                stockCurrentEcommerceDTO.setStock((Integer) obj.get(0)[1]);
+
+                items.add(stockCurrentEcommerceDTO);
+            }
+        }
+
+        return Response.ok(items).build();
+    }
+
     private ResponseDTO createOrderTemporary(SalesB2CorderDTO dto, Integer docNum) {
         OrderPedbox order = new OrderPedbox();
         OrderDetailPedbox detail = new OrderDetailPedbox();

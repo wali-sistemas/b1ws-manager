@@ -29,12 +29,13 @@ public class CustomerDTO {
     private BigDecimal cupo;
     private BigDecimal points;
     private BigDecimal balance;
+    private String region;
     private List<CustomerAddressesDTO> addresses;
 
     public CustomerDTO() {
     }
 
-    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, String length, String latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, BigDecimal balance, List<CustomerAddressesDTO> addresses) {
+    public CustomerDTO(String cardCode, String nit, String cardName, String addressToDef, String location, String phone, String cellular, String email, String wayToPay, Integer plazo, String contact, String seller, String length, String latitude, Integer priceList, String notes, BigDecimal discountCommercial, String condition, String excent, BigDecimal cupo, BigDecimal points, BigDecimal balance, String region, List<CustomerAddressesDTO> addresses) {
         this.cardCode = cardCode;
         this.nit = nit;
         this.cardName = cardName;
@@ -55,7 +56,9 @@ public class CustomerDTO {
         this.condition = condition;
         this.excent = excent;
         this.cupo = cupo;
+        this.points = points;
         this.balance = balance;
+        this.region = region;
         this.addresses = addresses;
     }
 
@@ -235,6 +238,14 @@ public class CustomerDTO {
         this.balance = balance;
     }
 
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public List<CustomerAddressesDTO> getAddresses() {
         return addresses;
     }
@@ -268,6 +279,7 @@ public class CustomerDTO {
                 ", cupo=" + cupo +
                 ", points=" + points +
                 ", balance=" + balance +
+                ", region='" + region + '\'' +
                 ", addresses=" + addresses +
                 '}';
     }
