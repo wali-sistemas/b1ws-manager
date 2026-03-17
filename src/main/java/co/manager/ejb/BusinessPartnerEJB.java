@@ -504,6 +504,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setCardType("L");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setGroupCode(dto.getCompanyName().contains("IGB") ? 100L : 1L);
+                businessPartner.setPriceListNum(dto.getPriceListNum());
                 businessPartner.setEmailAddress(dto.getMail().toUpperCase());
                 businessPartner.setUmanejo("DIA");
                 businessPartner.setUdocFormEntFE(1l);

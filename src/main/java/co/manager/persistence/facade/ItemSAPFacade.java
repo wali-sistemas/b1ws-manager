@@ -59,7 +59,7 @@ public class ItemSAPFacade {
     public List<Object[]> getListItemsExtranet(String slpCode, String companyName, String statusModula, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,SUM(t.Stock)as Stock,t.PicturName,t.ModeloMoto, ");
+        sb.append("select t.Producto,t.Descripcion,t.Presentacion,ifnull(t.Precio,0)as Precio,t.PorcentajeIva,t.Bodega,case when SUM(t.Stock)<0 then 0 else SUM(t.Stock)end as Stock,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
         sb.append("from ( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto,cast(it.\"ItemName\" as varchar(100))as Descripcion, ");
@@ -78,7 +78,7 @@ public class ItemSAPFacade {
             //Filtro bodegas de solo ventas para MOTOZONE
             sb.append("'13','26','32','35'");
         }
-        sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append(") and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and /*de.\"OnHandQty\">0 and*/ de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then ((select ifnull(sum(\"OnHand\"),0) from OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             sb.append("'01','30','05','26','32','35','60','55'");
@@ -124,7 +124,7 @@ public class ItemSAPFacade {
         } else {
             sb.append(1);
         }
-        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in(");
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" /*and inv.\"OnHand\">0*/ and inv.\"WhsCode\" in(");
         if (companyName.contains("IGB") && statusModula.equals("true")) {
             sb.append("'01','30','05','26','32','35','60','55'");
         } else if (companyName.contains("IGB") && statusModula.equals("false")) {
@@ -850,14 +850,14 @@ public class ItemSAPFacade {
 
     public List<Object[]> listStockCurrentMotorepuesto(String updateDate, String active, String itemCode) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select t.Producto,case when t.Stock < 0 then 0 else t.Stock end as Stock ");
+        sb.append("select t.Producto,case when t.Stock < 0 then 0 else t.Stock end as Stock,t.Bodega ");
         sb.append("from( ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(50))as Producto, ");
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','32','35','60','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("   then ((select ifnull(sum(\"OnHand\"),0) from \"IGB\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('01','05','26','32','35','60','55'))-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"IGB\".OBIN ub inner join \"IGB\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','05','26','32','35','60','55') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("   else ((select ifnull(sum(\"OnHand\"),0) from \"IGB\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('01','05','26','32','35','60','55'))-it.\"IsCommited\") ");
         sb.append("   end as int)as Stock, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion,cast(it.\"DfltWH\" as varchar(50))as Bodega ");
         sb.append(" from \"IGB\".OITM it ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"QryGroup2\"='Y' ");
         sb.append(" UNION ALL ");
@@ -866,7 +866,7 @@ public class ItemSAPFacade {
         sb.append("   then ((select ifnull(sum(\"OnHand\"),0) from \"VARROC\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('13','26','32','35'))-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"VARROC\".OBIN ub inner join \"VARROC\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('13','26','32','35') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("   else ((select ifnull(sum(\"OnHand\"),0) from \"VARROC\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\" in('13','26','32','35'))-it.\"IsCommited\") ");
         sb.append("   end as int)as Stock, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion,cast(it.\"DfltWH\" as varchar(50))as Bodega ");
         sb.append(" from \"VARROC\".OITM it ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"QryGroup2\"='Y' ");
         sb.append(" UNION ALL ");
@@ -875,7 +875,7 @@ public class ItemSAPFacade {
         sb.append("   then ((select ifnull(sum(\"OnHand\"),0) from \"VELEZ\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\"='01')-it.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from \"VELEZ\".OBIN ub inner join \"VELEZ\".OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='01' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("   else ((select ifnull(sum(\"OnHand\"),0) from \"VELEZ\".OITW where \"ItemCode\"=it.\"ItemCode\" and \"WhsCode\"='01')-it.\"IsCommited\") ");
         sb.append("   end as int)as Stock, ");
-        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion ");
+        sb.append("  cast(TO_NVARCHAR(it.\"UpdateDate\", 'YYYY-MM-DD')as varchar(15))as fechaModificacion,cast(SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),1,2) || ':' || SUBSTR(LPAD(it.\"UpdateTS\",6,'0'),3,2)as varchar(6))as horaModificacion,cast(it.\"DfltWH\" as varchar(50))as Bodega ");
         sb.append(" from \"VELEZ\".OITM it ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"CardCode\" not in ('P900255414', 'P811011909') ");
         sb.append(")as t ");

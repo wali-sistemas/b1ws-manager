@@ -869,11 +869,6 @@ public class AppREST {
     public Response createOrderSale(SalesOrderDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
 
-        /*if (!dto.getCardCode().equals("C900998242")) {
-            //TODO: restablecer numAtCard
-            dto.setNumAtCard(dto.getNumAtCard().substring(0, dto.getNumAtCard().length()-1));
-        }*/
-
         ResponseDTO res = new ResponseDTO();
         /**** 1. Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/
         if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
@@ -916,8 +911,8 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Por instrucción del area comercia y cartera, todos las ordenes ingresan con estado REVISAR
-        /*if (dto.getCompanyName().contains("IGB")) {
+        //TODO: Aprobación de ordenes automaticas en IGB y MTZ
+        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
@@ -928,16 +923,15 @@ public class AppREST {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
-        } else if (dto.getCompanyName().contains("VARROC")) {
-            //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR
+        } else {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB
+        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB y MTZ
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
-        }*/
+        }
         /**** 4. Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
@@ -961,6 +955,9 @@ public class AppREST {
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
             if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("60")) {
                 detail.setWhsCode("01");
+            }
+            if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                detail.setItemName(detail.getItemName().replace("(**)", detail.getItemName()).substring(4, detail.getItemName().length()));
             }
         }
 
@@ -2162,6 +2159,14 @@ public class AppREST {
 
         int digito = basicFunctions.getDigitoDian(dto.getDocument());
         dto.setLicTradNum(dto.getDocument() + "-" + digito);
+
+        //TODO: condicion solo para talleres
+        String regional = salesPersonSAPFacade.getRegionalBySeller(dto.getSlpCode(), dto.getCompanyName(), false);
+        if (regional.equals("TALLERES")) {
+            dto.setPriceListNum(8l);
+        } else {
+            dto.setPriceListNum(1l);
+        }
 
         Gson gson = new Gson();
         String json = gson.toJson(dto);

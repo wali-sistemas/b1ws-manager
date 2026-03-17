@@ -17,7 +17,6 @@ public class CustomerLeadDTO {
     private static String subject = "Y";
     private static String distributo = "02";
     private static Character cardType = 'L';
-    //private String typeTransaction;
     private String document;
     private String cardName;
     private String licTradNum;
@@ -25,11 +24,11 @@ public class CustomerLeadDTO {
     private String mail;
     private String slpCode;
     private String companyName;
-    //Ubicación
     private String address;
     private String departament;
     private String municipio;
     private String city;
+    private Long priceListNum;
 
     public CustomerLeadDTO() {
     }
@@ -186,6 +185,14 @@ public class CustomerLeadDTO {
         this.city = city;
     }
 
+    public Long getPriceListNum() {
+        return priceListNum;
+    }
+
+    public void setPriceListNum(Long priceListNum) {
+        this.priceListNum = priceListNum;
+    }
+
     @Override
     public String toString() {
         return "CustomerLeadDTO{" +
@@ -200,6 +207,7 @@ public class CustomerLeadDTO {
                 ", departament='" + departament + '\'' +
                 ", municipio='" + municipio + '\'' +
                 ", city='" + city + '\'' +
+                ", priceListNum=" + priceListNum +
                 '}';
     }
 }

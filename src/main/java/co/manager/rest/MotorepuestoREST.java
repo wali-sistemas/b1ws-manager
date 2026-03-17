@@ -326,6 +326,7 @@ public class MotorepuestoREST {
             StockCurrentEcommerceDTO dto = new StockCurrentEcommerceDTO();
             dto.setItemCode((String) obj[0]);
             dto.setStock((Integer) obj[1] < 0 ? 0 : (Integer) obj[1]);
+            dto.setWhsCode((String) obj[2]);
 
             stockCurrentDTO.add(dto);
         }
