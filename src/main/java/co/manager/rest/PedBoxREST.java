@@ -1021,26 +1021,27 @@ public class PedBoxREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        /*if (dto.getCompanyName().contains("IGB") && dto.getStatus().equals("APROBADO")) {
+        //TODO: Aprobación de ordenes automaticas en IGB y MTZ
+        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
+            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
+                dto.setStatus("APROBADO");
+                dto.setConfirmed("Y");
+            } else {
+                dto.setStatus("REVISAR");
+                dto.setConfirmed("N");
             }
-        } else if (dto.getCompanyName().contains("VARROC")) {
-            //TODO: Por instrucción del area de operaciones de MTZ, todos las ordenes ingresan con estado REVISAR
+        } else {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Solo para motorepuestos.co y editores las ordenes pasan aprobadas
+        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB y MTZ
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         }
-        //TODO: Pedidos de extranet deben entrar con status=REVISAR
-        if (dto.getNumAtCard().substring(0, 1).equals("E")) {
-            dto.setStatus("REVISAR");
-            dto.setConfirmed("N");
-        }*/
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
