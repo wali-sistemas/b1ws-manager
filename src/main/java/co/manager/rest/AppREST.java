@@ -956,9 +956,6 @@ public class AppREST {
             if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("60")) {
                 detail.setWhsCode("01");
             }
-            if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                detail.setItemName(detail.getItemName().replace("(**)", detail.getItemName()).substring(4, detail.getItemName().length()));
-            }
         }
 
         Gson gson = new Gson();
