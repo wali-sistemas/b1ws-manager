@@ -911,8 +911,13 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Aprobación de ordenes automaticas en IGB y MTZ
-        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+        //TODO: condicion solo para talleres
+        String regional = salesPersonSAPFacade.getRegionalBySeller(String.valueOf(dto.getSlpCode()), dto.getCompanyName(), false);
+        if (regional.equals("TALLERES")) {
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
+        } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+            //TODO: Aprobación de ordenes automaticas en IGB y MTZ
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
@@ -927,7 +932,7 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB y MTZ
+        //TODO: Solo para motorepuestos.co las ordenes de WALI SALES pasan aprobadas en IGB y MTZ
         if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
@@ -2162,7 +2167,7 @@ public class AppREST {
         if (regional.equals("TALLERES")) {
             dto.setPriceListNum(8l);
         } else {
-            dto.setPriceListNum(1l);
+            dto.setPriceListNum(4l);
         }
 
         Gson gson = new Gson();

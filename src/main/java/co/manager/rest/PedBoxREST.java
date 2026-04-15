@@ -285,9 +285,10 @@ public class PedBoxREST {
     @Path("price-list/{companyname}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public Response getPriceList(@PathParam("companyname") String companyname) {
+    public Response getPriceList(@PathParam("companyname") String companyname,
+                                 @QueryParam("slpcode") String slpCode) {
         CONSOLE.log(Level.INFO, "Iniciando retorno de lista de precios para {0}", companyname);
-        List<Object[]> objects = itemSAPFacade.getPriceList(companyname, false);
+        List<Object[]> objects = itemSAPFacade.getPriceList(companyname, slpCode == null ? "0" : slpCode, false);
 
         if (objects == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error retornando la lista de precios para {0}", companyname);
@@ -1011,18 +1012,21 @@ public class PedBoxREST {
             return Response.ok(new ResponseExtranetDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
         /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
-            dto.setStatus("APROBADO");
-            dto.setConfirmed("Y");
-        } else if (dto.getCompanyName().contains("VELEZ")) {
+        //TODO: Solo para motorepuestos.co las ordenes de extranet pasan aprobadas en IGB y MTZ
+        if (dto.getCardCode().equals("C900998242")) {
             dto.setStatus("APROBADO");
             dto.setConfirmed("Y");
         } else {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
-        //TODO: Aprobación de ordenes automaticas en IGB y MTZ
-        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+        //TODO: condicion solo para talleres
+        /*String regional = salesPersonSAPFacade.getRegionalBySeller(String.valueOf(dto.getSlpCode()), dto.getCompanyName(), false);
+        if (regional.equals("TALLERES")) {
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
+        } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+            //TODO: Aprobación de ordenes automaticas en IGB y MTZ
             if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
@@ -1036,12 +1040,7 @@ public class PedBoxREST {
         } else {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
-        }
-        //TODO: Solo para motorepuestos.co las ordenes pasan aprobadas en IGB y MTZ
-        if (dto.getCardCode().equals("C900998242")) {
-            dto.setStatus("APROBADO");
-            dto.setConfirmed("Y");
-        }
+        }*/
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);

@@ -117,10 +117,12 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
         sb.append(" from OITM it ");
         sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=");
-        if (companyName.contains("IGB") && !slpCode.equals("267")) {
+        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
             sb.append(4);
-        } else if (slpCode.equals("267")) {
+        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
             sb.append(8);
+        } else if (/*Asesores Bogota*/slpCode.equals("6") || slpCode.equals("32") || slpCode.equals("209") || slpCode.equals("210") || slpCode.equals("227") || slpCode.equals("259") || slpCode.equals("285")) {
+            sb.append(9);
         } else {
             sb.append(1);
         }
@@ -347,17 +349,21 @@ public class ItemSAPFacade {
         return new ArrayList<>();
     }
 
-    public List<Object[]> getPriceList(String companyName, boolean pruebas) {
+    public List<Object[]> getPriceList(String companyName, String slpCode, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(pr.\"ItemCode\" as varchar(20)) as ItemCode, cast(pr.\"PriceList\" as int) as PriceList, cast(pr.\"Price\" as numeric(18,0)) as Price ");
         sb.append("from ITM1 pr ");
         sb.append("inner join OITM it on it.\"ItemCode\" = pr.\"ItemCode\" ");
         sb.append("where it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <> '' and \"PriceList\" =");
-        if (companyName.contains("IGB")) {
-            sb.append("4");
+        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
+            sb.append(4);
+        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
+            sb.append(8);
+        } else if (/*Asesores Bogota*/slpCode.equals("6") || slpCode.equals("32") || slpCode.equals("209") || slpCode.equals("210") || slpCode.equals("227") || slpCode.equals("259") || slpCode.equals("285")) {
+            sb.append(9);
         } else {
-            sb.append("1");
+            sb.append(1);
         }
         sb.append(" order by pr.\"ItemCode\" asc");
         try {
