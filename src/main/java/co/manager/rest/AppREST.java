@@ -115,6 +115,10 @@ public class AppREST {
             dto.setSlpCode((String) obj[0]);
             dto.setSlpName((String) obj[1]);
             dto.setPassWord((String) obj[2]);
+            dto.setWhsTire1((String) obj[3]);
+            dto.setWhsTire2((String) obj[4]);
+            dto.setWhsTire3((String) obj[5]);
+            dto.setWhsTire4((String) obj[6]);
             dto.setAppVersion("12.7");
             dto.setCompanyName(companyName);
 
@@ -900,13 +904,18 @@ public class AppREST {
         }
 
         /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
-            dto.setStatus("APROBADO");
-            dto.setConfirmed("Y");
-            dto.setDiscountPercent(20.0);
-        } else if (dto.getCompanyName().contains("VELEZ")) {
-            dto.setStatus("APROBADO");
-            dto.setConfirmed("Y");
+        if (!dto.isHoldOrder()) {
+            if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
+                dto.setStatus("APROBADO");
+                dto.setConfirmed("Y");
+                dto.setDiscountPercent(20.0);
+            } else if (dto.getCompanyName().contains("VELEZ")) {
+                dto.setStatus("APROBADO");
+                dto.setConfirmed("Y");
+            } else {
+                dto.setStatus("REVISAR");
+                dto.setConfirmed("N");
+            }
         } else {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");

@@ -209,7 +209,8 @@ public class SalesPersonSAPFacade {
 
     public List<Object[]> validateLoginApp(String user, String pass, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"SlpCode\" as varchar(3))as slpCode,cast(\"SlpName\" as varchar(100))as slpName,cast(\"U_CEDULA\" as varchar(100))as passWord ");
+        sb.append("select cast(\"SlpCode\" as varchar(3))as slpCode,cast(\"SlpName\" as varchar(100))as slpName,cast(\"U_CEDULA\" as varchar(100))as passWord, ");
+        sb.append("ifnull(cast(\"U_PRIORI1\" as varchar(2)),'01')as b1,ifnull(cast(\"U_PRIORI2\" as varchar(2)),'01')as b2,ifnull(cast(\"U_PRIORI3\" as varchar(2)),'01')as b3,ifnull(cast(\"U_PRIORI4\" as varchar(2)),'01')as b4 ");
         sb.append("from OSLP ");
         sb.append("where \"Locked\"='N' and \"Fax\"='Y' and \"SlpCode\"='");
         sb.append(user);
