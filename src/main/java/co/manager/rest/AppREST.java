@@ -119,7 +119,7 @@ public class AppREST {
             dto.setWhsTire2((String) obj[4]);
             dto.setWhsTire3((String) obj[5]);
             dto.setWhsTire4((String) obj[6]);
-            dto.setAppVersion("12.7");
+            dto.setAppVersion("12.8");
             dto.setCompanyName(companyName);
 
             data.add(dto);
@@ -922,17 +922,22 @@ public class AppREST {
         }
         //TODO: condicion solo para talleres
         String regional = salesPersonSAPFacade.getRegionalBySeller(String.valueOf(dto.getSlpCode()), dto.getCompanyName(), false);
-        if (regional.equals("TALLERES")) {
-            dto.setStatus("REVISAR");
-            dto.setConfirmed("N");
-        } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
-            //TODO: Aprobación de ordenes automaticas en IGB y MTZ
-            if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
+        if (!dto.isHoldOrder()) {
+            if (regional.equals("TALLERES")) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
-            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
-                dto.setStatus("APROBADO");
-                dto.setConfirmed("Y");
+            } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+                //TODO: Aprobación de ordenes automaticas en IGB y MTZ
+                if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
+                    dto.setStatus("REVISAR");
+                    dto.setConfirmed("N");
+                } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
+                    dto.setStatus("APROBADO");
+                    dto.setConfirmed("Y");
+                } else {
+                    dto.setStatus("REVISAR");
+                    dto.setConfirmed("N");
+                }
             } else {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
