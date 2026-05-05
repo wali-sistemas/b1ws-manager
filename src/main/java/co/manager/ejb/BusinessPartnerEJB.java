@@ -95,7 +95,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco2Apellido(dto.getLastname2().toUpperCase());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
-                businessPartner.setUtrasp("03");
+                businessPartner.setUtrasp("14");
                 businessPartner.setPriceListNum(dto.getPriceList() == null ? 1 : Long.valueOf(dto.getPriceList()));
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartner.setSalesPersonCode("05");
@@ -214,7 +214,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpco2Apellido(dto.getLastName2().toUpperCase());
                 businessPartner.setUbpcoAddress("CALLE 98 SUR N 48 225");
                 businessPartner.setUbpvtper("PNRE");
-                businessPartner.setUtrasp("03");
+                businessPartner.setUtrasp("14");
                 businessPartner.setPriceListNum(1l);
                 businessPartner.setSalesPersonCode("22");
                 businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getEmail().toUpperCase());
@@ -515,7 +515,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcortc("RS");
                 businessPartner.setUbpcotdc("13");
                 businessPartner.setUbpcotp("01");
-                businessPartner.setUtrasp("03");
+                businessPartner.setUtrasp("14");
                 businessPartner.setUbpcocs(dto.getMunicipio());
                 businessPartner.setUbpcoCity(dto.getCity());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());

@@ -56,7 +56,7 @@ public class ItemSAPFacade {
         }
     }
 
-    public List<Object[]> getListItemsExtranet(String slpCode, String companyName, String statusModula, boolean pruebas) {
+    public List<Object[]> getListItemsExtranet(String slpCode, String companyName, String statusModula, String marketplace, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select t.Producto,t.Descripcion,t.Presentacion,ifnull(t.Precio,0)as Precio,t.PorcentajeIva,t.Bodega,case when SUM(t.Stock)<0 then 0 else SUM(t.Stock)end as Stock,t.PicturName,t.ModeloMoto, ");
@@ -151,6 +151,9 @@ public class ItemSAPFacade {
         sb.append(")as t /*where t.Stock>0*/ ");
         if (slpCode.equals("267")) {
             sb.append(" where t.Precio>0 ");
+        }
+        if (marketplace.equals("virtual-llantas")) {
+            sb.append(" where t.Categoria='LLANTAS Y NEUMÁTICOS' ");
         }
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");

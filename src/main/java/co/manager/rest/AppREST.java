@@ -208,13 +208,13 @@ public class AppREST {
 
         List<Object[]> objects = new ArrayList<>();
         if (slpCode == null) {
-            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
-            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
         } else if (companyname.equals("REDPLAS")) {
             objects = itemSAPFacade.getListItemsBySellerRedPlas(slpCode, companyname, false);
         } else {
-            objects = itemSAPFacade.getListItemsExtranet(slpCode, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet(slpCode, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
             //TODO: Se usaba cuando definimos bodegas de llantas por default
             //objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
         }
@@ -2180,8 +2180,10 @@ public class AppREST {
         String regional = salesPersonSAPFacade.getRegionalBySeller(dto.getSlpCode(), dto.getCompanyName(), false);
         if (regional.equals("TALLERES")) {
             dto.setPriceListNum(8l);
-        } else {
+        } else if (dto.getCompanyName().equals("IGB")) {
             dto.setPriceListNum(4l);
+        } else {
+            dto.setPriceListNum(1l);
         }
 
         Gson gson = new Gson();

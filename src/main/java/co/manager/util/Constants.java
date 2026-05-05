@@ -20,6 +20,7 @@ public class Constants {
     public static final String HANAWS_SL_URL = "https://slhana.igbcolombia.com:50000/b1s/";
     public static final String MODULAWS_URL = "http://192.168.10.102:3001/api/";
     public static final String TOKEN_CALIDOSOS = "token.calidosos";
+    public static final String TOKEN_VIRTUAL_LLANTAS = "token.marketplace.virtuallantas";
     public static final String BREAKER_MODULA = "breaker.modula";
     public static final String OPEN_AI_URL = "https://api.openai.com/";
     public static final String OPEN_AI_APIKEY = "apikey-openai";

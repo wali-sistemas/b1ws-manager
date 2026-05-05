@@ -167,11 +167,11 @@ public class PedBoxREST {
         List<Object[]> objects = new ArrayList<>();
 
         if (slpCode == null) {
-            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
         } else if (slpCode.equals("0") || companyname.equals("VARROC")) {
-            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet("0", companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
         } else {
-            objects = itemSAPFacade.getListItemsExtranet(slpCode, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), false);
+            objects = itemSAPFacade.getListItemsExtranet(slpCode, companyname, managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA), "", false);
             //TODO: Se usaba cuando definimos bodegas de llantas por default
             //objects = itemSAPFacade.getListItemsExtranetBySeller(slpCode, companyname, false);
         }
