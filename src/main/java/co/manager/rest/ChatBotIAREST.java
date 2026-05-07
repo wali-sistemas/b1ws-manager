@@ -4,7 +4,7 @@ import co.manager.dto.ResponseDTO;
 import co.manager.ejb.ManagerApplicationBean;
 import co.manager.openaiws.dto.ItemInputTextDTO;
 import co.manager.openaiws.dto.ItemResultDTO;
-import co.manager.openaiws.ejb.OpenaiEJB;
+import co.manager.openaiws.ejb.OpeniaEJB;
 import co.manager.persistence.entity.ChatbotAPP;
 import co.manager.persistence.facade.ChatbotAPPFacade;
 import co.manager.persistence.facade.ItemSAPFacade;
@@ -37,7 +37,7 @@ public class ChatBotIAREST {
     @EJB
     private ItemSAPFacade itemSAPFacade;
     @EJB
-    private OpenaiEJB openaiEJB;
+    private OpeniaEJB openiaEJB;
     @EJB
     private ChatbotAPPFacade chatbotAPPFacade;
 
@@ -47,7 +47,7 @@ public class ChatBotIAREST {
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response interpretInputText(ItemInputTextDTO dto) {
-        String res = openaiEJB.interpretTextInput(dto);
+        String res = openiaEJB.interpretTextInput(dto);
         if (res == null) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error interpretando la solicitud del asesor " + dto.getSlpCode() + " en " + dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, dto.getSlpName() + ", parece que hubo una situación interpretando tu solicitud. Mmm... creo que no entendí bien lo que necesitas. ¿Podrías explicármelo con un poquito más de detalle? Estoy aquí para ayudarte.")).build();

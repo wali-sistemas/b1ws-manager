@@ -22,8 +22,8 @@ import java.util.logging.Logger;
  * @author jguisao
  */
 @Stateless
-public class OpenaiEJB {
-    private static final Logger CONSOLE = Logger.getLogger(OpenaiEJB.class.getSimpleName());
+public class OpeniaEJB {
+    private static final Logger CONSOLE = Logger.getLogger(OpeniaEJB.class.getSimpleName());
     private OpenaiClient service;
     @Inject
     private ManagerApplicationBean appBean;
@@ -47,7 +47,7 @@ public class OpenaiEJB {
         messages.add(messageDTO);
 
         FormDataDTO formDataDTO = new FormDataDTO();
-        formDataDTO.setModel("GPT-5");
+        formDataDTO.setModel("gpt-5.4");
         formDataDTO.setMessages(messages);
         formDataDTO.setTemperature(0.2);
 
