@@ -148,7 +148,7 @@ public class ItemSAPFacade {
         sb.append(" left join \"@VISCOSIDAD\" vis on vis.\"Code\" = it.\"U_VISCOSIDAD\" ");
         sb.append(" left join \"@BASE\" bs on bs.\"Code\" = it.\"U_BASE\" ");
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
-        sb.append(")as t /*where t.Stock>0*/ ");
+        sb.append(")as t where t.Precio<>'1000000' /*and t.Stock>0*/ ");
         if (slpCode.equals("267")) {
             sb.append(" where t.Precio>0 ");
         }
