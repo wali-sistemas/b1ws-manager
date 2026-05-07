@@ -150,10 +150,10 @@ public class ItemSAPFacade {
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append(")as t where t.Precio<>'1000000' /*and t.Stock>0*/ ");
         if (slpCode.equals("267")) {
-            sb.append(" where t.Precio>0 ");
+            sb.append(" and t.Precio>0 ");
         }
         if (marketplace.equals("virtual-llantas")) {
-            sb.append(" where t.Categoria='LLANTAS Y NEUMÁTICOS' ");
+            sb.append(" and t.Categoria='LLANTAS Y NEUMÁTICOS' ");
         }
         sb.append("group by t.Producto,t.Descripcion,t.Presentacion,t.Precio,t.PorcentajeIva,t.Bodega,t.PicturName,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.Categoria,t.Grupo,t.Subgrupo,Marca,t.Viscosidad,t.Base ");
@@ -294,7 +294,7 @@ public class ItemSAPFacade {
             sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
             sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
         }
-        sb.append("where /*r.Stock>0 and*/ r.Producto='");
+        sb.append("where r.Precio<>'1000000' and /*r.Stock>0 and*/ r.Producto='");
         sb.append(itemCode);
         sb.append("' group by r.Producto ");
         if (companyName.equals("VELEZ")) {
@@ -358,7 +358,7 @@ public class ItemSAPFacade {
         sb.append("select cast(pr.\"ItemCode\" as varchar(20)) as ItemCode, cast(pr.\"PriceList\" as int) as PriceList, cast(pr.\"Price\" as numeric(18,0)) as Price ");
         sb.append("from ITM1 pr ");
         sb.append("inner join OITM it on it.\"ItemCode\" = pr.\"ItemCode\" ");
-        sb.append("where it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <> '' and \"PriceList\" =");
+        sb.append("where pr.\"Price\"<>'1000000' and it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <> '' and \"PriceList\" =");
         if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
             sb.append(4);
         } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
