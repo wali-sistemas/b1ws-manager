@@ -309,8 +309,8 @@ public class SalesOrderEJB {
                     orderLine.setItemCode(line.getItemCode());
                     orderLine.setQuantity(line.getQuantity().doubleValue());
                     if (dto.getCompanyName().contains("VELEZ")) {
-                        orderLine.setPrice(line.getPrice().doubleValue());
-                        orderLine.setUnitPrice(line.getPrice().doubleValue());
+                        orderLine.setPrice(line.getPrice().doubleValue() / 1.19);
+                        orderLine.setUnitPrice(line.getPrice().doubleValue() / 1.19);
                         orderLine.setWarehouseCode("01");
                     } else {
                         if (line.getWhsCode().equals("00")) {

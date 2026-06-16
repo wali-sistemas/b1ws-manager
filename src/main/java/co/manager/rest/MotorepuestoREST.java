@@ -283,6 +283,21 @@ public class MotorepuestoREST {
             dto.setSlpCode(Long.valueOf(5));
         }
 
+        //TODO: asignar bodega 01 a la 60 cuando sea solo lubricante
+        for (DetailSalesB2CorderDTO detail : dto.getDetailSalesOrder()) {
+            if (detail.getItemCode().substring(0, 2).equals("TY")) {
+                detail.setWhsCode("60");
+            }
+
+            if (detail.getItemCode().substring(0, 2).equals("LR")) {
+                detail.setWhsCode("01");
+            }
+
+            if (dto.getCompanyName().contains("VELEZ")) {
+                detail.setWhsCode("01");
+            }
+        }
+
         Gson gson = new Gson();
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);

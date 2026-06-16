@@ -42,6 +42,8 @@ public class SalesOrderDTO implements Serializable {
     private Double docTotal;
     @JsonProperty("holdOrder")
     private boolean holdOrder;
+    @JsonProperty("createTempOrder")
+    private boolean createTempOrder;
     @JsonProperty("detailSalesOrder")
     private List<DetailSalesOrderDTO> detailSalesOrder;
 
@@ -173,6 +175,14 @@ public class SalesOrderDTO implements Serializable {
         return holdOrder;
     }
 
+    public boolean isCreateTempOrder() {
+        return createTempOrder;
+    }
+
+    public void setCreateTempOrder(boolean createTempOrder) {
+        this.createTempOrder = createTempOrder;
+    }
+
     public void setHoldOrder(boolean holdOrder) {
         this.holdOrder = holdOrder;
     }
@@ -195,6 +205,7 @@ public class SalesOrderDTO implements Serializable {
                 ", discountPercent=" + discountPercent +
                 ", docTotal=" + docTotal +
                 ", holdOrder=" + holdOrder +
+                ", createTempOrder=" + createTempOrder +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';
     }

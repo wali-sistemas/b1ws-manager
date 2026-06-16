@@ -1068,6 +1068,7 @@ public class PedBoxREST {
 
             //TODO: si la orden es de Extranet, definir bodegas para las llantas
             if (dto.getNumAtCard().substring(0, 1).equals("E")) {
+                dto.setCreateTempOrder(true);
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
                         detail.setWhsCode("60");
@@ -2400,53 +2401,57 @@ public class PedBoxREST {
     }
 
     private ResponseExtranetDTO createOrderTemporary(SalesOrderDTO dto, Long docNum, String message) {
-        /**** 7.3. Registrar pedido en tablas temporales****/
-        OrderPedbox order = new OrderPedbox();
-        OrderDetailPedbox detail = new OrderDetailPedbox();
+        if (!dto.isCreateTempOrder()) {
+            return new ResponseExtranetDTO(0, 0, 0, message, new ArrayList<>());
+        } else {
+            /**** 7.3. Registrar pedido en tablas temporales****/
+            OrderPedbox order = new OrderPedbox();
+            OrderDetailPedbox detail = new OrderDetailPedbox();
 
-        order.setDocNum(docNum.intValue());
-        order.setDocDate(new Date());
-        order.setCardCode(dto.getCardCode());
-        order.setNumAtCard(dto.getNumAtCard());
-        order.setComments(dto.getComments());
-        order.setSlpCode(dto.getSlpCode().toString());
-        order.setStatus("F");
-        order.setCompanyName(dto.getCompanyName());
-        order.setDocTotal(dto.getDocTotal());
-        try {
-            orderPedboxFacade.create(order, dto.getCompanyName(), false);
-        } catch (Exception ex) {
-        }
-
-        for (DetailSalesOrderDTO dt : dto.getDetailSalesOrder()) {
-            /**** 7.4. Consultado stock actual en SAP para MODULA y CEDI****/
-            Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(dt.getItemCode(), dt.getWhsCode(), dto.getCompanyName(), false);
-
-            detail.setIdOrder(order);
-            detail.setIdOrderDetail(0);
-            detail.setItemCode(dt.getItemCode());
-            detail.setWhsCode(dt.getWhsCode());
-            detail.setQtyAPP(dt.getQuantity());
-            detail.setQtyMDL((Integer) stockCurrent[0]);
-            detail.setQtySAP((Integer) stockCurrent[1]);
-            detail.setQtySBT((Integer) stockCurrent[2]);
+            order.setDocNum(docNum.intValue());
+            order.setDocDate(new Date());
+            order.setCardCode(dto.getCardCode());
+            order.setNumAtCard(dto.getNumAtCard());
+            order.setComments(dto.getComments());
+            order.setSlpCode(dto.getSlpCode().toString());
+            order.setStatus("F");
+            order.setCompanyName(dto.getCompanyName());
+            order.setDocTotal(dto.getDocTotal());
             try {
-                orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
+                orderPedboxFacade.create(order, dto.getCompanyName(), false);
             } catch (Exception ex) {
             }
-        }
-        /**** 7.5. Consultar items agotados para mostrarlos****/
-        List<Object[]> objects = orderAPPFacade.listOutStockItems(order.getIdOrder(), dto.getCompanyName(), dto.getNumAtCard(), false);
 
-        List<ResponseExtranetDTO.OutStockItems> outStockItems = new ArrayList<>();
-        for (Object[] obj : objects) {
-            ResponseExtranetDTO.OutStockItems outStockItem = new ResponseExtranetDTO.OutStockItems();
-            outStockItem.setItemCode((String) obj[0]);
-            outStockItem.setQtyOrder((Integer) obj[1]);
-            outStockItem.setQtyCurrent((Integer) obj[2]);
-            outStockItems.add(outStockItem);
+            for (DetailSalesOrderDTO dt : dto.getDetailSalesOrder()) {
+                /**** 7.4. Consultado stock actual en SAP para MODULA y CEDI****/
+                Object[] stockCurrent = itemSAPFacade.getStockItemMDLvsSAPvsSBT(dt.getItemCode(), dt.getWhsCode(), dto.getCompanyName(), false);
+
+                detail.setIdOrder(order);
+                detail.setIdOrderDetail(0);
+                detail.setItemCode(dt.getItemCode());
+                detail.setWhsCode(dt.getWhsCode());
+                detail.setQtyAPP(dt.getQuantity());
+                detail.setQtyMDL((Integer) stockCurrent[0]);
+                detail.setQtySAP((Integer) stockCurrent[1]);
+                detail.setQtySBT((Integer) stockCurrent[2]);
+                try {
+                    orderDetailPedboxFacade.create(detail, dto.getCompanyName(), false);
+                } catch (Exception ex) {
+                }
+            }
+            /**** 7.5. Consultar items agotados para mostrarlos****/
+            List<Object[]> objects = orderAPPFacade.listOutStockItems(order.getIdOrder(), dto.getCompanyName(), dto.getNumAtCard(), false);
+
+            List<ResponseExtranetDTO.OutStockItems> outStockItems = new ArrayList<>();
+            for (Object[] obj : objects) {
+                ResponseExtranetDTO.OutStockItems outStockItem = new ResponseExtranetDTO.OutStockItems();
+                outStockItem.setItemCode((String) obj[0]);
+                outStockItem.setQtyOrder((Integer) obj[1]);
+                outStockItem.setQtyCurrent((Integer) obj[2]);
+                outStockItems.add(outStockItem);
+            }
+            return new ResponseExtranetDTO(0, order.getIdOrder(), 0, message, outStockItems);
         }
-        return new ResponseExtranetDTO(0, order.getIdOrder(), 0, message, outStockItems);
     }
 
     private DetailSalesOrderDTO setDetailOrder(DetailSalesOrderDTO detail, String ocrCode) {

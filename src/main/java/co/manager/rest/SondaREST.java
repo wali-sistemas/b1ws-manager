@@ -333,6 +333,7 @@ public class SondaREST {
             dto.setSlpCode(slpCode.longValue());
             dto.setDiscountPercent(discPrcnt.doubleValue());
             dto.setDocTotal(docTotal.doubleValue());
+            dto.setCreateTempOrder(false);
 
             List<Object[]> details = salesQuotationSAPFacade.listDetailSalesQuotations(docEntry, companyName, false);
             if (details.isEmpty()) {
