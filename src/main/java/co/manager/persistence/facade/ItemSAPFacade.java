@@ -117,9 +117,9 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
         sb.append(" from OITM it ");
         sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=");
-        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
+        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("296") && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
             sb.append(4);
-        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
+        } else if (/*Asesores Talleres*/slpCode.equals("296") || slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
             sb.append(8);
         } else if (/*Asesores Bogota*/slpCode.equals("6") || slpCode.equals("32") || slpCode.equals("209") || slpCode.equals("210") || slpCode.equals("227") || slpCode.equals("259") || slpCode.equals("285")) {
             sb.append(9);
