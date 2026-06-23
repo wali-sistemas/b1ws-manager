@@ -2374,6 +2374,51 @@ public class PedBoxREST {
     }
 
     @POST
+    @Path("extranet/shopping-cart-whs")
+    @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response validateStockShoppingCartWithWhs(StockShoppingCartDTO dto) {
+        CONSOLE.log(Level.INFO, "Validando carrito de compras del cliente ", dto.getCardCode());
+        //consultar el asesor asignado
+        String slpCode = businessPartnerSAPFacade.getSellerByCustomer(dto.getCardCode(), dto.getCompanyName().equals("VELEZ") ? "IGB" : dto.getCompanyName(), false);
+
+        List<StockShoppingCartRestDTO> list = new ArrayList<>();
+        if (slpCode != null) {
+            for (String item : dto.getItems()) {
+                List<Object[]> itemsStock = itemSAPFacade.listItemsShoppingCartWithWhs(item, dto.getCompanyName(), false);
+                Map<String, StockShoppingCartRestDTO> groupedItems = new LinkedHashMap<>();
+
+                for (Object[] obj : itemsStock) {
+                    String itemCode = (String) obj[0];
+                    Integer quantity = obj[1] != null ? (Integer) obj[1] : 0;
+                    String whsCode = (String) obj[2];
+                    BigDecimal price = (BigDecimal) obj[3];
+
+                    StockShoppingCartRestDTO itemResponse = groupedItems.get(itemCode);
+                    if (itemResponse == null) {
+                        itemResponse = new StockShoppingCartRestDTO();
+                        itemResponse.setItemCode(itemCode);
+                        itemResponse.setPrice(price);
+                        itemResponse.setStock(0);
+                        itemResponse.setStockWarehouses(new ArrayList<>());
+
+                        groupedItems.put(itemCode, itemResponse);
+                    }
+                    itemResponse.setStock(itemResponse.getStock() + quantity);
+
+                    StockShoppingCartRestDTO.StockCurrentWarehouseDTO warehouseDTO = new StockShoppingCartRestDTO.StockCurrentWarehouseDTO();
+                    warehouseDTO.setWhsCode(whsCode);
+                    warehouseDTO.setQuantity(quantity);
+                    itemResponse.getStockWarehouses().add(warehouseDTO);
+                }
+                list.addAll(groupedItems.values());
+            }
+        }
+        return Response.ok(list).build();
+    }
+
+    @POST
     @Path("extranet/shopping-cart")
     @Consumes({MediaType.APPLICATION_JSON + ";charset=utf-8"})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})

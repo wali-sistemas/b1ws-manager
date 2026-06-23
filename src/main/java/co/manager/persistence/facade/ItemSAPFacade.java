@@ -311,6 +311,150 @@ public class ItemSAPFacade {
         return null;
     }
 
+    //TODO: solo para extranet
+    public List<Object[]> listItemsShoppingCartWithWhs(String itemCode, String companyName, boolean pruebas) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select r.Producto,sum(r.Stock)as Stock,r.whsCode ");
+        if (companyName.equals("VELEZ")) {
+            sb.append(",cast(prMrto.\"Price\" as decimal(18,0))as Precio ");
+        } else {
+            sb.append(",r.Precio ");
+        }
+        sb.append("from (");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','30') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\" in('01','30') and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\" in('01','30') ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='05' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='05' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='26' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='26' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='26' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='35' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='60' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='60' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='60' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='55' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='13' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='13' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='13' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='32' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='32' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append(")as r ");
+        if (companyName.equals("VELEZ")) {
+            sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
+            sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
+        }
+        sb.append("where r.Precio<>'1000000' and /*r.Stock>0 and*/ r.Producto='");
+        sb.append(itemCode);
+        sb.append("' group by r.Producto ");
+        if (companyName.equals("VELEZ")) {
+            sb.append(",prMrto.\"Price\"");
+        } else {
+            sb.append(",r.Precio,r.whsCode");
+        }
+        try {
+            return persistenceConf.chooseSchema("IGB", pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (NoResultException e) {
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error validando el stock del item [" + itemCode + "] agregado en el carrito de compras para " + companyName, e);
+        }
+        return null;
+    }
+
     //TODO: solo aplica para REDPLAS
     public List<Object[]> getListItemsBySellerRedPlas(String slpCode, String companyName, boolean pruebas) {
         StringBuilder sb = new StringBuilder();
