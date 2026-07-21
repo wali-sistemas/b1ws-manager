@@ -117,12 +117,12 @@ public class ItemSAPFacade {
         sb.append("  cast(vis.\"Name\" as varchar(50))as Viscosidad,cast(bs.\"Name\" as varchar(50))as Base ");
         sb.append(" from OITM it ");
         sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=");
-        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("296") && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
+        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("293") && !slpCode.equals("301")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
             sb.append(4);
-        } else if (/*Asesores Talleres*/slpCode.equals("296") || slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
+        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("293") || slpCode.equals("301")) {
             sb.append(8);
         } else if (/*Asesores Bogota*/slpCode.equals("6") || slpCode.equals("32") || slpCode.equals("209") || slpCode.equals("210") || slpCode.equals("227") || slpCode.equals("259") || slpCode.equals("285")) {
-            sb.append(9);
+            sb.append(4);
         } else {
             sb.append(1);
         }
@@ -438,7 +438,7 @@ public class ItemSAPFacade {
             sb.append("inner join \"VELEZ\".OITM itMrto on itMrto.\"ItemCode\"=r.Producto and itMrto.\"validFor\"='Y' ");
             sb.append("inner join \"VELEZ\".ITM1 prMrto on prMrto.\"ItemCode\"=itMrto.\"ItemCode\" and prMrto.\"PriceList\"=1 ");
         }
-        sb.append("where r.Precio<>'1000000' and /*r.Stock>0 and*/ r.Producto='");
+        sb.append("where r.Precio<>'1000000' and r.Stock>0 and r.Producto='");
         sb.append(itemCode);
         sb.append("' group by r.Producto ");
         if (companyName.equals("VELEZ")) {
@@ -503,12 +503,12 @@ public class ItemSAPFacade {
         sb.append("from ITM1 pr ");
         sb.append("inner join OITM it on it.\"ItemCode\" = pr.\"ItemCode\" ");
         sb.append("where pr.\"Price\"<>'1000000' and it.\"validFor\" = 'Y' and it.\"ItemType\" = 'I' and it.\"U_Marca\" <> '' and \"PriceList\" =");
-        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("275") && !slpCode.equals("276") && !slpCode.equals("287") && !slpCode.equals("288")/*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
+        if (companyName.contains("IGB") /*Asesores Talleres*/ && !slpCode.equals("267") && !slpCode.equals("293") && !slpCode.equals("301") /*Asesores bogota*/ && !slpCode.equals("6") && !slpCode.equals("32") && !slpCode.equals("209") && !slpCode.equals("210") && !slpCode.equals("227") && !slpCode.equals("259") && !slpCode.equals("285")) {
             sb.append(4);
-        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("275") || slpCode.equals("276") || slpCode.equals("287") || slpCode.equals("288")) {
+        } else if (/*Asesores Talleres*/slpCode.equals("267") || slpCode.equals("293") || slpCode.equals("301")) {
             sb.append(8);
         } else if (/*Asesores Bogota*/slpCode.equals("6") || slpCode.equals("32") || slpCode.equals("209") || slpCode.equals("210") || slpCode.equals("227") || slpCode.equals("259") || slpCode.equals("285")) {
-            sb.append(9);
+            sb.append(4);
         } else {
             sb.append(1);
         }
@@ -701,7 +701,7 @@ public class ItemSAPFacade {
         sb.append("select t.Producto,t.Presentacion,t.PorcentajeIva,t.Bodega,case when t.Stock < 0 then 0 else t.Stock end as Stock,t.PicturName,t.Categoria,t.Marca,t.SubMarca,t.Grupo,t.SubGrupo,t.ModeloMoto, ");
         sb.append(" t.TipoLlanta,t.AnchoLlanta,t.PerfilLlanta,t.RinLlanta,t.Talla,t.ColorCadena,t.PasoCadena,t.Viscosidad,t.Base,t.TipoArticulo,t.Keywords,t.ArticuloPadre,t.DescripPadre,t.fechaModificacion, ");
         sb.append(" t.horaModificacion,t.marcaMoto,t.motoAplica, ");
-        sb.append(" cast(itMrto.\"ItemName\" as varchar(10000))as NombreWeb, cast((prMrto.\"Price\"*(t.PorcentajeIva/100))+prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast((prMrto2.\"Price\"*(t.PorcentajeIva/100))+prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
+        sb.append(" cast(itMrto.\"ItemName\" as varchar(149))as NombreWeb, cast((prMrto.\"Price\"*(t.PorcentajeIva/100))+prMrto.\"Price\" as numeric(18,2))as PrecioInicial,cast((prMrto2.\"Price\"*(t.PorcentajeIva/100))+prMrto2.\"Price\" as numeric(18,2))as PrecioOferta, ");
         sb.append(" cast(itMrto.\"U_DESCRIPCION_LARGA_W\" as varchar(1000000))as DescripcionLarga,cast(itMrto.\"U_DESCRIPCION_CORTA_W\" as varchar(1000000))as DescripcionCorta,cast(itMrto.\"QryGroup2\" as varchar(100))as UltimasOfertas, ");
         sb.append(" cast(\"QryGroup3\" as varchar(1))as hotSale,cast(\"SLength1\" as double)as longitud,cast(\"SWidth1\" as double)as ancho,cast(\"SHeight1\" as double)as altura,cast(\"SVolume\" as double)as volumen,round(cast(\"SWeight1\" as double),2)as peso ");
         sb.append("from( ");

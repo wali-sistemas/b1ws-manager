@@ -292,4 +292,20 @@ public class SalesPersonSAPFacade {
         }
         return new ArrayList<>();
     }
+
+    public List<Object[]> getPriorityTireWarehousesBySeller(long user, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(\"SlpCode\" as varchar(3))as slpCode,ifnull(cast(\"U_PRIORI1\" as varchar(2)),'01')as b1,ifnull(cast(\"U_PRIORI2\" as varchar(2)),'01')as b2, ");
+        sb.append(" ifnull(cast(\"U_PRIORI3\" as varchar(2)),'01')as b3,ifnull(cast(\"U_PRIORI4\" as varchar(2)),'01')as b4 ");
+        sb.append("from OSLP ");
+        sb.append("where \"Locked\"='N' and \"Fax\"='Y' and \"SlpCode\"='");
+        sb.append(user);
+        sb.append("'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listando los logins para " + companyName);
+        }
+        return new ArrayList<>();
+    }
 }

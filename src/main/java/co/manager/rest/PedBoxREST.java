@@ -1060,7 +1060,18 @@ public class PedBoxREST {
             dto.setShipToCode(shipToCodeDefault);
         }
 
-        /*** 7.Consultar de los items: la descripción, el grupo y la bodega***/
+        /*** 7.Consultar prioridad de asesor bodegas llantas***/
+        List<Object[]> objs = salesPersonSAPFacade.getPriorityTireWarehousesBySeller(dto.getSlpCode(), dto.getCompanyName(), false);
+
+        List<String> priorityWhsCodes = new ArrayList<>();
+        for (Object[] obj : objs) {
+            priorityWhsCodes.add((String) obj[1]);
+            priorityWhsCodes.add((String) obj[2]);
+            priorityWhsCodes.add((String) obj[3]);
+            priorityWhsCodes.add((String) obj[4]);
+        }
+
+        /*** 8.Consultar de los items: la descripción, el grupo y la bodega***/
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
             Object[] obj = itemSAPFacade.getItemNameAndGrup(detail.getItemCode(), dto.getCompanyName(), false);
             detail.setItemName((String) obj[0]);
@@ -1070,21 +1081,59 @@ public class PedBoxREST {
             if (dto.getNumAtCard().substring(0, 1).equals("E")) {
                 dto.setCreateTempOrder(true);
                 if (dto.getCompanyName().contains("IGB")) {
+                    List<DetailSalesOrderDTO> detailsProcessed = new ArrayList<>();
                     if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
-                        detail.setWhsCode("60");
+                        StockShoppingCartDTO shoppingCardDto = new StockShoppingCartDTO();
+                        shoppingCardDto.setCardCode(dto.getCardCode());
+                        shoppingCardDto.setCompanyName(dto.getCompanyName());
+
+                        List<String> items = new ArrayList<>();
+                        items.add(detail.getItemCode());
+
+                        shoppingCardDto.setItems(items);
+
+                        Response stockShoppingCartResponse = null;
+                        try {
+                            stockShoppingCartResponse = validateStockShoppingCartWithWhs(shoppingCardDto);
+                            if (stockShoppingCartResponse == null) {
+                                CONSOLE.log(Level.WARNING, "La validación de stock no devolvió respuesta para el artículo {0}", detail.getItemCode());
+                            } else if (stockShoppingCartResponse.getStatus() < 200 || stockShoppingCartResponse.getStatus() >= 300) {
+                                CONSOLE.log(Level.SEVERE, "Ocurrio un error consulatando el stock del item {0}", detail.getItemCode());
+                            }
+                        } catch (Exception e) {
+                        }
+
+                        List<StockShoppingCartRestDTO> stockData = (List<StockShoppingCartRestDTO>) stockShoppingCartResponse.getEntity();
+                        List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> assignments = new ArrayList<>();
+
+                        try {
+                            assignments = asignarBodegasLlantasConPrioridad(detail.getQuantity(), stockData.get(0).getStockWarehouses(), priorityWhsCodes);
+                        } catch (Exception e) {
+                            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando prioridad de bodegas. ", e);
+                        }
+
+                        for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO assignment : assignments) {
+                            DetailSalesOrderDTO detailSalesOrderDTO = copyDetail(detail);
+                            detailSalesOrderDTO.setWhsCode(assignment.getWhsCode());
+                            detailSalesOrderDTO.setQuantity(assignment.getQuantity());
+
+                            detailsProcessed.add(detailSalesOrderDTO);
+                        }
+
+                        dto.setDetailSalesOrder(detailsProcessed);
                     } else if ((detail.getItemCode().substring(0, 1).equals("U") || detail.getItemCode().substring(0, 2).equals("PW")) && detail.getGroup().equals("LLANTAS")) {
                         detail.setWhsCode("05");
                     } else {
                         detail.setWhsCode("01");
                     }
+                }
+            } else {
+                if ((detail.getItemCode().substring(0, 1).equals("L")) && detail.getGroup().equals("LLANTAS")) {
+                    detail.setWhsCode("13");
+                } else if (detail.getItemCode().substring(0, 2).equals("EX") && detail.getGroup().equals("LLANTAS")) {
+                    detail.setWhsCode("26");
                 } else {
-                    if ((detail.getItemCode().substring(0, 1).equals("L")) && detail.getGroup().equals("LLANTAS")) {
-                        detail.setWhsCode("13");
-                    } else if (detail.getItemCode().substring(0, 2).equals("EX") && detail.getGroup().equals("LLANTAS")) {
-                        detail.setWhsCode("26");
-                    } else {
-                        detail.setWhsCode("32");
-                    }
+                    detail.setWhsCode("32");
                 }
             }
         }
@@ -1093,7 +1142,7 @@ public class PedBoxREST {
         String json = gson.toJson(dto);
         CONSOLE.log(Level.INFO, json);
 
-        /**** 8. Separación de items para crear ordenes independientes - Llantas - (*) - (**) - Repuestos - combos ****/
+        /**** 9. Separación de items para crear ordenes independientes - Llantas - (*) - (**) - Repuestos - combos ****/
         List<DetailSalesOrderDTO> detailSalesOrderWS = dto.getDetailSalesOrder();
         List<DetailSalesOrderDTO> detailSalesOrder_REP = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_REP_one_asterisk = new ArrayList<>();
@@ -1136,13 +1185,13 @@ public class PedBoxREST {
         res = new ResponseExtranetDTO();
         orderCompleted = true;
 
-        /**** 9.Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
+        /**** 10.Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
         if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("REDPLAS")) {
             res = salesOrderEJB.createSalesOrderByExtranet(dto);
             if (res.getCode() == 0) {
                 return Response.ok(res).build();
             } else {
-                /**** 9.1.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app ****/
+                /**** 10.1.Creando registro en tabla temporal solo para ordenes con estado error para retornar de nuevo a la app ****/
                 return Response.ok(createOrderTemporary(dto, res.getOrderTemp(), res.getMessage())).build();
             }
         } else {
@@ -1271,8 +1320,8 @@ public class PedBoxREST {
                 }
             }
         }
-        /**** 9.Crear ordenes separadas por regla de negocio ****/
-        /**** 9.1. Solo repuestos con (*) ****/
+        /**** 11.Crear ordenes separadas por regla de negocio ****/
+        /**** 11.1. Solo repuestos con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_REP_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1300,7 +1349,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.2. Solo repuestos con (**) ****/
+        /**** 11.2. Solo repuestos con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_REP_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1328,13 +1377,13 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.3. Solo repuestos con (combo) ****/
+        /**** 11.3. Solo repuestos con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_REP_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_REP_combo);
                 dto.setNumAtCard(numAtCard + "RDC");
-                /**** 9.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                /**** 11.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
@@ -1356,13 +1405,13 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.4. Solo repuestos ****/
+        /**** 11.4. Solo repuestos ****/
         if (orderCompleted) {
             if (detailSalesOrder_REP.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
                 dto.setDetailSalesOrder(detailSalesOrder_REP);
                 dto.setNumAtCard(numAtCard + "R");
-                /**** 9.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                /**** 11.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
                 if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
@@ -1384,7 +1433,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.5. Solo lubricantes con (*) ****/
+        /**** 11.5. Solo lubricantes con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1408,7 +1457,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.6. Solo lubricantes con (**) ****/
+        /**** 11.6. Solo lubricantes con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1432,7 +1481,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.7. Solo lubricantes con (combo) ****/
+        /**** 11.7. Solo lubricantes con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1456,7 +1505,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.8. Solo lubricantes REVO Medellín con (*) ****/
+        /**** 11.8. Solo lubricantes REVO Medellín con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1481,7 +1530,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.9. Solo lubricantes REVO Medellín con (**) ****/
+        /**** 11.9. Solo lubricantes REVO Medellín con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1506,7 +1555,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.10. Solo lubricantes REVO Medellín con (combo) ****/
+        /**** 11.10. Solo lubricantes REVO Medellín con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1531,7 +1580,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.11. Solo lubricantes REVO Bogotá con (*) ****/
+        /**** 11.11. Solo lubricantes REVO Bogotá con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1556,7 +1605,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.12. Solo lubricantes REVO Bogotá con (**) ****/
+        /**** 11.12. Solo lubricantes REVO Bogotá con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1581,7 +1630,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.13. Solo lubricantes REVO Bogotá con (combo) ****/
+        /**** 11.13. Solo lubricantes REVO Bogotá con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1606,7 +1655,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.14. Solo llantas link con (*) ****/
+        /**** 11.14. Solo llantas link con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_link_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1628,7 +1677,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.15. Solo llantas link con (**) ****/
+        /**** 11.15. Solo llantas link con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_link_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1650,7 +1699,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.16. Solo llantas link con (combo) ****/
+        /**** 11.16. Solo llantas link con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_link_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1672,7 +1721,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.17. Solo llantas link ****/
+        /**** 11.17. Solo llantas link ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_link.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1694,7 +1743,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.18. Solo llantas de cali con (*) ****/
+        /**** 11.18. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1719,7 +1768,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.19. Solo llantas de cali con (*) ****/
+        /**** 11.19. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1744,7 +1793,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.20. Solo llantas de cali con (combo) ****/
+        /**** 11.20. Solo llantas de cali con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1769,7 +1818,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.21. Solo llantas de cartagena con (*) ****/
+        /**** 11.21. Solo llantas de cartagena con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1794,7 +1843,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.22. Solo llantas de cartagena con (**) ****/
+        /**** 11.22. Solo llantas de cartagena con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1819,7 +1868,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.23. Solo llantas de cartagena con (combo) ****/
+        /**** 11.23. Solo llantas de cartagena con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1844,7 +1893,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.24. Solo llantas de bogotá con (*) ****/
+        /**** 11.24. Solo llantas de bogotá con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1869,7 +1918,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.25. Solo llantas de bogotá con (**) ****/
+        /**** 11.25. Solo llantas de bogotá con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1894,7 +1943,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.26. Solo llantas de bogotá con (combo) ****/
+        /**** 11.26. Solo llantas de bogotá con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1919,7 +1968,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.27. Solo llantas de medellín con (*) ****/
+        /**** 11.27. Solo llantas de medellín con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1944,7 +1993,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.28. Solo llantas de medellín con (**) ****/
+        /**** 11.28. Solo llantas de medellín con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1969,7 +2018,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.29. Solo llantas de medellín con (combo) ****/
+        /**** 11.29. Solo llantas de medellín con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1994,7 +2043,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.30. Solo lubricantes ****/
+        /**** 11.30. Solo lubricantes ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2018,7 +2067,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.31. Solo lubricantes REVO Medellín****/
+        /**** 11.31. Solo lubricantes REVO Medellín****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2043,7 +2092,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.32. Solo lubricantes REVO Bogotá****/
+        /**** 11.32. Solo lubricantes REVO Bogotá****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2068,7 +2117,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.33. Solo llantas de cali ****/
+        /**** 11.33. Solo llantas de cali ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2093,7 +2142,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.34. Solo llantas de cartagena ****/
+        /**** 11.34. Solo llantas de cartagena ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2118,7 +2167,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.35. Solo llantas de bogotá ****/
+        /**** 11.35. Solo llantas de bogotá ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2143,7 +2192,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.36. Solo llantas de medellín ****/
+        /**** 11.36. Solo llantas de medellín ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2655,5 +2704,124 @@ public class PedBoxREST {
         } else {
             return res;
         }
+    }
+
+    private List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> asignarBodegasLlantasConPrioridad(Integer quantity, List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> stockWarehouses, List<String> priorityWhsTires) throws Exception {
+        if (quantity == null || quantity <= 0) {
+            throw new Exception("La cantidad solicitada debe ser mayor a cero");
+        }
+
+        if (stockWarehouses == null || stockWarehouses.isEmpty()) {
+            throw new Exception("No se recibieron bodegas para validar stock");
+        }
+
+        List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> bodegasDisponibles = new ArrayList<>();
+        for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega : stockWarehouses) {
+            if (bodega != null && bodega.getWhsCode() != null && bodega.getQuantity() != null && bodega.getQuantity() > 0) {
+                StockShoppingCartRestDTO.StockCurrentWarehouseDTO nueva = new StockShoppingCartRestDTO.StockCurrentWarehouseDTO();
+                nueva.setWhsCode(bodega.getWhsCode());
+                nueva.setQuantity(bodega.getQuantity());
+
+                bodegasDisponibles.add(nueva);
+            }
+        }
+
+        if (bodegasDisponibles.isEmpty()) {
+            throw new Exception("No hay stock disponible en ninguna bodega");
+        }
+
+        int stockTotal = 0;
+        for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega : bodegasDisponibles) {
+            stockTotal += bodega.getQuantity();
+        }
+
+        if (quantity > stockTotal) {
+            throw new Exception("Stock insuficiente. Solicitado: " + quantity + ", disponible: " + stockTotal);
+        }
+
+        Map<String, StockShoppingCartRestDTO.StockCurrentWarehouseDTO> mapaBodegas = new HashMap<>();
+        for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega : bodegasDisponibles) {
+            mapaBodegas.put(bodega.getWhsCode(), bodega);
+        }
+
+        int restante = quantity;
+        List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> asignacion = new ArrayList<>();
+        Set<String> bodegasUsadas = new HashSet<>();
+
+        if (priorityWhsTires != null) {
+            for (String whs : priorityWhsTires) {
+                if (restante == 0) {
+                    break;
+                }
+                if (whs == null) {
+                    continue;
+                }
+
+                StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega = mapaBodegas.get(whs);
+                if (bodega == null || bodega.getQuantity() <= 0) {
+                    continue;
+                }
+
+                int cantidadAAsignar = restante <= bodega.getQuantity() ? restante : bodega.getQuantity();
+                StockShoppingCartRestDTO.StockCurrentWarehouseDTO asignada = new StockShoppingCartRestDTO.StockCurrentWarehouseDTO();
+                asignada.setWhsCode(whs);
+                asignada.setQuantity(cantidadAAsignar);
+
+                asignacion.add(asignada);
+
+                restante -= cantidadAAsignar;
+                bodegasUsadas.add(whs);
+            }
+        }
+
+        if (restante > 0) {
+            List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> bodegasRestantes = new ArrayList<>();
+            for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega : bodegasDisponibles) {
+                if (!bodegasUsadas.contains(bodega.getWhsCode())) {
+                    bodegasRestantes.add(bodega);
+                }
+            }
+
+            Collections.sort(bodegasRestantes, new Comparator<StockShoppingCartRestDTO.StockCurrentWarehouseDTO>() {
+                @Override
+                public int compare(StockShoppingCartRestDTO.StockCurrentWarehouseDTO a, StockShoppingCartRestDTO.StockCurrentWarehouseDTO b) {
+                    return b.getQuantity().compareTo(a.getQuantity());
+                }
+            });
+
+            for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO bodega : bodegasRestantes) {
+                if (restante == 0) {
+                    break;
+                }
+
+                int cantidadAAsignar = restante <= bodega.getQuantity() ? restante : bodega.getQuantity();
+                StockShoppingCartRestDTO.StockCurrentWarehouseDTO asignada = new StockShoppingCartRestDTO.StockCurrentWarehouseDTO();
+                asignada.setWhsCode(bodega.getWhsCode());
+                asignada.setQuantity(cantidadAAsignar);
+
+                asignacion.add(asignada);
+
+                restante -= cantidadAAsignar;
+            }
+        }
+
+        if (restante > 0) {
+            throw new Exception("No fue posible completar la asignación de bodegas");
+        }
+        return asignacion;
+    }
+
+    private DetailSalesOrderDTO copyDetail(DetailSalesOrderDTO original) {
+        DetailSalesOrderDTO detailSalesOrderDTO = new DetailSalesOrderDTO();
+
+        detailSalesOrderDTO.setItemCode(original.getItemCode());
+        detailSalesOrderDTO.setItemName(original.getItemName());
+        detailSalesOrderDTO.setQuantity(original.getQuantity());
+        detailSalesOrderDTO.setGroup(original.getGroup());
+        detailSalesOrderDTO.setWhsCode(original.getWhsCode());
+        detailSalesOrderDTO.setOcrCode(original.getOcrCode());
+        detailSalesOrderDTO.setBaseType(original.getBaseType());
+
+        return detailSalesOrderDTO;
     }
 }
