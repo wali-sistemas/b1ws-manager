@@ -1060,6 +1060,11 @@ public class PedBoxREST {
             dto.setShipToCode(shipToCodeDefault);
         }
 
+        CONSOLE.log(Level.INFO, "Json antes de separar el tema de llantas");
+        Gson gson = new Gson();
+        String json = gson.toJson(dto);
+        CONSOLE.log(Level.INFO, json);
+
         /*** 7.Consultar prioridad de asesor bodegas llantas***/
         List<Object[]> objs = salesPersonSAPFacade.getPriorityTireWarehousesBySeller(dto.getSlpCode(), dto.getCompanyName(), false);
 
@@ -1072,7 +1077,9 @@ public class PedBoxREST {
         }
 
         /*** 8.Consultar de los items: la descripción, el grupo y la bodega***/
-        for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
+        List<DetailSalesOrderDTO> detailsProcessed = new ArrayList<>();
+        List<DetailSalesOrderDTO> originalDetails = new ArrayList<>(dto.getDetailSalesOrder());
+        for (DetailSalesOrderDTO detail : originalDetails) {
             Object[] obj = itemSAPFacade.getItemNameAndGrup(detail.getItemCode(), dto.getCompanyName(), false);
             detail.setItemName((String) obj[0]);
             detail.setGroup((String) obj[1]);
@@ -1081,7 +1088,6 @@ public class PedBoxREST {
             if (dto.getNumAtCard().substring(0, 1).equals("E")) {
                 dto.setCreateTempOrder(true);
                 if (dto.getCompanyName().contains("IGB")) {
-                    List<DetailSalesOrderDTO> detailsProcessed = new ArrayList<>();
                     if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
                         StockShoppingCartDTO shoppingCardDto = new StockShoppingCartDTO();
                         shoppingCardDto.setCardCode(dto.getCardCode());
@@ -1092,55 +1098,59 @@ public class PedBoxREST {
 
                         shoppingCardDto.setItems(items);
 
-                        Response stockShoppingCartResponse = null;
                         try {
-                            stockShoppingCartResponse = validateStockShoppingCartWithWhs(shoppingCardDto);
-                            if (stockShoppingCartResponse == null) {
-                                CONSOLE.log(Level.WARNING, "La validación de stock no devolvió respuesta para el artículo {0}", detail.getItemCode());
-                            } else if (stockShoppingCartResponse.getStatus() < 200 || stockShoppingCartResponse.getStatus() >= 300) {
-                                CONSOLE.log(Level.SEVERE, "Ocurrio un error consulatando el stock del item {0}", detail.getItemCode());
+                            Response stockShoppingCartResponse = validateStockShoppingCartWithWhs(shoppingCardDto);
+                            if (stockShoppingCartResponse == null || stockShoppingCartResponse.getStatus() < 200 || stockShoppingCartResponse.getStatus() >= 300) {
+                                CONSOLE.log(Level.SEVERE, "Ocurrió un error consultando el stock para el artículo " + detail.getItemCode());
+                                return Response.ok(new ResponseDTO(-1, "Ocurrió un error consultando el stock para el artículo " + detail.getItemCode())).build();
+                            }
+
+                            @SuppressWarnings("unchecked")
+                            List<StockShoppingCartRestDTO> stockData = (List<StockShoppingCartRestDTO>) stockShoppingCartResponse.getEntity();
+                            if (stockData == null || stockData.isEmpty()) {
+                                CONSOLE.log(Level.SEVERE, "No se encontró información de stock para el artículo " + detail.getItemCode());
+                                return Response.ok(new ResponseDTO(-1, "No se encontró información de stock para el artículo " + detail.getItemCode())).build();
+                            }
+
+                            List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> assignments = asignarBodegasLlantasConPrioridad(detail.getQuantity(), stockData.get(0).getStockWarehouses(), priorityWhsCodes);
+                            for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO assignment : assignments) {
+                                DetailSalesOrderDTO detailSalesOrderDTO = copyDetail(detail);
+                                detailSalesOrderDTO.setWhsCode(assignment.getWhsCode());
+                                detailSalesOrderDTO.setQuantity(assignment.getQuantity());
+
+                                detailsProcessed.add(detailSalesOrderDTO);
                             }
                         } catch (Exception e) {
+                            CONSOLE.log(Level.SEVERE, "Ocurrió un error asignando prioridad de bodegas para el artículo " + detail.getItemCode(), e);
+                            return Response.ok(new ResponseDTO(-1, "Ocurrió un error asignando prioridad de bodegas para el artículo " + detail.getItemCode())).build();
                         }
-
-                        List<StockShoppingCartRestDTO> stockData = (List<StockShoppingCartRestDTO>) stockShoppingCartResponse.getEntity();
-                        List<StockShoppingCartRestDTO.StockCurrentWarehouseDTO> assignments = new ArrayList<>();
-
-                        try {
-                            assignments = asignarBodegasLlantasConPrioridad(detail.getQuantity(), stockData.get(0).getStockWarehouses(), priorityWhsCodes);
-                        } catch (Exception e) {
-                            CONSOLE.log(Level.SEVERE, "Ocurrio un error asignando prioridad de bodegas. ", e);
-                        }
-
-                        for (StockShoppingCartRestDTO.StockCurrentWarehouseDTO assignment : assignments) {
-                            DetailSalesOrderDTO detailSalesOrderDTO = copyDetail(detail);
-                            detailSalesOrderDTO.setWhsCode(assignment.getWhsCode());
-                            detailSalesOrderDTO.setQuantity(assignment.getQuantity());
-
-                            detailsProcessed.add(detailSalesOrderDTO);
-                        }
-
-                        dto.setDetailSalesOrder(detailsProcessed);
                     } else if ((detail.getItemCode().substring(0, 1).equals("U") || detail.getItemCode().substring(0, 2).equals("PW")) && detail.getGroup().equals("LLANTAS")) {
                         detail.setWhsCode("05");
+                        detailsProcessed.add(detail);
                     } else {
                         detail.setWhsCode("01");
+                        detailsProcessed.add(detail);
                     }
-                }
-            } else {
-                if ((detail.getItemCode().substring(0, 1).equals("L")) && detail.getGroup().equals("LLANTAS")) {
+                } else if (detail.getItemCode().substring(0, 1).equals("L") && detail.getGroup().equals("LLANTAS")) {
                     detail.setWhsCode("13");
+                    detailsProcessed.add(detail);
                 } else if (detail.getItemCode().substring(0, 2).equals("EX") && detail.getGroup().equals("LLANTAS")) {
                     detail.setWhsCode("26");
+                    detailsProcessed.add(detail);
                 } else {
                     detail.setWhsCode("32");
+                    detailsProcessed.add(detail);
                 }
+            } else {
+                detailsProcessed.add(detail);
             }
         }
+        dto.setDetailSalesOrder(detailsProcessed);
 
-        Gson gson = new Gson();
-        String json = gson.toJson(dto);
-        CONSOLE.log(Level.INFO, json);
+        CONSOLE.log(Level.INFO, "Json despues de separar el tema de llantas");
+        Gson gson2 = new Gson();
+        String json2 = gson2.toJson(dto);
+        CONSOLE.log(Level.INFO, json2);
 
         /**** 9. Separación de items para crear ordenes independientes - Llantas - (*) - (**) - Repuestos - combos ****/
         List<DetailSalesOrderDTO> detailSalesOrderWS = dto.getDetailSalesOrder();
