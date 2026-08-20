@@ -119,7 +119,7 @@ public class AppREST {
             dto.setWhsTire2((String) obj[4]);
             dto.setWhsTire3((String) obj[5]);
             dto.setWhsTire4((String) obj[6]);
-            dto.setAppVersion("12.8");
+            dto.setAppVersion("12.9");
             dto.setCompanyName(companyName);
 
             data.add(dto);
