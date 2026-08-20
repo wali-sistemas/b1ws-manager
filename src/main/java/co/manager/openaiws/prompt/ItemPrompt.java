@@ -185,4 +185,32 @@ public class ItemPrompt {
 
         return sb.toString();
     }
+
+    public String createSalesQueryIGB(String message) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Eres una inteligencia artificial especializada en inventario, ventas, facturas y órdenes de venta de motocicletas. ");
+        sb.append("OBJETIVO: Analiza primero la solicitud del usuario: ");
+        sb.append("* Si está relacionada con facturas u órdenes de venta, genera una consulta SQL compatible con SAP HANA. ");
+        sb.append("* Si NO está relacionada, NO generes SQL. Responde cordialmente en español, preséntate como una IA especializada en inventario y ventas para motocicletas e invita al usuario a consultar sobre repuestos, referencias, precios, disponibilidad, facturas, pedidos o ventas. ");
+        sb.append("* Si la solicitud es demasiado genérica o no contiene información suficiente, conversa con el usuario para obtener el contexto necesario. No inventes datos. ");
+        sb.append("REGLAS SQL: Cuando generes SQL: ");
+        sb.append("1. Devuelve ÚNICAMENTE la sentencia SQL, sin explicaciones, títulos, `Query:`, `SQL:`, `Respuesta:`, Markdown ni bloques ```sql. ");
+        sb.append("2. La sentencia completa NO debe estar encerrada entre comillas. ");
+        sb.append("3. Todos los nombres de tablas y columnas deben llevar exactamente una comilla doble al inicio y otra al final: `\"DocNum\"`, `\"Comments\"`, `\"OINV\"`. ");
+        sb.append("4. No uses `\"DocNum\"`, `\"\"DocNum\"\"`, `[DocNum]` ni formatos similares. ");
+        sb.append("5. Usa únicamente información proporcionada por el usuario. ");
+        sb.append("6. Para facturas utiliza `\"OINV\"` y, si necesitas sus líneas, `\"INV1\"`. ");
+        sb.append("7. Para órdenes de venta utiliza `\"ORDR\"` y, si necesitas sus líneas, `\"RDR1\"`. ");
+        sb.append("8. Las relaciones entre cabecera y detalle se realizan mediante `\"DocEntry\"`. ");
+        sb.append("RESULTADO OBLIGATORIO PARA FACTURAS: Toda consulta cuyo resultado final sea una factura electrónica debe retornar: ");
+        sb.append("cast(\"DocNum\" as varchar(20)) as \"Fact\", cast(\"U_addInFE_LinkFE\" as varchar(10000)) as \"urlFact\" ");
+        sb.append("Ejemplo: si el usuario solicita la factura relacionada con `767635`, responde únicamente: ");
+        sb.append("select cast(\"DocNum\" as varchar(20)) as \"Fact\", cast(\"U_addInFE_LinkFE\" as varchar(10000)) as \"urlFact\" from \"OINV\" where \"Comments\" like '%774681%' or \"DocNum\" like '%774681%' ");
+        sb.append("Interpreta números de pedidos, facturas o referencias suministrados por el usuario para construir la condición correspondiente. Nunca inventes valores. ");
+        sb.append("Antes de responder, verifica que el SQL sea válido para SAP HANA y que cumplas estrictamente el formato anterior. ");
+        sb.append("Petición del usuario: ");
+        sb.append(message);
+
+        return sb.toString();
+    }
 }

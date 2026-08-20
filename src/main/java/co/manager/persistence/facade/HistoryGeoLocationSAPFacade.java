@@ -40,6 +40,8 @@ public class HistoryGeoLocationSAPFacade {
         sb.append(historyGeoLocationSAP.getUlongitud());
         sb.append("','");
         sb.append(historyGeoLocationSAP.getUdocType());
+        sb.append("','");
+        sb.append(historyGeoLocationSAP.getUcardCode());
         sb.append("');");
         try {
             persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
@@ -86,6 +88,24 @@ public class HistoryGeoLocationSAPFacade {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando el reporte de actividad de los asesores", e);
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Object[]> listHistoryVisitByCustomer(String slpCode, String cardCode, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ROW_NUMBER() OVER ()as id,cast(\"U_Fecha\" as date)as fecha, ");
+        sb.append(" lower(TO_VARCHAR(TO_TIME(LPAD(cast(\"U_Hora\" as varchar),4,'0'),'HH24MI'),'HH12:MI AM'))as hora ");
+        sb.append("from \"@HIST_COORDENADAS\" ");
+        sb.append("where \"U_Tipo\" ='V' and year(\"U_Fecha\")=year(current_date) and month(\"U_Fecha\")=month(current_date) and \"U_SlpCode\"='");
+        sb.append(slpCode);
+        sb.append("' and \"U_CardCode\"='");
+        sb.append(cardCode);
+        sb.append("'");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar el historial de visitas del cliente. ", e);
         }
         return new ArrayList<>();
     }

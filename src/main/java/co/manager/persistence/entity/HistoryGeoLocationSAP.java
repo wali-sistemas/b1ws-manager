@@ -44,6 +44,8 @@ public class HistoryGeoLocationSAP implements Serializable {
     @NotNull
     @Column(name = "U_Tipo")
     private String udocType;
+    @Column(name = "U_CardCode")
+    private String ucardCode;
 
     public HistoryGeoLocationSAP() {
     }
@@ -112,6 +114,14 @@ public class HistoryGeoLocationSAP implements Serializable {
         this.udocType = udocType;
     }
 
+    public String getUcardCode() {
+        return ucardCode;
+    }
+
+    public void setUcardCode(String ucardCode) {
+        this.ucardCode = ucardCode;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -140,6 +150,7 @@ public class HistoryGeoLocationSAP implements Serializable {
                 ", ulongitud='" + ulongitud + '\'' +
                 ", ulatitud='" + ulatitud + '\'' +
                 ", udocType='" + udocType + '\'' +
+                ", ucardCode='" + ucardCode + '\'' +
                 '}';
     }
 }

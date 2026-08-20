@@ -579,22 +579,6 @@ public class ItemSAPFacade {
                 sb.append("'");
             }
             sb.append(" union all ");
-            //BOGOTÁ LUBRICANTE REVO IGB
-            sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
-            sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
-            sb.append("  from OBIN ub ");
-            sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
-            sb.append("  where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
-            sb.append("   (select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
-            sb.append(" from OITM oi ");
-            sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
-            sb.append(" where it.\"WhsCode\"='35' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
-            if (!itemCode.equals("0")) {
-                sb.append("and oi.\"ItemCode\"='");
-                sb.append(itemCode);
-                sb.append("'");
-            }
-            sb.append(" union all ");
             //COTA LUBRICANTE REVO IGB
             sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
             sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
@@ -628,6 +612,22 @@ public class ItemSAPFacade {
             }
             sb.append(" union all ");
         }
+        //BOGOTÁ IGB - MTZ
+        sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
+        sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");
+        sb.append("  from OBIN ub ");
+        sb.append("  inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" ");
+        sb.append("  where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")>0 then (it.\"OnHand\"-it.\"IsCommited\"-");
+        sb.append("   (select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='35' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=oi.\"ItemCode\")) else (it.\"OnHand\"-it.\"IsCommited\") end as int)as Stock ");
+        sb.append(" from OITM oi ");
+        sb.append(" inner join OITW it on it.\"ItemCode\"=oi.\"ItemCode\" ");
+        sb.append(" where it.\"WhsCode\"='35' and oi.\"frozenFor\"='N' and oi.\"SellItem\"='Y' and oi.\"InvntItem\"='Y' ");
+        if (!itemCode.equals("0")) {
+            sb.append("and oi.\"ItemCode\"='");
+            sb.append(itemCode);
+            sb.append("'");
+        }
+        sb.append(" union all ");
         //CALI IGB - MTZ
         sb.append(" select cast(oi.\"ItemCode\" as varchar(20))as Producto,cast(it.\"WhsCode\" as varchar(20))as Bodega,cast(case when (");
         sb.append("  select ifnull(sum(de.\"OnHandQty\"),0) ");

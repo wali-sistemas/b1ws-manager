@@ -181,6 +181,7 @@ public class AppREST {
                     dto.setCupo((BigDecimal) obj[26]);
                     dto.setPoints((BigDecimal) obj[27]);
                     dto.setRegion((String) obj[28]);
+                    dto.setLocationVisit((String) obj[29]);
                     //Detalle de direcciones al CustomerDTO
                     CustomerDTO.CustomerAddressesDTO dto2 = new CustomerDTO.CustomerAddressesDTO();
                     dto2.setLineNum((String) obj[20]);
@@ -784,6 +785,16 @@ public class AppREST {
         return Response.ok(new ResponseDTO(0, list)).build();
     }
 
+    @GET
+    @Path("list-history-visit/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response findHistoryVisitByCustomer(@PathParam("companyname") String companyName,
+                                               @QueryParam("slpcode") String slpCode,
+                                               @QueryParam("cardcode") String cardCode) {
+        return Response.ok(historyGeoLocationSAPFacade.listHistoryVisitByCustomer(slpCode, cardCode, companyName, false)).build();
+    }
+
     @PUT
     @Path("update-status-order-extranet/{companyname}/{docnum}")
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
@@ -855,6 +866,7 @@ public class AppREST {
         entity.setUlatitud(dto.getLatitude());
         entity.setUlongitud(dto.getLongitude());
         entity.setUdocType(dto.getDocType());
+        entity.setUcardCode(dto.getCardCode());
         try {
             historyGeoLocationSAPFacade.addHistoryGeoLocation(entity, dto.getCompanyName(), false);
             CONSOLE.log(Level.INFO, "Asesor [" + dto.getSlpCode() + "]-" + dto.getCompanyName() + " geo-localizado con exito");
@@ -972,7 +984,7 @@ public class AppREST {
 
         //TODO: asignar bodega 01 a la 60 cuando sea solo lubricante
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
-            if (detail.getItemCode().substring(0, 2).equals("LR") && detail.getWhsCode().equals("60")) {
+            if (detail.getItemCode().substring(0, 2).equals("LR") /*&& detail.getWhsCode().equals("60")*/) {
                 detail.setWhsCode("01");
             }
         }
@@ -2153,9 +2165,9 @@ public class AppREST {
         } else if (dto.getMunicipio() == null || dto.getMunicipio().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo municipio es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo municipio es obligatorio.")).build();
-        } else if (dto.getCity() == null || dto.getCity().isEmpty()) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo ciudad es obligatorio", dto.getCompanyName());
-            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo ciudad es obligatorio.")).build();
+        } else if (dto.getProvince() == null || dto.getProvince().isEmpty()) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo barrio es obligatorio", dto.getCompanyName());
+            return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo barrio es obligatorio.")).build();
         } else if (dto.getAddress() == null || dto.getAddress().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el cliente para {0}. Campo address es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear el cliente para " + dto.getCompanyName() + ". Campo address es obligatorio.")).build();

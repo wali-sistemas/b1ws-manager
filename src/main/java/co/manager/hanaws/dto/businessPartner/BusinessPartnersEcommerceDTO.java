@@ -349,6 +349,8 @@ public class BusinessPartnersEcommerceDTO implements Serializable {
             protected String state;
             @JsonProperty("Country")
             protected String country;
+            @JsonProperty("County")
+            protected String county;
             @JsonProperty("AddressType")
             protected String addressType;
             @JsonProperty("TaxCode")
@@ -406,6 +408,14 @@ public class BusinessPartnersEcommerceDTO implements Serializable {
 
             public void setCountry(String country) {
                 this.country = country;
+            }
+
+            public String getCounty() {
+                return county;
+            }
+
+            public void setCounty(String county) {
+                this.county = county;
             }
 
             public String getAddressType() {

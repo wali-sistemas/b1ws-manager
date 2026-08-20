@@ -134,12 +134,13 @@ public class BusinessPartnerSAPFacade {
         sb.append(") as r ");
         sb.append("group by r.\"CardCode\" ");
         sb.append("),0)as numeric(18,2))as ptsPrograma, ");
-        sb.append(" cast(sl.\"Memo\" as varchar(100))as region ");
+        sb.append(" cast(sl.\"Memo\" as varchar(100))as region, ");
+        sb.append(" case when exists (select 1 from \"@HIST_COORDENADAS\" where \"U_SlpCode\"=sn.\"SlpCode\" and \"U_CardCode\"=sn.\"CardCode\" and \"U_Tipo\"='V' and year(\"U_Fecha\")=year(current_date) and month(\"U_Fecha\")=month(current_date)) then 'Y' else 'N' end locationVisit ");
         sb.append("from OCRD sn ");
         sb.append("inner join CRD1 cr on cr.\"CardCode\"=sn.\"CardCode\" ");
         sb.append("inner join OCTG oc on sn.\"GroupNum\"=oc.\"GroupNum\" ");
         sb.append("inner join OCST cs on cs.\"Code\"=cr.\"State\" ");
-        sb.append("inner  join OSLP sl on sl.\"SlpCode\"=sn.\"SlpCode\" ");
+        sb.append("inner join OSLP sl on sl.\"SlpCode\"=sn.\"SlpCode\" ");
         sb.append("where sn.\"CardType\" in ('C','L') and sn.\"validFor\"='Y' and cs.\"Country\"='CO' and sn.\"SlpCode\"<>-1 and cr.\"AdresType\"='S' and sn.\"QryGroup24\"='N' ");
         if (!slpCode.equals("81")) {
             sb.append(" and sn.\"SlpCode\" =");

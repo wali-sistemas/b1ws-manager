@@ -6,6 +6,7 @@ import co.manager.dto.CustomerOncreditDTO;
 import co.manager.dto.ResponseDTO;
 import co.manager.hanaws.client.businessPartners.BusinessPartnersClient;
 import co.manager.hanaws.client.udo.FeResFisSnClient;
+import co.manager.hanaws.dto.ResponseServiceLayerDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
@@ -100,7 +101,7 @@ public class BusinessPartnerEJB {
                 if (dto.getCompanyName().contains("VELEZ")) {
                     businessPartner.setSalesPersonCode("05");
                     businessPartner.setUaddInFaElectronicaEmailContactoFE("facturas@motorepuestos.co;" + dto.getMail().toUpperCase());
-                    businessPartner.setDebitorAccount("11100520");
+                    businessPartner.setDebitorAccount("13050506");
                 } else {
                     businessPartner.setSalesPersonCode("22");
                     businessPartner.setUaddInFaElectronicaEmailContactoFE(dto.getMail().toUpperCase());
@@ -483,6 +484,7 @@ public class BusinessPartnerEJB {
 
     public ResponseDTO createCustomerLead(CustomerLeadDTO dto) {
         String cardCode = "";
+        String msjError = "";
         //1. Login
         String sessionId = null;
         try {
@@ -499,13 +501,13 @@ public class BusinessPartnerEJB {
         if (sessionId != null) {
             try {
                 BusinessPartnersEcommerceDTO businessPartner = new BusinessPartnersEcommerceDTO();
-                businessPartner.setCardCode("L" + dto.getDocument());
-                businessPartner.setCardName(dto.getCardName().toUpperCase());
+                businessPartner.setCardCode("L" + dto.getDocument().trim());
+                businessPartner.setCardName(dto.getCardName().toUpperCase().trim());
                 businessPartner.setCardType("L");
                 businessPartner.setFederalTaxID(dto.getLicTradNum());
                 businessPartner.setGroupCode(dto.getCompanyName().contains("IGB") ? 100L : 1L);
                 businessPartner.setPriceListNum(dto.getPriceListNum());
-                businessPartner.setEmailAddress(dto.getMail().toUpperCase());
+                businessPartner.setEmailAddress(dto.getMail().toUpperCase().trim());
                 businessPartner.setUmanejo("DIA");
                 businessPartner.setUdocFormEntFE(1l);
                 businessPartner.setPhone1(dto.getCellular());
@@ -517,7 +519,7 @@ public class BusinessPartnerEJB {
                 businessPartner.setUbpcotp("01");
                 businessPartner.setUtrasp("14");
                 businessPartner.setUbpcocs(dto.getMunicipio());
-                businessPartner.setUbpcoCity(dto.getCity());
+                businessPartner.setUbpcoCity(dto.getMunicipio());
                 businessPartner.setUbpcoAddress(dto.getAddress().toUpperCase());
                 businessPartner.setUbpvtper("PNRE");
                 businessPartner.setSalesPersonCode(dto.getSlpCode());
@@ -536,7 +538,9 @@ public class BusinessPartnerEJB {
                     BusinessPartnersEcommerceDTO.BPAddresses.BPAddress address = new BusinessPartnersEcommerceDTO.BPAddresses.BPAddress();
                     address.setAddressName("WALI SALES");
                     address.setStreet(dto.getAddress().toUpperCase());
-                    address.setCity(dto.getCity());
+                    address.setCity(dto.getMunicipio());
+                    address.setBlock(dto.getMunicipio());
+                    address.setCounty(dto.getProvince().trim());
                     address.setState(dto.getDepartament());
                     address.setUmunicipio(dto.getMunicipio());
                     address.setCountry("CO");
@@ -559,8 +563,17 @@ public class BusinessPartnerEJB {
                 String json = gson.toJson(businessPartner);
                 CONSOLE.log(Level.INFO, json);
 
-                BusinessPartnersRestDTO res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
-                cardCode = res.getCardCode();
+                /*BusinessPartnersRestDTO res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
+                cardCode = res.getCardCode();*/
+
+                Object res = service.addBusinessPartnerFromEcommerce(businessPartner, sessionId);
+                if (res instanceof BusinessPartnersRestDTO) {
+                    BusinessPartnersRestDTO orderRestDTO = (BusinessPartnersRestDTO) res;
+                    cardCode = orderRestDTO.getCardCode();
+                } else if (res instanceof ResponseServiceLayerDTO) {
+                    msjError = String.valueOf(((ResponseServiceLayerDTO) res).getError().getMessage());
+                    CONSOLE.log(Level.SEVERE, msjError);
+                }
 
                 if (cardCode.isEmpty()) {
                     CONSOLE.log(Level.WARNING, "Ocurrió un problema al crear el prospecto de cliente. Resetear el sesión ID.");
@@ -568,7 +581,7 @@ public class BusinessPartnerEJB {
                 } else {
                     CONSOLE.log(Level.INFO, "Se creo el prospecto de cliente satisfactoriamente");
                     //agregar las resposabilidades fiscales al socio de negocio
-                    addRespFisSN(cardCode, res.getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
+                    addRespFisSN(cardCode, ((BusinessPartnersRestDTO) res).getCardName(), "R-99-PN", "No aplica – Otros", sessionId, dto.getCompanyName());
                 }
             } catch (Exception e) {
                 CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear el prospecto de cliente ", e);

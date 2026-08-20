@@ -27,7 +27,7 @@ public class CustomerLeadDTO {
     private String address;
     private String departament;
     private String municipio;
-    private String city;
+    private String province;
     private Long priceListNum;
 
     public CustomerLeadDTO() {
@@ -177,12 +177,12 @@ public class CustomerLeadDTO {
         this.municipio = municipio;
     }
 
-    public String getCity() {
-        return city;
+    public String getProvince() {
+        return province;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setProvince(String province) {
+        this.province = province;
     }
 
     public Long getPriceListNum() {
@@ -206,7 +206,7 @@ public class CustomerLeadDTO {
                 ", address='" + address + '\'' +
                 ", departament='" + departament + '\'' +
                 ", municipio='" + municipio + '\'' +
-                ", city='" + city + '\'' +
+                ", province='" + province + '\'' +
                 ", priceListNum=" + priceListNum +
                 '}';
     }

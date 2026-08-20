@@ -31,6 +31,7 @@ public class CustomerDTO {
     private BigDecimal balance;
     private String region;
     private List<CustomerAddressesDTO> addresses;
+    private String locationVisit;
 
     public CustomerDTO() {
     }
@@ -254,6 +255,14 @@ public class CustomerDTO {
         this.addresses = addresses;
     }
 
+    public String getLocationVisit() {
+        return locationVisit;
+    }
+
+    public void setLocationVisit(String locationVisit) {
+        this.locationVisit = locationVisit;
+    }
+
     @Override
     public String toString() {
         return "CustomerDTO{" +
@@ -281,6 +290,7 @@ public class CustomerDTO {
                 ", balance=" + balance +
                 ", region='" + region + '\'' +
                 ", addresses=" + addresses +
+                ", locationVisit='" + locationVisit + '\'' +
                 '}';
     }
 
