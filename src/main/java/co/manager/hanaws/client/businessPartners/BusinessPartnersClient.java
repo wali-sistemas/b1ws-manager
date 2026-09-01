@@ -5,8 +5,6 @@ import co.manager.hanaws.dto.businessPartner.BusinessPartnersDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersEcommerceDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersRestDTO;
 import co.manager.hanaws.dto.businessPartner.BusinessPartnersWithholdingTaxDTO;
-import co.manager.hanaws.dto.order.OrderDTO;
-import co.manager.hanaws.dto.order.OrderRestDTO;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

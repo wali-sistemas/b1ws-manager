@@ -1088,7 +1088,7 @@ public class PedBoxREST {
             if (dto.getNumAtCard().substring(0, 1).equals("E")) {
                 dto.setCreateTempOrder(true);
                 if (dto.getCompanyName().contains("IGB")) {
-                    if (detail.getItemCode().substring(0, 2).equals("TY") && detail.getGroup().equals("LLANTAS")) {
+                    if (/*detail.getItemCode().substring(0, 2).equals("TY") &&*/ detail.getGroup().equals("LLANTAS")) {
                         StockShoppingCartDTO shoppingCardDto = new StockShoppingCartDTO();
                         shoppingCardDto.setCardCode(dto.getCardCode());
                         shoppingCardDto.setCompanyName(dto.getCompanyName());
@@ -1124,10 +1124,10 @@ public class PedBoxREST {
                             CONSOLE.log(Level.SEVERE, "Ocurrió un error asignando prioridad de bodegas para el artículo " + detail.getItemCode(), e);
                             return Response.ok(new ResponseDTO(-1, "Ocurrió un error asignando prioridad de bodegas para el artículo " + detail.getItemCode())).build();
                         }
-                    } else if ((detail.getItemCode().substring(0, 1).equals("U") || detail.getItemCode().substring(0, 2).equals("PW")) && detail.getGroup().equals("LLANTAS")) {
+                    } /*else if ((detail.getItemCode().substring(0, 1).equals("U") || detail.getItemCode().substring(0, 2).equals("PW")) && detail.getGroup().equals("LLANTAS")) {
                         detail.setWhsCode("05");
                         detailsProcessed.add(detail);
-                    } else {
+                    }*/ else {
                         detail.setWhsCode("01");
                         detailsProcessed.add(detail);
                     }

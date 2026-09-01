@@ -260,7 +260,7 @@ public class SalesPersonSAPFacade {
         sb.append("    inner join OSLP s on f.\"SlpCode\"=s.\"SlpCode\" ");
         sb.append("    inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append("    inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
-        sb.append("    where f.\"DocType\"='I' and month(f.\"DocDate\")=month(current_date) and year(f.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append("    where d.\"TaxOnly\"='N' and f.\"DocType\"='I' and month(f.\"DocDate\")=month(current_date) and year(f.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
         sb.append(slpCode);
         sb.append("  union all ");
         sb.append("    select m.\"Name\" as Marca,(d.\"LineTotal\"-(d.\"LineTotal\"*(n.\"DiscPrcnt\")/100))*-1 as Total,s.\"SlpName\" ");
@@ -269,7 +269,7 @@ public class SalesPersonSAPFacade {
         sb.append("    inner join OSLP s on n.\"SlpCode\"=s.\"SlpCode\" ");
         sb.append("    inner join OITM a on a.\"ItemCode\"=d.\"ItemCode\" ");
         sb.append("    inner join \"@MARCAS\" m on a.\"U_Marca\"=m.\"Code\" ");
-        sb.append("    where n.\"DocType\"='I' and month(n.\"DocDate\")=month(current_date) and year(n.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
+        sb.append("    where d.\"TaxOnly\"='N' and n.\"DocType\"='I' and month(n.\"DocDate\")=month(current_date) and year(n.\"DocDate\")=year(current_date) and s.\"SlpCode\"=");
         sb.append(slpCode);
         sb.append("  )as t ");
         sb.append("  where t.\"SlpName\"=m.U_VEND_PRES and t.MARCA=m.U_MARCA_PRES ");
