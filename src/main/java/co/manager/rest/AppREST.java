@@ -1,10 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
-import co.manager.ejb.BasicFunctions;
-import co.manager.ejb.BusinessPartnerEJB;
-import co.manager.ejb.ManagerApplicationBean;
-import co.manager.ejb.SalesOrderEJB;
+import co.manager.ejb.*;
 import co.manager.modulaws.dto.order.OrderModulaDTO;
 import co.manager.modulaws.ejb.OrderModulaEJB;
 import co.manager.persistence.entity.*;
@@ -66,6 +63,8 @@ public class AppREST {
     private ItemSoldOutAPPFacade itemSoldOutAPPFacade;
     @EJB
     private BusinessPartnerEJB businessPartnerEJB;
+    @EJB
+    private DespachoExhibidoreSAPFacade despachoExhibidoreSAPFacade;
     @EJB
     private BasicFunctions basicFunctions;
 
@@ -884,8 +883,6 @@ public class AppREST {
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public Response createOrderSale(SalesOrderDTO dto) {
         CONSOLE.log(Level.INFO, "Iniciando creacion de orden de venta para " + dto.getCompanyName());
-
-        ResponseDTO res = new ResponseDTO();
         /**** 1. Validar si ya existe la orden en SAP por idPedBox campo NumAtCard****/
         if (dto.getNumAtCard() == null || dto.getNumAtCard().isEmpty()) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo numAtCard es obligatorio", dto.getCompanyName());
@@ -895,6 +892,13 @@ public class AppREST {
             if (docNum != 0) {
                 CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
                 return Response.ok(new ResponseDTO(0, docNum)).build();
+            } else {
+                //validar existencia de numAtCard de la tabla temporal de pedidos
+                Integer idDocNum = orderPedboxFacade.getIdOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
+                if (idDocNum != 0) {
+                    CONSOLE.log(Level.INFO, "La orden ya existe en tabla temporal con el id {0}", docNum);
+                    return Response.ok(new ResponseDTO(0, idDocNum)).build();
+                }
             }
         }
         /**** 2. Validar campos obligatorios para creación de orden de venta****/
@@ -914,6 +918,8 @@ public class AppREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
+        //Consulta de regional y centro de costo del asesor
+        Object[] dataSeller = salesPersonSAPFacade.getDataSellerRegionAndCost(dto.getSlpCode(), dto.getCompanyName(), false);
 
         /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
         if (!dto.isHoldOrder()) {
@@ -932,15 +938,18 @@ public class AppREST {
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
+        //Consulta de descuento comercial, transportadora, dirección por default
+        Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+
         //TODO: condicion solo para talleres
-        String regional = salesPersonSAPFacade.getRegionalBySeller(String.valueOf(dto.getSlpCode()), dto.getCompanyName(), false);
+        String regional = (String) dataSeller[0];
         if (!dto.isHoldOrder()) {
             if (regional.equals("TALLERES")) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
                 //TODO: Aprobación de ordenes automaticas en IGB y MTZ
-                if (businessPartnerSAPFacade.checkFieldDiscountCommercial(dto.getCardCode(), dto.getCompanyName(), false)) {
+                if (dataCustomer[0].equals("Y")) {
                     dto.setStatus("REVISAR");
                     dto.setConfirmed("N");
                 } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
@@ -964,27 +973,20 @@ public class AppREST {
             dto.setConfirmed("Y");
         }
         /**** 4. Consultando el centro de costo por asesor de venta****/
-        String ocrCode = salesPersonSAPFacade.getCentroCosto(dto.getSlpCode(), dto.getCompanyName(), false);
+        String ocrCode = (String) dataSeller[1];
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
         /**** 5. Consultando código de transportadora asignada al cliente****/
-        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        dto.setIdTransport((String) dataCustomer[1]);
         /**** 6. Consultando por cliente el id de la dirección de factura****/
-        String shipToCodeDefault = null;
-        List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
-        if (idAddress.size() > 0) {
-            for (Object[] obj : idAddress) {
-                shipToCodeDefault = (String) obj[0];
-                dto.setPayToCode((String) obj[1]);
-            }
-        }
+        String shipToCodeDefault = (String) dataCustomer[2];
+        dto.setPayToCode((String) dataCustomer[3]);
 
         if (dto.getShipToCode().equals("Elija un destino")) {
             dto.setShipToCode(shipToCodeDefault);
         }
-
         //TODO: asignar bodega 01 a la 60 cuando sea solo lubricante
         for (DetailSalesOrderDTO detail : dto.getDetailSalesOrder()) {
-            if (detail.getItemCode().substring(0, 2).equals("LR") /*&& detail.getWhsCode().equals("60")*/) {
+            if (detail.getItemCode().substring(0, 2).equals("LR")) {
                 detail.setWhsCode("01");
             }
         }
@@ -1011,10 +1013,6 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_one_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_two_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_cart_combo = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_link = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_one_asterisk = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_two_asterisk = new ArrayList<>();
-        List<DetailSalesOrderDTO> detailSalesOrder_LL_link_combo = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_med = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_med_one_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LR_med_two_asterisk = new ArrayList<>();
@@ -1033,8 +1031,9 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_combo = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
-        res = new ResponseDTO();
+        ResponseDTO res = new ResponseDTO();
         orderCompleted = true;
+        int sumTires = 0;
 
         /**** 8. Crear orden directamente en cedi solo para: motorepuestos.co - REDPLAS ****/
         if (dto.getCompanyName().contains("VELEZ") || dto.getCardCode().equals("C900998242") || dto.getCompanyName().contains("REDPLAS")) {
@@ -1049,6 +1048,7 @@ public class AppREST {
             for (DetailSalesOrderDTO detail : detailSalesOrderWS) {
                 if (dto.getCompanyName().contains("IGB")) {
                     if (detail.getGroup().equals("LLANTAS")) {
+                        sumTires += detail.getQuantity();
                         if (detail.getWhsCode().equals("05")) {
                             if (detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_cart_one_asterisk.add(setDetailOrder(detail, ocrCode));
@@ -1125,17 +1125,8 @@ public class AppREST {
                     }
                 } else {
                     if (detail.getGroup().equals("LLANTAS")) {
-                        if (detail.getWhsCode().equals("13")) {
-                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
-                                detailSalesOrder_LL_link_one_asterisk.add(setDetailOrder(detail, ocrCode));
-                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
-                                detailSalesOrder_LL_link_two_asterisk.add(setDetailOrder(detail, ocrCode));
-                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
-                                detailSalesOrder_LL_link_combo.add(setDetailOrder(detail, ocrCode));
-                            } else {
-                                detailSalesOrder_LL_link.add(setDetailOrder(detail, ocrCode));
-                            }
-                        } else if (detail.getWhsCode().equals("26")) {
+                        sumTires += detail.getQuantity();
+                        if (detail.getWhsCode().equals("26")) {
                             if (detail.getItemName().substring(0, 3).equals("(*)")) {
                                 detailSalesOrder_LL_cali_one_asterisk.add(setDetailOrder(detail, ocrCode));
                             } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
@@ -1179,7 +1170,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_REP_one_asterisk);
                 dto.setNumAtCard(numAtCard + "RD1");
                 /**** 9.1.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
                     res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1207,7 +1198,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_REP_two_asterisk);
                 dto.setNumAtCard(numAtCard + "RD2");
                 /**** 9.2.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
                     res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1235,7 +1226,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_REP_combo);
                 dto.setNumAtCard(numAtCard + "RDC");
                 /**** 9.3.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
                     res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1263,7 +1254,7 @@ public class AppREST {
                 dto.setDetailSalesOrder(detailSalesOrder_REP);
                 dto.setNumAtCard(numAtCard + "R");
                 /**** 9.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
                     res = sortOutItemsOnlyParts(dto, ocrCode);
                 } else {
                     res = salesOrderEJB.createSalesOrderByApp(dto);
@@ -1506,94 +1497,6 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.14. Solo llantas link con (*) ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_LL_link_one_asterisk.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link_one_asterisk);
-                dto.setNumAtCard(numAtCard + "LL13D1");
-                dto.setSerialMDL("");
-
-                res = salesOrderEJB.createSalesOrderByApp(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (*). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
-        /**** 9.15. Solo llantas link con (**) ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_LL_link_two_asterisk.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link_two_asterisk);
-                dto.setNumAtCard(numAtCard + "LL13D2");
-                dto.setSerialMDL("");
-
-                res = salesOrderEJB.createSalesOrderByApp(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (**). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
-        /**** 9.16. Solo llantas link con (combo) ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_LL_link_combo.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link_combo);
-                dto.setNumAtCard(numAtCard + "LL13DC");
-                dto.setSerialMDL("");
-
-                res = salesOrderEJB.createSalesOrderByApp(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link con (combo). Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
-        /**** 9.17. Solo llantas link ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_LL_link.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_LL_link);
-                dto.setNumAtCard(numAtCard + "LL13");
-                dto.setSerialMDL("");
-
-                res = salesOrderEJB.createSalesOrderByApp(dto);
-                if (res.getCode() < 0) {
-                    ResponseDTO response = createOrderTemporary(dto, 0);
-
-                    gson = new Gson();
-                    json = gson.toJson(dto);
-                    CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de link. Orden Temp={0}", response.getContent());
-                    res = response;
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
         /**** 9.18. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_one_asterisk.size() > 0) {
@@ -1614,12 +1517,14 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.19. Solo llantas de cali con (*) ****/
+        /**** 9.19. Solo llantas de cali con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1639,6 +1544,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1664,6 +1571,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1689,6 +1598,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1714,6 +1625,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1739,6 +1652,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1764,6 +1679,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1789,6 +1706,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1814,6 +1733,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1839,6 +1760,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1864,6 +1787,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1889,6 +1814,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -1988,6 +1915,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -2013,6 +1942,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -2038,6 +1969,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -2063,6 +1996,8 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
                 }
             }
         } else {
@@ -2189,10 +2124,11 @@ public class AppREST {
         dto.setLicTradNum(dto.getDocument() + "-" + digito);
 
         //TODO: condicion solo para talleres
-        String regional = salesPersonSAPFacade.getRegionalBySeller(dto.getSlpCode(), dto.getCompanyName(), false);
+        Object[] dataSeller = salesPersonSAPFacade.getDataSellerRegionAndCost(Long.valueOf(dto.getSlpCode()), dto.getCompanyName(), false);
+        String regional = (String) dataSeller[0];
         if (regional.equals("TALLERES")) {
             dto.setPriceListNum(8l);
-        } else if (dto.getCompanyName().equals("IGB")) {
+        } else if (dto.getCompanyName().contains("IGB")) {
             dto.setPriceListNum(4l);
         } else {
             dto.setPriceListNum(1l);
@@ -2402,5 +2338,17 @@ public class AppREST {
         }
         CONSOLE.log(Level.INFO, "Se creo la orden temporal satisfactoriamente. idOrden={0} en la empresa {1}", new Object[]{order.getIdOrder(), dto.getCompanyName()});
         return new ResponseDTO(0, order.getIdOrder());
+    }
+
+    private void validateCampanaTires(String docNum, int sumTires, String cardCode, String regional, String companyName) {
+        if (regional.equals("TALLERES")) {
+            if (sumTires >= 20 && despachoExhibidoreSAPFacade.existsExhibitorDispatchRecordByCustomer(cardCode, companyName, false)) {
+                salesOrderSAPFacade.updateCampanaByOrder(docNum, "2", companyName, false);
+            }
+        } else {
+            if (sumTires >= 30 && despachoExhibidoreSAPFacade.existsExhibitorDispatchRecordByCustomer(cardCode, companyName, false)) {
+                salesOrderSAPFacade.updateCampanaByOrder(docNum, "2", companyName, false);
+            }
+        }
     }
 }

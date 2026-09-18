@@ -25,8 +25,8 @@ public class SalesOrderSAPFacade {
     public SalesOrderSAPFacade() {
     }
 
-    public List<String> getStatusOrder(String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<String> getStatusOrder(String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(e.\"Name\" as varchar(50)) as Estados ");
         sb.append("from   \"@DESPACHADORES\" e ");
@@ -41,8 +41,8 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
-    public List<Object[]> findOrdersStopped(String slpCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<Object[]> findOrdersStopped(String slpCode, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as int)as docNum, cast(o.\"DocDate\" as date)as docDate, cast(o.\"CardCode\" as varchar(20))as cardCode, ");
         sb.append("       cast(o.\"CardName\" as varchar(50))as cardName, cast(o.\"U_SEPARADOR\" as varchar (50))as status, cast(o.\"DocTotal\" as numeric(18,0))as docTotal, ");
@@ -60,8 +60,8 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
-    public List<Object[]> findDetailOrdersStopped(String slpCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<Object[]> findDetailOrdersStopped(String slpCode, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as int)as docNum, cast(o.\"CardCode\" as varchar(20))as cardCode, cast(s.\"LicTradNum\" as varchar(20))as nit, ");
         sb.append("       cast(o.\"CardName\" as varchar(50))as cardName, cast(o.\"DocDueDate\" as date)as docDueDate, cast(o.\"DocDate\" as date)as docDate, ");
@@ -85,8 +85,8 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
-    public Integer getDocNumOrder(Long docEntry, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    /*public Integer getDocNumOrder(Long docEntry, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\"as int)as DocNum from ORDR where \"DocEntry\" = ");
         sb.append(docEntry);
@@ -97,10 +97,10 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el nro de documento de la orden [" + docEntry + "] en [" + companyName + ']', e);
         }
         return null;
-    }
+    }*/
 
-    public Integer getDocNumOrderByNumAtCard(String numAtCard, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public Integer getDocNumOrderByNumAtCard(String numAtCard, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\" as int)as DocNum from ORDR where \"NumAtCard\" like '");
         sb.append(numAtCard);
@@ -122,8 +122,8 @@ public class SalesOrderSAPFacade {
         return 0;
     }
 
-    public List<Object[]> listOrdersHistoryByCustomer(String cardCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<Object[]> listOrdersHistoryByCustomer(String cardCode, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as int)as DocNum, cast(o.\"DocDate\" as date)as DocDate, cast(o.\"DocTotal\" as numeric(18,2))as DocTotal ");
         sb.append("from ORDR o ");
@@ -139,7 +139,7 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
-    public List<Object[]> listOrdersHistoryWithDetailByCustomer(String cardCode, String companyName, boolean pruebas) {
+    public List<Object[]> listOrdersHistoryWithDetailByCustomer(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocDate\" as date)as DocDate,cast(o.\"DocNum\" as varchar)as DocNum,cast(d.\"WhsCode\" as varchar)as WhsCode, ");
         sb.append(" cast(d.\"Quantity\" as int)as Qty,cast(o.\"DiscPrcnt\" as int)as desc1,cast(d.\"DiscPrcnt\" as int)as desc2,cast(d.\"Dscription\" as varchar)as itemName, ");
@@ -153,7 +153,7 @@ public class SalesOrderSAPFacade {
         sb.append(cardCode);
         sb.append("' order by cast(o.\"DocDate\" as date) desc ");
         try {
-            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al listar el historico de ordenes con detalle para el cliente " + cardCode + " en " + companyName, e);
@@ -161,8 +161,8 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
-    public List<Object[]> listDetailOrder(Integer docNum, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<Object[]> listDetailOrder(Integer docNum, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(d.\"LineNum\" as int)as LineNum, cast(d.\"ItemCode\" as varchar(20))as ItemCode, cast(d.\"Dscription\" as varchar(100))as ItemName, ");
         sb.append("      cast(d.\"Quantity\" as int)as Qty, cast(d.\"PackQty\" as int)as QtyPack, cast(d.\"Price\" as numeric(18,2))as PriceUnit, ");
@@ -181,8 +181,8 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
-    public List<Object[]> listOrdersForValidateTransport(String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public List<Object[]> listOrdersForValidateTransport(String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(o.\"DocNum\" as int)as DocNum, cast(m.\"U_COD_TRA\" as varchar(4))as U_COD_TRA ");
         sb.append("from  ORDR o ");
@@ -199,8 +199,8 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
-    public void updateTransport(Integer docNum, String trasnport, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
+    public void updateTransport(Integer docNum, String trasnport, String companyName, boolean testing) {
+        EntityManager em = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
         sb.append("update ORDR set \"U_TRANSP\"=");
         sb.append(trasnport);
@@ -213,7 +213,7 @@ public class SalesOrderSAPFacade {
         }
     }
 
-    public List<Object[]> listOrdersApprovedForModula(String companyName, boolean pruebas) {
+    public List<Object[]> listOrdersApprovedForModula(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\" as varchar(20))as DocNun, cast(d.\"ItemCode\" as varchar(20))as ItemCode,cast(d.\"Quantity\" as int)as Qty ");
         sb.append("from ORDR p ");
@@ -221,7 +221,7 @@ public class SalesOrderSAPFacade {
         sb.append("where p.\"DocStatus\"='O' and d.\"WhsCode\"='30' and days_between(p.\"DocDate\",current_date)<45");
         sb.append(" and p.\"Confirmed\"='Y' and p.\"U_SEPARADOR\" in ('APROBADO','PREPAGO') and p.\"U_ESTADO_WMS\" in ('P','C') ");
         try {
-            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listado las ordenes aprobadas para enviar a wms-modula.", e);
@@ -229,20 +229,20 @@ public class SalesOrderSAPFacade {
         return new ArrayList<>();
     }
 
-    public void updateStatus(String docNum, Character status, String companyName, boolean pruebas) {
+    public void updateStatus(String docNum, Character status, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("update ORDR set \"U_ESTADO_WMS\"='");
         sb.append(status);
         sb.append("' where \"DocNum\"=");
         sb.append(docNum);
         try {
-            persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+            persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error actualiando el estado de la orden de venta docEntry=[" + docNum + "]", e);
         }
     }
 
-    public List<Object[]> listOrdersByDateAndSale(long slpCode, long year, long month, long day, String companyName, boolean pruebas) {
+    public List<Object[]> listOrdersByDateAndSale(long slpCode, long year, long month, long day, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"CardCode\" as varchar(20))as cardCode,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
         sb.append(" cast(\"Comments\" as varchar(500))as comments,cast(\"DocEntry\" as int)as docEntry,cast(\"DocNum\" as int)as docNum,cast(\"CardName\" as varchar(100))as cardName, ");
@@ -258,7 +258,7 @@ public class SalesOrderSAPFacade {
         sb.append(day);
         sb.append(" order by \"DocDate\" asc,\"DocNum\" desc");
         try {
-            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error listando las ordenes de venta para el asesor [" + slpCode + "] en " + companyName, e);
@@ -287,7 +287,7 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
-    public Object[] getOrderExtranetInProgressBySeller(String slpCode, String companyName, boolean pruebas) {
+    public Object[] getOrderExtranetInProgressBySeller(String slpCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(\"DocNum\" as varchar)as docNum,cast(\"DocDate\" as date)as docDate,cast(\"DocTotal\" as numeric(18,2))as docTotal, ");
         sb.append(" cast(\"CardCode\" as varchar)as cardCode,cast(\"CardName\" as varchar)as cardName ");
@@ -296,7 +296,7 @@ public class SalesOrderSAPFacade {
         sb.append(slpCode);
         sb.append(" limit 1");
         try {
-            return (Object[]) persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error obteniendo la orden creada desde la extranet para " + companyName, e);
@@ -304,14 +304,14 @@ public class SalesOrderSAPFacade {
         return null;
     }
 
-    public boolean updateStatusOrderExtranetInprogress(String docNum, String status, String companyName, boolean pruebas) {
+    public boolean updateStatusOrderExtranetInprogress(String docNum, String status, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("update ORDR set \"U_ESTADO_PED\"='");
         sb.append(status);
         sb.append("' where \"DocNum\"=");
         sb.append(docNum);
         try {
-            int res = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+            int res = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
             if (res == 1) {
                 return true;
             }
@@ -319,5 +319,59 @@ public class SalesOrderSAPFacade {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar el estado de la orden extranet #" + docNum + " en " + companyName);
         }
         return false;
+    }
+
+    public boolean updateCampanaByOrder(String docNum, String campana, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update ORDR set \"U_CAMPANA\"='");
+        sb.append(campana);
+        sb.append("' where \"DocNum\"=");
+        sb.append(docNum);
+        try {
+            int res = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
+            if (res == 1) {
+                return true;
+            }
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error al actualizar la campana de la orden #" + docNum + " en " + companyName);
+        }
+        return false;
+    }
+
+    public List<Object[]> listPendingOrdersByExhibidore(String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select cast(o.\"DocNum\" as varchar(8)) as docNum,cast(o.\"CardCode\" as varchar(20)) as cardCode, ");
+        sb.append(" case when d.\"Dscription\" like '%LLANTA%MOTOCARRO%' then 'AP00022' ");
+        sb.append("      when d.\"ItemCode\" like 'TY%' then 'AP00021' ");
+        sb.append("      when d.\"ItemCode\" like 'U%'  then 'PRE0065' ");
+        sb.append("      when d.\"ItemCode\" like 'EX%' then 'PRE02' ");
+        sb.append("      else 'OTRO'");
+        sb.append(" end as codExhibidor, ");
+        sb.append(" case when d.\"ItemCode\" like 'TY%' then 'TIMSUM' ");
+        sb.append("      when d.\"ItemCode\" like 'U%'  then 'DONIN' ");
+        sb.append("      when d.\"ItemCode\" like 'EX%' then 'XCELINK' ");
+        sb.append("      else 'OTRO' ");
+        sb.append(" end as brand ");
+        sb.append("from ORDR o ");
+        sb.append("inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
+        sb.append("where o.\"DocStatus\"='O' and o.\"U_CAMPANA\"='2' ");
+        sb.append("group by o.\"DocNum\",o.\"CardCode\",");
+        sb.append(" case when d.\"Dscription\" like '%LLANTA%MOTOCARRO%' then 'AP00022' ");
+        sb.append("      when d.\"ItemCode\" like 'TY%' then 'AP00021' ");
+        sb.append("      when d.\"ItemCode\" like 'U%'  then 'PRE0065' ");
+        sb.append("      when d.\"ItemCode\" like 'EX%' then 'PRE02' ");
+        sb.append("      else 'OTRO' ");
+        sb.append(" end,");
+        sb.append(" case when d.\"ItemCode\" like 'TY%' then 'TIMSUM' ");
+        sb.append("      when d.\"ItemCode\" like 'U%'  then 'DONIN' ");
+        sb.append("      when d.\"ItemCode\" like 'EX%' then 'XCELINK' ");
+        sb.append("      else 'OTRO' ");
+        sb.append(" end");
+        try {
+            return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error listado ordenes pendientes por exhibidor en " + companyName, e);
+        }
+        return new ArrayList<>();
     }
 }

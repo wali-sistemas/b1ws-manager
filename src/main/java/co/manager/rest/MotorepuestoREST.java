@@ -229,6 +229,13 @@ public class MotorepuestoREST {
             if (docNum != 0) {
                 CONSOLE.log(Level.INFO, "La orden ya existe en SAP con el id {0}", docNum);
                 return Response.ok(new ResponseDTO(0, docNum)).build();
+            } else {
+                //validar existencia de numAtCard de la tabla temporal de pedidos
+                Integer idDocNum = orderPedboxFacade.getIdOrderByNumAtCard(dto.getNumAtCard(), dto.getCompanyName(), false);
+                if (idDocNum != 0) {
+                    CONSOLE.log(Level.INFO, "La orden ya existe en tabla temporal con el id {0}", docNum);
+                    return Response.ok(new ResponseDTO(0, idDocNum)).build();
+                }
             }
         }
         /**** 2.Validar campos obligatorios para creación de orden de venta****/
@@ -254,21 +261,20 @@ public class MotorepuestoREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
+
+        //Consulta de descuento comercial, transportadora, dirección por default
+        Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+
         /**** 3.Asignar valores predeterminados a la orden****/
         dto.setStatus("APROBADO");
         dto.setConfirmed("Y");
         dto.setDocTotal(dto.getDocTotal());
         /**** 4.Consultando código de transportadora asignada al cliente****/
-        dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+        dto.setIdTransport((String) dataCustomer[1]);
         /**** 5.Consultando por cliente el id de la dirección de factura****/
-        String shipToCodeDefault = null;
-        List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
-        if (idAddress.size() > 0) {
-            for (Object[] obj : idAddress) {
-                shipToCodeDefault = (String) obj[0];
-                dto.setPayToCode((String) obj[1]);
-            }
-        }
+        String shipToCodeDefault = (String) dataCustomer[2];
+        dto.setPayToCode((String) dataCustomer[3]);
+
         if (dto.getShipToCode().equals("0")) {
             dto.setShipToCode(shipToCodeDefault);
         }

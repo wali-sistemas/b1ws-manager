@@ -156,21 +156,6 @@ public class BusinessPartnerSAPFacade {
         return null;
     }
 
-    public String getTransportCustomer(String cardCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"U_TRASP\" as varchar(11)) as transport from OCRD where \"CardCode\" = '");
-        sb.append(cardCode);
-        sb.append("'");
-        try {
-            return (String) em.createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando la transportadora del cliente. ", e);
-        }
-        return null;
-    }
-
     public CupoDTO getCustomerPortfolio(String cardCode, String slpCode, String companyName, boolean pruebas) {
         EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
         StringBuilder sb = new StringBuilder();
@@ -375,38 +360,20 @@ public class BusinessPartnerSAPFacade {
         return false;
     }
 
-    public List<Object[]> findIdAddress(String cardCode, String companyName, boolean pruebas) {
+    public Object[] getDataCustomer(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select cast(s.\"ShipToDef\" as varchar(100))as ShipToDef, cast(s.\"BillToDef\" as varchar(100))as BillToDef ");
-        sb.append("from OCRD s where s.\"CardCode\" ='");
+        sb.append("select cast(s.\"QryGroup12\" as varchar(1))as QryGroup12,cast(s.\"U_TRASP\" as varchar(11)) as transport, ");
+        sb.append(" cast(s.\"ShipToDef\" as varchar(100))as ShipToDef, cast(s.\"BillToDef\" as varchar(100))as BillToDef ");
+        sb.append("from OCRD s ");
+        sb.append("where s.\"CardCode\" ='");
         sb.append(cardCode);
         sb.append("'");
         try {
-            return persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
-        } catch (NoResultException ex) {
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el id de direcciones para el cliente " + cardCode + " en " + companyName, e);
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando los datos del cliente " + cardCode + " en " + companyName, e);
         }
-        return new ArrayList<>();
-    }
-
-    public boolean checkFieldDiscountCommercial(String cardCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"QryGroup12\" as varchar(1))as QryGroup12 from OCRD where \"CardCode\" = '");
-        sb.append(cardCode);
-        sb.append("'");
-        try {
-            if (em.createNativeQuery(sb.toString()).getSingleResult().equals("Y")) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la propiedad del SN " + cardCode, e);
-        }
-        return false;
+        return new Object[]{};
     }
 
     public List<Object[]> listTypeDocument(String companyName, boolean pruebas) {
@@ -511,13 +478,11 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join OCRD s ON s.\"CardCode\"=e.\"CardCode\" ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=s.\"U_PRO_FIDELIZACION\" and c.\"U_Activo\"='Y' ");
         sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and s.\"QryGroup15\"='Y' and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
-
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",c.\"Name\" ");
         sb.append(" union all ");
         sb.append("  select v.\"U_Documento\" as \"CardCode\",e.\"DocNum\",'FV' as \"TypeDoc\",e.\"DocDate\", ");
@@ -534,13 +499,11 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S' ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y' ");
         sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
-
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",v.\"U_Documento\",c.\"Name\" ");
         sb.append(" union all ");
         sb.append("  select v.\"U_Documento\" as \"CardCode\",e.\"DocNum\",'NC' as \"TypeDoc\",e.\"DocDate\", ");
@@ -558,13 +521,11 @@ public class BusinessPartnerSAPFacade {
         sb.append("  inner join \"@REDENCION_VENDMOSTR\" v ON v.\"U_CardCode\"=e.\"CardCode\" and v.\"U_Activo\"='S' ");
         sb.append("  inner join \"@REDENCION_CONCEPTOS\" c ON c.\"Code\"=v.\"U_Concepto\" and c.\"U_Activo\"='Y' ");
         sb.append("  where year(e.\"DocDate\")=year(current_date) and month(e.\"DocDate\")=month(current_date) and e.\"DiscPrcnt\"<100 and d.\"TaxOnly\"='N' ");
-
         if (!cardCode.equals("0")) {
             sb.append(" and e.\"CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("  group by e.\"DocNum\",m.\"Name\",m.\"U_Puntos\",c.\"U_PorcPuntos\",e.\"CardCode\",e.\"DocDate\",v.\"U_Documento\",c.\"Name\" ");
         sb.append(") as t ");
         sb.append("group by t.\"DocNum\",t.\"CardCode\",t.\"TypeDoc\",t.\"DocDate\",t.\"Programa\" ");
@@ -573,24 +534,20 @@ public class BusinessPartnerSAPFacade {
         sb.append("select cast(\"U_CardCode\" as varchar(20))as \"CardCode\",cast(\"U_Programa\" as varchar(50))as \"Programa\",cast(\"U_DocNum\" as int)as \"DocNum\", ");
         sb.append(" cast(\"U_TypeDoc\" as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(\"U_DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\",cast(\"U_Puntos\" as int)as \"Puntos\" ");
         sb.append("from \"@REDENCION_HISTPUNTO\" ");
-
         if (!cardCode.equals("0")) {
             sb.append("where \"U_CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append(" union all ");
         sb.append("select cast(p.\"U_CardCode\" as varchar(20))as \"CardCode\",cast('REDENCIÓN' as varchar(50))as \"Programa\",cast(0 as int)as \"DocNum\", ");
         sb.append(" cast('RM' as varchar(2))as \"TypeDoc\",cast(TO_VARCHAR(p.\"U_DocDate\",'YYYY-MM-DD')as varchar(20))as \"DocDate\",cast(p.\"U_Point\" as int)*-1 as \"Puntos\" ");
         sb.append("from \"@REDENCION_PUNTOS\" p ");
-
         if (!cardCode.equals("0")) {
             sb.append("where p.\"U_CardCode\"='");
             sb.append(cardCode);
             sb.append("' ");
         }
-
         sb.append("order by y.\"TypeDoc\",y.\"DocNum\",y.\"Programa\" ASC");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();

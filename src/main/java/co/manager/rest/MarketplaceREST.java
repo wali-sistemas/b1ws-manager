@@ -214,6 +214,9 @@ public class MarketplaceREST {
                 return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
             }
 
+            //Consulta de descuento comercial, transportadora, dirección por default
+            Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+
             dto.setStatus("REVISAR");
             dto.setConfirmed("N");
             dto.setDiscountPercent(10.0);
@@ -222,17 +225,14 @@ public class MarketplaceREST {
             String ocrCode = "590";
             dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
             /**** 4. Consultando código de transportadora asignada al cliente****/
-            dto.setIdTransport(businessPartnerSAPFacade.getTransportCustomer(dto.getCardCode(), dto.getCompanyName(), false));
+            dto.setIdTransport((String) dataCustomer[1]);
             /**** 5. Consultando por cliente el id de la dirección de factura****/
-            String shipToCodeDefault = null;
-            List<Object[]> idAddress = businessPartnerSAPFacade.findIdAddress(dto.getCardCode(), dto.getCompanyName(), false);
-            if (idAddress.size() > 0) {
-                for (Object[] obj : idAddress) {
-                    shipToCodeDefault = (String) obj[0];
-                    dto.setPayToCode((String) obj[1]);
-                }
+            String shipToCodeDefault = (String) dataCustomer[2];
+            dto.setPayToCode((String) dataCustomer[3]);
+
+            if (dto.getShipToCode().equals("0")) {
+                dto.setShipToCode(shipToCodeDefault);
             }
-            dto.setShipToCode(shipToCodeDefault);
 
             Gson gson = new Gson();
             String json = gson.toJson(dto);

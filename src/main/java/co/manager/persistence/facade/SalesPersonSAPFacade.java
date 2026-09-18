@@ -5,7 +5,6 @@ import co.manager.util.Constants;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,36 +27,23 @@ public class SalesPersonSAPFacade {
     public SalesPersonSAPFacade() {
     }
 
-    public String getCentroCosto(Long slpCode, String companyName, boolean pruebas) {
-        EntityManager em = persistenceConf.chooseSchema(companyName, pruebas, DB_TYPE_HANA);
-        StringBuilder sb = new StringBuilder();
-        sb.append("select cast(\"U_CentroCosto\" as varchar(20))as CentroCosto from OSLP where \"SlpCode\"=");
-        sb.append(slpCode);
-        try {
-            return (String) em.createNativeQuery(sb.toString()).getSingleResult();
-        } catch (NoResultException ex) {
-        } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el centro de costo para el vendedor " + slpCode.toString(), e.getMessage());
-        }
-        return "";
-    }
-
-    public String getRegionalBySeller(String slpCode, String companyName, boolean testing) {
+    public Object[] getDataSellerRegionAndCost(Long slpCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         if (companyName.contains("IGB")) {
-            sb.append("select cast(\"Memo\" as varchar(100))as region ");
+            sb.append("select cast (\"Memo\" as varchar (100))as region,");
         } else {
-            sb.append("select cast(\"U_REGIONAL\" as varchar(100))as region ");
+            sb.append("select cast (\"U_REGIONAL\" as varchar (100))as region,");
         }
+        sb.append("cast (\"U_CentroCosto\" as varchar (20))as CentroCosto ");
         sb.append("from OSLP ");
         sb.append("where \"Fax\"='Y' and \"SlpCode\"=");
         sb.append(slpCode);
         try {
-            return (String) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+            return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
         } catch (Exception e) {
-            CONSOLE.log(Level.SEVERE, "Ocurrio un error al consultar la regional del asesor " + slpCode + " en " + companyName, e);
-            return "";
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando datos del asesor " + slpCode.toString() + " en " + companyName, e);
         }
+        return new Object[]{};
     }
 
     public List<Object[]> getSaleBudgetBySeller(String slpCode, Integer year, String month, String companyName, boolean testing) {

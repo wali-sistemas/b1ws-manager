@@ -1,10 +1,7 @@
 package co.manager.rest;
 
 import co.manager.dto.*;
-import co.manager.ejb.BusinessPartnerEJB;
-import co.manager.ejb.EmailManager;
-import co.manager.ejb.ItemEJB;
-import co.manager.ejb.PurchaseInvoicesEJB;
+import co.manager.ejb.*;
 import co.manager.hanaws.dto.item.ItemsDTO;
 import co.manager.hanaws.dto.item.ItemsRestDTO;
 import co.manager.modulaws.dto.item.ItemModulaDTO;
@@ -67,7 +64,11 @@ public class SondaREST {
     @EJB
     private InvoiceSAPFacade invoiceSAPFacade;
     @EJB
+    private DespachoExhibidoreSAPFacade despachoExhibidoreSAPFacade;
+    @EJB
     private PurchaseInvoicesEJB purchaseInvoicesEJB;
+    @EJB
+    private InventoryGenExitsEJB inventoryGenExitsEJB;
     @Inject
     private EmailManager emailManager;
 
@@ -562,6 +563,86 @@ public class SondaREST {
 
         CONSOLE.log(Level.INFO, "Finalizando sincronizacion automatica de facturas de compras.");
         return Response.ok(new ResponseDTO(-1, "Finalizando sincronizacion automatica de facturas de compras.")).build();
+    }
+
+    @GET
+    @Path("sync-inventory-gen-exits/{companyname}")
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8"})
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public Response syncInventoryGenExits(@PathParam("companyname") String companyName) {
+        CONSOLE.log(Level.INFO, "Iniciando sincronizacion automatica de salida de mercancía (exhibidor) pendientes por crear en {0}", companyName);
+
+        List<Object[]> orders = salesOrderSAPFacade.listPendingOrdersByExhibidore(companyName, false);
+        if (orders.isEmpty()) {
+            CONSOLE.log(Level.WARNING, "No se encontraron datos para crear salida de mercancia en {0}", companyName);
+            return Response.ok(new ResponseDTO(-1, "No se encontraron datos para crear salida de mercancia en " + companyName)).build();
+        }
+
+        ResponseDTO resp = null;
+        for (Object[] order : orders) {
+            try {
+                InventoryItemGenExitsDTO inventoryGenExitsDTO = new InventoryItemGenExitsDTO();
+                inventoryGenExitsDTO.setComment("PROMO EXHIBIDOR GRATIS orden: " + order[0].toString());
+                inventoryGenExitsDTO.setCardCode((String) order[1]);
+                inventoryGenExitsDTO.setCompanyName(companyName);
+
+                List<InventoryItemGenExitsDTO.DocumentLines> details = new ArrayList<>();
+                InventoryItemGenExitsDTO.DocumentLines item = new InventoryItemGenExitsDTO.DocumentLines();
+                item.setItemCode((String) order[2]);
+                item.setQuantity(1);
+                item.setWhsCode("01");
+                details.add(item);
+
+                inventoryGenExitsDTO.setDocumentLines(details);
+
+                Gson gson = new Gson();
+                String json = gson.toJson(inventoryGenExitsDTO);
+                CONSOLE.log(Level.INFO, json);
+
+                resp = inventoryGenExitsEJB.createInventoryGenExitsService(inventoryGenExitsDTO);
+                if (resp.getCode() >= 0) {
+                    try {
+                        //Actualizar la orden con estado de exhibidor enviado
+                        salesOrderSAPFacade.updateCampanaByOrder(order[0].toString(), "3", companyName, false);
+
+                        Map<String, String> params = new HashMap<>();
+                        params.put("companyName", companyName);
+                        params.put("docNum", resp.getContent().toString());
+                        params.put("orderNum", order[0].toString());
+                        params.put("docDate", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+                        params.put("cardCode", inventoryGenExitsDTO.getCardCode());
+                        params.put("itemCode", item.getItemCode());
+                        params.put("brand", (String) order[3]);
+                        params.put("comment", inventoryGenExitsDTO.getComment());
+
+                        sendEmail("NotificationInvExitsExhibidore", "soporte@igbcolombia.com", "Salida Exhibidor - " + resp.getContent().toString(), "mercadeo@igbcolombia.com",
+                                "sistemas2@igbcolombia.com", "", null, params);
+                        //Crear registro en tabla del despacho del exhibidor
+                        DespachoExhibidoreDTO dto = new DespachoExhibidoreDTO();
+                        dto.setCode(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + inventoryGenExitsDTO.getCardCode());
+                        dto.setName(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + inventoryGenExitsDTO.getCardCode());
+                        dto.setCardCode(inventoryGenExitsDTO.getCardCode());
+                        dto.setQty(1);
+                        dto.setMarca((String) order[3]);
+                        dto.setBaseRef(resp.getContent().toString());
+                        dto.setItemCode(item.getItemCode());
+
+                        if (!despachoExhibidoreSAPFacade.addDespachoExhibidore(dto, companyName, false)) {
+                            Gson gsonTable = new Gson();
+                            String jsonTable = gsonTable.toJson(dto);
+                            CONSOLE.log(Level.INFO, jsonTable);
+                        }
+                    } catch (Exception e) {
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error notificando la salida de mercancia (exhibidor) #" + resp.getContent().toString(), e);
+                        return Response.ok(new ResponseDTO(-1, "Ocurrio un error notificando la salida de mercancia (exhibidor) # " + resp.getContent().toString())).build();
+                    }
+                }
+            } catch (Exception e) {
+                CONSOLE.log(Level.SEVERE, "Ocurrio un error creando la salida de mercancia (exhibidor) en " + companyName);
+                return Response.ok(new ResponseDTO(-1, "Ocurrio un error creando la salida de mercancia (exhibidor) en " + companyName)).build();
+            }
+        }
+        return Response.ok(new ResponseDTO(0, "Salidas de mercancia sincronizadas exitosamente.")).build();
     }
 
     private void sendEmail(String template, String from, String subject, String toAddress, String ccAddress, String bccAddress, String adjunto, Map<String, String> params) {

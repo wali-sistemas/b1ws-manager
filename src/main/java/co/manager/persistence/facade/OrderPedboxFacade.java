@@ -56,4 +56,19 @@ public class OrderPedboxFacade {
         }
         return new ArrayList<>();
     }
+
+    public Integer getIdOrderByNumAtCard(String numAtCard, String companyName, boolean testing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select top 1 cast(case when docNum=0 then idOrder else docNum end as int)as docNum ");
+        sb.append("from order_pedbox ");
+        sb.append("where numAtCard like '");
+        sb.append(numAtCard);
+        sb.append("%'");
+        try {
+            return (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (Exception e) {
+            CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el idOrder.", e);
+        }
+        return 0;
+    }
 }
