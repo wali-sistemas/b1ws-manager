@@ -935,7 +935,7 @@ public class AppREST {
                 dto.setConfirmed("N");
             }
         } else {
-            dto.setStatus("REVISAR");
+            dto.setStatus("RETENIDO");
             dto.setConfirmed("N");
         }
         //Consulta de descuento comercial, transportadora, dirección por default
