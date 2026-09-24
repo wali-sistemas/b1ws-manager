@@ -6,6 +6,7 @@ import co.manager.hanaws.client.InventoryGenExits.InventoryGenExitsClient;
 import co.manager.hanaws.dto.InventoryGenExits.InventoryGenExitsDTO;
 import co.manager.hanaws.dto.InventoryGenExits.InventoryGenExitsRestDTO;
 import co.manager.util.Constants;
+import co.manager.util.IGBUtils;
 import com.google.gson.Gson;
 
 import javax.annotation.PostConstruct;
@@ -59,7 +60,7 @@ public class InventoryGenExitsEJB {
         if (sessionId != null) {
             try {
                 InventoryGenExitsDTO inventoryGenExits = new InventoryGenExitsDTO();
-                inventoryGenExits.setSeries(179);
+                inventoryGenExits.setSeries(Integer.parseInt(getPropertyValue("manager.inventoryGenExits.series", dto.getCompanyName())));
                 inventoryGenExits.setReference2(dto.getCardCode());
                 inventoryGenExits.setComments(dto.getComment());
 
@@ -109,5 +110,9 @@ public class InventoryGenExitsEJB {
             }
         }
         return new ResponseDTO(0, docNum);
+    }
+
+    private String getPropertyValue(String propertyName, String companyName) {
+        return IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(propertyName), companyName);
     }
 }

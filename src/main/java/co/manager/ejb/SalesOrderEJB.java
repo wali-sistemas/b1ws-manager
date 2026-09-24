@@ -17,7 +17,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -385,16 +384,6 @@ public class SalesOrderEJB {
         }
         return new ResponseDTO(0, docNum);
     }
-
-    /*public static void main(String[] args) {
-        double cupon = 5386.554621;
-        double subTotalsinIva = 107730;
-
-        System.out.println(Math.round(cupon));
-        System.out.println(Math.round((Math.round(cupon) / subTotalsinIva) * 100));
-
-//5387
-    }*/
 
     private String getPropertyValue(String propertyName, String companyName) {
         return IGBUtils.getProperParameter(appBean.obtenerValorPropiedad(propertyName), companyName);
