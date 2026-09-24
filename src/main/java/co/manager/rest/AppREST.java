@@ -964,7 +964,7 @@ public class AppREST {
                 dto.setConfirmed("N");
             }
         } else {
-            dto.setStatus("REVISAR");
+            dto.setStatus("RETENIDO");
             dto.setConfirmed("N");
         }
         //TODO: Solo para motorepuestos.co las ordenes de WALI SALES pasan aprobadas en IGB y MTZ
