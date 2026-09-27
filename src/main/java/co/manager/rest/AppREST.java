@@ -921,50 +921,39 @@ public class AppREST {
         //Consulta de regional y centro de costo del asesor
         Object[] dataSeller = salesPersonSAPFacade.getDataSellerRegionAndCost(dto.getSlpCode(), dto.getCompanyName(), false);
 
-        /**** 3. Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
-        if (!dto.isHoldOrder()) {
-            if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
-                dto.setStatus("APROBADO");
-                dto.setConfirmed("Y");
-                dto.setDiscountPercent(20.0);
-            } else if (dto.getCompanyName().contains("VELEZ")) {
-                dto.setStatus("APROBADO");
-                dto.setConfirmed("Y");
-            } else {
-                dto.setStatus("REVISAR");
-                dto.setConfirmed("N");
-            }
-        } else {
-            dto.setStatus("RETENIDO");
-            dto.setConfirmed("N");
-        }
+        /**** 3. Validar descuento comercial. Marcar con estado REVISAR, RETENIDO si asesor marca y APROBADO si es MTR****/
         //Consulta de descuento comercial, transportadora, dirección por default
         Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
 
         //TODO: condicion solo para talleres
         String regional = (String) dataSeller[0];
-        if (!dto.isHoldOrder()) {
-            if (regional.equals("TALLERES")) {
+        if (dto.isHoldOrder()) {
+            dto.setStatus("RETENIDO");
+            dto.setConfirmed("N");
+        } else if ((dto.getCompanyName().contains("VARROC") || dto.getCompanyName().contains("IGB")) && dto.getCardCode().equals("C900998242")) {
+            dto.setStatus("APROBADO");
+            dto.setConfirmed("Y");
+            dto.setDiscountPercent(20.0);
+        } else if (dto.getCompanyName().contains("VELEZ")) {
+            dto.setStatus("APROBADO");
+            dto.setConfirmed("Y");
+        } else if (regional.equals("TALLERES")) {
+            dto.setStatus("REVISAR");
+            dto.setConfirmed("N");
+        } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+            // TODO: Aprobación de órdenes automáticas en IGB y VARROC
+            if (dataCustomer[0].equals("Y")) {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
-            } else if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
-                //TODO: Aprobación de ordenes automaticas en IGB y MTZ
-                if (dataCustomer[0].equals("Y")) {
-                    dto.setStatus("REVISAR");
-                    dto.setConfirmed("N");
-                } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
-                    dto.setStatus("APROBADO");
-                    dto.setConfirmed("Y");
-                } else {
-                    dto.setStatus("REVISAR");
-                    dto.setConfirmed("N");
-                }
+            } else if (dto.getDocTotal() <= businessPartnerSAPFacade.getAvailableCreditByCustomer(dto.getCardCode(), dto.getCompanyName(), false).doubleValue()) {
+                dto.setStatus("APROBADO");
+                dto.setConfirmed("Y");
             } else {
                 dto.setStatus("REVISAR");
                 dto.setConfirmed("N");
             }
         } else {
-            dto.setStatus("RETENIDO");
+            dto.setStatus("REVISAR");
             dto.setConfirmed("N");
         }
         //TODO: Solo para motorepuestos.co las ordenes de WALI SALES pasan aprobadas en IGB y MTZ
@@ -2340,7 +2329,8 @@ public class AppREST {
         return new ResponseDTO(0, order.getIdOrder());
     }
 
-    private void validateCampanaTires(String docNum, int sumTires, String cardCode, String regional, String companyName) {
+    private void validateCampanaTires(String docNum, int sumTires, String cardCode, String regional, String
+            companyName) {
         if (regional.equals("TALLERES")) {
             if (sumTires >= 20 && despachoExhibidoreSAPFacade.existsExhibitorDispatchRecordByCustomer(cardCode, companyName, false)) {
                 salesOrderSAPFacade.updateCampanaByOrder(docNum, "2", companyName, false);
