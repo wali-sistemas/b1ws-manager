@@ -582,7 +582,7 @@ public class SondaREST {
         for (Object[] order : orders) {
             try {
                 InventoryItemGenExitsDTO inventoryGenExitsDTO = new InventoryItemGenExitsDTO();
-                inventoryGenExitsDTO.setComment("PROMO EXHIBIDOR GRATIS orden: " + order[0].toString());
+                inventoryGenExitsDTO.setComment("PROMO EXHIBIDOR GRATIS orden(es): " + order[0].toString());
                 inventoryGenExitsDTO.setCardCode((String) order[1]);
                 inventoryGenExitsDTO.setCompanyName(companyName);
 
