@@ -1057,7 +1057,6 @@ public class PedBoxREST {
         //Consulta de descuento comercial, transportadora, dirección por default
         Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
         String regional = (String) dataSeller[0];
-
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = (String) dataSeller[1];
         dto.getDetailSalesOrder().get(0).setOcrCode(ocrCode);
