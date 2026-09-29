@@ -40,6 +40,7 @@ public class SalesPersonSAPFacade {
         sb.append(slpCode);
         try {
             return (Object[]) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando datos del asesor " + slpCode.toString() + " en " + companyName, e);
         }

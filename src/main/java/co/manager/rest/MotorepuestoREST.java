@@ -261,7 +261,15 @@ public class MotorepuestoREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
-
+        //TODO: Valores seteados analizar despues de desplegar y estabilizar
+        dto.setIdTransport("35");
+        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
+            dto.setCardCode("C900998242");
+            dto.setSlpCode(Long.valueOf(22));
+            dto.setDiscountPercent(20.0);
+        } else {
+            dto.setSlpCode(Long.valueOf(5));
+        }
         //Consulta de descuento comercial, transportadora, dirección por default
         Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
 
@@ -278,27 +286,14 @@ public class MotorepuestoREST {
         if (dto.getShipToCode().equals("0")) {
             dto.setShipToCode(shipToCodeDefault);
         }
-
-        //TODO: Valores seteados analizar despues de desplegar y estabilizar
-        dto.setIdTransport("35");
-        if (dto.getCompanyName().contains("IGB") || dto.getCompanyName().contains("VARROC")) {
-            dto.setCardCode("C900998242");
-            dto.setSlpCode(Long.valueOf(22));
-            dto.setDiscountPercent(20.0);
-        } else {
-            dto.setSlpCode(Long.valueOf(5));
-        }
-
         //TODO: asignar bodega 01 a la 60 cuando sea solo lubricante
         for (DetailSalesB2CorderDTO detail : dto.getDetailSalesOrder()) {
             if (detail.getItemCode().substring(0, 2).equals("TY")) {
                 detail.setWhsCode("60");
             }
-
             if (detail.getItemCode().substring(0, 2).equals("LR")) {
                 detail.setWhsCode("01");
             }
-
             if (dto.getCompanyName().contains("VELEZ")) {
                 detail.setWhsCode("01");
             }

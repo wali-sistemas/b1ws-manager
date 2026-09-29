@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 @Stateless
 public class BusinessPartnerSAPFacade {
-    private static final Logger CONSOLE = Logger.getLogger(ItemSAPFacade.class.getSimpleName());
+    private static final Logger CONSOLE = Logger.getLogger(BusinessPartnerSAPFacade.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
 
     @EJB

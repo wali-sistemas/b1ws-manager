@@ -63,9 +63,12 @@ public class OrderPedboxFacade {
         sb.append("from order_pedbox ");
         sb.append("where numAtCard like '");
         sb.append(numAtCard);
-        sb.append("%'");
+        sb.append("%' and companyName='");
+        sb.append(companyName);
+        sb.append("'");
         try {
             return (Integer) persistenceConf.chooseSchema(companyName, testing, DB_TYPE_WALI).createNativeQuery(sb.toString()).getSingleResult();
+        } catch (NoResultException ex) {
         } catch (Exception e) {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error consultando el idOrder.", e);
         }

@@ -325,11 +325,12 @@ public class SalesOrderSAPFacade {
         StringBuilder sb = new StringBuilder();
         sb.append("update ORDR set \"U_CAMPANA\"='");
         sb.append(campana);
-        sb.append("' where \"DocNum\"=");
+        sb.append("' where \"DocNum\" in (");
         sb.append(docNum);
+        sb.append(")");
         try {
             int res = persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).executeUpdate();
-            if (res == 1) {
+            if (res > 0) {
                 return true;
             }
         } catch (Exception e) {
@@ -340,23 +341,28 @@ public class SalesOrderSAPFacade {
 
     public List<Object[]> listPendingOrdersByExhibidore(String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select STRING_AGG(cast(t.\"DocNum\" as varchar(20)), ', ')as docNum,t.\"CardCode\",t.\"codExhibidor\",t.\"brand\" ");
-        sb.append("from ( ");
-        sb.append(" select distinct o.\"DocNum\",o.\"CardCode\", ");
-        sb.append("  case when d.\"Dscription\" like '%LLANTA%MOTOCARRO%' then 'AP00022' ");
-        sb.append("       when d.\"ItemCode\" like 'TY%' then 'AP00021' ");
-        sb.append("       when d.\"ItemCode\" like 'U%'  then 'PRE0065' ");
-        sb.append("       when d.\"ItemCode\" like 'EX%' then 'PRE02' ");
-        sb.append("  else 'OTRO' end as \"codExhibidor\", ");
-        sb.append("  case when d.\"ItemCode\" like 'TY%' then 'TIMSUM' ");
-        sb.append("       when d.\"ItemCode\" like 'U%'  then 'DONIN' ");
-        sb.append("       when d.\"ItemCode\" like 'EX%' then 'XCELINK' ");
-        sb.append("  else 'OTRO' end as \"brand\" ");
-        sb.append("from ORDR o ");
-        sb.append("inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
-        sb.append("where o.\"DocStatus\"='O'and o.\"U_CAMPANA\"='2' ");
+        sb.append("select STRING_AGG(cast(t.\"DocNum\" as varchar(20)),', ')as \"DocNum\",cast(t.\"CardCode\" as varchar(20))as \"CardCode\",cast(t.\"CodExhibidor\" as varchar(20))as \"CodExhibidor\",cast(t.\"Brand\" as varchar(50))as \"Brand\" ");
+        sb.append("from (");
+        sb.append(" select s.\"DocNum\",s.\"CardCode\",s.\"CodExhibidor\",s.\"Brand\",sum(s.\"Quantity\")as \"Quantity\" ");
+        sb.append(" from ( ");
+        sb.append("  select o.\"DocNum\",o.\"CardCode\",d.\"Quantity\", ");
+        sb.append("   case when d.\"Dscription\" like '%LLANTA%MOTOCARRO%' then 'AP00022' ");
+        sb.append("        when d.\"ItemCode\" like 'TY%' then 'AP00021' ");
+        sb.append("        when d.\"ItemCode\" like 'U%'  then 'PRE0065' ");
+        sb.append("        when d.\"ItemCode\" like 'EX%' then 'PRE02' ");
+        sb.append("   else 'OTRO' end as \"CodExhibidor\",");
+        sb.append("   case when d.\"ItemCode\" like 'TY%' then 'TIMSUM' ");
+        sb.append("        when d.\"ItemCode\" like 'U%'  then 'DONIN' ");
+        sb.append("        when d.\"ItemCode\" like 'EX%' then 'XCELINK' ");
+        sb.append("   else 'OTRO' end as \"Brand\" ");
+        sb.append("  from ORDR o ");
+        sb.append("  inner join RDR1 d on d.\"DocEntry\"=o.\"DocEntry\" ");
+        sb.append("  where o.\"DocStatus\"='O' and o.\"U_CAMPANA\"='2' and o.\"CardCode\" not like 'L%' ");
+        sb.append(" )as s ");
+        sb.append(" group by s.\"DocNum\",s.\"CardCode\",s.\"CodExhibidor\",s.\"Brand\" ");
+        sb.append(" having sum(s.\"Quantity\")>=20 ");
         sb.append(")as t ");
-        sb.append("group by t.\"CardCode\",t.\"codExhibidor\",t.\"brand\"");
+        sb.append("group by t.\"CardCode\",t.\"CodExhibidor\",t.\"Brand\" ");
         try {
             return persistenceConf.chooseSchema(companyName, testing, DB_TYPE_HANA).createNativeQuery(sb.toString()).getResultList();
         } catch (Exception e) {
