@@ -590,7 +590,11 @@ public class SondaREST {
                 InventoryItemGenExitsDTO.DocumentLines item = new InventoryItemGenExitsDTO.DocumentLines();
                 item.setItemCode((String) order[2]);
                 item.setQuantity(1);
-                item.setWhsCode("01");
+                if (companyName.contains("VARROC")) {
+                    item.setWhsCode("32");
+                } else {
+                    item.setWhsCode("01");
+                }
                 details.add(item);
 
                 inventoryGenExitsDTO.setDocumentLines(details);
