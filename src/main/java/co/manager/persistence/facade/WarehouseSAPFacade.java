@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 public class WarehouseSAPFacade {
     private static final Logger CONSOLE = Logger.getLogger(WarehouseSAP.class.getSimpleName());
     private static final String DB_TYPE_HANA = Constants.DATABASE_TYPE_HANA;
-
     @EJB
     private PersistenceConf persistenceConf;
 
@@ -33,7 +32,7 @@ public class WarehouseSAPFacade {
 
         if (companyName.equals("IGB")) {
             //Filtro bodegas de solo ventas para IGB
-            sb.append("'01','05','26','32','35','60','55') ");
+            sb.append("'01','05','26','32','35','60','55','70') ");
             sb.append("union all ");
             sb.append("select '00' as Bodega,'VENTAS PERDIDAS' as Descripcion,2 as type ");
             sb.append("from dummy ");
