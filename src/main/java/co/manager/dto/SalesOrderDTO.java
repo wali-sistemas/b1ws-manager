@@ -42,6 +42,8 @@ public class SalesOrderDTO implements Serializable {
     private Double docTotal;
     @JsonProperty("holdOrder")
     private boolean holdOrder;
+    @JsonProperty("sendExhibidore")
+    private boolean sendExhibidore;
     @JsonProperty("createTempOrder")
     private boolean createTempOrder;
     @JsonProperty("detailSalesOrder")
@@ -175,16 +177,24 @@ public class SalesOrderDTO implements Serializable {
         return holdOrder;
     }
 
+    public void setHoldOrder(boolean holdOrder) {
+        this.holdOrder = holdOrder;
+    }
+
+    public boolean isSendExhibidore() {
+        return sendExhibidore;
+    }
+
+    public void setSendExhibidore(boolean sendExhibidore) {
+        this.sendExhibidore = sendExhibidore;
+    }
+
     public boolean isCreateTempOrder() {
         return createTempOrder;
     }
 
     public void setCreateTempOrder(boolean createTempOrder) {
         this.createTempOrder = createTempOrder;
-    }
-
-    public void setHoldOrder(boolean holdOrder) {
-        this.holdOrder = holdOrder;
     }
 
     @Override
@@ -205,6 +215,7 @@ public class SalesOrderDTO implements Serializable {
                 ", discountPercent=" + discountPercent +
                 ", docTotal=" + docTotal +
                 ", holdOrder=" + holdOrder +
+                ", sendExhibidore=" + sendExhibidore +
                 ", createTempOrder=" + createTempOrder +
                 ", detailSalesOrder=" + detailSalesOrder +
                 '}';
