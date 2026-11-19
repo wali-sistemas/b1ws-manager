@@ -118,7 +118,7 @@ public class AppREST {
             dto.setWhsTire2((String) obj[4]);
             dto.setWhsTire3((String) obj[5]);
             dto.setWhsTire4((String) obj[6]);
-            dto.setAppVersion("12.9");
+            dto.setAppVersion("13.0");
             dto.setCompanyName(companyName);
 
             data.add(dto);
@@ -1018,6 +1018,10 @@ public class AppREST {
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_one_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_two_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_combo = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_combo = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         ResponseDTO res = new ResponseDTO();
@@ -1077,6 +1081,16 @@ public class AppREST {
                                 detailSalesOrder_LL_med_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_med.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("70")) {
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_buc_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_buc_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_buc_combo.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_buc.add(setDetailOrder(detail, ocrCode));
                             }
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES") && detail.getItemCode().substring(0, 2).equals("LR")) {
@@ -1226,34 +1240,6 @@ public class AppREST {
                         json = gson.toJson(dto);
                         CONSOLE.log(Level.INFO, json);
                         CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos con (combo). Orden Temp={0}", response.getContent());
-                        res = response;
-                        orderCompleted = false;
-                    } else {
-                        orderCompleted = true;
-                    }
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
-        /**** 9.4. Solo repuestos ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_REP.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_REP);
-                dto.setNumAtCard(numAtCard + "R");
-                /**** 9.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
-                    res = sortOutItemsOnlyParts(dto, ocrCode);
-                } else {
-                    res = salesOrderEJB.createSalesOrderByApp(dto);
-                    if (res.getCode() < 0) {
-                        ResponseDTO response = createOrderTemporary(dto, 0);
-
-                        gson = new Gson();
-                        json = gson.toJson(dto);
-                        CONSOLE.log(Level.INFO, json);
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos. Orden Temp={0}", response.getContent());
                         res = response;
                         orderCompleted = false;
                     } else {
@@ -1506,8 +1492,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1533,8 +1521,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1560,8 +1550,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1587,8 +1579,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1641,8 +1635,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1668,8 +1664,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1695,8 +1693,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1722,8 +1722,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1749,8 +1751,10 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1771,13 +1775,15 @@ public class AppREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (*). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (**). Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
@@ -1803,14 +1809,131 @@ public class AppREST {
                     orderCompleted = false;
                 } else {
                     orderCompleted = true;
-                    //Validación: para aplicar a campaña exhibidor gratis
-                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
                 }
             }
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.30. Solo lubricantes ****/
+        /**** 9.30. Solo llantas de bucaramanga con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL70D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.31. Solo llantas de bucaramanga con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL70D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.32. Solo llantas de bucaramanga con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_combo);
+                dto.setNumAtCard(numAtCard + "LL70DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    if (dto.isSendExhibidore()) {
+                        //Validación: para aplicar a campaña exhibidor gratis
+                        validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.33. Solo repuestos ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_REP.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP);
+                dto.setNumAtCard(numAtCard + "R");
+                /**** 9.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().contains("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrderByApp(dto);
+                    if (res.getCode() < 0) {
+                        ResponseDTO response = createOrderTemporary(dto, 0);
+
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos. Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.34. Solo lubricantes ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1834,7 +1957,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.31. Solo lubricantes REVO Medellín****/
+        /**** 9.35. Solo lubricantes REVO Medellín****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1859,7 +1982,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.32. Solo lubricantes REVO Bogotá****/
+        /**** 9.36. Solo lubricantes REVO Bogotá****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1884,7 +2007,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.33. Solo llantas de cali ****/
+        /**** 9.37. Solo llantas de cali ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1911,7 +2034,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.34. Solo llantas de cartagena ****/
+        /**** 9.38. Solo llantas de cartagena ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1938,7 +2061,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.35. Solo llantas de bogotá ****/
+        /**** 9.39. Solo llantas de bogotá ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1965,7 +2088,7 @@ public class AppREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 9.36. Solo llantas de medellín ****/
+        /**** 9.40. Solo llantas de medellín ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1981,6 +2104,33 @@ public class AppREST {
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín. Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 9.41. Solo llantas de Bucaramanga ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc);
+                dto.setNumAtCard(numAtCard + "LL70");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByApp(dto);
+                if (res.getCode() < 0) {
+                    ResponseDTO response = createOrderTemporary(dto, 0);
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {

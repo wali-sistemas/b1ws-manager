@@ -363,7 +363,7 @@ public class BusinessPartnerSAPFacade {
     public Object[] getDataCustomer(String cardCode, String companyName, boolean testing) {
         StringBuilder sb = new StringBuilder();
         sb.append("select cast(s.\"QryGroup12\" as varchar(1))as QryGroup12,cast(s.\"U_TRASP\" as varchar(11)) as transport, ");
-        sb.append(" cast(s.\"ShipToDef\" as varchar(100))as ShipToDef, cast(s.\"BillToDef\" as varchar(100))as BillToDef ");
+        sb.append(" cast(s.\"ShipToDef\" as varchar(100))as ShipToDef,cast(s.\"BillToDef\" as varchar(100))as BillToDef,cast(s.\"SlpCode\" as int)as slpCode ");
         sb.append("from OCRD s ");
         sb.append("where s.\"CardCode\" ='");
         sb.append(cardCode);

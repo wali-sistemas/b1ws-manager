@@ -1020,8 +1020,12 @@ public class PedBoxREST {
             CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden de venta para {0}. Campo docTotal es obligatorio", dto.getCompanyName());
             return Response.ok(new ResponseExtranetDTO(-1, "Ocurrio un error al crear la orden de venta para " + dto.getCompanyName() + ". Campo docTotal es obligatorio.")).build();
         }
-        //Consulta de regional y centro de costo del asesor
-        Object[] dataSeller = salesPersonSAPFacade.getDataSellerRegionAndCost(dto.getSlpCode(), dto.getCompanyName(), false);
+        //Consulta de descuento comercial, transportadora, dirección por default
+        Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+        //Aplica solo para ordenes de extarnet, NO ofertas
+        if (dto.isCreateTempOrder()) {
+            dto.setSlpCode(Long.valueOf((Integer) dataCustomer[4]));
+        }
 
         /**** 3.Validar descuento comercial. Marcar con estado REVISAR y no Autorizar despacho****/
         //TODO: Solo para motorepuestos.co las ordenes de extranet pasan aprobadas en IGB y MTZ
@@ -1054,8 +1058,9 @@ public class PedBoxREST {
             dto.setConfirmed("N");
         }*/
 
-        //Consulta de descuento comercial, transportadora, dirección por default
-        Object[] dataCustomer = businessPartnerSAPFacade.getDataCustomer(dto.getCardCode(), dto.getCompanyName(), false);
+        //Consulta de regional y centro de costo del asesor
+        Object[] dataSeller = salesPersonSAPFacade.getDataSellerRegionAndCost(dto.getSlpCode(), dto.getCompanyName(), false);
+
         String regional = (String) dataSeller[0];
         /**** 4.Consultando el centro de costo por asesor de venta****/
         String ocrCode = (String) dataSeller[1];
@@ -1193,6 +1198,10 @@ public class PedBoxREST {
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_one_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_two_asterisk = new ArrayList<>();
         List<DetailSalesOrderDTO> detailSalesOrder_LL_med_combo = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_one_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_two_asterisk = new ArrayList<>();
+        List<DetailSalesOrderDTO> detailSalesOrder_LL_buc_combo = new ArrayList<>();
 
         String numAtCard = dto.getNumAtCard();
         res = new ResponseExtranetDTO();
@@ -1252,6 +1261,16 @@ public class PedBoxREST {
                                 detailSalesOrder_LL_med_combo.add(setDetailOrder(detail, ocrCode));
                             } else {
                                 detailSalesOrder_LL_med.add(setDetailOrder(detail, ocrCode));
+                            }
+                        } else if (detail.getWhsCode().equals("70")) {
+                            if (detail.getItemName().substring(0, 3).equals("(*)")) {
+                                detailSalesOrder_LL_buc_one_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 4).equals("(**)")) {
+                                detailSalesOrder_LL_buc_two_asterisk.add(setDetailOrder(detail, ocrCode));
+                            } else if (detail.getItemName().substring(0, 5).equals("COMBO")) {
+                                detailSalesOrder_LL_buc_combo.add(setDetailOrder(detail, ocrCode));
+                            } else {
+                                detailSalesOrder_LL_buc.add(setDetailOrder(detail, ocrCode));
                             }
                         }
                     } else if (detail.getGroup().equals("LUBRICANTES") && detail.getItemCode().substring(0, 2).equals("LR")) {
@@ -1411,35 +1430,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.4. Solo repuestos ****/
-        if (orderCompleted) {
-            if (detailSalesOrder_REP.size() > 0) {
-                dto.setDetailSalesOrder(new ArrayList<>());
-                dto.setDetailSalesOrder(detailSalesOrder_REP);
-                dto.setNumAtCard(numAtCard + "R");
-                /**** 11.4.1. Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
-                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
-                    res = sortOutItemsOnlyParts(dto, ocrCode);
-                } else {
-                    res = salesOrderEJB.createSalesOrderByExtranet(dto);
-                    if (res.getCode() < 0) {
-                        ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
-
-                        gson = new Gson();
-                        json = gson.toJson(dto);
-                        CONSOLE.log(Level.INFO, json);
-                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos. Orden Temp={0}", response.getContent());
-                        res = response;
-                        orderCompleted = false;
-                    } else {
-                        orderCompleted = true;
-                    }
-                }
-            }
-        } else {
-            return Response.ok(res).build();
-        }
-        /**** 11.5. Solo lubricantes con (*) ****/
+        /**** 11.4. Solo lubricantes con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1463,7 +1454,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.6. Solo lubricantes con (**) ****/
+        /**** 11.5. Solo lubricantes con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1487,7 +1478,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.7. Solo lubricantes con (combo) ****/
+        /**** 11.6. Solo lubricantes con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1511,7 +1502,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.8. Solo lubricantes REVO Medellín con (*) ****/
+        /**** 11.7. Solo lubricantes REVO Medellín con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1536,7 +1527,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.9. Solo lubricantes REVO Medellín con (**) ****/
+        /**** 11.8. Solo lubricantes REVO Medellín con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1561,7 +1552,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.10. Solo lubricantes REVO Medellín con (combo) ****/
+        /**** 11.9. Solo lubricantes REVO Medellín con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1586,7 +1577,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.11. Solo lubricantes REVO Bogotá con (*) ****/
+        /**** 11.10. Solo lubricantes REVO Bogotá con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1611,7 +1602,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.12. Solo lubricantes REVO Bogotá con (**) ****/
+        /**** 11.11. Solo lubricantes REVO Bogotá con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1636,7 +1627,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.13. Solo lubricantes REVO Bogotá con (combo) ****/
+        /**** 11.12. Solo lubricantes REVO Bogotá con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1661,7 +1652,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.18. Solo llantas de cali con (*) ****/
+        /**** 11.13. Solo llantas de cali con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1688,7 +1679,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.19. Solo llantas de cali con (*) ****/
+        /**** 11.14. Solo llantas de cali con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1715,7 +1706,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.20. Solo llantas de cali con (combo) ****/
+        /**** 11.15. Solo llantas de cali con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1742,7 +1733,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.21. Solo llantas de cartagena con (*) ****/
+        /**** 11.16. Solo llantas de cartagena con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1769,7 +1760,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.22. Solo llantas de cartagena con (**) ****/
+        /**** 11.17. Solo llantas de cartagena con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1796,7 +1787,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.23. Solo llantas de cartagena con (combo) ****/
+        /**** 11.18. Solo llantas de cartagena con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1823,7 +1814,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.24. Solo llantas de bogotá con (*) ****/
+        /**** 11.19. Solo llantas de bogotá con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1850,7 +1841,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.25. Solo llantas de bogotá con (**) ****/
+        /**** 11.20. Solo llantas de bogotá con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1877,7 +1868,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.26. Solo llantas de bogotá con (combo) ****/
+        /**** 11.21. Solo llantas de bogotá con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1904,7 +1895,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.27. Solo llantas de medellín con (*) ****/
+        /**** 11.22. Solo llantas de medellín con (*) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_one_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1931,7 +1922,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.28. Solo llantas de medellín con (**) ****/
+        /**** 11.23. Solo llantas de medellín con (**) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_two_asterisk.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1946,7 +1937,7 @@ public class PedBoxREST {
                     gson = new Gson();
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
-                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (*). Orden Temp={0}", response.getContent());
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín con (**). Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {
@@ -1958,7 +1949,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.29. Solo llantas de medellín con (combo) ****/
+        /**** 11.24. Solo llantas de medellín con (combo) ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med_combo.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -1985,7 +1976,116 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.30. Solo lubricantes ****/
+        /**** 11.25. Solo llantas de bucaramanga con (*) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_one_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_one_asterisk);
+                dto.setNumAtCard(numAtCard + "LL70D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByExtranet(dto);
+                if (res.getCode() < 0) {
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (*). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 11.26. Solo llantas de bucaramanga con (**) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_two_asterisk.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_two_asterisk);
+                dto.setNumAtCard(numAtCard + "LL70D1");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByExtranet(dto);
+                if (res.getCode() < 0) {
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (**). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 11.27. Solo llantas de bucaramanga con (combo) ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc_combo.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc_combo);
+                dto.setNumAtCard(numAtCard + "LL70DC");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByExtranet(dto);
+                if (res.getCode() < 0) {
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga con (combo). Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 11.28. Solo repuestos ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_REP.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_REP);
+                dto.setNumAtCard(numAtCard + "R");
+                /**** Validar si los repuestos son de IGB y separar que es para modula y cedi ****/
+                if (dto.getCompanyName().equals("IGB") && managerApplicationBean.obtenerValorPropiedad(Constants.BREAKER_MODULA).equals("true")) {
+                    res = sortOutItemsOnlyParts(dto, ocrCode);
+                } else {
+                    res = salesOrderEJB.createSalesOrderByExtranet(dto);
+                    if (res.getCode() < 0) {
+                        ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
+
+                        gson = new Gson();
+                        json = gson.toJson(dto);
+                        CONSOLE.log(Level.INFO, json);
+                        CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items Repuestos. Orden Temp={0}", response.getContent());
+                        res = response;
+                        orderCompleted = false;
+                    } else {
+                        orderCompleted = true;
+                    }
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 11.29. Solo lubricantes ****/
         if (orderCompleted) {
             if (detailSalesOrder_LU.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2009,7 +2109,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.31. Solo lubricantes REVO Medellín****/
+        /**** 11.30. Solo lubricantes REVO Medellín****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2034,7 +2134,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.32. Solo lubricantes REVO Bogotá****/
+        /**** 11.31. Solo lubricantes REVO Bogotá****/
         if (orderCompleted) {
             if (detailSalesOrder_LR_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2059,7 +2159,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.33. Solo llantas de cali ****/
+        /**** 11.32. Solo llantas de cali ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cali.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2086,7 +2186,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.34. Solo llantas de cartagena ****/
+        /**** 11.33. Solo llantas de cartagena ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_cart.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2113,7 +2213,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.35. Solo llantas de bogotá ****/
+        /**** 11.34. Solo llantas de bogotá ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_bog.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2140,7 +2240,7 @@ public class PedBoxREST {
         } else {
             return Response.ok(res).build();
         }
-        /**** 11.36. Solo llantas de medellín ****/
+        /**** 11.35. Solo llantas de medellín ****/
         if (orderCompleted) {
             if (detailSalesOrder_LL_med.size() > 0) {
                 dto.setDetailSalesOrder(new ArrayList<>());
@@ -2156,6 +2256,33 @@ public class PedBoxREST {
                     json = gson.toJson(dto);
                     CONSOLE.log(Level.INFO, json);
                     CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Medellín. Orden Temp={0}", response.getContent());
+                    res = response;
+                    orderCompleted = false;
+                } else {
+                    orderCompleted = true;
+                    //Validación: para aplicar a campaña exhibidor gratis
+                    validateCampanaTires(res.getContent().toString(), sumTires, dto.getCardCode(), regional, dto.getCompanyName());
+                }
+            }
+        } else {
+            return Response.ok(res).build();
+        }
+        /**** 11.36. Solo llantas de bucaramanga ****/
+        if (orderCompleted) {
+            if (detailSalesOrder_LL_buc.size() > 0) {
+                dto.setDetailSalesOrder(new ArrayList<>());
+                dto.setDetailSalesOrder(detailSalesOrder_LL_buc);
+                dto.setNumAtCard(numAtCard + "LL70");
+                dto.setSerialMDL("");
+
+                res = salesOrderEJB.createSalesOrderByExtranet(dto);
+                if (res.getCode() < 0) {
+                    ResponseExtranetDTO response = createOrderTemporary(dto, res.getOrderTemp(), res.getMessage());
+
+                    gson = new Gson();
+                    json = gson.toJson(dto);
+                    CONSOLE.log(Level.INFO, json);
+                    CONSOLE.log(Level.SEVERE, "Ocurrio un error al crear la orden para items solo LLantas de Bucaramanga. Orden Temp={0}", response.getContent());
                     res = response;
                     orderCompleted = false;
                 } else {

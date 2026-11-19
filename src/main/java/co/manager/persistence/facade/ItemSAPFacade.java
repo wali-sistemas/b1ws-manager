@@ -393,6 +393,20 @@ public class ItemSAPFacade {
         sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
         sb.append("union all ");
         sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
+        sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='70' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
+        sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='70' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
+        sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
+        if (companyName.equals("IGB")) {
+            sb.append(",cast(pre.\"Price\" as decimal(18,0))as Precio,cast(inv.\"WhsCode\" as varchar(2))as whsCode ");
+            sb.append(" from OITM it ");
+            sb.append(" inner join ITM1 pre on it.\"ItemCode\" = pre.\"ItemCode\" and pre.\"PriceList\"=4 ");
+        } else {
+            sb.append(" from OITM it ");
+        }
+        sb.append(" inner join OITW inv on inv.\"ItemCode\" = it.\"ItemCode\" and inv.\"OnHand\">0 and inv.\"WhsCode\"='70' ");
+        sb.append(" where it.\"validFor\"='Y' and it.\"ItemType\"='I' and it.\"InvntItem\"='Y' and it.\"SellItem\"='Y' ");
+        sb.append("union all ");
+        sb.append(" select distinct cast(it.\"ItemCode\" as varchar(20))as Producto, ");
         sb.append("  cast(case when(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")>0 ");
         sb.append("  then (inv.\"OnHand\"-inv.\"IsCommited\"-(select ifnull(sum(de.\"OnHandQty\"),0) from OBIN ub inner join OIBQ de on ub.\"AbsEntry\"=de.\"BinAbs\" where de.\"WhsCode\"='55' and (ub.\"Attr4Val\"='' or ub.\"Attr4Val\" is null) and de.\"OnHandQty\">0 and de.\"ItemCode\"=it.\"ItemCode\")) ");
         sb.append("  else (inv.\"OnHand\"-inv.\"IsCommited\") end as int)as Stock ");
