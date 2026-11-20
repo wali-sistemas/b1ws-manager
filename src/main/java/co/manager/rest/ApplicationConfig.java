@@ -38,5 +38,6 @@ public class ApplicationConfig extends Application {
         resources.add(OncreditREST.class);
         resources.add(ChatBotIAREST.class);
         resources.add(MarketplaceREST.class);
+        resources.add(NovaREST.class);
     }
 }

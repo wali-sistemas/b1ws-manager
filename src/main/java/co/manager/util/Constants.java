@@ -24,6 +24,10 @@ public class Constants {
     public static final String BREAKER_MODULA = "breaker.modula";
     public static final String OPEN_AI_URL = "https://api.openai.com/";
     public static final String OPEN_AI_APIKEY = "apikey-openai";
+    //TODO: SIIGO
+    public static final String SIIGO_URL = "url.siigo";
+    public static final String SIIGO_USER_NAME = "username.siigo";
+    public static final String SIIGO_ACCESS_KEY = "accesskey.siigo";
 
     public static final String[] LDAP_ATTR_IDS = {"name", "givenName", "description", "sAMAccountname", "userPrincipalName", "sn", "distinguishedName", "cn", "mail", "memberOf"};
 }
